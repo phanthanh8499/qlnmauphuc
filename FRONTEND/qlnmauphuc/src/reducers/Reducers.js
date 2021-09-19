@@ -3,7 +3,10 @@ import {
   DANG_NHAP_THANH_CONG,
   DANG_NHAP_THAT_BAI,
   DANG_XUAT,
+  LIET_KE_BFM,
   LIET_KE_SAN_PHAM,
+  LIET_KE_SFM,
+  LIET_KE_TFM,
   LIET_KE_THAT_BAI,
   LIET_KE_USERS_CHUA_CAP_NHAT,
   LIET_KE_USERS_DA_CAP_NHAT,
@@ -36,7 +39,7 @@ export const dangNhapReducer = (state = { loading: true }, action) => {
   }
 };
 
-export const productReducer = (state = { loading: true, productData: [] }, action) => {
+export const productReducer = (state = { loading: true, productData: [], BFM: [], SFM: [], TFM:[] }, action) => {
   switch (action.type) {
     case YEU_CAU_LIET_KE_SP:
       return { loading: true };
@@ -44,7 +47,13 @@ export const productReducer = (state = { loading: true, productData: [] }, actio
       const data = action.payload.sort(function (a, b) {
         return a.id - b.id;
       });
-      return { loading: false, productData: data };
+      return { loading: true, productData: data };
+    case LIET_KE_BFM:
+      return {...state, BFM: state.productData.filter(productData => productData.product_typeid === "BFM")}
+    case LIET_KE_TFM:
+      return {...state, TFM: state.productData.filter(productData => productData.product_typeid === "TFM")}
+    case LIET_KE_SFM:
+      return {...state, loading: false,  SFM: state.productData.filter(productData => productData.product_typeid === "SFM")}
     case LIET_KE_THAT_BAI:
       return { loading: false, error: action.payload };
     case THEM_SAN_PHAM:

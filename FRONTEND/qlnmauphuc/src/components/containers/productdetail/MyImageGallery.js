@@ -11,20 +11,20 @@ class MyImageGallery extends Component {
 
       items: [
         {
-          original: "https://188.com.vn/uploads/ao-vest-nam-a6521.jpg",
-          thumbnail: "https://188.com.vn/uploads/ao-vest-nam-a6521.jpg",
+          original: this.props.img1,
+          thumbnail: this.props.img1,
         },
         {
           original:
-            "https://cbu01.alicdn.com/img/ibank/O1CN01PkM5Kh1FkUb9bGQ5n_!!2815000525-0-cib.jpg",
+            this.props.img2,
           thumbnail:
-            "https://cbu01.alicdn.com/img/ibank/O1CN01PkM5Kh1FkUb9bGQ5n_!!2815000525-0-cib.jpg",
+            this.props.img2,
         },
         {
           original:
-            "https://cbu01.alicdn.com/img/ibank/O1CN01rgWppy1FkUauQfYKM_!!2815000525-0-cib.jpg",
+            this.props.img3,
           thumbnail:
-            "https://cbu01.alicdn.com/img/ibank/O1CN01rgWppy1FkUauQfYKM_!!2815000525-0-cib.jpg",
+            this.props.img3,
         },
       ],
     };

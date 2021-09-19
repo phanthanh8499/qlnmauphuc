@@ -41,7 +41,7 @@ const useStyles = makeStyles((theme) => ({
   title: {
     fontWeight: "400px !important",
     fontFamily: `"Roboto", sans-serif !important`,
-    fontSize: "35px !important",
+    fontSize: "25px !important",
     color: "#555",
   },
   titleColor: {
@@ -250,55 +250,83 @@ const useStyles = makeStyles((theme) => ({
     },
   },
 }));
-export default function MainDetail() {
+export default function MainDetail(props) {
   const classes = useStyles();
   const [mau, setMau] = useState(0);
-
-  useEffect(() => {
-    const color1 = document.getElementById("color1");
-    const color2 = document.getElementById("color2");
-    const color3 = document.getElementById("color3");
-    const color4 = document.getElementById("color4");
-    const color5 = document.getElementById("color5");
-    const color6 = document.getElementById("color6");
-    const color7 = document.getElementById("color7");
-    const color8 = document.getElementById("color8");
-    const color9 = document.getElementById("color9");
-    for (var i = 1; i <= 9; i++) {
-      const name = document.getElementById(`color${i}`);
-      name.classList.remove(classes.active);
-    }
-    if (mau === 1) {
-      color1.classList.add(classes.active);
-    }
-    if (mau === 2) {
-      color2.classList.add(classes.active);
-    }
-    if (mau === 3) {
-      color3.classList.add(classes.active);
-    }
-    if (mau === 4) {
-      color4.classList.add(classes.active);
-    }
-    if (mau === 5) {
-      color5.classList.add(classes.active);
-    }
-    if (mau === 6) {
-      color6.classList.add(classes.active);
-    }
-    if (mau === 7) {
-      color7.classList.add(classes.active);
-    }
-    if (mau === 8) {
-      color8.classList.add(classes.active);
-    }
-    if (mau === 9) {
-      color9.classList.add(classes.active);
-    }
-  });
+  const { data } = props;
+  // useEffect(() => {
+  //   const color1 = document.getElementById("color1");
+  //   const color2 = document.getElementById("color2");
+  //   const color3 = document.getElementById("color3");
+  //   const color4 = document.getElementById("color4");
+  //   const color5 = document.getElementById("color5");
+  //   const color6 = document.getElementById("color6");
+  //   const color7 = document.getElementById("color7");
+  //   const color8 = document.getElementById("color8");
+  //   const color9 = document.getElementById("color9");
+  //   for (var i = 1; i <= 9; i++) {
+  //     const name = document.getElementById(`color${i}`);
+  //     name.classList.remove(classes.active);
+  //   }
+  //   if (mau === 1) {
+  //     color1.classList.add(classes.active);
+  //   }
+  //   if (mau === 2) {
+  //     color2.classList.add(classes.active);
+  //   }
+  //   if (mau === 3) {
+  //     color3.classList.add(classes.active);
+  //   }
+  //   if (mau === 4) {
+  //     color4.classList.add(classes.active);
+  //   }
+  //   if (mau === 5) {
+  //     color5.classList.add(classes.active);
+  //   }
+  //   if (mau === 6) {
+  //     color6.classList.add(classes.active);
+  //   }
+  //   if (mau === 7) {
+  //     color7.classList.add(classes.active);
+  //   }
+  //   if (mau === 8) {
+  //     color8.classList.add(classes.active);
+  //   }
+  //   if (mau === 9) {
+  //     color9.classList.add(classes.active);
+  //   }
+  // });
   const choose = (abc) => {
     setMau(abc);
   };
+  const renderBreadCrumbs = () => {
+    if (data[0].product_typeid === "BFM" || data[0].product_typeid === "SFM" || data[0].product_typeid === "TFM" ){
+      return (
+        <Breadcrumbs aria-label="breadcrumb">
+          <Link color="inherit" href="/">
+            Trang chủ
+          </Link>
+          <Link color="inherit" href="/getting-started/installation/">
+            Thời trang Nam
+          </Link>
+          <Typography color="textPrimary">{data[0].product_typeid}</Typography>
+        </Breadcrumbs>
+      );
+    }
+    else {
+      return (
+        <Breadcrumbs aria-label="breadcrumb">
+          <Link color="inherit" href="/">
+            Trang chủ
+          </Link>
+          <Link color="inherit" href="/getting-started/installation/">
+            Thời trang Nữ
+          </Link>
+          <Typography color="textPrimary">{data[0].product_typeid}</Typography>
+        </Breadcrumbs>
+      );
+    }
+  }
   return (
     <>
       <Grid container className={classes.mainDetail}>
@@ -308,53 +336,59 @@ export default function MainDetail() {
           className={classes.productTitle}
         >
           <Grid item xs={12} className={classes.center}>
-            <Typography className={classes.font}>ÁO VEST – F1000AT</Typography>
+            <Typography className={classes.font}>
+              {data[0].product_name} - {data[0].product_code}
+            </Typography>
           </Grid>
           <div className={classes.divider}></div>
           <Grid item xs={12} className={classes.center}>
-            <Breadcrumbs aria-label="breadcrumb">
-              <Link color="inherit" href="/">
-                Trang chủ
-              </Link>
-              <Link color="inherit" href="/getting-started/installation/">
-                Thời trang Nam
-              </Link>
-              <Typography color="textPrimary">ÁO VEST – F1000AT</Typography>
-            </Breadcrumbs>
+            {renderBreadCrumbs()}
           </Grid>
         </Grid>
         <Grid container spacing={1}>
           <Grid item xs={6}>
-            <MyImageGallery></MyImageGallery>
+            <MyImageGallery
+              img1={data[0].product_image1}
+              img2={data[0].product_image2}
+              img3={data[0].product_image3}
+            ></MyImageGallery>
           </Grid>
           <Grid item xs={6} component={Paper} className={classes.productBox}>
             <Grid container xs={12}>
               <Grid item xs={12}>
-                <Typography className={classes.price}>1.000.000 đ</Typography>
+                <Typography className={classes.price}>
+                  {data[0].product_price.toLocaleString("it-IT", {
+                    style: "currency",
+                    currency: "VND",
+                  })}
+                </Typography>
               </Grid>
               <Grid item xs={12}>
                 <Typography className={classes.title}>
-                  Áo Vest - F1000AT
+                  {data[0].product_name}
                 </Typography>
               </Grid>
               <Grid item xs={12}>
                 <ul>
-                  <li className={classes.star}>Mẫu thời trang mới.</li>
                   <li className={classes.star}>
-                    Kiểu thiết kế nam tính, lịch lãm.
+                    {data[0].product_introduction1}
                   </li>
                   <li className={classes.star}>
-                    Form áo vừa vặn, mềm mại, mặc thoải mái.
+                    {data[0].product_introduction2}
                   </li>
                   <li className={classes.star}>
-                    Phong cách thời trang Châu Âu hiện đại
+                    {data[0].product_introduction3}
                   </li>
                   <li className={classes.star}>
-                    Linh hoạt trong kết hợp với các loại trang phục
+                    {data[0].product_introduction4}
+                  </li>
+                  <li className={classes.star}>
+                    {data[0].product_introduction5}
                   </li>
                 </ul>
               </Grid>
-              <Grid item xs={12}>
+
+              {/* <Grid item xs={12}>
                 <Grid container xs={12}>
                   <Grid item xs={12} className={classes.center}>
                     <Typography className={classes.titleColor}>
@@ -429,7 +463,8 @@ export default function MainDetail() {
                     </ul>
                   </Grid>
                 </Grid>
-              </Grid>
+              </Grid> */}
+
               <Grid item xs={12} className={classes.center}>
                 <Button
                   variant="outlined"

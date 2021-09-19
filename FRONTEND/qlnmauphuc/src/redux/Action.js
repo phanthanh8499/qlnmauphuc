@@ -3,7 +3,10 @@ import {
   CHINH_SUA_THONG_TIN_SAN_PHAM,
   DANG_NHAP_THANH_CONG,
   DANG_NHAP_THAT_BAI,
+  LIET_KE_BFM,
   LIET_KE_SAN_PHAM,
+  LIET_KE_SFM,
+  LIET_KE_TFM,
   LIET_KE_THAT_BAI,
   LIET_KE_USERS_CHUA_CAP_NHAT,
   LIET_KE_USERS_DA_CAP_NHAT,
@@ -44,6 +47,9 @@ export const getProductData = () => async (dispatch) => {
   try {
     const { data } = await Axios.get("/getProductData");
     dispatch({ type: LIET_KE_SAN_PHAM, payload: data});
+    dispatch({ type: LIET_KE_BFM });
+    dispatch({ type: LIET_KE_TFM });
+    dispatch({ type: LIET_KE_SFM });
   } catch (error) {
     dispatch({ type: LIET_KE_THAT_BAI, payload: error.message});
   }

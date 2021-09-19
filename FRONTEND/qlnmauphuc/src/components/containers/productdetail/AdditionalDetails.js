@@ -49,8 +49,9 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function AdditionalDetails() {
+export default function AdditionalDetails(props) {
   const classes = useStyles();
+  const {data} = props;
   return (
     <Grid container xs={12} component={Paper} className={classes.root}>
       <Grid item xs={2}>
@@ -66,20 +67,20 @@ export default function AdditionalDetails() {
           <Grid item xs={12}>
             <ul>
               <li className={classes.star}>
-                <Typography className={classes.font}>Màu sắc:</Typography> Xanh
-                than, cà phê, xám
+                <Typography className={classes.font}>Màu sắc:</Typography>{" "}
+                {data[0].product_color}
               </li>
               <li className={classes.star}>
                 <Typography className={classes.font}>Chất liệu:</Typography>{" "}
-                100% polyster
+                {data[0].product_material}
               </li>
               <li className={classes.star}>
-                <Typography className={classes.font}>lớp lót:</Typography> 100%
-                polysters
+                <Typography className={classes.font}>lớp lót:</Typography>{" "}
+                {data[0].product_lining}
               </li>
               <li className={classes.star}>
-                <Typography className={classes.font}>Size:</Typography> L, M, S,
-                XL, XXL, Yêu cầu may theo số đo
+                <Typography className={classes.font}>Size:</Typography>{" "}
+                {data[0].product_size}
               </li>
             </ul>
           </Grid>
@@ -91,13 +92,16 @@ export default function AdditionalDetails() {
           <Grid item xs={12}>
             <ul>
               <li className={classes.star}>
-                <Typography className={classes.font}>Độ dày:</Typography> mỏng
+                <Typography className={classes.font}>Độ dày:</Typography>
+                {data[0].product_thickness}
               </li>
               <li className={classes.star}>
-                <Typography className={classes.font}>Độ mềm:</Typography> vừa
+                <Typography className={classes.font}>Độ mềm:</Typography>
+                {data[0].product_softness}
               </li>
               <li className={classes.star}>
-                <Typography className={classes.font}>Co giãn:</Typography> không
+                <Typography className={classes.font}>Co giãn:</Typography>{" "}
+                {data[0].product_elasticity}
               </li>
             </ul>
           </Grid>
@@ -108,23 +112,23 @@ export default function AdditionalDetails() {
           </Grid>
           <Grid item xs={12} className={classes.center}>
             <img
-              src="./images/bangsize.png"
+              src={data[0].product_sizeimage}
               alt="Bảng size"
               className={`${classes.picture} ${classes.priceTable}`}
             ></img>
             <img
-              src="https://188.com.vn/uploads/ao-vest-nam-a6521.jpg"
-              alt="Ảnh sản phẩm"
+              src={data[0].product_image1}
+              alt="Ảnh sản phẩm 1"
               className={classes.picture}
             ></img>
             <img
-              src="https://cbu01.alicdn.com/img/ibank/O1CN01PkM5Kh1FkUb9bGQ5n_!!2815000525-0-cib.jpg"
-              alt="Ảnh sản phẩm"
+              src={data[0].product_image2}
+              alt="Ảnh sản phẩm 2"
               className={classes.picture}
             ></img>
             <img
-              src="https://cbu01.alicdn.com/img/ibank/O1CN01rgWppy1FkUauQfYKM_!!2815000525-0-cib.jpg"
-              alt="Ảnh sản phẩm"
+              src={data[0].product_image3}
+              alt="Ảnh sản phẩm 3"
               className={classes.picture}
             ></img>
           </Grid>

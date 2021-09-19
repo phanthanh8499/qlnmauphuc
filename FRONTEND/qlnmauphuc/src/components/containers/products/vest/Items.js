@@ -8,10 +8,12 @@ import {
   Button,
   IconButton,
 } from "@mui/material";
-import makeStyles from '@mui/styles/makeStyles';
-import React from "react";
+import makeStyles from "@mui/styles/makeStyles";
+import React, { useState } from "react";
 import NavigateNextIcon from "@mui/icons-material/NavigateNext";
 import NavigateBeforeIcon from "@mui/icons-material/NavigateBefore";
+import { useSelector } from "react-redux";
+import { Link } from "react-router-dom";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -63,147 +65,114 @@ const useStyles = makeStyles((theme) => ({
       opacity: 1,
     },
   },
+  boxTitle: {
+    overflow: "hidden",
+    textOverflow: "ellipsis",
+    whiteSpace: "nowrap",
+  },
 }));
 
 export default function Items() {
   const classes = useStyles();
+  const products = useSelector((state) => state.products);
+  const { BFM, TFM, SFM } = products;
+  const [page, setPage] = useState(0);
+  const [rowsPerPage] = useState(4);
+  const onPreClick = () => {
+    if (page !== 0) {
+      setPage(page - 1);
+    }
+  };
+  const onNextClick = () => {
+    const temp = BFM.length / rowsPerPage;
+    if (page < temp - 1) {
+      setPage(page + 1);
+    }
+  };
+  const covertURL = (str) => {
+    str = str.toLowerCase();
+    str = str.replace(/(à|á|ạ|ả|ã|â|ầ|ấ|ậ|ẩ|ẫ|ă|ằ|ắ|ặ|ẳ|ẵ)/g, "a");
+    str = str.replace(/(è|é|ẹ|ẻ|ẽ|ê|ề|ế|ệ|ể|ễ)/g, "e");
+    str = str.replace(/(ì|í|ị|ỉ|ĩ)/g, "i");
+    str = str.replace(/(ò|ó|ọ|ỏ|õ|ô|ồ|ố|ộ|ổ|ỗ|ơ|ờ|ớ|ợ|ở|ỡ)/g, "o");
+    str = str.replace(/(ù|ú|ụ|ủ|ũ|ư|ừ|ứ|ự|ử|ữ)/g, "u");
+    str = str.replace(/(ỳ|ý|ỵ|ỷ|ỹ)/g, "y");
+    str = str.replace(/(đ)/g, "d");
+    str = str.replace(/([^0-9a-z-\s])/g, "");
+    str = str.replace(/(\s+)/g, "-");
+    str = str.replace(/^-+/g, "");
+    str = str.replace(/-+$/g, "");
+    return str;
+  };
+  const printData = () => {
+    if (BFM !== null) {
+      return (
+        rowsPerPage > 0
+          ? BFM.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+          : BFM
+      ).map((value, key) => (
+        <Grid item xs={3} key={key}>
+          <Link
+            to={"/" + covertURL(value.product_name) + "." + value.id + ".html"}
+          >
+            <Card className={classes.boxItem}>
+              <CardActionArea>
+                <CardMedia
+                  className={classes.media}
+                  image={value.product_image1}
+                  title="Contemplative Reptile"
+                />
+                <CardContent>
+                  <Typography
+                    gutterBottom
+                    variant="h5"
+                    component="h2"
+                    align="center"
+                    className={classes.boxTitle}
+                  >
+                    {value.product_name}
+                  </Typography>
+                  <Typography
+                    variant="body2"
+                    color="textSecondary"
+                    component="p"
+                    align="center"
+                  >
+                    {value.product_price.toLocaleString("it-IT", {
+                      style: "currency",
+                      currency: "VND",
+                    })}
+                  </Typography>
+                  <Button variant="outlined" className={classes.button}>
+                    Xem chi tiết
+                  </Button>
+                </CardContent>
+              </CardActionArea>
+            </Card>
+          </Link>
+        </Grid>
+      ));
+    }
+  };
+
   return (
     <div className={classes.root}>
       <Grid container className={classes.gridroot} spacing={2} xs={12}>
-        <IconButton className={classes.navigateBeforeIcon} size="large">
+        <IconButton
+          className={classes.navigateBeforeIcon}
+          size="large"
+          onClick={onPreClick}
+        >
           <NavigateBeforeIcon></NavigateBeforeIcon>
         </IconButton>
-        <IconButton className={classes.navigateNextIcon} size="large">
+        <IconButton
+          className={classes.navigateNextIcon}
+          size="large"
+          onClick={onNextClick}
+        >
           <NavigateNextIcon></NavigateNextIcon>
         </IconButton>
-        <Grid item xs={3}>
-          <Card className={classes.boxItem}>
-            <CardActionArea>
-              <CardMedia
-                className={classes.media}
-                image="./images/VEST/vd193.jpg"
-                title="Contemplative Reptile"
-              />
-              <CardContent>
-                <Typography
-                  gutterBottom
-                  variant="h5"
-                  component="h2"
-                  align="center"
-                >
-                  Lizard
-                </Typography>
-                <Typography
-                  variant="body2"
-                  color="textSecondary"
-                  component="p"
-                  align="center"
-                >
-                  1.000.000 đ
-                </Typography>
-                <Button variant="outlined" className={classes.button}>
-                  Xem chi tiết
-                </Button>
-              </CardContent>
-            </CardActionArea>
-          </Card>
-        </Grid>
-        <Grid item xs={3}>
-          <Card className={classes.boxItem}>
-            <CardActionArea>
-              <CardMedia
-                className={classes.media}
-                image="./images/VEST/vd193.jpg"
-                title="Contemplative Reptile"
-              />
-              <CardContent>
-                <Typography
-                  gutterBottom
-                  variant="h5"
-                  component="h2"
-                  align="center"
-                >
-                  Lizard
-                </Typography>
-                <Typography
-                  variant="body2"
-                  color="textSecondary"
-                  component="p"
-                  align="center"
-                >
-                  1.000.000 đ
-                </Typography>
-                <Button variant="outlined" className={classes.button}>
-                  Xem chi tiết
-                </Button>
-              </CardContent>
-            </CardActionArea>
-          </Card>
-        </Grid>
-        <Grid item xs={3}>
-          <Card className={classes.boxItem}>
-            <CardActionArea>
-              <CardMedia
-                className={classes.media}
-                image="./images/VEST/vd193.jpg"
-                title="Contemplative Reptile"
-              />
-              <CardContent>
-                <Typography
-                  gutterBottom
-                  variant="h5"
-                  component="h2"
-                  align="center"
-                >
-                  Lizard
-                </Typography>
-                <Typography
-                  variant="body2"
-                  color="textSecondary"
-                  component="p"
-                  align="center"
-                >
-                  1.000.000 đ
-                </Typography>
-                <Button variant="outlined" className={classes.button}>
-                  Xem chi tiết
-                </Button>
-              </CardContent>
-            </CardActionArea>
-          </Card>
-        </Grid>
-        <Grid item xs={3}>
-          <Card className={classes.boxItem}>
-            <CardActionArea>
-              <CardMedia
-                className={classes.media}
-                image="./images/VEST/vd193.jpg"
-                title="Contemplative Reptile"
-              />
-              <CardContent>
-                <Typography
-                  gutterBottom
-                  variant="h5"
-                  component="h2"
-                  align="center"
-                >
-                  Lizard
-                </Typography>
-                <Typography
-                  variant="body2"
-                  color="textSecondary"
-                  component="p"
-                  align="center"
-                >
-                  1.000.000 đ
-                </Typography>
-                <Button variant="outlined" className={classes.button}>
-                  Xem chi tiết
-                </Button>
-              </CardContent>
-            </CardActionArea>
-          </Card>
-        </Grid>
+        {printData()}
       </Grid>
     </div>
   );

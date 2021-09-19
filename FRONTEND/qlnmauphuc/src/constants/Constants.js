@@ -24,6 +24,9 @@ export const XOA_USER_THAT_BAI = "XOA_USER_THAT_BAI";
 //======================== SAN PHAM =====================================
 export const YEU_CAU_LIET_KE_SP = "YEU_CAU_LIET_KE_SP";
 export const LIET_KE_SAN_PHAM = "LIET_KE_SAN_PHAM";
+export const LIET_KE_BFM = "LIET_KE_BFM";
+export const LIET_KE_SFM = "LIET_KE_SFM";
+export const LIET_KE_TFM = "LIET_KE_TFM";
 export const LIET_KE_THAT_BAI = "LIET_KE_THAT_BAI";
 export const THEM_SAN_PHAM = "THEM_SAN_PHAM";
 
