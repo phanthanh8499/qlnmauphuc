@@ -16,8 +16,8 @@ import NavigateBeforeIcon from "@mui/icons-material/NavigateBefore";
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    margin: "20px 0px 20px 0px",
-    padding: "10px",
+    margin: "20px 0px 20px 0px !important",
+    padding: "10px !important",
     position: "relative",
     border: "1px solid #d3d3d3",
   },
@@ -33,15 +33,15 @@ const useStyles = makeStyles((theme) => ({
     "&:hover": {
       boxShadow: "0 2px 8px #000000",
     },
-    transition: "box-shadow 0.5s ease-in-out",
+    transition: "box-shadow 0.5s ease-in-out !important",
   },
   media: {
     height: 215,
     width: 215,
-    margin: "0px auto",
+    margin: "0px auto !important",
   },
   navigateBeforeIcon: {
-    position: "absolute",
+    position: "absolute !important",
     zIndex: "999",
     top: "40%",
     left: "-17px",
@@ -53,7 +53,7 @@ const useStyles = makeStyles((theme) => ({
     },
   },
   navigateNextIcon: {
-    position: "absolute",
+    position: "absolute !important",
     zIndex: "999",
     top: "40%",
     right: -17,
@@ -66,9 +66,9 @@ const useStyles = makeStyles((theme) => ({
   },
   title: {
     color: "#555",
-    fontSize: 21,
-    fontWeight: 300,
-    fontFamily: `'Times New Roman', Times`,
+    fontSize: "21px !important",
+    fontWeight: "300px !important",
+    fontFamily: `'Times New Roman', Times !important`,
   },
   iconbtn: {
     outline: "none",

@@ -41,7 +41,10 @@ export const productReducer = (state = { loading: true, productData: [] }, actio
     case YEU_CAU_LIET_KE_SP:
       return { loading: true };
     case LIET_KE_SAN_PHAM:
-      return { loading: false, productData: action.payload };
+      const data = action.payload.sort(function (a, b) {
+        return a.id - b.id;
+      });
+      return { loading: false, productData: data };
     case LIET_KE_THAT_BAI:
       return { loading: false, error: action.payload };
     case THEM_SAN_PHAM:

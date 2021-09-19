@@ -27,13 +27,13 @@ const useStyles = makeStyles((theme) => ({
     },
   },
   font: {
-    fontWeight: 400,
+    fontWeight: "400px !important",
     color: "#4fb1f6",
     display: "inline-block",
-    padding: "0px 5px 0px 0px",
+    padding: "0px 5px 0px 0px !important",
   },
   title: {
-    fontWeight: "bold",
+    fontWeight: "bold !important",
     color: "#777777",
   },
   center: {
@@ -42,7 +42,7 @@ const useStyles = makeStyles((theme) => ({
     alignItems: "center",
   },
   picture: {
-    padding: "10px 0px 10px 0px",
+    padding: "10px 0px 10px 0px !important",
   },
   priceTable: {
     width: "80%",

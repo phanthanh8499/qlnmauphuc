@@ -5,19 +5,28 @@ import reportWebVitals from './reportWebVitals';
 import { Provider } from "react-redux";
 import store from "./Store";
 import { SnackbarProvider } from "notistack";
+import {
+  ThemeProvider,
+  createMuiTheme,
+  makeStyles,
+} from "@mui/material/styles";
+
+const theme = createMuiTheme();
 
 ReactDOM.render(
-  <Provider store={store}>
-     <SnackbarProvider
-      maxSnack={3}
-      anchorOrigin={{
-        vertical: "top",
-        horizontal: "right",
-      }}
-    >
-    <App></App>
-    </SnackbarProvider>
-  </Provider>,
+  <ThemeProvider theme={theme}>
+    <Provider store={store}>
+      <SnackbarProvider
+        maxSnack={3}
+        anchorOrigin={{
+          vertical: "top",
+          horizontal: "right",
+        }}
+      >
+        <App></App>
+      </SnackbarProvider>
+    </Provider>
+  </ThemeProvider>,
   document.getElementById("root")
 );
 

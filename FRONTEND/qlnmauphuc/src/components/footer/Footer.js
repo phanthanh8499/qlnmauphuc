@@ -15,23 +15,23 @@ const useStyles = makeStyles((theme) => ({
     },
   },
   inputCustom: {
-    padding: "10px 10px",
+    padding: "10px 10px !important",
     width: "70%",
-    borderRadius: "10px 0px 0px 10px",
+    borderRadius: "10px 0px 0px 10px !important",
     "&:focus": {
-      borderRadius: "5px",
+      borderRadius: "5px !important",
     },
   },
   btn: {
-    backgroundColor: "#000",
-    border: "1px solid #fff",
-    color: "#fff",
+    backgroundColor: "#000 !important",
+    border: "1px solid #fff !important",
+    color: "#fff !important",
     transition: "all 0.5s",
     margin: "0px 5px 0px 0px",
-    borderRadius: "0px 10px 10px 0px",
+    borderRadius: "0px 10px 10px 0px !important",
     "&:hover": {
-      backgroundColor: "#fff",
-      color: "#000",
+      backgroundColor: "#fff !important",
+      color: "#000 !important",
     },
   },
 }));

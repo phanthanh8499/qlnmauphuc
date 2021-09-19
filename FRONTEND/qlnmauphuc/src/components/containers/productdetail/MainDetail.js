@@ -5,20 +5,20 @@ import MyImageGallery from "./MyImageGallery";
 
 const useStyles = makeStyles((theme) => ({
   mainDetail: {
-    marginBottom: 20,
+    marginBottom: "20px !important",
   },
   font: {
-    fontWeight: 300,
-    fontSize: 23,
-    fontFamily: `"Roboto", sans-serif`,
+    fontWeight: "300px !important",
+    fontSize: "23px !important",
+    fontFamily: `"Roboto", sans-serif !important`,
     color: "#555",
     display: "block",
   },
   divider: {
-    height: 3,
+    height: "3px !important",
     display: "block",
     backgroundColor: "#00001a",
-    margin: "10px 0px",
+    margin: "10px 0px !important",
     width: "100%",
     maxWidth: "40%",
   },
@@ -31,37 +31,36 @@ const useStyles = makeStyles((theme) => ({
     },
   },
   productTitle: {
-    // margin: "0px 0px 20px 0px",
-    margin: "10px 0px 40px 0px",
+    margin: "10px 0px 40px 0px !important",
   },
   price: {
     color: "#111",
-    fontWeight: 700,
-    fontSize: 20,
+    fontWeight: "700px !important",
+    fontSize: "20px !important",
   },
   title: {
-    fontWeight: 400,
-    fontFamily: `"Roboto", sans-serif`,
-    fontSize: 35,
+    fontWeight: "400px !important",
+    fontFamily: `"Roboto", sans-serif !important`,
+    fontSize: "35px !important",
     color: "#555",
   },
   titleColor: {
-    fontWeight: 400,
-    fontFamily: `"Roboto", sans-serif`,
-    fontSize: 20,
+    fontWeight: "400px !important",
+    fontFamily: `"Roboto", sans-serif !important`,
+    fontSize: "20px !important",
     color: "#555",
   },
   productBox: {
-    padding: "20px 20px 20px 20px",
-    borderRadius: 10,
+    padding: "20px 20px 20px 20px !important",
+    borderRadius: "10px !important",
     border: "1px solid #d3d3d3",
   },
   star: {
     position: "relative",
     padding: "7px 0 7px 25px",
     margin: 0,
-    borderBottom: "1px solid #ececec",
-    fontFamily: `"Roboto", sans-serif`,
+    borderBottom: "1px solid #ececec !important",
+    fontFamily: `"Roboto", sans-serif !important`,
     lineHeight: 1.6,
     color: "#777777",
     fontSize: "16px",
@@ -96,9 +95,9 @@ const useStyles = makeStyles((theme) => ({
   },
   btnOrder: {
     width: "40%",
-    border: "0px solid",
-    borderBottom: "1px solid",
-    transition: "width 2s",
+    border: "0px solid !important",
+    borderBottom: "1px solid !important",
+    transition: "width 2s !important",
     "&:hover": {
       border: "0px solid",
       borderBottom: "1px solid",
@@ -302,10 +301,9 @@ export default function MainDetail() {
   };
   return (
     <>
-      <Grid container xs={12} className={classes.mainDetail}>
+      <Grid container className={classes.mainDetail}>
         <Grid
           container
-          xs={12}
           justifyContent="center"
           className={classes.productTitle}
         >
@@ -325,11 +323,11 @@ export default function MainDetail() {
             </Breadcrumbs>
           </Grid>
         </Grid>
-        <Grid container xs={12}>
+        <Grid container spacing={1}>
           <Grid item xs={6}>
             <MyImageGallery></MyImageGallery>
           </Grid>
-          <Grid item xs={5} component={Paper} className={classes.productBox}>
+          <Grid item xs={6} component={Paper} className={classes.productBox}>
             <Grid container xs={12}>
               <Grid item xs={12}>
                 <Typography className={classes.price}>1.000.000 đ</Typography>

@@ -112,6 +112,11 @@ const useStyle = makeStyles((theme) => ({
     right: 0,
     position: 'absolute',
   },
+  imgTitle: {
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+    fontSize: '10px !important',
+  },
 }));
 
 function AddForm(props) {
@@ -536,8 +541,8 @@ function AddForm(props) {
                 >
                   <PhotoCamera />
                 </IconButton>
-                {/* {fileName1} */}
               </label>
+              {/* <Typography className={classes.imgTitle}>{fileName1}</Typography> */}
             </Grid>
             <Grid item xs={3}>
               <Typography className={classes.label}>
@@ -559,7 +564,6 @@ function AddForm(props) {
                 >
                   <PhotoCamera />
                 </IconButton>
-                cccc
               </label>
             </Grid>
             <Grid item xs={3}>
@@ -582,7 +586,6 @@ function AddForm(props) {
                 >
                   <PhotoCamera />
                 </IconButton>
-                cccc
               </label>
             </Grid>
             <Grid item xs={3}>
@@ -603,7 +606,6 @@ function AddForm(props) {
                 >
                   <PhotoCamera />
                 </IconButton>
-                cccc
               </label>
             </Grid>
           </Grid>

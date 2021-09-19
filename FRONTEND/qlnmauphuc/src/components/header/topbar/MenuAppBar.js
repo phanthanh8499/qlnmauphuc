@@ -21,9 +21,9 @@ const useStyles = makeStyles((theme) => ({
     flexGrow: 1,
   },
   titleColor: {
-    fontSize: "14px",
+    fontSize: "14px !important",
     color: "#cccccc",
-    display: 'inline-block',
+    display: "inline-block",
     "& span": {
       padding: "0px 5px",
     },
@@ -32,7 +32,7 @@ const useStyles = makeStyles((theme) => ({
     },
   },
   icon: {
-    color: '#ffffff',
+    color: "#ffffff",
   },
 }));
 

@@ -11,10 +11,10 @@ import {
   Typography,
   Link,
 } from "@mui/material";
-import makeStyles from '@mui/styles/makeStyles';
 import { useSnackbar } from "notistack";
 import { useDispatch, useSelector } from "react-redux";
 import { getUserData } from "../../redux/Action";
+import { makeStyles } from "@mui/styles";
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -108,84 +108,84 @@ function SignUp(props) {
   };
 
   return (
-    <Dialog open={open} onClose={onClose} aria-labelledby="form-dialog-title">
-      <Container component="main" maxWidth="xs" className={classes.mainform}>
-        <CssBaseline />
-        <div className={classes.paper}>
-          <Typography component="h1" variant="h5" className={classes.title}>
-            Đăng ký
-          </Typography>
-          <form className={classes.form} noValidate>
-            <TextField
-              variant="outlined"
-              margin="normal"
-              required
-              fullWidth
-              id="username"
-              label="Nhập tên tài khoản"
-              name="username"
-              autoComplete="username"
-              autoFocus
-              onChange={getUsernameParams}
-            />
-            <TextField
-              variant="outlined"
-              margin="normal"
-              required
-              fullWidth
-              name="email"
-              label="Email"
-              id="email"
-              autoComplete="current-password"
-              onChange={getEmailParams}
-            />
-            <TextField
-              variant="outlined"
-              margin="normal"
-              required
-              fullWidth
-              name="password"
-              label="Nhập mật khẩu"
-              type="password"
-              id="password"
-              autoComplete="current-password"
-              onChange={getPasswordParams}
-            />
-            <TextField
-              variant="outlined"
-              margin="normal"
-              required
-              fullWidth
-              name="repassword"
-              label="Xác nhận mật khẩu"
-              type="password"
-              id="repassword"
-              autoComplete="current-password"
-              onChange={getRePasswordParams}
-            />
-            <Button
-              // type="submit"
-              fullWidth
-              variant="contained"
-              color="primary"
-              className={classes.submit}
-              onClick={handleSubmit}
-            >
+      <Dialog open={open} onClose={onClose} aria-labelledby="form-dialog-title">
+        <Container component="main" maxWidth="xs" className={classes.mainform}>
+          <CssBaseline />
+          <div className={classes.paper}>
+            <Typography component="h1" variant="h5" className={classes.title}>
               Đăng ký
-            </Button>
-            <Grid container>
-              <Grid item xs></Grid>
-              <Grid item>
-                <Link href="#" variant="body2">
-                  {"Bạn đã có tài khoản? Đăng nhập"}
-                </Link>
+            </Typography>
+            <form className={classes.form} noValidate>
+              <TextField
+                variant="outlined"
+                margin="normal"
+                required
+                fullWidth
+                id="username"
+                label="Nhập tên tài khoản"
+                name="username"
+                autoComplete="username"
+                autoFocus
+                onChange={getUsernameParams}
+              />
+              <TextField
+                variant="outlined"
+                margin="normal"
+                required
+                fullWidth
+                name="email"
+                label="Email"
+                id="email"
+                autoComplete="current-password"
+                onChange={getEmailParams}
+              />
+              <TextField
+                variant="outlined"
+                margin="normal"
+                required
+                fullWidth
+                name="password"
+                label="Nhập mật khẩu"
+                type="password"
+                id="password"
+                autoComplete="current-password"
+                onChange={getPasswordParams}
+              />
+              <TextField
+                variant="outlined"
+                margin="normal"
+                required
+                fullWidth
+                name="repassword"
+                label="Xác nhận mật khẩu"
+                type="password"
+                id="repassword"
+                autoComplete="current-password"
+                onChange={getRePasswordParams}
+              />
+              <Button
+                // type="submit"
+                fullWidth
+                variant="contained"
+                color="primary"
+                className={classes.submit}
+                onClick={handleSubmit}
+              >
+                Đăng ký
+              </Button>
+              <Grid container>
+                <Grid item xs></Grid>
+                <Grid item>
+                  <Link href="#" variant="body2">
+                    {"Bạn đã có tài khoản? Đăng nhập"}
+                  </Link>
+                </Grid>
               </Grid>
-            </Grid>
-          </form>
-        </div>
-        <Box mt={8}></Box>
-      </Container>
-    </Dialog>
+            </form>
+          </div>
+          <Box mt={8}></Box>
+        </Container>
+      </Dialog>
   );
 }
 

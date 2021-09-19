@@ -50,15 +50,10 @@ export const getProductData = () => async (dispatch) => {
 }
 
 export const addProduct = (data) => async (dispatch) => {
-  console.log("====", data);
   const abc = {};
   data.forEach((value, key) => (abc[key] = value));
-  // Log the data.
-  console.log(abc);
-
   dispatch({ type: THEM_SAN_PHAM, payload: abc });
-  // await Axios.post("/admin/products/add", data);
-  console.log(abc);
+  await Axios.post("/admin/products/add", data);
 }
 
 export const editProduct = (data) =>  (dispatch) => {

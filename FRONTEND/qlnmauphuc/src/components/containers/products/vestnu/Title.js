@@ -4,13 +4,13 @@ import React from "react";
 
 const useStyles = makeStyles((theme) => ({
   title: {
-    marginTop: 40,
+    marginTop: "40px !important",
   },
   mainTitle: {
-    fontSize: 32,
-    fontWeight: 900,
+    fontSize: "32px !important",
+    fontWeight: "900 !important",
     // fontFamily: `neNikeCurrency,'FuturaW01-ExtraBoldCond 774896',Helvetica,Arial,sans-serif`,
-    margin: "10px 0px",
+    margin: "10px 0px !important",
     textAlign: "center",
   },
   subTitle: {

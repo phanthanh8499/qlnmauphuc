@@ -11,20 +11,20 @@ const useStyles = makeStyles((theme) => ({
     borderBottom: "1px solid #E5E5E5",
   },
   navigation: {
-    margin: "25px",
+    margin: "25px !important",
     justifyContent: "center",
     alignItems: "center",
   },
   menu: {
-    height: 100,
-    margin: "0px auto",
+    height: "100px !important",
+    margin: "0px auto !important",
   },
   logoimg: {
     height: 95,
   },
   icon: {
-    margin: 25,
-    padding: "0px 10px",
+    margin: "25px 0px !important",
+    padding: "0px 10px !important",
   },
   sticky: {
     top: 0,
@@ -38,16 +38,16 @@ const useStyles = makeStyles((theme) => ({
     animation: "stuckMoveDown .6s",
   },
   nav: {
-    display: 'flex',
+    display: "flex",
   },
   navItem: {
-    display: 'inline-block',
-    padding: '10px',
+    display: "inline-block",
+    padding: "10px !important",
     "& a:hover": {
-      fontWeight: 'bold',
-      color: '#000000',
+      fontWeight: "bold",
+      color: "#000000",
     },
-  }
+  },
 }));
 
 export default function BotBar() {

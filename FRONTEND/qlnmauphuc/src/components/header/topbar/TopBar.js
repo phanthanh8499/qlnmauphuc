@@ -11,10 +11,10 @@ const useStyles = makeStyles((theme) => ({
     backgroundColor: "black",
   },
   titleColor: {
-    fontSize: "14px",
+    fontSize: "14px !important",
     color: "#cccccc",
     "& span": {
-      padding: '0px 5px',
+      padding: "0px 5px !important",
     },
     "& span:hover": {
       color: "#ffffff",

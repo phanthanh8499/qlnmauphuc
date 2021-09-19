@@ -8,7 +8,7 @@ import {
   Button,
   IconButton,
 } from "@mui/material";
-import makeStyles from '@mui/styles/makeStyles';
+import makeStyles from "@mui/styles/makeStyles";
 import React from "react";
 import NavigateNextIcon from "@mui/icons-material/NavigateNext";
 import NavigateBeforeIcon from "@mui/icons-material/NavigateBefore";
@@ -16,12 +16,12 @@ import NavigateBeforeIcon from "@mui/icons-material/NavigateBefore";
 const useStyles = makeStyles((theme) => ({
   root: {
     flexGrow: 1,
-    padding: 10,
+    padding: "0px 0px 0px 10px",
   },
   gridroot: {
     position: "relative",
-    marginTop: 30,
-    padding: '0px 10px',
+    marginTop: "30px !important",
+    padding: "0px 10px",
   },
   boxItem: {
     height: 430,
@@ -36,29 +36,28 @@ const useStyles = makeStyles((theme) => ({
     justifyContent: "center",
   },
   button: {
-    margin: "10px 0px 0px 0px",
+    margin: "10px 0px 0px 0px !important",
     width: "100%",
   },
   navigateBeforeIcon: {
-    position: "absolute",
+    position: "absolute !important",
     zIndex: "999",
     top: 195,
     opacity: 0.5,
-    boxShadow: "0 2px 8px #000000",
     left: 0,
+    boxShadow: "0 2px 8px #000000",
     "&:hover": {
       boxShadow: "0 2px 8px #000000",
       opacity: 1,
     },
   },
   navigateNextIcon: {
-    position: "absolute",
+    position: "absolute !important",
     zIndex: "999",
     top: 195,
-    right: 0,
     opacity: 0.5,
+    right: -10,
     boxShadow: "0 2px 8px #000000",
-    right: 2,
     "&:hover": {
       boxShadow: "0 2px 8px #000000",
       opacity: 1,

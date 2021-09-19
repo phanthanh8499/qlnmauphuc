@@ -8,25 +8,25 @@ import { Grid, Typography } from '@mui/material';
 
 const useStyles = makeStyles((theme) => ({
   bg: {
-    margin: '20px 0px 0px 0px',
-    backgroundColor: '#f8f8f8',
-    padding: '30px 0px 30px 0px', 
+    margin: "20px 0px 0px 0px !important",
+    backgroundColor: "#f8f8f8",
+    padding: "30px 0px 30px 0px",
   },
   icon: {
-    fontSize: 100,
-    margin: '0px auto',
+    fontSize: "100px !important",
+    margin: "0px auto",
   },
   box: {
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
   },
   title: {
-    fontFamily: `"Noto Serif", sans-serif`,
-    fontWeight: 700,
-    fontSize: 20,
+    fontFamily: `"Noto Serif", sans-serif !important`,
+    fontWeight: "700 !important",
+    fontSize: "20px !important",
   },
-}))
+}));
 
 export default function Content () {
   const classes = useStyles();

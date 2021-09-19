@@ -20,8 +20,8 @@ const useStyles = makeStyles((theme) => ({
   },
   gridroot: {
     position: "relative",
-    marginTop: 30,
-    padding: '0px 10px',
+    marginTop: "30px !important",
+    padding: "0px 10px",
   },
   boxItem: {
     height: 430,
@@ -36,11 +36,11 @@ const useStyles = makeStyles((theme) => ({
     justifyContent: "center",
   },
   button: {
-    margin: "10px 0px 0px 0px",
+    margin: "10px 0px 0px 0px !important",
     width: "100%",
   },
   navigateBeforeIcon: {
-    position: "absolute",
+    position: "absolute !important",
     zIndex: "999",
     top: 195,
     opacity: 0.5,
@@ -52,12 +52,11 @@ const useStyles = makeStyles((theme) => ({
     },
   },
   navigateNextIcon: {
-    position: "absolute",
+    position: "absolute !important",
     zIndex: "999",
     top: 195,
-    right: 0,
     opacity: 0.5,
-    right: 2,
+    right: -10,
     boxShadow: "0 2px 8px #000000",
     "&:hover": {
       boxShadow: "0 2px 8px #000000",
