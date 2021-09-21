@@ -15,13 +15,13 @@ import {
   Typography,
 } from "@mui/material";
 import React, { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { useSnackbar } from "notistack";
 import ProductImageGallery from "./ProductImageGallery";
 import PhotoCamera from "@mui/icons-material/PhotoCamera";
 import axios from "axios";
-import { editProduct } from "../../../../redux/Action";
 import makeStyles from "@mui/styles/makeStyles";
+import { editProduct } from "../../../redux/Action";
 
 const markThickness = [
   {

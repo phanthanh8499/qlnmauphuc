@@ -20,9 +20,9 @@ import { useDispatch, useSelector } from "react-redux";
 import { useSnackbar } from "notistack";
 import ProductImageGallery from "./ProductImageGallery";
 import PhotoCamera from "@mui/icons-material/PhotoCamera";
-import { addProduct } from "../../../../redux/Action";
-import { FRONTEND_ADM_URL, FRONTEND_URL } from "../../../../constants/Constants";
 import makeStyles from "@mui/styles/makeStyles";
+import { FRONTEND_ADM_URL, FRONTEND_URL } from "../../../constants/Constants";
+import { addProduct } from "../../../redux/Action";
 
 const markThickness = [
   {

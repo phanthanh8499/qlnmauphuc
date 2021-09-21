@@ -1,16 +1,17 @@
 import React, { useEffect, useState } from "react";
 import { useSelector, useDispatch} from "react-redux";
-import { deleteProduct, getProductData } from "../../../redux/Action";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import { useSnackbar } from "notistack";
 import { DataGrid } from "@mui/x-data-grid";
-import Detail from "./Detail";
 import AddForm from "./addForm/AddForm";
 import DetailForm from "./detailForm/DetailForm";
 import DeleteForm from "./deleteForm/DeteleForm";
 import { Button, ButtonGroup, Grid, IconButton, Paper } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
+import { getProductData } from "../../redux/Action";
+
+
 const useStyles = makeStyles((theme) => ({
   topBar: {
     padding: 5,
@@ -18,7 +19,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function Products() {
+export default function AdminProducts() {
   const classes = useStyles();
   const { enqueueSnackbar } = useSnackbar();
   const products = useSelector((state) => state.products);

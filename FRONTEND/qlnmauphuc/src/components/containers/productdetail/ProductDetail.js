@@ -2,6 +2,7 @@ import { Container } from '@mui/material'
 import axios from 'axios';
 import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux';
+import { useParams } from 'react-router';
 import { getProductData } from '../../../redux/Action';
 import Product from '../products/Product';
 import AdditionalDetails from './AdditionalDetails';
@@ -10,7 +11,7 @@ import SameProduct from './SameProduct';
 
 
 export default function ProductDetail (props){
-  const id = props.match.params.id;
+  let { id } = useParams();
   const [data, setData] = useState([])
   const [loadingPage, setLoadingPage] = useState(true)
   const products = useSelector(state => state.products);

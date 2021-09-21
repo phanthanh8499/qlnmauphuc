@@ -1,17 +1,35 @@
-import { BrowserRouter as Router } from "react-router-dom";
+
 import './../css/App.css';
-import Header from './header/Header';
-import Footer from "./footer/Footer";
-import RouterURL from "../router/RouterURL";
-import Dashboard from "./dashboard/Dashboard";
+import { Backdrop, CircularProgress } from "@mui/material";
+import { BrowserRouter as Router, Switch } from "react-router-dom";
+import { Suspense } from 'react';
+import RouteList from '../routers/RouterList';
+import { routes } from "./../routers/Routers";
+import { makeStyles } from '@mui/styles';
+
+const useStyles = makeStyles((theme) => ({
+  backdrop: {
+    background: "#fff",
+    zIndex: theme.zIndex.drawer + 1,
+    color: "#fff",
+  },
+}));
 
 function App() {
+  const classes = useStyles();
   return (
     <Router>
-      <Header></Header>
-      <RouterURL></RouterURL> 
-      <Footer></Footer>
-      {/* <Dashboard></Dashboard> */}
+      <Switch>
+        <Suspense
+          fallback={
+            <Backdrop className={classes.backdrop} open={true}>
+              <CircularProgress color="primary" />
+            </Backdrop>
+          }
+        >
+          <RouteList routes={routes} />
+        </Suspense>
+      </Switch>
     </Router>
   );
 }
