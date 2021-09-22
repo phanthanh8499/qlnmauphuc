@@ -185,6 +185,14 @@ export default function AAppBar(props) {
             <ListItemText primary="Products" />
           </ListItem>
         </Link>
+        <Link to="/admin/cloth" onClick={() => changeTitle("Cloth")}>
+          <ListItem button>
+            <ListItemIcon>
+              <CategoryIcon />
+            </ListItemIcon>
+            <ListItemText primary="Cloth" />
+          </ListItem>
+        </Link>
         <Link to="/admin/statistic" onClick={() => changeTitle("Statistic")}>
           <ListItem button>
             <ListItemIcon>

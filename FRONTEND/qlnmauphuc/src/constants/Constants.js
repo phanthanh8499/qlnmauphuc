@@ -33,3 +33,14 @@ export const THEM_SAN_PHAM = "THEM_SAN_PHAM";
 //== XEM CHI TIET
 export const CHINH_SUA_THONG_TIN_SAN_PHAM = "CHINH_SUA_THONG_TIN_SAN_PHAM";
 export const XOA_SAN_PHAM = "XOA_SAN_PHAM";
+
+
+//======================== VAI =====================================
+export const YEU_CAU_LIET_KE_VAI = "YEU_CAU_LIET_KE_VAI";
+export const LIET_KE_VAI = "LIET_KE_VAI";
+export const LIET_KE_VAI_THAT_BAI = "LIET_KE_VAI_THAT_BAI";
+export const THEM_VAI = "THEM_VAI";
+export const CHINH_SUA_THONG_TIN_VAI = "CHINH_SUA_THONG_TIN_VAI";
+export const XOA_VAI = "XOA_VAI";
+export const CAP_NHAT_HINH_ANH = "CAP_NHAT_HINH_ANH";
+export const XOA_HINH_ANH = "XOA_HINH_ANH";

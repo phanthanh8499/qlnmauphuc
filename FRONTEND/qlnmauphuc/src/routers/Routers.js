@@ -21,4 +21,9 @@ export const routes = [
     exact: true,
     component: lazy(() => import("./../pages/admin/product/Product")),
   },
+  {
+    path: "/admin/cloth",
+    exact: true,
+    component: lazy(() => import("./../pages/admin/cloth/Cloth")),
+  },
 ];

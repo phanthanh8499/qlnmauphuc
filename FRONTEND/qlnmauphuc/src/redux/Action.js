@@ -1,6 +1,7 @@
 import Axios from "axios";
 import {
   CHINH_SUA_THONG_TIN_SAN_PHAM,
+  CHINH_SUA_THONG_TIN_VAI,
   DANG_NHAP_THANH_CONG,
   DANG_NHAP_THAT_BAI,
   LIET_KE_BFM,
@@ -12,11 +13,16 @@ import {
   LIET_KE_USERS_DA_CAP_NHAT,
   LIET_KE_USERS_THANH_CONG,
   LIET_KE_USERS_THAT_BAI,
+  LIET_KE_VAI,
+  LIET_KE_VAI_THAT_BAI,
   THEM_SAN_PHAM,
+  THEM_VAI,
   XOA_SAN_PHAM,
+  XOA_VAI,
   YEU_CAU_DANG_NHAP,
   YEU_CAU_LIET_KE_SP,
   YEU_CAU_LIET_KE_USERS,
+  YEU_CAU_LIET_KE_VAI,
 } from "../constants/Constants";
 
 export const dangNhapKhangHang = (username, password) => async (dispatch) => {
@@ -73,3 +79,32 @@ export const deleteProduct = (data) => async (dispatch) => {
   dispatch({ type: XOA_SAN_PHAM, payload: data});
   await Axios.get(`/admin/products/delete.${data}`);
 }
+
+export const getClothData = (data) => async (dispatch) => {
+  dispatch({ type: YEU_CAU_LIET_KE_VAI});
+  try {
+    const {data} = await Axios.get("/getClothData");
+    dispatch({type: LIET_KE_VAI, payload: data})
+  } catch (error) {
+    dispatch({type: LIET_KE_VAI_THAT_BAI, payload: error.message})
+  }
+}
+
+export const addCloth = (data) => async (dispatch) => {
+  const abc = {};
+  data.forEach((value, key) => (abc[key] = value));
+  dispatch({ type: THEM_VAI, payload: abc });
+  await Axios.post("/admin/cloth/add", data);
+};
+
+export const editCloth = (data) => (dispatch) => {
+  const abc = {};
+  data.forEach((value, key) => (abc[key] = value));
+  Axios.post("/admin/cloth/edit", data);
+  dispatch({ type: CHINH_SUA_THONG_TIN_VAI, payload: abc });
+};
+
+export const deleteCloth = (data) => async (dispatch) => {
+  dispatch({ type: XOA_VAI, payload: data });
+  await Axios.get(`/admin/cloth/delete.${data}`);
+};

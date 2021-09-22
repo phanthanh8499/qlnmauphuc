@@ -324,4 +324,114 @@ router.get("/admin/products/delete.:id", function (req, res) {
   })
 })
 
+router.get("/getClothData", function(req, res) {
+  pool.query(
+    `SELECT DISTINCT cloth.id, cloth.cloth_material, cloth.cloth_name, cloth.cloth_quantity, cloth.cloth_userid, cloth.cloth_typeid, cloth.cloth_image, clothtypes.ct_name
+FROM cloth
+INNER JOIN clothtypes ON clothtypes.id = cloth.cloth_typeid`,
+    (error, response) => {
+      if (error) {
+        console.log(error);
+      } else {
+        res.send(response.rows);
+      }
+    }
+  );
+})
+
+router.post("/admin/cloth/add", function (req, res) {
+  // console.log("???");
+  const {
+    id,
+    cloth_material,
+    cloth_name,
+    cloth_quantity,
+    cloth_userid,
+    cloth_typeid,
+    frontEndURL,
+    frontEndAdmURL,
+  } = req.body;
+  const file = req.files.file;
+  const filename = file.name;
+  var newpath = "";
+  var admpath = "";
+  var cloth_image = "./images";
+  newpath = frontEndURL + "/images/Cloth/" + cloth_typeid + "/";
+  admpath = frontEndAdmURL + "/images/Cloth/" + cloth_typeid + "/";
+  cloth_image = cloth_image + "/Cloth/" + cloth_typeid + "/" + filename;
+  pool.query(
+    `INSERT INTO cloth(
+	id, cloth_material, cloth_name, cloth_quantity, cloth_userid, cloth_typeid, cloth_image)
+	VALUES ('${id}', '${cloth_material}', '${cloth_name}', '${cloth_quantity}', '${cloth_userid}', '${cloth_typeid}', '${cloth_image}');`,
+    (error, response) => {
+      if (error) {
+        console.log(error);
+      } else {
+        res.send({ message: "Them san pham thanh cong" });
+        if (!fs.existsSync(newpath)) {
+          fs.mkdirSync(newpath);
+        }
+        if (!fs.existsSync(admpath)) {
+          fs.mkdirSync(admpath);
+        }
+        file.mv(`${admpath}${filename}`, (err) => {
+          if (err) {
+            console.log(err);
+          }
+        });
+        file.mv(`${newpath}${filename}`, (err) => {
+          if (err) {
+            console.log(err);
+          }
+        });
+      }
+    }
+  );
+});
+
+router.get("/getDetailCloth.:id", function (req, res) {
+  const { id } = req.params;
+  pool.query(`SELECT * FROM cloth WHERE id = ${id}`, (error, response) => {
+    if (error) {
+      console.log(error);
+    } else {
+      res.send(response.rows);
+    }
+  });
+});
+
+router.post("/admin/cloth/edit", function (req, res) {
+  const {
+    id,
+    cloth_material,
+    cloth_name,
+    cloth_quantity,
+    cloth_userid,
+    cloth_typeid,
+  } = req.body;
+  pool.query(
+    `UPDATE cloth
+	SET cloth_name='${cloth_name}', cloth_quantity='${cloth_quantity}', cloth_typeid='${cloth_typeid}'
+	WHERE id = '${id}' AND cloth_material = '${cloth_material}';`,
+    (error, response) => {
+      if (error) {
+        console.log(error);
+      } else {
+        console.log("Chỉnh sửa thông tin thành công!");
+      }
+    }
+  );
+});
+
+router.get("/admin/cloth/delete.:id", function (req, res) {
+  const { id } = req.params;
+  pool.query(`DELETE FROM cloth WHERE id='${id}'`, (error, response) => {
+    if (error) {
+      console.log(error);
+    } else {
+      console.log("Xoá thành công sản phẩm có id là: ", id);
+    }
+  });
+});
+
 module.exports = router;
