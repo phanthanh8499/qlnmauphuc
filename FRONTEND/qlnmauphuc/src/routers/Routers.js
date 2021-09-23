@@ -12,6 +12,23 @@ export const routes = [
     component: lazy(() => import("./../pages/users/product/Product")),
   },
   {
+    path: "/account",
+    exact: true,
+    component: lazy(() => import("./../pages/users/account/Account")),
+  },
+  {
+    path: "/account/profile",
+    exact: true,
+    component: lazy(() => import("./../pages/users/profile/Profile")),
+  },
+  {
+    path: "/account/registration-number",
+    exact: true,
+    component: lazy(() =>
+      import("./../pages/users/numberManagement/NumberManagement")
+    ),
+  },
+  {
     path: "/admin",
     exact: true,
     component: lazy(() => import("./../pages/admin/home/Home")),

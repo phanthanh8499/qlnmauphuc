@@ -6,7 +6,7 @@ export default function Layout (props) {
     return (
       <>
         <Header></Header>
-        <div>{props.children}</div>
+        <>{props.children}</>
         <Footer></Footer>
       </>
     );
