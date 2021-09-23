@@ -7,6 +7,7 @@ import {
   Divider,
   Grid,
   IconButton,
+  Paper,
   TextField,
   Typography,
 } from "@mui/material";
@@ -113,9 +114,7 @@ export default function UserProfile() {
                 onChange={saveFile}
               />
               <label htmlFor="icon-button-file">
-                <CameraAltIcon
-                  sx={{ cursor: 'pointer' }}
-                ></CameraAltIcon>
+                <CameraAltIcon sx={{ cursor: "pointer" }}></CameraAltIcon>
               </label>
             </>
           }

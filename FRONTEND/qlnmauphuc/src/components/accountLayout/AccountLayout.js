@@ -41,12 +41,8 @@ export default function AccountLayout (props){
               </Breadcrumbs>
             </Grid>
 
-            <Grid item xs={9} className={classes.box}>
-              <Grid container>
-                <Grid item component={Paper}>
-                  <>{props.children}</>
-                </Grid>
-              </Grid>
+            <Grid item xs={9} components={Paper} className={classes.box}>
+              <>{props.children}</>
             </Grid>
             <Grid item xs={3} component={Paper} className={classes.box}>
               <ListModule></ListModule>
