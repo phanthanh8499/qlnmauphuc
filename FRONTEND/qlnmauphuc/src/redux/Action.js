@@ -1,12 +1,15 @@
 import Axios from "axios";
 import {
   CHINH_SUA_THONG_TIN_SAN_PHAM,
+  CHINH_SUA_THONG_TIN_SO_DO,
   CHINH_SUA_THONG_TIN_VAI,
   DANG_NHAP_THANH_CONG,
   DANG_NHAP_THAT_BAI,
   LIET_KE_BFM,
   LIET_KE_SAN_PHAM,
   LIET_KE_SFM,
+  LIET_KE_SO_DO,
+  LIET_KE_SO_DO_THAT_BAI,
   LIET_KE_TFM,
   LIET_KE_THAT_BAI,
   LIET_KE_USERS_CHUA_CAP_NHAT,
@@ -16,10 +19,13 @@ import {
   LIET_KE_VAI,
   LIET_KE_VAI_THAT_BAI,
   THEM_SAN_PHAM,
+  THEM_SO_DO,
   THEM_VAI,
   XOA_SAN_PHAM,
+  XOA_SO_DO,
   XOA_VAI,
   YEU_CAU_DANG_NHAP,
+  YEU_CAU_LIET_KE_SO_DO,
   YEU_CAU_LIET_KE_SP,
   YEU_CAU_LIET_KE_USERS,
   YEU_CAU_LIET_KE_VAI,
@@ -107,4 +113,34 @@ export const editCloth = (data) => (dispatch) => {
 export const deleteCloth = (data) => async (dispatch) => {
   dispatch({ type: XOA_VAI, payload: data });
   await Axios.get(`/admin/cloth/delete.${data}`);
+};
+
+export const getMeasurementsData = (id) => async (dispatch) => {
+  dispatch({ type: YEU_CAU_LIET_KE_SO_DO});
+  try {
+    const { data } = await Axios.get(`/getMeasurementsData.${id})`);
+    dispatch({type: LIET_KE_SO_DO, payload: data})
+  } catch (error) {
+    dispatch({type: LIET_KE_SO_DO_THAT_BAI, payload: error.message})
+  }
+}
+
+export const addMeasurements = (data) => async (dispatch) => {
+  const abc = {};
+  data.forEach((value, key) => (abc[key] = value));
+  dispatch({ type: THEM_SO_DO, payload: abc });
+  // await Axios.post("/admin/measurements/add", data);
+  console.log(abc);
+};
+
+export const editMeasurements = (data) => (dispatch) => {
+  const abc = {};
+  data.forEach((value, key) => (abc[key] = value));
+  // Axios.post("/admin/measurements/edit", data);
+  dispatch({ type: CHINH_SUA_THONG_TIN_SO_DO, payload: abc });
+};
+
+export const deleteMeasurements = (data) => async (dispatch) => {
+  dispatch({ type: XOA_SO_DO, payload: data });
+  // await Axios.get(`/admin/measurements/delete.${data}`);
 };

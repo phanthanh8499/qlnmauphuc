@@ -1,6 +1,7 @@
 import {
   CAP_NHAT_HINH_ANH,
   CHINH_SUA_THONG_TIN_SAN_PHAM,
+  CHINH_SUA_THONG_TIN_SO_DO,
   CHINH_SUA_THONG_TIN_VAI,
   DANG_NHAP_THANH_CONG,
   DANG_NHAP_THAT_BAI,
@@ -8,6 +9,8 @@ import {
   LIET_KE_BFM,
   LIET_KE_SAN_PHAM,
   LIET_KE_SFM,
+  LIET_KE_SO_DO,
+  LIET_KE_SO_DO_THAT_BAI,
   LIET_KE_TFM,
   LIET_KE_THAT_BAI,
   LIET_KE_USERS_CHUA_CAP_NHAT,
@@ -19,13 +22,16 @@ import {
   SUA_THONG_TIN_USER_THANH_CONG,
   SUA_THONG_TIN_USER_THAT_BAI,
   THEM_SAN_PHAM,
+  THEM_SO_DO,
   THEM_VAI,
   XOA_HINH_ANH,
   XOA_SAN_PHAM,
+  XOA_SO_DO,
   XOA_USER_THANH_CONG,
   XOA_USER_THAT_BAI,
   XOA_VAI,
   YEU_CAU_DANG_NHAP,
+  YEU_CAU_LIET_KE_SO_DO,
   YEU_CAU_LIET_KE_SP,
   YEU_CAU_LIET_KE_USERS,
   YEU_CAU_LIET_KE_VAI,
@@ -208,6 +214,49 @@ export const clothReducer = (
       return {
         ...state,
         image: "./images/loadingImg.gif",
+      };
+    default:
+      return state;
+  }
+};
+
+
+export const measurementsReducer = (
+  state = { loading: true, measurementsData: []},
+  action
+) => {
+  switch (action.type) {
+    case YEU_CAU_LIET_KE_SO_DO:
+      return { ...state, loading: true };
+    case LIET_KE_SO_DO:
+      const data = action.payload.sort(function (a, b) {
+        return a.id - b.id;
+      });
+      return { ...state, loading: false, measurementsData: data };
+    case LIET_KE_SO_DO_THAT_BAI:
+      return { loading: false, error: action.payload };
+    case THEM_SO_DO:
+      const product = action.payload;
+      return { ...state, measurementsData: [...state.measurementsData, product] };
+    case CHINH_SUA_THONG_TIN_SO_DO:
+      return {
+        ...state,
+        measurementsData: state.measurementsData.map((item) => {
+          if (item.id === parseInt(action.payload.id)) {
+            item = action.payload;
+            item.id = parseInt(action.payload.id);
+            return item;
+          } else {
+            return item;
+          }
+        }),
+      };
+    case XOA_SO_DO:
+      return {
+        ...state,
+        measurementsData: state.measurementsData.filter(
+          (measurementsData) => measurementsData.id !== action.payload
+        ),
       };
     default:
       return state;

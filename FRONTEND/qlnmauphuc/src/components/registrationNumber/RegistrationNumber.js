@@ -81,7 +81,6 @@ export default function RegistrationNumber() {
               <TabPanel value="2">
                 <Female></Female>
               </TabPanel>
-              <TabPanel value="3">Item Three</TabPanel>
             </TabContext>
           </Grid>
         </Grid>

@@ -434,4 +434,92 @@ router.get("/admin/cloth/delete.:id", function (req, res) {
   });
 });
 
+router.get("/getMeasurementsData.:id", function (req, res) {
+  const {id} = req.params;
+  if(id === 0){
+    pool.query(`SELECT * FROM measurements`, (error, response) => {
+      if (error) {
+        console.log(error);
+      } else {
+        res.send(response.rows);
+      }
+    });
+  } else {
+    pool.query(`SELECT * FROM measurements WHERE m_userid = '${id}'`, (error, response) => {
+      if (error) {
+        console.log(error);
+      } else {
+        res.send(response.rows);
+      }
+    });
+  }
+});
+
+router.post("/admin/measurements/add", function (req, res) {
+  // console.log("???");
+  const {
+    id,
+    cloth_material,
+    cloth_name,
+    cloth_quantity,
+    cloth_userid,
+    cloth_typeid,
+    frontEndURL,
+    frontEndAdmURL,
+  } = req.body;
+  // pool.query(``, (error, response) => {
+  //   if (error) {
+  //     console.log(error);
+  //   } else {
+  //   }
+  // });
+});
+
+router.get("/getDetailMeasurements.:id", function (req, res) {
+  const { id } = req.params;
+  // pool.query(
+  //   `SELECT * FROM measurements WHERE id = ${id}`,
+  //   (error, response) => {
+  //     if (error) {
+  //       console.log(error);
+  //     } else {
+  //       res.send(response.rows);
+  //     }
+  //   }
+  // );
+});
+
+router.post("/admin/measurements/edit", function (req, res) {
+  const {
+    id,
+    cloth_material,
+    cloth_name,
+    cloth_quantity,
+    cloth_userid,
+    cloth_typeid,
+  } = req.body;
+  // pool.query(
+  //   ``,
+  //   (error, response) => {
+  //     if (error) {
+  //       console.log(error);
+  //     } else {
+  //       console.log("Chỉnh sửa thông tin thành công!");
+  //     }
+  //   }
+  // );
+});
+
+router.get("/admin/measurements/delete.:id", function (req, res) {
+  const { id } = req.params;
+  console.log(id)
+  // pool.query(`DELETE FROM measurements WHERE id='${id}'`, (error, response) => {
+  //   if (error) {
+  //     console.log(error);
+  //   } else {
+  //     console.log("Xoá thành công sản phẩm có id là: ", id);
+  //   }
+  // });
+});
+
 module.exports = router;

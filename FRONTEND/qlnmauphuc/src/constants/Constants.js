@@ -44,3 +44,12 @@ export const CHINH_SUA_THONG_TIN_VAI = "CHINH_SUA_THONG_TIN_VAI";
 export const XOA_VAI = "XOA_VAI";
 export const CAP_NHAT_HINH_ANH = "CAP_NHAT_HINH_ANH";
 export const XOA_HINH_ANH = "XOA_HINH_ANH";
+
+
+//======================== VAI =====================================
+export const YEU_CAU_LIET_KE_SO_DO = "YEU_CAU_LIET_KE_SO_DO";
+export const LIET_KE_SO_DO = "LIET_KE_SO_DO";
+export const LIET_KE_SO_DO_THAT_BAI = "LIET_KE_SO_DO_THAT_BAI";
+export const THEM_SO_DO = "THEM_SO_DO";
+export const CHINH_SUA_THONG_TIN_SO_DO = "CHINH_SUA_THONG_TIN_SO_DO";
+export const XOA_SO_DO = "XOA_SO_DO";
