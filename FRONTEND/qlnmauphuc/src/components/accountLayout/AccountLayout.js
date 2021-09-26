@@ -1,11 +1,12 @@
 import { Breadcrumbs, Container, Grid, List, ListItem, ListItemIcon, ListItemText, Paper, Typography } from '@mui/material';
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom';
 import NavigateNextIcon from "@mui/icons-material/NavigateNext";
 import { makeStyles } from '@mui/styles';
 import ListModule from './ListModule';
 import Header from '../header/Header';
 import Footer from '../footer/Footer';
+import { useLocation } from "react-router";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -24,6 +25,24 @@ const useStyles = makeStyles((theme) => ({
 
 export default function AccountLayout (props){
   const classes = useStyles();
+  let { pathname } = useLocation();
+  console.log(pathname);
+  const [title, setTitle] = useState("");
+  
+  useEffect(() => {
+    function Title () {
+      if (pathname === "/account/profile") {
+        setTitle("Thông tin cá nhân");
+      }
+      if (pathname === "/account/measurements") {
+        setTitle("Số hiệu đăng ký");
+      }
+      if (pathname === "/account/measurements-add") {
+        setTitle("Số hiệu đăng ký");
+      }
+    };
+    Title();
+  }, [title]);
     return (
       <>
         <Header></Header>
@@ -37,7 +56,7 @@ export default function AccountLayout (props){
                 <Link color="inherit" to="/account">
                   Trang cá nhân
                 </Link>
-                <Typography color="primary">bccc</Typography>
+                <Typography color="primary">{title}</Typography>
               </Breadcrumbs>
             </Grid>
 

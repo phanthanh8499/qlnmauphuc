@@ -19,11 +19,13 @@ import {
   LIET_KE_USERS_THAT_BAI,
   LIET_KE_VAI,
   LIET_KE_VAI_THAT_BAI,
+  SUA_THONG_TIN_USER,
   SUA_THONG_TIN_USER_THANH_CONG,
   SUA_THONG_TIN_USER_THAT_BAI,
   THEM_SAN_PHAM,
   THEM_SO_DO,
   THEM_VAI,
+  XEM_SO_DO,
   XOA_HINH_ANH,
   XOA_SAN_PHAM,
   XOA_SO_DO,
@@ -123,6 +125,7 @@ export const userReducer = (
     userData: [],
     userData1: [],
     userData2: [],
+    userInfo: [],
   },
   action
 ) => {
@@ -163,6 +166,8 @@ export const userReducer = (
       };
     case XOA_USER_THAT_BAI:
       return { loading: false, deleteError: action.message };
+    case SUA_THONG_TIN_USER:
+      return { ...state, userInfo: action.payload };
     default:
       return state;
   }
@@ -222,7 +227,7 @@ export const clothReducer = (
 
 
 export const measurementsReducer = (
-  state = { loading: true, measurementsData: []},
+  state = { loading: true, loadingDetail: true, measurementsData: [], detailData: [], msg : {}},
   action
 ) => {
   switch (action.type) {
@@ -250,6 +255,7 @@ export const measurementsReducer = (
             return item;
           }
         }),
+        msg: action.msg,
       };
     case XOA_SO_DO:
       return {
@@ -257,6 +263,12 @@ export const measurementsReducer = (
         measurementsData: state.measurementsData.filter(
           (measurementsData) => measurementsData.id !== action.payload
         ),
+      };
+    case XEM_SO_DO:
+      return {
+        ...state,
+        loadingDetail: false,
+        detailData: action.payload,
       };
     default:
       return state;

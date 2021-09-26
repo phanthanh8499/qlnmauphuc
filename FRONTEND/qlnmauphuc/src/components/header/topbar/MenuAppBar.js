@@ -69,9 +69,9 @@ export default function MenuAppBar() {
         <div>
           {userInfo ? (
             <Typography className={classes.titleColor}>
-              Xin chào {userInfo.username}
+              Xin chào {userInfo.user_username}
             </Typography>
-          ) : userInfo.type === "AD" ? (
+          ) : userInfo.user_typeid === "AD" ? (
             <Typography className={classes.titleColor}>
               Xin chào Admin
             </Typography>
@@ -84,7 +84,9 @@ export default function MenuAppBar() {
             aria-haspopup="true"
             onClick={handleMenu}
             className={classes.icon}
-            size="large">
+            size="large"
+            sx={{color: '#ffffff'}}
+          >
             <AccountCircle />
           </IconButton>
           <Menu
@@ -102,7 +104,7 @@ export default function MenuAppBar() {
             open={open}
             onClose={handleClose}
           >
-            {userInfo.type === "AD" ? (
+            {userInfo.user_typeid === "AD" ? (
               <>
                 <MenuItem onClick={handleClose}>
                   <Link to="/admin/" target="_blank">
@@ -110,7 +112,7 @@ export default function MenuAppBar() {
                   </Link>
                 </MenuItem>
               </>
-            ) : userInfo.type === "NV" ? (
+            ) : userInfo.user_typeid === "NV" ? (
               <>
                 <MenuItem onClick={handleClose}>
                   <Link to="/admin/orders" target="_blank">

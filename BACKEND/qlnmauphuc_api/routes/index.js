@@ -45,19 +45,17 @@ router.post("/signin", function (req, res, next) {
             expiresIn: "3d",
           });
           res.send({
-            userid: response.rows[0].id,
-            username: response.rows[0].user_username,
-            address: response.rows[0].user_address,
-            tel: response.rows[0].user_tel,
-            firstname: response.rows[0].user_firstname,
-            lastname: response.rows[0].user_lastname,
-            company: response.rows[0].user_company,
-            status: response.rows[0].user_status,
-            type: response.rows[0].user_typeid,
-            date: response.rows[0].user_date,
-            registrationnumber: response.rows[0].user_registrationnumber,
-            avatar: response.rows[0].user_avatar,
-            email: response.rows[0].user_email,
+            id: response.rows[0].id,
+            user_username: response.rows[0].user_username,
+            user_address: response.rows[0].user_address,
+            user_tel: response.rows[0].user_tel,
+            user_firstname: response.rows[0].user_firstname,
+            user_lastname: response.rows[0].user_lastname,
+            user_status: response.rows[0].user_status,
+            user_typeid: response.rows[0].user_typeid,
+            user_date: response.rows[0].user_date,
+            user_avatar: response.rows[0].user_avatar,
+            user_email: response.rows[0].user_email,
             // Copy het tat ca cac phan tu trong mang
             token,
           });
@@ -436,7 +434,7 @@ router.get("/admin/cloth/delete.:id", function (req, res) {
 
 router.get("/getMeasurementsData.:id", function (req, res) {
   const {id} = req.params;
-  if(id === 0){
+  if(parseInt(id) === 0){
     pool.query(`SELECT * FROM measurements`, (error, response) => {
       if (error) {
         console.log(error);
@@ -458,56 +456,106 @@ router.get("/getMeasurementsData.:id", function (req, res) {
 router.post("/admin/measurements/add", function (req, res) {
   // console.log("???");
   const {
-    id,
-    cloth_material,
-    cloth_name,
-    cloth_quantity,
-    cloth_userid,
-    cloth_typeid,
-    frontEndURL,
-    frontEndAdmURL,
+    m_userid,
+    m_neckline,
+    m_bust,
+    m_waist,
+    m_buttock,
+    m_shoulderwidth,
+    m_armpitcircumference,
+    m_biceps,
+    m_wristaround,
+    m_sleevelength,
+    m_shirtlength,
+    m_crotchlength,
+    m_thighcircumference,
+    m_dresslength,
+    m_pantslength,
+    m_gender
   } = req.body;
-  // pool.query(``, (error, response) => {
-  //   if (error) {
-  //     console.log(error);
-  //   } else {
-  //   }
-  // });
+  console.log(
+    m_userid,
+    m_neckline,
+    m_bust,
+    m_waist,
+    m_buttock,
+    m_shoulderwidth,
+    m_armpitcircumference,
+    m_biceps,
+    m_wristaround,
+    m_sleevelength,
+    m_shirtlength,
+    m_crotchlength,
+    m_thighcircumference,
+    m_dresslength,
+    m_pantslength,
+    m_gender
+  );
+  pool.query(
+    `INSERT INTO measurements(
+	m_userid, m_neckline, m_bust, m_waist, m_buttock, m_shoulderwidth, m_armpitcircumference, m_biceps, m_wristaround, m_sleevelength, m_shirtlength, m_crotchlength, m_thighcircumference, m_dresslength, m_pantslength, m_gender)
+	VALUES ('${m_userid}', '${m_neckline}', '${m_bust}', '${m_waist}', '${m_buttock}', '${m_shoulderwidth}', '${m_armpitcircumference}', '${m_biceps}', '${m_wristaround}', '${m_sleevelength}', '${m_shirtlength}', '${m_crotchlength}', '${m_thighcircumference}', '${m_dresslength}', '${m_pantslength}', '${m_gender}');`,
+    (error, response) => {
+      if (error) {
+        console.log(error);
+        res.send({ msg: "ERROR" });
+      } else {
+        console.log('OK');
+        res.send({ msg: "OK" });
+      }
+    }
+  );
 });
 
 router.get("/getDetailMeasurements.:id", function (req, res) {
   const { id } = req.params;
-  // pool.query(
-  //   `SELECT * FROM measurements WHERE id = ${id}`,
-  //   (error, response) => {
-  //     if (error) {
-  //       console.log(error);
-  //     } else {
-  //       res.send(response.rows);
-  //     }
-  //   }
-  // );
+  pool.query(
+    `SELECT * FROM measurements WHERE id = ${id}`,
+    (error, response) => {
+      if (error) {
+        console.log(error);
+        res.send({msg: "ERROR"})
+      } else {
+        res.send(response.rows);
+      }
+    }
+  );
 });
 
 router.post("/admin/measurements/edit", function (req, res) {
   const {
     id,
-    cloth_material,
-    cloth_name,
-    cloth_quantity,
-    cloth_userid,
-    cloth_typeid,
+    m_userid,
+    m_neckline,
+    m_bust,
+    m_waist,
+    m_buttock,
+    m_shoulderwidth,
+    m_armpitcircumference,
+    m_biceps,
+    m_wristaround,
+    m_sleevelength,
+    m_shirtlength,
+    m_crotchlength,
+    m_thighcircumference,
+    m_dresslength,
+    m_pantslength,
+    m_gender,
   } = req.body;
-  // pool.query(
-  //   ``,
-  //   (error, response) => {
-  //     if (error) {
-  //       console.log(error);
-  //     } else {
-  //       console.log("Chỉnh sửa thông tin thành công!");
-  //     }
-  //   }
-  // );
+  pool.query(
+    `UPDATE measurements
+	SET m_userid='${m_userid}', m_neckline='${m_neckline}', m_bust='${m_bust}', m_waist='${m_waist}', m_buttock='${m_buttock}', m_shoulderwidth='${m_shoulderwidth}', m_armpitcircumference='${m_armpitcircumference}', m_biceps='${m_biceps}', m_wristaround='${m_wristaround}', m_sleevelength='${m_sleevelength}', m_shirtlength='${m_shirtlength}', m_crotchlength='${m_crotchlength}', m_thighcircumference='${m_thighcircumference}', m_dresslength='${m_dresslength}', m_pantslength='${m_pantslength}', m_gender='${m_gender}'
+	WHERE id='${id}'`,
+    (error, response) => {
+      if (error) {
+        console.log(error);
+        res.send({ msg: "ERROR" });
+      } else {
+        console.log("OK");
+        res.send({ msg: "OK" });
+      }
+    }
+  );
 });
 
 router.get("/admin/measurements/delete.:id", function (req, res) {
@@ -520,6 +568,124 @@ router.get("/admin/measurements/delete.:id", function (req, res) {
   //     console.log("Xoá thành công sản phẩm có id là: ", id);
   //   }
   // });
+});
+
+router.post("/admin/users/edit", function (req, res) {
+  const {
+    id,
+     user_username,
+     user_address,
+     user_tel,
+     user_firstname,
+     user_lastname,
+     user_status,
+     user_typeid,
+     user_date,
+     user_avatar,
+     user_email,
+    fileRecv,
+    token,
+    FRONTEND_URL,
+    FRONTEND_ADM_URL,
+  } = req.body;
+  console.log(
+    id,
+    user_username,
+    user_address,
+    user_tel,
+    user_firstname,
+    user_lastname,
+    user_status,
+    user_typeid,
+    user_date,
+    user_avatar,
+    user_email,
+    fileRecv,
+    token,
+    FRONTEND_URL,
+    FRONTEND_ADM_URL,
+  );
+  if(parseInt(fileRecv) === 1){
+    const file = req.files.file;
+    const filename = Date.now() + "-" + id + "-" + file.name;
+    var newpath = "";
+    var admpath = "";
+    var image_path = "./images";
+    newpath = FRONTEND_URL + "/images/avatar/";
+    admpath = FRONTEND_ADM_URL + "/images/avatar/";
+    image_path = image_path + "/avatar/" + filename;
+    console.log("co file");
+    console.log(newpath, admpath, image_path);
+    pool.query(
+      `UPDATE users
+	SET user_typeid='${user_typeid}', user_username='${user_username}', user_firstname='${user_firstname}', user_lastname='${user_lastname}', user_address='${user_address}', user_tel='${user_tel}', user_status='${user_status}', user_date='${user_date}', user_avatar='${image_path}', user_email='${user_email}'
+	WHERE id='${id}'`,
+      (error, response) => {
+        if (error) {
+          console.log(error);
+          res.send({ msg: "ERROR" });
+        } else {
+          if (!fs.existsSync(newpath)) {
+            fs.mkdirSync(newpath);
+          }
+          if (!fs.existsSync(admpath)) {
+            fs.mkdirSync(admpath);
+          }
+          file.mv(`${admpath}${filename}`, (err) => {
+            if (err) {
+              console.log(err);
+            }
+          });
+          file.mv(`${newpath}${filename}`, (err) => {
+            if (err) {
+              console.log(err);
+            }
+          });
+          res.send({
+            id: parseInt(id),
+            user_username: user_username,
+            user_address: user_address,
+            user_tel: user_tel,
+            user_firstname: user_firstname,
+            user_lastname: user_lastname,
+            user_status: user_status,
+            user_typeid: user_typeid,
+            user_date: user_date,
+            user_avatar: image_path,
+            user_email: user_email,
+            token: token,
+          });
+        }
+      }
+    );
+  } else {
+    pool.query(
+      `UPDATE users
+	SET  user_typeid='${user_typeid}', user_username='${user_username}', user_firstname='${user_firstname}', user_lastname='${user_lastname}', user_address='${user_address}', user_tel='${user_tel}', user_status='${user_status}', user_date='${user_date}', user_avatar='${user_avatar}', user_email='${user_email}'
+	WHERE id='${id}'`,
+      (error, response) => {
+        if (error) {
+          console.log(error);
+          res.send({ msg: "ERROR" });
+        } else {
+           res.send({
+             id: parseInt(id),
+             user_username: user_username,
+             user_address: user_address,
+             user_tel: user_tel,
+             user_firstname: user_firstname,
+             user_lastname: user_lastname,
+             user_status: user_status,
+             user_typeid: user_typeid,
+             user_date: user_date,
+             user_avatar: user_avatar,
+             user_email: user_email,
+             token: token,
+           });
+        }
+      }
+    );
+  }
 });
 
 module.exports = router;

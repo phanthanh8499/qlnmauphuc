@@ -1,4 +1,5 @@
 import Axios from "axios";
+import { useSnackbar } from "notistack";
 import {
   CHINH_SUA_THONG_TIN_SAN_PHAM,
   CHINH_SUA_THONG_TIN_SO_DO,
@@ -18,9 +19,11 @@ import {
   LIET_KE_USERS_THAT_BAI,
   LIET_KE_VAI,
   LIET_KE_VAI_THAT_BAI,
+  SUA_THONG_TIN_USER,
   THEM_SAN_PHAM,
   THEM_SO_DO,
   THEM_VAI,
+  XEM_SO_DO,
   XOA_SAN_PHAM,
   XOA_SO_DO,
   XOA_VAI,
@@ -118,29 +121,42 @@ export const deleteCloth = (data) => async (dispatch) => {
 export const getMeasurementsData = (id) => async (dispatch) => {
   dispatch({ type: YEU_CAU_LIET_KE_SO_DO});
   try {
-    const { data } = await Axios.get(`/getMeasurementsData.${id})`);
+    const { data } = await Axios.get(`/getMeasurementsData.${id}`);
     dispatch({type: LIET_KE_SO_DO, payload: data})
   } catch (error) {
     dispatch({type: LIET_KE_SO_DO_THAT_BAI, payload: error.message})
   }
 }
 
-export const addMeasurements = (data) => async (dispatch) => {
+export const addMeasurements = (dataReq) => async (dispatch) => {
   const abc = {};
-  data.forEach((value, key) => (abc[key] = value));
+  dataReq.forEach((value, key) => (abc[key] = value));
   dispatch({ type: THEM_SO_DO, payload: abc });
-  // await Axios.post("/admin/measurements/add", data);
-  console.log(abc);
+  const {data} = await Axios.post("/admin/measurements/add", dataReq);
 };
 
-export const editMeasurements = (data) => (dispatch) => {
+export const editMeasurements = (dataReq) => async (dispatch) => {
   const abc = {};
-  data.forEach((value, key) => (abc[key] = value));
-  // Axios.post("/admin/measurements/edit", data);
-  dispatch({ type: CHINH_SUA_THONG_TIN_SO_DO, payload: abc });
+  dataReq.forEach((value, key) => (abc[key] = value));
+  const {data} = await Axios.post("/admin/measurements/edit", dataReq);
+  dispatch({ type: CHINH_SUA_THONG_TIN_SO_DO, payload: abc, msg: data });
 };
 
 export const deleteMeasurements = (data) => async (dispatch) => {
   dispatch({ type: XOA_SO_DO, payload: data });
   // await Axios.get(`/admin/measurements/delete.${data}`);
+};
+
+export const getDetailMeasurements = (dataReq) => async (dispatch) => {
+  const {data} = await Axios.get(`/getDetailMeasurements.${dataReq}`);
+  dispatch({ type: XEM_SO_DO, payload: data });
+};
+
+export const editUserInfo = (dataReq) => async (dispatch) => {
+  const abc = {};
+  dataReq.forEach((value, key) => (abc[key] = value));
+  const { data } = await Axios.post(`/admin/users/edit`, dataReq);
+  dispatch({ type: SUA_THONG_TIN_USER, payload: abc });
+  localStorage.setItem("userInfo", JSON.stringify({ userInfo: data }));
+  console.log(data);
 };

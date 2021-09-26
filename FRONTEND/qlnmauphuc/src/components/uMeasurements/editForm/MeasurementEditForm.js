@@ -1,0 +1,83 @@
+import { TabContext, TabList, TabPanel } from "@mui/lab";
+import { Backdrop, CircularProgress, Grid, Tab } from "@mui/material";
+import { Box } from "@mui/system";
+import React, { useEffect, useState } from "react";
+import Male from "./male/Male";
+import Female from "./female/Female";
+import { useDispatch, useSelector } from "react-redux";
+import { useParams } from "react-router";
+import axios from "axios";
+import { getDetailMeasurements } from "../../../redux/Action";
+
+export default function MeasurementEditForm() {
+  let { id } = useParams();
+  const [value, setValue] = useState("1");
+  const dispatch = useDispatch();
+  const handleChange = (event, newValue) => {
+    setValue(newValue);
+  };
+  const [loading, setLoading] = useState(true);
+  // useEffect(() => {
+  //   async function getDetailMeasurement() {
+  //     const { data } = await axios.get(`/getDetailMeasurements.${id}`);
+  //     dispatch(getDetailMeasurements(parseInt(id)));
+  //     setData(data);
+  //     setLoading(false);
+  //   }
+  //   getDetailMeasurement();
+  // }, [id]);
+  const measurements = useSelector((state) => state.measurements);
+  const { loadingDetail, detailData } = measurements;
+  const [data, setData] = useState(measurements);
+  useEffect(() => {
+    dispatch(getDetailMeasurements(parseInt(id)));
+    setLoading(false);
+  }, [id]);
+  return (
+    <>
+      {loadingDetail ? (
+        <div>loading....</div>
+      ) : loading ? (
+        <CircularProgress color="primary" />
+      ) : (
+        <Grid container>
+          <Grid item xs={12}>
+            <TabContext value={value}>
+              {detailData[0].id !== parseInt(id) ? (
+                <CircularProgress color="primary" />
+              ) : detailData[0].m_gender === "male" ? (
+                <>
+                  <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
+                    <TabList
+                      onChange={handleChange}
+                      aria-label="lab API tabs example"
+                    >
+                      <Tab label="Nam" value="1" />
+                    </TabList>
+                  </Box>
+                  <TabPanel value="1">
+                    <Male></Male>
+                  </TabPanel>
+                </>
+              ) : (
+                <>
+                  <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
+                    <TabList
+                      onChange={handleChange}
+                      aria-label="lab API tabs example"
+                    >
+                      <Tab label="Nữ" value="1" />
+                    </TabList>
+                  </Box>
+                  <TabPanel value="1">
+                    <Female></Female>
+                  </TabPanel>
+                </>
+              )}
+            </TabContext>
+          </Grid>
+        </Grid>
+      )}
+    </>
+  );
+}

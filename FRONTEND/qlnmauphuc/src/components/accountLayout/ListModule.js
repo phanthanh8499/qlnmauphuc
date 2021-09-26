@@ -25,7 +25,7 @@ export default function ListModule () {
               <ListItemText primary="Thông tin cá nhân" />
             </ListItem>
           </Link>
-          <Link to="/account/registration-number">
+          <Link to="/account/measurements">
             <ListItem >
               <ListItemIcon>
                 <PermIdentityIcon />

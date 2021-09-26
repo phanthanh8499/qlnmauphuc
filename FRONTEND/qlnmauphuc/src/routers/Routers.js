@@ -22,11 +22,19 @@ export const routes = [
     component: lazy(() => import("./../pages/users/profile/Profile")),
   },
   {
-    path: "/account/registration-number",
+    path: "/account/measurements",
     exact: true,
-    component: lazy(() =>
-      import("./../pages/users/numberManagement/NumberManagement")
-    ),
+    component: lazy(() => import("./../pages/users/measurements/Measurements")),
+  },
+  {
+    path: "/account/measurements-edit-:id",
+    exact: true,
+    component: lazy(() => import("./../pages/users/measurementsEdit/MeasurementsEdit")),
+  },
+  {
+    path: "/account/measurements-add",
+    exact: true,
+    component: lazy(() => import("./../pages/users/measurementsAdd/MeasurementsAdd")),
   },
   {
     path: "/admin",
