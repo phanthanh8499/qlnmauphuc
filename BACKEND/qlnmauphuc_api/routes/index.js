@@ -322,20 +322,54 @@ router.get("/admin/products/delete.:id", function (req, res) {
   })
 })
 
-router.get("/getClothData", function(req, res) {
-  pool.query(
-    `SELECT DISTINCT cloth.id, cloth.cloth_material, cloth.cloth_name, cloth.cloth_quantity, cloth.cloth_userid, cloth.cloth_typeid, cloth.cloth_image, clothtypes.ct_name
+router.post("/getClothData", function(req, res) {
+  const { cloth_material } = req.body;
+  if(cloth_material){
+     pool.query(
+       `SELECT DISTINCT cloth.id, cloth.cloth_material, cloth.cloth_name, cloth.cloth_quantity, cloth.cloth_userid, cloth.cloth_typeid, cloth.cloth_image, clothtypes.ct_name
+FROM cloth
+INNER JOIN clothtypes ON clothtypes.id = cloth.cloth_typeid
+WHERE cloth.cloth_material = '${cloth_material}'`,
+       (error, response) => {
+         if (error) {
+           console.log(error);
+         } else {
+           res.send(response.rows);
+         }
+       }
+     );
+  } else {
+     pool.query(
+       `SELECT DISTINCT cloth.id, cloth.cloth_material, cloth.cloth_name, cloth.cloth_quantity, cloth.cloth_userid, cloth.cloth_typeid, cloth.cloth_image, clothtypes.ct_name
 FROM cloth
 INNER JOIN clothtypes ON clothtypes.id = cloth.cloth_typeid`,
-    (error, response) => {
-      if (error) {
-        console.log(error);
-      } else {
-        res.send(response.rows);
-      }
-    }
-  );
+       (error, response) => {
+         if (error) {
+           console.log(error);
+         } else {
+           res.send(response.rows);
+         }
+       }
+     );
+  }
 })
+
+router.post("/getMyClothData", function (req, res) {
+  const { cloth_userid } = req.body;
+    pool.query(
+      `SELECT DISTINCT cloth.id, cloth.cloth_material, cloth.cloth_name, cloth.cloth_quantity, cloth.cloth_userid, cloth.cloth_typeid, cloth.cloth_image, clothtypes.ct_name
+FROM cloth
+INNER JOIN clothtypes ON clothtypes.id = cloth.cloth_typeid
+WHERE cloth.cloth_userid = '${cloth_userid}'`,
+      (error, response) => {
+        if (error) {
+          console.log(error);
+        } else {
+          res.send(response.rows);
+        }
+      }
+    );
+});
 
 router.post("/admin/cloth/add", function (req, res) {
   // console.log("???");

@@ -18,6 +18,7 @@ import {
   LIET_KE_USERS_THANH_CONG,
   LIET_KE_USERS_THAT_BAI,
   LIET_KE_VAI,
+  LIET_KE_VAI_CUA_TOI,
   LIET_KE_VAI_THAT_BAI,
   SUA_THONG_TIN_USER,
   THEM_SAN_PHAM,
@@ -89,14 +90,19 @@ export const deleteProduct = (data) => async (dispatch) => {
   await Axios.get(`/admin/products/delete.${data}`);
 }
 
-export const getClothData = (data) => async (dispatch) => {
+export const getClothData = (dataReq) => async (dispatch) => {
   dispatch({ type: YEU_CAU_LIET_KE_VAI});
   try {
-    const {data} = await Axios.get("/getClothData");
+    const {data} = await Axios.post("/getClothData", dataReq);
     dispatch({type: LIET_KE_VAI, payload: data})
   } catch (error) {
     dispatch({type: LIET_KE_VAI_THAT_BAI, payload: error.message})
   }
+}
+
+export const getMyClothData = (dataReq) => async (dispatch) => {
+  const {data} = await Axios.post("/getMyClothData", dataReq);
+  dispatch({type: LIET_KE_VAI_CUA_TOI, payload: data})
 }
 
 export const addCloth = (data) => async (dispatch) => {

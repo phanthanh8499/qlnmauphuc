@@ -92,10 +92,19 @@ export default function Pants() {
     } else {
       dispatch(editMeasurements(formData));
       dispatch(getDetailMeasurements(parseInt(detailData[0].id)));
-      enqueueSnackbar("Chỉnh sửa thông tin thành công", {
-        variant: "success",
-        autoHideDuration: 2000,
-      });
+      const { msg } = measurements;
+      console.log("====", msg)
+      if (msg.msg === "OK") {
+        enqueueSnackbar("Chỉnh sửa thông tin thành công", {
+          variant: "success",
+          autoHideDuration: 2000,
+        });
+      } else {
+        enqueueSnackbar("Có lỗi xảy ra", {
+          variant: "error",
+          autoHideDuration: 2000,
+        });
+      }   
     }
   };
   return (

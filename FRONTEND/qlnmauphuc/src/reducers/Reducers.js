@@ -18,6 +18,7 @@ import {
   LIET_KE_USERS_THANH_CONG,
   LIET_KE_USERS_THAT_BAI,
   LIET_KE_VAI,
+  LIET_KE_VAI_CUA_TOI,
   LIET_KE_VAI_THAT_BAI,
   SUA_THONG_TIN_USER,
   SUA_THONG_TIN_USER_THANH_CONG,
@@ -174,7 +175,7 @@ export const userReducer = (
 };
 
 export const clothReducer = (
-  state = { loading: true, clothData: [], image: "./images/loadingImg.gif" },
+  state = { loading: true, loadingMyData: true, clothData: [], myClothData: [], image: "./images/loadingImg.gif" },
   action
 ) => {
   switch (action.type) {
@@ -185,6 +186,11 @@ export const clothReducer = (
         return a.id - b.id;
       });
       return { ...state, loading: false, clothData: data };
+    case LIET_KE_VAI_CUA_TOI:
+      const myData = action.payload.sort(function (a, b) {
+        return a.id - b.id;
+      });
+      return { ...state, loadingMyData: false, myClothData: myData };
     case LIET_KE_VAI_THAT_BAI:
       return { loading: false, error: action.payload };
     case THEM_VAI:

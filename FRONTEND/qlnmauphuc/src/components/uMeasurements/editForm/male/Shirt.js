@@ -12,7 +12,7 @@ import {
 export default function Shirt(props) {
   let { id } = useParams();
   const measurements = useSelector((state) => state.measurements);
-  const { detailData } = measurements;
+  const { detailData, msg } = measurements;
   const dispatch = useDispatch();
   const { enqueueSnackbar } = useSnackbar();
   const [neckline, setNeckline] = useState("");
@@ -71,9 +71,9 @@ export default function Shirt(props) {
       detailData[0].m_sleevelength === 0
         ? setSleevelength("")
         : setSleevelength(detailData[0].m_sleevelength);
-      detailData[0].m_sleevelength === 0
+      detailData[0].m_shirtlength === 0
         ? setShirtlength("")
-        : setShirtlength(detailData[0].m_sleevelength);
+        : setShirtlength(detailData[0].m_shirtlength);
       setLoading(false);
     }
     getDetail();
@@ -118,13 +118,28 @@ export default function Shirt(props) {
     } else {
       dispatch(editMeasurements(formData));
       dispatch(getDetailMeasurements(id));
-      enqueueSnackbar("Chỉnh sửa thông tin thành công", {
-        variant: "success",
-        autoHideDuration: 2000,
-      });
+      // const {msg} = measurements;
+      //nay ben componet 
+      // day t bat cai msg ne
+      // neu la OK thi thong bao thanh cong, nguoc lai thi bao loi
+      console.log("====", msg);
+      if(msg.msg === "OK"){
+       //setSuccess(true)
+        enqueueSnackbar("Chỉnh sửa thông tin thành công", {
+          variant: "success",
+          autoHideDuration: 2000,
+        });
+        // reset msg
+        // cho nay ong viet them action reset msg
+      } else {
+        //setSuccess(false);
+        enqueueSnackbar("Có lỗi xảy ra", {
+          variant: "error",
+          autoHideDuration: 2000,
+        });
+      }   
     }
   };
-
   return (
     <>
       {loading ? (
