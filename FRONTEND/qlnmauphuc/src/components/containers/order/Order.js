@@ -1,4 +1,24 @@
-import { CircularProgress, Dialog, FormControl, FormControlLabel, Grid, InputLabel, LinearProgress, MenuItem, Radio, RadioGroup, Select, TextField, Typography } from "@mui/material";
+import {
+  Badge,
+  Button,
+  ButtonGroup,
+  CircularProgress,
+  Dialog,
+  Divider,
+  FormControl,
+  FormControlLabel,
+  Grid,
+  Icon,
+  Input,
+  InputLabel,
+  LinearProgress,
+  MenuItem,
+  Radio,
+  RadioGroup,
+  Select,
+  TextField,
+  Typography,
+} from "@mui/material";
 import { makeStyles, styled } from "@mui/styles";
 import { Box } from "@mui/system";
 import React, { useEffect, useState } from "react";
@@ -60,10 +80,37 @@ const useStyles = makeStyles((theme) => ({
   root: {
     padding: 20,
   },
+  title: {
+    fontFamily: "Helvetica Neue, sans-serif !important",
+    fontWeight: "normal !important",
+    color: "#333333 !important",
+    fontSize: "18px !important",
+  },
+  img: {
+    height: 64,
+    width: 64,
+    boxShadow: '0 0 0 1px rgb(0 0 0 / 10%) inset',
+    borderRadius: '8px',
+  },
+  box: {
+    backgroundColor: "#fafafa",
+    padding: 10,
+  },
+  productTitle: {
+    color: "#4b4b4b",
+    padding: '0px 5px',
+  },
 }));
+
+const center = {
+  display: 'flex',
+  justifyContent: 'center',
+  alignItems: 'center',
+};
+
 export default function Order(props) {
   const classes = useStyles();
-  const dispatch = useDispatch()
+  const dispatch = useDispatch();
   const { open, onClose } = props;
 
   const [value, setValue] = React.useState("1");
@@ -158,91 +205,99 @@ export default function Order(props) {
   };
   const [measurement, setMeasurement] = useState();
 
-  const {userInfo} = JSON.parse(localStorage.getItem('userInfo'));
-  console.log(userInfo)
+  const { userInfo } = JSON.parse(localStorage.getItem("userInfo"));
+  console.log(userInfo);
   const [loading, setLoading] = useState(true);
-  const measurements = useSelector(state => state.measurements);
+  const measurements = useSelector((state) => state.measurements);
   const { measurementsData } = measurements;
-  
+
   // console.log("???", detailData);
   console.log(measurementsData);
 
-  
-
   const renderMenuMeasurement = () => {
     return measurementsData.map((value, key) => (
-      <MenuItem value={value.id}>Mã số đăng ký thứ {key+1}</MenuItem>
+      <MenuItem value={value.id} key={key}>Mã số đăng ký thứ {key + 1}</MenuItem>
     ));
-  }
-   const [loadingMeasurement, setLoadingMeasurement] = useState(false);
-   const handleChangeMeasurement = (event, value) => {
-     setMeasurement(event.target.value);
-     setLoadingMeasurement(true);
-     setTimeout(() => {const detailData = measurementsData.filter(
-       (measurementsData) => measurementsData.id === value.props.value
-     );
-     detailData[0].m_crotchlength === 0
-       ? setCrotchlength("")
-       : setCrotchlength(detailData[0].m_crotchlength);
-     detailData[0].m_neckline === 0
-       ? setNeckline("")
-       : setNeckline(detailData[0].m_neckline);
-     detailData[0].m_bust === 0 ? setBust("") : setBust(detailData[0].m_bust);
-     detailData[0].m_waist === 0
-       ? setWaist("")
-       : setWaist(detailData[0].m_waist);
-     detailData[0].m_buttock === 0
-       ? setButtock("")
-       : setButtock(detailData[0].m_buttock);
-     detailData[0].m_shoulderwidth === 0
-       ? setShoulderwidth("")
-       : setShoulderwidth(detailData[0].m_shoulderwidth);
-     detailData[0].m_wristaround === 0
-       ? setWristaround("")
-       : setWristaround(detailData[0].m_wristaround);
-     detailData[0].m_sleevelength === 0
-       ? setSleevelength("")
-       : setSleevelength(detailData[0].m_sleevelength);
-     detailData[0].m_armpitcircumference === 0
-       ? setArmpitcircumference("")
-       : setArmpitcircumference(detailData[0].m_armpitcircumference);
-     detailData[0].m_biceps === 0
-       ? setBiceps("")
-       : setBiceps(detailData[0].m_biceps);
-     detailData[0].m_shirtlength === 0
-       ? setShirtlength("")
-       : setShirtlength(detailData[0].m_shirtlength);
-     detailData[0].m_pantslength === 0
-       ? setPantslength("")
-       : setPantslength(detailData[0].m_pantslength);
-     detailData[0].m_thighcircumference === 0
-       ? setThighcircumference("")
-       : setThighcircumference(detailData[0].m_thighcircumference);
-     detailData[0].m_crotchlength === 0
-       ? setCrotchlength("")
-       : setCrotchlength(detailData[0].m_crotchlength);
-     detailData[0].m_dresslength === 0
-       ? setDresslength("")
-       : setDresslength(detailData[0].m_dresslength);
-     setLoadingMeasurement(false);
+  };
+  const [loadingMeasurement, setLoadingMeasurement] = useState(false);
+  const handleChangeMeasurement = (event, value) => {
+    setMeasurement(event.target.value);
+    setLoadingMeasurement(true);
+    setTimeout(() => {
+      const detailData = measurementsData.filter(
+        (measurementsData) => measurementsData.id === value.props.value
+      );
+      detailData[0].m_crotchlength === 0
+        ? setCrotchlength("")
+        : setCrotchlength(detailData[0].m_crotchlength);
+      detailData[0].m_neckline === 0
+        ? setNeckline("")
+        : setNeckline(detailData[0].m_neckline);
+      detailData[0].m_bust === 0 ? setBust("") : setBust(detailData[0].m_bust);
+      detailData[0].m_waist === 0
+        ? setWaist("")
+        : setWaist(detailData[0].m_waist);
+      detailData[0].m_buttock === 0
+        ? setButtock("")
+        : setButtock(detailData[0].m_buttock);
+      detailData[0].m_shoulderwidth === 0
+        ? setShoulderwidth("")
+        : setShoulderwidth(detailData[0].m_shoulderwidth);
+      detailData[0].m_wristaround === 0
+        ? setWristaround("")
+        : setWristaround(detailData[0].m_wristaround);
+      detailData[0].m_sleevelength === 0
+        ? setSleevelength("")
+        : setSleevelength(detailData[0].m_sleevelength);
+      detailData[0].m_armpitcircumference === 0
+        ? setArmpitcircumference("")
+        : setArmpitcircumference(detailData[0].m_armpitcircumference);
+      detailData[0].m_biceps === 0
+        ? setBiceps("")
+        : setBiceps(detailData[0].m_biceps);
+      detailData[0].m_shirtlength === 0
+        ? setShirtlength("")
+        : setShirtlength(detailData[0].m_shirtlength);
+      detailData[0].m_pantslength === 0
+        ? setPantslength("")
+        : setPantslength(detailData[0].m_pantslength);
+      detailData[0].m_thighcircumference === 0
+        ? setThighcircumference("")
+        : setThighcircumference(detailData[0].m_thighcircumference);
+      detailData[0].m_crotchlength === 0
+        ? setCrotchlength("")
+        : setCrotchlength(detailData[0].m_crotchlength);
+      detailData[0].m_dresslength === 0
+        ? setDresslength("")
+        : setDresslength(detailData[0].m_dresslength);
+      setLoadingMeasurement(false);
     }, 1000);
-   };
+  };
 
   const [imgUpload, setImgUpload] = useState("");
   const [clothSelected, setClothSelected] = useState("");
   const [clothSelectedId, setClothSelectedId] = useState("");
-  const [selectedValue, setSelectedValue] = React.useState("nm");
+  const [owner, setOwner] = useState("nm");
+  const [price, setPrice] = useState(0);
+  const [discount, setDiscount] = useState(0);
+  const [qty, setQty] = useState(1);
 
   const handleChangeRadio = (event, value) => {
-    setSelectedValue(event.target.value);
+    const temp = event.target.value;
+    setOwner(event.target.value);
+    setClothSelectedId("");
     setClothSelected("");
+    setImgUpload("./images/loadingImg.gif");
+    event.target.value === "kh"
+      ? setDiscount(price * 0.3)
+      : setDiscount(0);
   };
 
   const cloth = useSelector((state) => state.cloth);
-  const {clothData, myClothData} = cloth;
+  const { clothData, myClothData } = cloth;
   let currentClothData = {};
   const renderCloth = () => {
-    if(selectedValue === "nm"){
+    if (owner === "nm") {
       currentClothData = clothData;
       return clothData.map((value, key) => (
         <MenuItem value={value.id} key={key}>
@@ -257,23 +312,55 @@ export default function Order(props) {
         </MenuItem>
       ));
     }
-  }
-  
+  };
+
   const handleChangeCloth = (event) => {
-    const abc = currentClothData.filter((currentClothData) => currentClothData.id === event.target.value)
+    const abc = currentClothData.filter(
+      (currentClothData) => currentClothData.id === event.target.value
+    );
     setClothSelectedId(event.target.value);
-    setClothSelected(abc);
+    setClothSelected(abc[0]);
     setImgUpload(abc[0].cloth_image);
+  };
+
+  const [shippingMethod, setShippingMethod] = useState("TNM");
+  const handleChangeShippingMethod = (event) => {
+    setShippingMethod(event.target.value)
   }
-  const {productData} = props;
+  const [paymentMethod, setPaymentMethod] = useState("COD");
+  const handleChangePaymentMethod = (event) => {
+    setPaymentMethod(event.target.value);
+  };
+  
+  const increment = () => {
+    const temp = price + productData.product_price;
+    setQty(qty + 1);
+    setPrice(price + productData.product_price); 
+     owner === "kh" ? setDiscount(temp*0.3) : setDiscount(0);
+  };
+
+  const decrement = () => {
+    let temp = 0;
+    qty > 1 ? setQty(qty - 1) : setQty(1);
+    qty > 1
+      ? setPrice(price - productData.product_price)
+      : setPrice(productData.product_price);
+    qty > 1
+      ? (temp = price - productData.product_price)
+      : (temp = productData.product_price);
+    owner === "kh" ? setDiscount(temp * 0.3) : setDiscount(0);
+  };
+
+  const { productData } = props;
   const data1 = {
     cloth_material: productData.product_material,
   };
   const data2 = {
     cloth_userid: 1,
   };
+
   useEffect(() => {
-    function setState(){
+    function setState() {
       dispatch(getMeasurementsData(userInfo.id));
       dispatch(getClothData(data1));
       dispatch(getMyClothData(data2));
@@ -282,10 +369,12 @@ export default function Order(props) {
       setEmail(userInfo.user_email);
       setAddress(userInfo.user_address);
       setTel(userInfo.user_tel);
+      setPrice(parseInt(productData.product_price));
       setLoading(false);
     }
     setState();
-  }, [])
+  }, []);
+
   return (
     <Dialog
       onClose={onClose}
@@ -606,9 +695,7 @@ export default function Order(props) {
                                       label="Tên vải"
                                       onChange={handleChangeCloth}
                                     >
-                                 
                                       {renderCloth()}
-                               
                                     </Select>
                                   </FormControl>
                                 </Grid>
@@ -629,21 +716,195 @@ export default function Order(props) {
                   aria-controls="panel3d-content"
                   id="panel3d-header"
                 >
-                  <Typography>Phương thức thanh toán & giao hàng</Typography>
+                  <Typography>Phương thức vận chuyển & thanh toán</Typography>
                 </AccordionSummary>
                 <AccordionDetails>
-                  <Typography>
-                    Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-                    Suspendisse malesuada lacus ex, sit amet blandit leo
-                    lobortis eget. Lorem ipsum dolor sit amet, consectetur
-                    adipiscing elit. Suspendisse malesuada lacus ex, sit amet
-                    blandit leo lobortis eget.
-                  </Typography>
+                  <Grid container>
+                    <Grid item xs={12} sx={{ margin: "10px 0px" }}>
+                      <Typography className={classes.title}>
+                        Phương thức vận chuyển
+                      </Typography>
+                    </Grid>
+                    <Grid item xs={12}>
+                      <RadioGroup
+                        name="use-radio-group"
+                        defaultValue="TNM"
+                        sx={{
+                          boxShadow: "0 0 0 1px #d9d9d9",
+                          borderRadius: "4px",
+                        }}
+                        onChange={handleChangeShippingMethod}
+                      >
+                        <FormControlLabel
+                          value="TNM"
+                          label="Nhận hàng tại nhà may"
+                          control={<Radio />}
+                          sx={{ padding: "5px 10px" }}
+                        />
+                        <Divider />
+                        <FormControlLabel
+                          value="GTN"
+                          label="Giao tận nhà"
+                          control={<Radio />}
+                          sx={{ padding: "5px 10px" }}
+                        />
+                      </RadioGroup>
+
+                      <Grid item xs={12} sx={{ margin: "10px 0px" }}>
+                        <Typography className={classes.title}>
+                          Phương thức thanh toán
+                        </Typography>
+                      </Grid>
+                      <Grid item xs={12}>
+                        <RadioGroup
+                          name="use-radio-group"
+                          defaultValue="COD"
+                          sx={{
+                            boxShadow: "0 0 0 1px #d9d9d9",
+                            borderRadius: "4px",
+                          }}
+                          onChange={handleChangePaymentMethod}
+                        >
+                          <FormControlLabel
+                            value="COD"
+                            label="Thanh toán khi giao hàng (COD)"
+                            control={<Radio />}
+                            sx={{ padding: "5px 10px" }}
+                          />
+                          <Divider />
+                          <FormControlLabel
+                            value="MOMO"
+                            label="Thanh toán online qua ví MoMo"
+                            control={<Radio />}
+                            sx={{ padding: "5px 10px" }}
+                          />
+                        </RadioGroup>
+                      </Grid>
+                    </Grid>
+                  </Grid>
                 </AccordionDetails>
               </Accordion>
             </Grid>
-            <Grid item xs={4}>
-              abc
+            <Grid item xs={4} className={classes.box}>
+              <Grid container>
+                <Grid item xs={2} sx={center}>
+                  <Badge badgeContent={qty} color="primary">
+                    <img
+                      src={productData.product_image1}
+                      alt="abc"
+                      className={classes.img}
+                    ></img>
+                  </Badge>
+                </Grid>
+                <Grid item xs={7} sx={center} className={classes.productTitle}>
+                  <Typography sx={{ fontSize: "14px" }}>
+                    {productData.product_name}
+                  </Typography>
+                </Grid>
+                <Grid item xs={3} sx={center} className={classes.productTitle}>
+                  <Typography sx={{ fontSize: "14px" }}>
+                    {price.toLocaleString("it-IT", {
+                      style: "currency",
+                      currency: "VND",
+                    })}
+                  </Typography>
+                </Grid>
+              </Grid>
+              <Divider sx={{ margin: "10px 0px" }} />
+              <Grid container sx={center}>
+                <Grid item xs={7}>
+                  <Typography sx={{ fontSize: "14px" }}>Số lượng</Typography>
+                </Grid>
+                <Grid item xs={5}>
+                  <ButtonGroup>
+                    <Button
+                      variant="outlined"
+                      color="error"
+                      onClick={decrement}
+                    >
+                      <Icon>remove</Icon>
+                    </Button>
+                    <TextField
+                      id="outlined-basic"
+                      variant="outlined"
+                      size="small"
+                      value={qty}
+                      onChange={(e) => {
+                        setQty(e.target.value);
+                        setPrice(e.target.value * productData.product_price);
+                        owner === "kh"
+                          ? setDiscount(
+                              e.target.value * productData.product_price * 0.3
+                            )
+                          : setDiscount(0);
+                      }}
+                    />
+                    <Button
+                      variant="outlined"
+                      color="primary"
+                      onClick={increment}
+                    >
+                      <Icon>add</Icon>
+                    </Button>
+                  </ButtonGroup>
+                </Grid>
+              </Grid>
+              <Divider sx={{ margin: "10px 0px" }} />
+              <Grid container>
+                <Grid item xs={8}>
+                  <Typography sx={{ fontSize: "14px" }}>Tạm tính</Typography>
+                </Grid>
+                <Grid item xs={4}>
+                  <Typography sx={{ fontSize: "14px", float: "right" }}>
+                    {price.toLocaleString("it-IT", {
+                      style: "currency",
+                      currency: "VND",
+                    })}
+                  </Typography>
+                </Grid>
+                <Grid item xs={8}>
+                  <Typography sx={{ fontSize: "14px" }}>Giảm giá</Typography>
+                </Grid>
+                <Grid item xs={4}>
+                  <Typography sx={{ fontSize: "14px", float: "right" }}>
+                    {discount.toLocaleString("it-IT", {
+                      style: "currency",
+                      currency: "VND",
+                    })}
+                  </Typography>
+                </Grid>
+                <Grid item xs={8}>
+                  <Typography sx={{ fontSize: "14px" }}>
+                    Phí vận chuyển
+                  </Typography>
+                </Grid>
+                <Grid item xs={4}>
+                  <Typography sx={{ fontSize: "14px", float: "right" }}>
+                    {parseInt(0).toLocaleString("it-IT", {
+                      style: "currency",
+                      currency: "VND",
+                    })}
+                  </Typography>
+                </Grid>
+              </Grid>
+              <Divider sx={{ margin: "10px 0px" }} />
+              <Grid container>
+                <Grid item xs={8}>
+                  <Typography sx={{ fontSize: "14px" }}>Tổng cộng</Typography>
+                </Grid>
+                <Grid item xs={4}>
+                  <Typography sx={{ fontSize: "14px", float: "right" }}>
+                    {(price - discount).toLocaleString("it-IT", {
+                      style: "currency",
+                      currency: "VND",
+                    })}
+                  </Typography>
+                </Grid>
+              </Grid>
+              <Divider sx={{ margin: "10px 0px" }} />
+              <Button variant="outlined" color="primary" fullWidth>
+                Xác nhận
+              </Button>
             </Grid>
           </Grid>
         </>

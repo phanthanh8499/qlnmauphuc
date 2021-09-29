@@ -17,7 +17,7 @@ function ImageMagnify(props) {
       {...{
         smallImage: {
           alt: "Wristwatch by Ted Baker London",
-          isFluidWidth: true,
+          // isFluidWidth: true,
           src: img,
           width: 230,
           height: 152,
