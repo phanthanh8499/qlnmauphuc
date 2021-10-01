@@ -1,12 +1,15 @@
 import Axios from "axios";
 import { useSnackbar } from "notistack";
 import {
+  CHINH_SUA_THONG_TIN_DON_HANG,
   CHINH_SUA_THONG_TIN_SAN_PHAM,
   CHINH_SUA_THONG_TIN_SO_DO,
   CHINH_SUA_THONG_TIN_VAI,
   DANG_NHAP_THANH_CONG,
   DANG_NHAP_THAT_BAI,
   LIET_KE_BFM,
+  LIET_KE_DON_HANG,
+  LIET_KE_DON_HANG_THAT_BAI,
   LIET_KE_SAN_PHAM,
   LIET_KE_SFM,
   LIET_KE_SO_DO,
@@ -21,14 +24,18 @@ import {
   LIET_KE_VAI_CUA_TOI,
   LIET_KE_VAI_THAT_BAI,
   SUA_THONG_TIN_USER,
+  THEM_DON_HANG,
   THEM_SAN_PHAM,
   THEM_SO_DO,
   THEM_VAI,
+  XEM_DON_HANG,
   XEM_SO_DO,
+  XOA_DON_HANG,
   XOA_SAN_PHAM,
   XOA_SO_DO,
   XOA_VAI,
   YEU_CAU_DANG_NHAP,
+  YEU_CAU_LIET_KE_DON_HANG,
   YEU_CAU_LIET_KE_SO_DO,
   YEU_CAU_LIET_KE_SP,
   YEU_CAU_LIET_KE_USERS,
@@ -165,4 +172,35 @@ export const editUserInfo = (dataReq) => async (dispatch) => {
   dispatch({ type: SUA_THONG_TIN_USER, payload: abc });
   localStorage.setItem("userInfo", JSON.stringify({ userInfo: data }));
   console.log(data);
+};
+
+export const getOrderData = (id) => async (dispatch) => {
+  dispatch({ type: YEU_CAU_LIET_KE_DON_HANG });
+  try {
+    const { data } = await Axios.get(`/getOrderData.${id}`);
+    dispatch({ type: LIET_KE_DON_HANG, payload: data });
+  } catch (error) {
+    dispatch({ type: LIET_KE_DON_HANG_THAT_BAI, payload: error.message });
+  }
+};
+
+export const addOrder = (dataReq) => async (dispatch) => {
+  const { data } = await Axios.post("/admin/order/add", dataReq);
+  console.log(data)
+  dispatch({ type: THEM_DON_HANG, payload: dataReq });
+};
+
+export const editOrder = (dataReq) => async (dispatch) => {
+  const { data } = await Axios.post("/admin/order/edit", dataReq);
+  dispatch({ type: CHINH_SUA_THONG_TIN_DON_HANG, payload: data, msg: data });
+};
+
+export const deleteOrder = (data) => async (dispatch) => {
+  dispatch({ type: XOA_DON_HANG, payload: data });
+  // await Axios.get(`/admin/Order/delete.${data}`);
+};
+
+export const getDetailOrder = (dataReq) => async (dispatch) => {
+  const { data } = await Axios.get(`/getDetailOrder.${dataReq}`);
+  dispatch({ type: XEM_DON_HANG, payload: data });
 };

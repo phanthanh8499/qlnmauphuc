@@ -20,10 +20,10 @@ export default function SlideShow() {
         <img alt="" src="./images/banner/banner-ao-vest-1024x361.jpg" />
       </div>
       <div>
-        <img alt="" src="http://lorempixel.com/output/cats-q-c-640-480-2.jpg" />
+        <img alt="" src="./images/banner/banner-ao-vest-1024x361.jpg" />
       </div>
       <div>
-        <img alt="" src="http://lorempixel.com/output/cats-q-c-640-480-3.jpg" />
+        <img alt="" src="./images/banner/banner-ao-vest-1024x361.jpg" />
       </div>
     </Carousel>
   );

@@ -9,7 +9,7 @@ export default function ListModule () {
     return (
       <>
         <List component="nav" aria-label="main mailbox folders">
-          <Link to="/account">
+          <Link to="/account/orders">
             <ListItem >
               <ListItemIcon>
                 <ListAltIcon />

@@ -722,4 +722,206 @@ router.post("/admin/users/edit", function (req, res) {
   }
 });
 
+router.get("/getOrderData.:id", function (req, res) {
+  const { id } = req.params;
+  if (parseInt(id) === 0) {
+    pool.query(
+      `SELECT order_details.*, order_customername, order_customeraddress, order_customerphone, order_customeremail, order_startdate, order_enddate, order_subtotal, order_discount, order_total, order_paymentid, order_shippingid, order_statusid, order_userid, products.product_name, products.product_typeid, products.product_image1, cloth.cloth_name, cloth.cloth_image, cloth.cloth_quantity FROM order_details 
+              INNER JOIN orders ON orders.id = order_details.od_orderid 
+              INNER JOIN products ON products.id = order_details.od_productid
+			  INNER JOIN cloth ON cloth.id = order_details.od_clothid `,
+      (error, response) => {
+        if (error) {
+          console.log(error);
+        } else {
+          res.send(response.rows);
+        }
+      }
+    );
+  } else {
+    pool.query(
+      `SELECT order_details.*, order_customername, order_customeraddress, order_customerphone, order_customeremail, order_startdate, order_enddate, order_subtotal, order_discount, order_total, order_paymentid, order_shippingid, order_statusid, order_userid, products.product_name, products.product_typeid, products.product_image1, cloth.cloth_name, cloth.cloth_image, cloth.cloth_quantity FROM order_details 
+              INNER JOIN orders ON orders.id = order_details.od_orderid 
+              INNER JOIN products ON products.id = order_details.od_productid
+			  INNER JOIN cloth ON cloth.id = order_details.od_clothid
+			  WHERE orders.order_userid = '${id}'`,
+      (error, response) => {
+        if (error) {
+          console.log(error);
+        } else {
+          res.send(response.rows);
+        }
+      }
+    );
+  }
+});
+
+router.post("/admin/order/add", function (req, res) {
+  const {
+    order_customername,
+    order_customeraddress,
+    order_customeremail,
+    order_customerphone,
+    order_startdate,
+    order_enddate,
+    order_subtotal,
+    order_discount,
+    order_total,
+    order_paymentid,
+    order_shippingid,
+    order_statusid,
+    order_userid,
+    od_productid,
+    od_clothid,
+    od_neckline,
+    od_bust,
+    od_waist,
+    od_buttock,
+    od_shoulderwidth,
+    od_armpitcircumference,
+    od_biceps,
+    od_wristaround,
+    od_sleevelength,
+    od_shirtlength,
+    od_crotchlength,
+    od_dresslength,
+    od_pantslength,
+    od_thighcircumference,
+  } = req.body;
+  const id = uuidv4();
+  console.log(
+    id,
+    order_customername,
+    order_customeraddress,
+    order_customeremail,
+    order_customerphone,
+    order_startdate,
+    order_enddate,
+    order_subtotal,
+    order_discount,
+    order_total,
+    order_paymentid,
+    order_shippingid,
+    order_statusid,
+    order_userid,
+    od_productid,
+    od_clothid,
+    od_neckline,
+    od_bust,
+    od_waist,
+    od_buttock,
+    od_shoulderwidth,
+    od_armpitcircumference,
+    od_biceps,
+    od_wristaround,
+    od_sleevelength,
+    od_shirtlength,
+    od_crotchlength,
+    od_dresslength,
+    od_pantslength,
+    od_thighcircumference
+  );
+  pool.query(
+    `INSERT INTO orders(
+	id, order_customername, order_customeraddress, order_customerphone, order_customeremail, order_startdate, order_enddate, order_subtotal, order_discount, order_total, order_paymentid, order_shippingid, order_statusid, order_userid)
+	VALUES ('${id}', '${order_customername}', '${order_customeraddress}', '${order_customerphone}', '${order_customeremail}', '${order_startdate}', '${order_enddate}', '${order_subtotal}', '${order_discount}', '${order_total}', '${order_paymentid}', '${order_shippingid}', '${order_statusid}', '${order_userid}')`,
+    (error, response) => {
+      if (error) {
+        console.log("1", error);
+        res.send({ msg: "ERROR" });
+      } else {
+        console.log("win");
+       pool.query(
+         `INSERT INTO order_details(
+	od_orderid, od_productid, od_clothid, od_neckline, od_bust, od_waist, od_buttock, od_shoulderwidth, od_armpitcircumference, od_biceps, od_wristaround, od_sleevelength, od_shirtlength, od_crotchlength, od_thighcircumference, od_dresslength, od_pantslength)
+	VALUES ('${id}', '${od_productid}', '${od_clothid}', '${od_neckline}', '${od_bust}', '${od_waist}', '${od_buttock}', '${od_shoulderwidth}', '${od_armpitcircumference}', '${od_biceps}', '${od_wristaround}', '${od_sleevelength}', '${od_shirtlength}', '${od_crotchlength}', '${od_thighcircumference}', '${od_dresslength}', '${od_pantslength}')`,
+         (error, response) => {
+           if (error) {
+             console.log("2", error);
+             res.send({ msg: "ERROR" });
+           } else {
+             res.send({
+               id,
+               order_customername,
+               order_customeraddress,
+               order_customeremail,
+               order_startdate,
+               order_enddate,
+               order_subtotal,
+               order_discount,
+               order_total,
+               order_paymentid,
+               order_shippingid,
+               order_statusid,
+               order_userid,
+               od_productid,
+               od_clothid,
+               od_neckline,
+               od_bust,
+               od_waist,
+               od_buttock,
+               od_shoulderwidth,
+               od_armpitcircumference,
+               od_biceps,
+               od_wristaround,
+               od_sleevelength,
+               od_shirtlength,
+               od_crotchlength,
+               od_dresslength,
+               od_pantslength,
+             });
+           }
+         }
+       );
+      }
+    }
+  );
+});
+
+router.get("/getDetailorder.:id", function (req, res) {
+  const { id } = req.params;
+  pool.query(
+    `SELECT * FROM order WHERE id = ${id}`,
+    (error, response) => {
+      if (error) {
+        console.log(error);
+        res.send({ msg: "ERROR" });
+      } else {
+        res.send(response.rows);
+      }
+    }
+  );
+});
+
+router.post("/admin/order/edit", function (req, res) {
+  const {
+    
+  } = req.body;
+  pool.query(
+    ``,
+    (error, response) => {
+      if (error) {
+        console.log(error);
+        res.send({ msg: "ERROR" });
+      } else {
+        console.log("OK");
+        res.send({ msg: "OK" });
+      }
+    }
+  );
+});
+
+router.get("/admin/order/delete.:id", function (req, res) {
+  const { id } = req.params;
+  console.log(id);
+  // pool.query(`DELETE FROM measurements WHERE id='${id}'`, (error, response) => {
+  //   if (error) {
+  //     console.log(error);
+  //   } else {
+  //     console.log("Xoá thành công sản phẩm có id là: ", id);
+  //   }
+  // });
+});
+
+
 module.exports = router;

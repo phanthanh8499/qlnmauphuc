@@ -36,9 +36,13 @@ import {
   getDetailMeasurements,
   getClothData,
   getMyClothData,
+  addOrder,
 } from "../../../redux/Action";
 import PropTypes from "prop-types";
 import ImageMagnify from "./ImageMagnify";
+import { format } from "date-fns";
+import { useSnackbar } from "notistack";
+
 
 const Accordion = styled((props) => (
   <MuiAccordion disableGutters elevation={0} square {...props} />
@@ -112,7 +116,7 @@ export default function Order(props) {
   const classes = useStyles();
   const dispatch = useDispatch();
   const { open, onClose } = props;
-
+  const { enqueueSnackbar } = useSnackbar();
   const [value, setValue] = React.useState("1");
   const [progress, setProgress] = React.useState(10);
 
@@ -219,6 +223,7 @@ export default function Order(props) {
       <MenuItem value={value.id} key={key}>Mã số đăng ký thứ {key + 1}</MenuItem>
     ));
   };
+
   const [loadingMeasurement, setLoadingMeasurement] = useState(false);
   const handleChangeMeasurement = (event, value) => {
     setMeasurement(event.target.value);
@@ -227,48 +232,45 @@ export default function Order(props) {
       const detailData = measurementsData.filter(
         (measurementsData) => measurementsData.id === value.props.value
       );
-      detailData[0].m_crotchlength === 0
-        ? setCrotchlength("")
-        : setCrotchlength(detailData[0].m_crotchlength);
       detailData[0].m_neckline === 0
-        ? setNeckline("")
+        ? setNeckline(0)
         : setNeckline(detailData[0].m_neckline);
-      detailData[0].m_bust === 0 ? setBust("") : setBust(detailData[0].m_bust);
+      detailData[0].m_bust === 0 ? setBust(0) : setBust(detailData[0].m_bust);
       detailData[0].m_waist === 0
-        ? setWaist("")
+        ? setWaist(0)
         : setWaist(detailData[0].m_waist);
       detailData[0].m_buttock === 0
-        ? setButtock("")
+        ? setButtock(0)
         : setButtock(detailData[0].m_buttock);
       detailData[0].m_shoulderwidth === 0
-        ? setShoulderwidth("")
+        ? setShoulderwidth(0)
         : setShoulderwidth(detailData[0].m_shoulderwidth);
       detailData[0].m_wristaround === 0
-        ? setWristaround("")
+        ? setWristaround(0)
         : setWristaround(detailData[0].m_wristaround);
       detailData[0].m_sleevelength === 0
-        ? setSleevelength("")
+        ? setSleevelength(0)
         : setSleevelength(detailData[0].m_sleevelength);
       detailData[0].m_armpitcircumference === 0
-        ? setArmpitcircumference("")
+        ? setArmpitcircumference(0)
         : setArmpitcircumference(detailData[0].m_armpitcircumference);
       detailData[0].m_biceps === 0
-        ? setBiceps("")
+        ? setBiceps(0)
         : setBiceps(detailData[0].m_biceps);
       detailData[0].m_shirtlength === 0
-        ? setShirtlength("")
+        ? setShirtlength(0)
         : setShirtlength(detailData[0].m_shirtlength);
       detailData[0].m_pantslength === 0
-        ? setPantslength("")
+        ? setPantslength(0)
         : setPantslength(detailData[0].m_pantslength);
       detailData[0].m_thighcircumference === 0
-        ? setThighcircumference("")
+        ? setThighcircumference(0)
         : setThighcircumference(detailData[0].m_thighcircumference);
       detailData[0].m_crotchlength === 0
-        ? setCrotchlength("")
+        ? setCrotchlength(0)
         : setCrotchlength(detailData[0].m_crotchlength);
       detailData[0].m_dresslength === 0
-        ? setDresslength("")
+        ? setDresslength(0)
         : setDresslength(detailData[0].m_dresslength);
       setLoadingMeasurement(false);
     }, 1000);
@@ -359,6 +361,815 @@ export default function Order(props) {
     cloth_userid: 1,
   };
 
+  const formatDate = (dateString) => {
+    const options = {
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit",
+    };
+    return new Date(dateString).toLocaleDateString(undefined, options);
+  };
+
+  const handleSubmit = () => {
+    const today = new Date();
+    const enddate = new Date();
+    enddate.setDate(today.getDate() + 10);
+    const formData = new FormData();
+    
+    formData.append("order_subtotal", price / qty);
+    formData.append("order_discount", discount / qty);
+    formData.append("order_total", (price - discount) / qty);
+    formData.append("order_paymentid", paymentMethod);
+    formData.append("order_shippingid", shippingMethod);
+    formData.append("order_statusid", 0);
+    formData.append("order_userid", userInfo.id);
+    formData.append("od_productid", productData.id);
+    
+    
+    if (!lastName || !firstName || !tel || !email || !address) {
+      enqueueSnackbar("Vui lòng nhập thông tin cá nhân", {
+        variant: "error",
+        autoHideDuration: 2000,
+      });
+      return false;
+    } else {
+      formData.append("order_customername", lastName + " " + firstName);
+      formData.append("order_customeraddress", address);
+      formData.append("order_customerphone", tel);
+      formData.append("order_customeremail", email);
+      formData.append("order_startdate", format(today, "yyyy-MM-dd HH:mm:ss"));
+      formData.append("order_enddate", format(enddate, "yyyy-MM-dd HH:mm:ss"));
+    }
+    // Blazer, tuxedo, suit
+    if (
+      productData.product_typeid === "BFM" ||
+      productData.product_typeid === "SFM" ||
+      productData.product_typeid === "TFM"
+    ) {
+      if(!neckline || !bust || !waist || !buttock || !shoulderwidth || !sleevelength || !shirtlength || !wristaround){
+        enqueueSnackbar("Vui điền nhập đầy đủ số đo", {
+          variant: "error",
+          autoHideDuration: 2000,
+        });
+        return false;
+      } else {
+        formData.append("od_neckline", neckline);
+        formData.append("od_bust", bust);
+        formData.append("od_waist", waist);
+        formData.append("od_buttock", buttock);
+        formData.append("od_shoulderwidth", shoulderwidth);
+        formData.append("od_armpitcircumference", 0);
+        formData.append("od_biceps", 0);
+        formData.append("od_wristaround", wristaround);
+        formData.append("od_sleevelength", sleevelength);
+        formData.append("od_shirtlength", shirtlength);
+        formData.append("od_crotchlength", 0);
+        formData.append("od_thighcircumference", 0);
+        formData.append("od_dresslength", 0);
+        formData.append("od_pantslength", 0);
+      }
+    }
+    // gile
+    if (
+      productData.product_typeid === "GFF"
+    ) {
+      if (
+        !neckline || !bust || !waist || !buttock || !shoulderwidth || !armpitcircumference || !shirtlength || !dresslength
+      ) {
+        enqueueSnackbar("Vui điền nhập đầy đủ số đo", {
+          variant: "error",
+          autoHideDuration: 2000,
+        });
+        return false;
+      } else {
+        formData.append("od_neckline", neckline);
+        formData.append("od_bust", bust);
+        formData.append("od_waist", waist);
+        formData.append("od_buttock", buttock);
+        formData.append("od_shoulderwidth", shoulderwidth);
+        formData.append("od_armpitcircumference", armpitcircumference);
+        formData.append("od_biceps", 0);
+        formData.append("od_wristaround", 0);
+        formData.append("od_sleevelength", 0);
+        formData.append("od_shirtlength", shirtlength);
+        formData.append("od_crotchlength", 0);
+        formData.append("od_thighcircumference", 0);
+        formData.append("od_dresslength", dresslength);
+        formData.append("od_pantslength", pantslength);
+      }
+    }
+
+    // vest cho nữ
+    if (productData.product_typeid === "VFF") {
+      if (
+        !neckline ||
+        !bust ||
+        !waist ||
+        !buttock ||
+        !shoulderwidth ||
+        !wristaround ||
+        !sleevelength ||
+        !shirtlength ||
+        !armpitcircumference ||
+        !biceps
+      ) {
+        enqueueSnackbar("Vui điền nhập đầy đủ số đo", {
+          variant: "error",
+          autoHideDuration: 2000,
+        });
+        return false;
+      } else {
+        formData.append("od_neckline", neckline);
+        formData.append("od_bust", bust);
+        formData.append("od_waist", waist);
+        formData.append("od_buttock", buttock);
+        formData.append("od_shoulderwidth", shoulderwidth);
+        formData.append("od_armpitcircumference", armpitcircumference);
+        formData.append("od_biceps", biceps);
+        formData.append("od_wristaround", wristaround);
+        formData.append("od_sleevelength", sleevelength);
+        formData.append("od_shirtlength", shirtlength);
+        formData.append("od_crotchlength", 0);
+        formData.append("od_thighcircumference", 0);
+        formData.append("od_dresslength", 0);
+        formData.append("od_pantslength", 0);
+      }
+    }
+
+    // bộ vest cho nữ
+    if (productData.product_typeid === "FVF") {
+      if (
+        !neckline ||
+        !bust ||
+        !waist ||
+        !buttock ||
+        !shoulderwidth ||
+        !wristaround ||
+        !sleevelength ||
+        !shirtlength ||
+        !armpitcircumference ||
+        !biceps ||
+        !thighcircumference ||
+        !dresslength ||
+        !pantslength
+      ) {
+        enqueueSnackbar("Vui điền nhập đầy đủ số đo", {
+          variant: "error",
+          autoHideDuration: 2000,
+        });
+        return false;
+      } else {
+        formData.append("od_neckline", neckline);
+        formData.append("od_bust", bust);
+        formData.append("od_waist", waist);
+        formData.append("od_buttock", buttock);
+        formData.append("od_shoulderwidth", shoulderwidth);
+        formData.append("od_armpitcircumference", armpitcircumference);
+        formData.append("od_biceps", biceps);
+        formData.append("od_wristaround", wristaround);
+        formData.append("od_sleevelength", sleevelength);
+        formData.append("od_shirtlength", shirtlength);
+        formData.append("od_crotchlength", 0);
+        formData.append("od_thighcircumference", thighcircumference);
+        formData.append("od_dresslength", dresslength);
+        formData.append("od_pantslength", pantslength);
+      }
+    }
+
+    if (!clothSelectedId){
+      enqueueSnackbar("Vui lòng chọn loại vải", {
+        variant: "error",
+        autoHideDuration: 2000,
+      });
+      return false;
+    } else {
+      formData.append("od_clothid", clothSelectedId);
+    }
+
+    enqueueSnackbar("Đặt may thành công", {
+      variant: "success",
+      autoHideDuration: 2000,
+    });
+    for (let i = 0; i < qty; i++) {
+      dispatch(addOrder(formData));
+    }
+    onClose()
+  }
+
+  const renderMeasurement = () => {
+    if(productData.product_typeid === "BFM"){
+      return (
+        <>
+          <Grid item xs={6}>
+            <TextField
+              id="neckline"
+              label="Vòng cổ"
+              placeholder="Đo vòng quanh chân cổ"
+              margin="normal"
+              defaultValue={neckline}
+              fullWidth
+              size="small"
+              onChange={getParamsNeckline}
+              InputLabelProps={{
+                shrink: true,
+              }}
+            />
+          </Grid>
+          <Grid item xs={6}>
+            <TextField
+              id="bust"
+              label="Vòng ngực"
+              placeholder="Đo vòng quanh ngực, chỗ nở nhất"
+              margin="normal"
+              defaultValue={bust}
+              fullWidth
+              size="small"
+              onChange={getParamsBust}
+              InputLabelProps={{
+                shrink: true,
+              }}
+            />
+          </Grid>
+          <Grid item xs={6}>
+            <TextField
+              id="waist"
+              label="Vòng eo"
+              placeholder="Đo vòng quanh eo"
+              margin="normal"
+              defaultValue={waist}
+              fullWidth
+              size="small"
+              onChange={getParamsWaist}
+              InputLabelProps={{
+                shrink: true,
+              }}
+            />
+          </Grid>
+          <Grid item xs={6}>
+            <TextField
+              id="buttock"
+              label="Vòng mông"
+              placeholder="Đo vòng quanh mông, chỗ nở nhất"
+              margin="normal"
+              defaultValue={buttock}
+              fullWidth
+              size="small"
+              onChange={getParamsButtock}
+              InputLabelProps={{
+                shrink: true,
+              }}
+            />
+          </Grid>
+          <Grid item xs={6}>
+            <TextField
+              id="shoulderwidth"
+              label="Rộng vai"
+              placeholder="Từ đầu vai trái sang đầu vai phải"
+              margin="normal"
+              defaultValue={shoulderwidth}
+              fullWidth
+              size="small"
+              onChange={getParamsShoulderwidth}
+              InputLabelProps={{
+                shrink: true,
+              }}
+            />
+          </Grid>
+          <Grid item xs={6}>
+            <TextField
+              id="wristaround"
+              label="Cửa tay"
+              placeholder="Đo vòng quanh nắm tay"
+              margin="normal"
+              defaultValue={wristaround}
+              fullWidth
+              size="small"
+              onChange={getParamsWristaround}
+              InputLabelProps={{
+                shrink: true,
+              }}
+            />
+          </Grid>
+          <Grid item xs={6}>
+            <TextField
+              id="sleevelength"
+              label="Dài tay"
+              placeholder="Từ đầu vai đến qua khỏi mắt cá tay"
+              margin="normal"
+              defaultValue={sleevelength}
+              fullWidth
+              size="small"
+              onChange={getParamsSleevelength}
+              InputLabelProps={{
+                shrink: true,
+              }}
+            />
+          </Grid>
+          <Grid item xs={6}>
+            <TextField
+              id="shirtlength"
+              label="Dài áo"
+              placeholder="Từ đốt xương cổ thứ 7 đến ngang mông"
+              margin="normal"
+              defaultValue={shirtlength}
+              fullWidth
+              size="small"
+              onChange={getParamsShirtlength}
+              InputLabelProps={{
+                shrink: true,
+              }}
+            />
+          </Grid>
+        </>
+      );
+    }
+    if (productData.product_typeid === "GFF") {
+      return (
+        <>
+          <Grid item xs={6}>
+            <TextField
+              id="neckline"
+              label="Vòng cổ"
+              placeholder="Đo vòng quanh chân cổ"
+              margin="normal"
+              defaultValue={neckline}
+              fullWidth
+              size="small"
+              onChange={getParamsNeckline}
+              InputLabelProps={{
+                shrink: true,
+              }}
+            />
+          </Grid>
+          <Grid item xs={6}>
+            <TextField
+              id="bust"
+              label="Vòng ngực"
+              placeholder="Đo vòng quanh ngực, chỗ nở nhất"
+              margin="normal"
+              defaultValue={bust}
+              fullWidth
+              size="small"
+              onChange={getParamsBust}
+              InputLabelProps={{
+                shrink: true,
+              }}
+            />
+          </Grid>
+          <Grid item xs={6}>
+            <TextField
+              id="waist"
+              label="Vòng eo"
+              placeholder="Đo vòng quanh eo"
+              margin="normal"
+              defaultValue={waist}
+              fullWidth
+              size="small"
+              onChange={getParamsWaist}
+              InputLabelProps={{
+                shrink: true,
+              }}
+            />
+          </Grid>
+          <Grid item xs={6}>
+            <TextField
+              id="buttock"
+              label="Vòng mông"
+              placeholder="Đo vòng quanh mông, chỗ nở nhất"
+              margin="normal"
+              defaultValue={buttock}
+              fullWidth
+              size="small"
+              onChange={getParamsButtock}
+              InputLabelProps={{
+                shrink: true,
+              }}
+            />
+          </Grid>
+          <Grid item xs={6}>
+            <TextField
+              id="shoulderwidth"
+              label="Rộng vai"
+              placeholder="Từ đầu vai trái sang đầu vai phải"
+              margin="normal"
+              defaultValue={shoulderwidth}
+              fullWidth
+              size="small"
+              onChange={getParamsShoulderwidth}
+              InputLabelProps={{
+                shrink: true,
+              }}
+            />
+          </Grid>
+          <Grid item xs={6}>
+            <TextField
+              id="shirtlength"
+              label="Dài áo"
+              placeholder="Từ đốt xương cổ thứ 7 đến ngang mông"
+              margin="normal"
+              defaultValue={shirtlength}
+              fullWidth
+              size="small"
+              onChange={getParamsShirtlength}
+              InputLabelProps={{
+                shrink: true,
+              }}
+            />
+          </Grid>
+          <Grid item xs={6}>
+            <TextField
+              id="armpitcircumference"
+              label="Vòng nách"
+              placeholder="Chống tay lên hông, đo sát vòng nách"
+              margin="normal"
+              defaultValue={armpitcircumference}
+              fullWidth
+              size="small"
+              onChange={getParamsArmpitcircumference}
+              InputLabelProps={{
+                shrink: true,
+              }}
+            />
+          </Grid>
+          <Grid item xs={6}>
+            <TextField
+              id="dresslength"
+              label="Dài váy"
+              placeholder="Đo từ eo đến gối"
+              margin="normal"
+              defaultValue={dresslength}
+              fullWidth
+              size="small"
+              onChange={getParamsDresslength}
+              InputLabelProps={{
+                shrink: true,
+              }}
+            />
+          </Grid>
+        </>
+      );
+    }
+    if (productData.product_typeid === "VFF") {
+      return (
+        <>
+          <Grid item xs={6}>
+            <TextField
+              id="neckline"
+              label="Vòng cổ"
+              placeholder="Đo vòng quanh chân cổ"
+              margin="normal"
+              defaultValue={neckline}
+              fullWidth
+              size="small"
+              onChange={getParamsNeckline}
+              InputLabelProps={{
+                shrink: true,
+              }}
+            />
+          </Grid>
+          <Grid item xs={6}>
+            <TextField
+              id="bust"
+              label="Vòng ngực"
+              placeholder="Đo vòng quanh ngực, chỗ nở nhất"
+              margin="normal"
+              defaultValue={bust}
+              fullWidth
+              size="small"
+              onChange={getParamsBust}
+              InputLabelProps={{
+                shrink: true,
+              }}
+            />
+          </Grid>
+          <Grid item xs={6}>
+            <TextField
+              id="waist"
+              label="Vòng eo"
+              placeholder="Đo vòng quanh eo"
+              margin="normal"
+              defaultValue={waist}
+              fullWidth
+              size="small"
+              onChange={getParamsWaist}
+              InputLabelProps={{
+                shrink: true,
+              }}
+            />
+          </Grid>
+          <Grid item xs={6}>
+            <TextField
+              id="buttock"
+              label="Vòng mông"
+              placeholder="Đo vòng quanh mông, chỗ nở nhất"
+              margin="normal"
+              defaultValue={buttock}
+              fullWidth
+              size="small"
+              onChange={getParamsButtock}
+              InputLabelProps={{
+                shrink: true,
+              }}
+            />
+          </Grid>
+          <Grid item xs={6}>
+            <TextField
+              id="shoulderwidth"
+              label="Rộng vai"
+              placeholder="Từ đầu vai trái sang đầu vai phải"
+              margin="normal"
+              defaultValue={shoulderwidth}
+              fullWidth
+              size="small"
+              onChange={getParamsShoulderwidth}
+              InputLabelProps={{
+                shrink: true,
+              }}
+            />
+          </Grid>
+          <Grid item xs={6}>
+            <TextField
+              id="wristaround"
+              label="Cửa tay"
+              placeholder="Đo vòng quanh nắm tay"
+              margin="normal"
+              defaultValue={wristaround}
+              fullWidth
+              size="small"
+              onChange={getParamsWristaround}
+              InputLabelProps={{
+                shrink: true,
+              }}
+            />
+          </Grid>
+          <Grid item xs={6}>
+            <TextField
+              id="sleevelength"
+              label="Dài tay"
+              placeholder="Từ đầu vai đến qua khỏi mắt cá tay"
+              margin="normal"
+              defaultValue={sleevelength}
+              fullWidth
+              size="small"
+              onChange={getParamsSleevelength}
+              InputLabelProps={{
+                shrink: true,
+              }}
+            />
+          </Grid>
+          <Grid item xs={6}>
+            <TextField
+              id="shirtlength"
+              label="Dài áo"
+              placeholder="Từ đốt xương cổ thứ 7 đến ngang mông"
+              margin="normal"
+              defaultValue={shirtlength}
+              fullWidth
+              size="small"
+              onChange={getParamsShirtlength}
+              InputLabelProps={{
+                shrink: true,
+              }}
+            />
+          </Grid>
+          <Grid item xs={6}>
+            <TextField
+              id="armpitcircumference"
+              label="Vòng nách"
+              placeholder="Chống tay lên hông, đo sát vòng nách"
+              margin="normal"
+              defaultValue={armpitcircumference}
+              fullWidth
+              size="small"
+              onChange={getParamsArmpitcircumference}
+              InputLabelProps={{
+                shrink: true,
+              }}
+            />
+          </Grid>
+          <Grid item xs={6}>
+            <TextField
+              id="biceps"
+              label="Bắp tay"
+              placeholder="Đo vòng sát bắp tay"
+              margin="normal"
+              defaultValue={biceps}
+              fullWidth
+              size="small"
+              onChange={getParamsBiceps}
+              InputLabelProps={{
+                shrink: true,
+              }}
+            />
+          </Grid>
+        </>
+      );
+    }
+    if (productData.product_typeid === "FVF") {
+      return (
+        <>
+          <Grid item xs={6}>
+            <TextField
+              id="neckline"
+              label="Vòng cổ"
+              placeholder="Đo vòng quanh chân cổ"
+              margin="normal"
+              defaultValue={neckline}
+              fullWidth
+              size="small"
+              onChange={getParamsNeckline}
+              InputLabelProps={{
+                shrink: true,
+              }}
+            />
+          </Grid>
+          <Grid item xs={6}>
+            <TextField
+              id="bust"
+              label="Vòng ngực"
+              placeholder="Đo vòng quanh ngực, chỗ nở nhất"
+              margin="normal"
+              defaultValue={bust}
+              fullWidth
+              size="small"
+              onChange={getParamsBust}
+              InputLabelProps={{
+                shrink: true,
+              }}
+            />
+          </Grid>
+          <Grid item xs={6}>
+            <TextField
+              id="waist"
+              label="Vòng eo"
+              placeholder="Đo vòng quanh eo"
+              margin="normal"
+              defaultValue={waist}
+              fullWidth
+              size="small"
+              onChange={getParamsWaist}
+              InputLabelProps={{
+                shrink: true,
+              }}
+            />
+          </Grid>
+          <Grid item xs={6}>
+            <TextField
+              id="buttock"
+              label="Vòng mông"
+              placeholder="Đo vòng quanh mông, chỗ nở nhất"
+              margin="normal"
+              defaultValue={buttock}
+              fullWidth
+              size="small"
+              onChange={getParamsButtock}
+              InputLabelProps={{
+                shrink: true,
+              }}
+            />
+          </Grid>
+          <Grid item xs={6}>
+            <TextField
+              id="shoulderwidth"
+              label="Rộng vai"
+              placeholder="Từ đầu vai trái sang đầu vai phải"
+              margin="normal"
+              defaultValue={shoulderwidth}
+              fullWidth
+              size="small"
+              onChange={getParamsShoulderwidth}
+              InputLabelProps={{
+                shrink: true,
+              }}
+            />
+          </Grid>
+          <Grid item xs={6}>
+            <TextField
+              id="wristaround"
+              label="Cửa tay"
+              placeholder="Đo vòng quanh nắm tay"
+              margin="normal"
+              defaultValue={wristaround}
+              fullWidth
+              size="small"
+              onChange={getParamsWristaround}
+              InputLabelProps={{
+                shrink: true,
+              }}
+            />
+          </Grid>
+          <Grid item xs={6}>
+            <TextField
+              id="sleevelength"
+              label="Dài tay"
+              placeholder="Từ đầu vai đến qua khỏi mắt cá tay"
+              margin="normal"
+              defaultValue={sleevelength}
+              fullWidth
+              size="small"
+              onChange={getParamsSleevelength}
+              InputLabelProps={{
+                shrink: true,
+              }}
+            />
+          </Grid>
+          <Grid item xs={6}>
+            <TextField
+              id="shirtlength"
+              label="Dài áo"
+              placeholder="Từ đốt xương cổ thứ 7 đến ngang mông"
+              margin="normal"
+              defaultValue={shirtlength}
+              fullWidth
+              size="small"
+              onChange={getParamsShirtlength}
+              InputLabelProps={{
+                shrink: true,
+              }}
+            />
+          </Grid>
+          <Grid item xs={6}>
+            <TextField
+              id="armpitcircumference"
+              label="Vòng nách"
+              placeholder="Chống tay lên hông, đo sát vòng nách"
+              margin="normal"
+              defaultValue={armpitcircumference}
+              fullWidth
+              size="small"
+              onChange={getParamsArmpitcircumference}
+              InputLabelProps={{
+                shrink: true,
+              }}
+            />
+          </Grid>
+          <Grid item xs={6}>
+            <TextField
+              id="biceps"
+              label="Bắp tay"
+              placeholder="Đo vòng sát bắp tay"
+              margin="normal"
+              defaultValue={biceps}
+              fullWidth
+              size="small"
+              onChange={getParamsBiceps}
+              InputLabelProps={{
+                shrink: true,
+              }}
+            />
+          </Grid>
+          <Grid item xs={6}>
+            <TextField
+              id="thighcircumference"
+              label="Vòng đùi"
+              placeholder="Đo vòng quang đùi chỗ nở nhất"
+              margin="normal"
+              defaultValue={thighcircumference}
+              fullWidth
+              size="small"
+              onChange={getParamsThighcircumference}
+              InputLabelProps={{
+                shrink: true,
+              }}
+            />
+          </Grid>
+          <Grid item xs={6}>
+            <TextField
+              id="dresslength"
+              label="Dài váy"
+              placeholder="Đo từ eo đến gối"
+              margin="normal"
+              defaultValue={dresslength}
+              fullWidth
+              size="small"
+              onChange={getParamsDresslength}
+              InputLabelProps={{
+                shrink: true,
+              }}
+            />
+          </Grid>
+          <Grid item xs={6}>
+            <TextField
+              id="pantslength"
+              label="Dài quần"
+              placeholder="Đo từ eo đến chấm gót chân"
+              margin="normal"
+              defaultValue={pantslength}
+              fullWidth
+              size="small"
+              onChange={getParamsPantslength}
+              InputLabelProps={{
+                shrink: true,
+              }}
+            />
+          </Grid>
+        </>
+      );
+    }
+  }
   useEffect(() => {
     function setState() {
       dispatch(getMeasurementsData(userInfo.id));
@@ -533,126 +1344,7 @@ export default function Order(props) {
                               </Box>
                             ) : (
                               <>
-                                <Grid item xs={6}>
-                                  <TextField
-                                    id="neckline"
-                                    label="Vòng cổ"
-                                    placeholder="Đo vòng quanh chân cổ"
-                                    margin="normal"
-                                    defaultValue={neckline}
-                                    fullWidth
-                                    size="small"
-                                    onChange={getParamsNeckline}
-                                    InputLabelProps={{
-                                      shrink: true,
-                                    }}
-                                  />
-                                </Grid>
-                                <Grid item xs={6}>
-                                  <TextField
-                                    id="bust"
-                                    label="Vòng ngực"
-                                    placeholder="Đo vòng quanh ngực, chỗ nở nhất"
-                                    margin="normal"
-                                    defaultValue={bust}
-                                    fullWidth
-                                    size="small"
-                                    onChange={getParamsBust}
-                                    InputLabelProps={{
-                                      shrink: true,
-                                    }}
-                                  />
-                                </Grid>
-                                <Grid item xs={6}>
-                                  <TextField
-                                    id="waist"
-                                    label="Vòng eo"
-                                    placeholder="Đo vòng quanh eo"
-                                    margin="normal"
-                                    defaultValue={waist}
-                                    fullWidth
-                                    size="small"
-                                    onChange={getParamsWaist}
-                                    InputLabelProps={{
-                                      shrink: true,
-                                    }}
-                                  />
-                                </Grid>
-                                <Grid item xs={6}>
-                                  <TextField
-                                    id="buttock"
-                                    label="Vòng mông"
-                                    placeholder="Đo vòng quanh mông, chỗ nở nhất"
-                                    margin="normal"
-                                    defaultValue={buttock}
-                                    fullWidth
-                                    size="small"
-                                    onChange={getParamsButtock}
-                                    InputLabelProps={{
-                                      shrink: true,
-                                    }}
-                                  />
-                                </Grid>
-                                <Grid item xs={6}>
-                                  <TextField
-                                    id="shoulderwidth"
-                                    label="Rộng vai"
-                                    placeholder="Từ đầu vai trái sang đầu vai phải"
-                                    margin="normal"
-                                    defaultValue={shoulderwidth}
-                                    fullWidth
-                                    size="small"
-                                    onChange={getParamsShoulderwidth}
-                                    InputLabelProps={{
-                                      shrink: true,
-                                    }}
-                                  />
-                                </Grid>
-                                <Grid item xs={6}>
-                                  <TextField
-                                    id="wristaround"
-                                    label="Cửa tay"
-                                    placeholder="Đo vòng quanh nắm tay"
-                                    margin="normal"
-                                    defaultValue={wristaround}
-                                    fullWidth
-                                    size="small"
-                                    onChange={getParamsWristaround}
-                                    InputLabelProps={{
-                                      shrink: true,
-                                    }}
-                                  />
-                                </Grid>
-                                <Grid item xs={6}>
-                                  <TextField
-                                    id="sleevelength"
-                                    label="Dài tay"
-                                    placeholder="Từ đầu vai đến qua khỏi mắt cá tay"
-                                    margin="normal"
-                                    defaultValue={sleevelength}
-                                    fullWidth
-                                    size="small"
-                                    onChange={getParamsSleevelength}
-                                    InputLabelProps={{
-                                      shrink: true,
-                                    }}
-                                  />
-                                </Grid>
-                                <Grid item xs={6}>
-                                  <TextField
-                                    id="shirtlength"
-                                    label="Dài áo"
-                                    placeholder="Từ đốt xương cổ thứ 7 đến ngang mông"
-                                    margin="normal"
-                                    defaultValue={shirtlength}
-                                    fullWidth
-                                    size="small"
-                                    onChange={getParamsShirtlength}
-                                    InputLabelProps={{
-                                      shrink: true,
-                                    }}
-                                  />
-                                </Grid>
+                                {renderMeasurement()}
                               </>
                             )}
                           </Grid>
@@ -667,7 +1359,7 @@ export default function Order(props) {
                                 <Grid item xs={4}>
                                   <RadioGroup
                                     aria-label="gender"
-                                    defaultValue="nm"
+                                    defaultValue={owner}
                                     name="radio-buttons-group"
                                     onChange={handleChangeRadio}
                                   >
@@ -728,7 +1420,7 @@ export default function Order(props) {
                     <Grid item xs={12}>
                       <RadioGroup
                         name="use-radio-group"
-                        defaultValue="TNM"
+                        defaultValue={shippingMethod}
                         sx={{
                           boxShadow: "0 0 0 1px #d9d9d9",
                           borderRadius: "4px",
@@ -758,7 +1450,7 @@ export default function Order(props) {
                       <Grid item xs={12}>
                         <RadioGroup
                           name="use-radio-group"
-                          defaultValue="COD"
+                          defaultValue={paymentMethod}
                           sx={{
                             boxShadow: "0 0 0 1px #d9d9d9",
                             borderRadius: "4px",
@@ -773,7 +1465,7 @@ export default function Order(props) {
                           />
                           <Divider />
                           <FormControlLabel
-                            value="MOMO"
+                            value="OWM"
                             label="Thanh toán online qua ví MoMo"
                             control={<Radio />}
                             sx={{ padding: "5px 10px" }}
@@ -902,7 +1594,7 @@ export default function Order(props) {
                 </Grid>
               </Grid>
               <Divider sx={{ margin: "10px 0px" }} />
-              <Button variant="outlined" color="primary" fullWidth>
+              <Button variant="outlined" color="primary" fullWidth onClick={handleSubmit}>
                 Xác nhận
               </Button>
             </Grid>

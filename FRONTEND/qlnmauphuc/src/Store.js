@@ -2,7 +2,7 @@ import { createStore, compose, applyMiddleware, combineReducers } from "redux";
 import thunk from "redux-thunk";
 import {
   clothReducer,
-  dangNhapReducer, measurementsReducer, productReducer, userReducer,
+  dangNhapReducer, measurementsReducer, orderReducer, productReducer, userReducer,
 } from "./reducers/Reducers";
 
 const reducer = combineReducers({
@@ -11,6 +11,7 @@ const reducer = combineReducers({
   products: productReducer,
   cloth: clothReducer,
   measurements: measurementsReducer,
+  order: orderReducer,
 });
 
 const initialState = {

@@ -1,7 +1,7 @@
 //== PATH
 export const FRONTEND_URL = "F:/project/LV/FRONTEND/qlnmauphuc/public";
 export const FRONTEND_ADM_URL = "F:/project/LV/FRONTEND/qlnmauphuc/public/admin";
-
+export const LOCAL_PATH = "http://localhost:3000/";
 //=== DANG NHAP
 export const YEU_CAU_DANG_NHAP = "YEU_CAU_DANG_NHAP";
 export const DANG_NHAP_THANH_CONG = "DANG_NHAP_THANH_CONG";
@@ -56,3 +56,12 @@ export const THEM_SO_DO = "THEM_SO_DO";
 export const CHINH_SUA_THONG_TIN_SO_DO = "CHINH_SUA_THONG_TIN_SO_DO";
 export const XOA_SO_DO = "XOA_SO_DO";
 export const XEM_SO_DO = "XEM_SO_DO";
+
+//======================== DON HANG =====================================
+export const YEU_CAU_LIET_KE_DON_HANG = "YEU_CAU_LIET_KE_DON_HANG";
+export const LIET_KE_DON_HANG = "LIET_KE_DON_HANG";
+export const LIET_KE_DON_HANG_THAT_BAI = "LIET_KE_DON_HANG_THAT_BAI";
+export const THEM_DON_HANG = "THEM_DON_HANG";
+export const CHINH_SUA_THONG_TIN_DON_HANG = "CHINH_SUA_THONG_TIN_DON_HANG";
+export const XOA_DON_HANG = "XOA_DON_HANG";
+export const XEM_DON_HANG = "XEM_DON_HANG";
