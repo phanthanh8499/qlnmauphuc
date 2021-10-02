@@ -118,26 +118,10 @@ export default function Shirt(props) {
     } else {
       dispatch(editMeasurements(formData));
       dispatch(getDetailMeasurements(id));
-      // const {msg} = measurements;
-      //nay ben componet 
-      // day t bat cai msg ne
-      // neu la OK thi thong bao thanh cong, nguoc lai thi bao loi
-      console.log("====", msg);
-      if(msg.msg === "OK"){
-       //setSuccess(true)
-        enqueueSnackbar("Chỉnh sửa thông tin thành công", {
-          variant: "success",
-          autoHideDuration: 2000,
-        });
-        // reset msg
-        // cho nay ong viet them action reset msg
-      } else {
-        //setSuccess(false);
-        enqueueSnackbar("Có lỗi xảy ra", {
-          variant: "error",
-          autoHideDuration: 2000,
-        });
-      }   
+      enqueueSnackbar("Chỉnh sửa thông tin thành công", {
+        variant: "success",
+        autoHideDuration: 2000,
+      });
     }
   };
   return (

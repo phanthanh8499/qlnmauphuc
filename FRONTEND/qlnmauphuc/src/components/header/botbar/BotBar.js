@@ -1,7 +1,7 @@
 import { CssBaseline, Grid, Container, IconButton } from "@mui/material";
 import makeStyles from '@mui/styles/makeStyles';
 import React, { useEffect } from "react";
-import { NavLink } from "react-router-dom";
+import { Link, NavLink } from "react-router-dom";
 import ShoppingBasketIcon from "@mui/icons-material/ShoppingBasket";
 import SearchIcon from "@mui/icons-material/Search";
 
@@ -52,23 +52,23 @@ const useStyles = makeStyles((theme) => ({
 
 export default function BotBar() {
   const classes = useStyles();
-  // useEffect(() => {
-  //   const header = document.getElementById("header");
-  //   const sticky = header.offsetTop;
+  useEffect(() => {
+    const header = document.getElementById("header");
+    const sticky = header.offsetTop;
 
-  //   const scrollHandler = () => {
-  //     if (window.pageYOffset > sticky) {
-  //       header.classList.add(classes.sticky);
-  //     } else {
-  //       header.classList.remove(classes.sticky);
-  //     }
-  //   };
-  //   window.addEventListener("scroll", scrollHandler);
+    const scrollHandler = () => {
+      if (window.pageYOffset > sticky) {
+        header.classList.add(classes.sticky);
+      } else {
+        header.classList.remove(classes.sticky);
+      }
+    };
+    window.addEventListener("scroll", scrollHandler);
 
-  //   return () => {
-  //     window.removeEventListener("scroll", scrollHandler);
-  //   };
-  // }, [classes]);
+    return () => {
+      window.removeEventListener("scroll", scrollHandler);
+    };
+  }, [classes]);
   
   return (
     <React.Fragment>
@@ -77,11 +77,13 @@ export default function BotBar() {
         <Container>
           <Grid container spacing={1} className={classes.menu}>
             <Grid item xs={3}>
-              <img
-                src="./images/logo.png"
-                alt="logo"
-                className={classes.logoimg}
-              ></img>
+              <Link to="/home">
+                <img
+                  src="./images/logo.png"
+                  alt="logo"
+                  className={classes.logoimg}
+                ></img>
+              </Link>
             </Grid>
             <Grid item xs={7} className={classes.navigation}>
               <ul className={classes.nav}>
@@ -135,7 +137,7 @@ export default function BotBar() {
                 </li>
               </ul>
             </Grid>
-            <Grid item  className={classes.icon} justifyContent='flex-end'>
+            <Grid item className={classes.icon} justifyContent="flex-end">
               <IconButton size="large">
                 <ShoppingBasketIcon
                   className={classes.buttonIcon}

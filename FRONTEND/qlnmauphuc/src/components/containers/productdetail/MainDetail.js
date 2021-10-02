@@ -114,7 +114,7 @@ export default function MainDetail(props) {
   const [open, setOpen] = React.useState(false);
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
- 
+  console.log("main", data)
   const choose = (abc) => {
     setMau(abc);
   };

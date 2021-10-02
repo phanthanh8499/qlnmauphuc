@@ -8,14 +8,14 @@ import {
   IconButton,
   Paper,
   Typography,
-} from '@mui/material';
-import makeStyles from '@mui/styles/makeStyles';
-import React, { useEffect, useState } from 'react'
+} from "@mui/material";
+import makeStyles from "@mui/styles/makeStyles";
+import React, { useEffect, useState } from "react";
 import NavigateNextIcon from "@mui/icons-material/NavigateNext";
 import NavigateBeforeIcon from "@mui/icons-material/NavigateBefore";
-import { useDispatch, useSelector } from 'react-redux';
-import { getProductData } from '../../../redux/Action';
-import { Link } from 'react-router-dom';
+import { useDispatch, useSelector } from "react-redux";
+import { getProductData } from "../../../redux/Action";
+import { Link } from "react-router-dom";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -78,17 +78,29 @@ const useStyles = makeStyles((theme) => ({
     border: "none",
   },
   title: {
-    overflow: 'hidden',
-    textOverflow: 'ellipsis',
-    whiteSpace: 'nowrap',
-    fontSize: '18px !important',
-  }
+    overflow: "hidden",
+    textOverflow: "ellipsis",
+    whiteSpace: "nowrap",
+    fontSize: "18px !important",
+  },
 }));
 
-export default function SameProduct (props) {
+export default function SameProduct(props) {
   const classes = useStyles();
-  const {data, id} = props;
-    const renderData = data.filter((data) => data.id !== parseInt(id));
+  const { type, id } = props;
+  const products = useSelector((state) => state.products);
+  const dispatch = useDispatch();
+  const { productData } = products;
+  const [data, setData] = useState();
+  const [loading, setLoading] = useState(true);
+  useEffect(() => {
+    setData(
+      productData
+        .filter((productData) => productData.id !== parseInt(id))
+        .filter((productData) => productData.product_typeid === type)
+    );
+    setLoading(false);
+  }, [type, id]);
 
   const [page, setPage] = useState(0);
   const [rowsPerPage] = useState(6);
@@ -98,7 +110,7 @@ export default function SameProduct (props) {
     }
   };
   const onNextClick = () => {
-    const temp = renderData.length / rowsPerPage;
+    const temp = data.length / rowsPerPage;
     if (page < temp - 1) {
       setPage(page + 1);
     }
@@ -118,12 +130,13 @@ export default function SameProduct (props) {
     str = str.replace(/-+$/g, "");
     return str;
   };
+
   const renderItems = () => {
     return (
-        rowsPerPage > 0
-          ? renderData.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-          : renderData
-      ).map((value, key) => (
+      rowsPerPage > 0
+        ? data.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+        : data
+    ).map((value, key) => (
       <Grid item className={classes.box} key={key}>
         <Link
           to={"/" + covertURL(value.product_name) + "." + value.id + ".html"}
@@ -171,36 +184,42 @@ export default function SameProduct (props) {
         </Link>
       </Grid>
     ));
-  }
-    return (
-      <Grid
-        container
-        xs={12}
-        component={Paper}
-        spacing={1}
-        className={classes.root}
-        direction="row"
-        justifyContent="center"
-        alignItems="center"
-      >
-        <Grid item xs={12}>
-          <Typography className={classes.title}>SẢN PHẨM TƯƠNG TỰ</Typography>
-        </Grid>
-        <IconButton className={classes.navigateBeforeIcon} size="large">
-          <NavigateBeforeIcon
-            className={classes.iconbtn}
-            onClick={onPreClick}
-          ></NavigateBeforeIcon>
-        </IconButton>
-        <IconButton
-          className={classes.navigateNextIcon}
-          size="large"
-          onClick={onNextClick}
+  };
+  return (
+    <>
+      {loading ? (
+        <div>loading....</div>
+      ) : (
+        <Grid
+          container
+          xs={12}
+          component={Paper}
+          spacing={1}
+          className={classes.root}
+          direction="row"
+          justifyContent="center"
+          alignItems="center"
         >
-          <NavigateNextIcon></NavigateNextIcon>
-        </IconButton>
+          <Grid item xs={12}>
+            <Typography className={classes.title}>SẢN PHẨM TƯƠNG TỰ</Typography>
+          </Grid>
+          <IconButton className={classes.navigateBeforeIcon} size="large">
+            <NavigateBeforeIcon
+              className={classes.iconbtn}
+              onClick={onPreClick}
+            ></NavigateBeforeIcon>
+          </IconButton>
+          <IconButton
+            className={classes.navigateNextIcon}
+            size="large"
+            onClick={onNextClick}
+          >
+            <NavigateNextIcon></NavigateNextIcon>
+          </IconButton>
 
-        {renderItems()}
-      </Grid>
-    );
+          {renderItems()}
+        </Grid>
+      )}
+    </>
+  );
 }

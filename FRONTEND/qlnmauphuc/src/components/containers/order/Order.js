@@ -560,7 +560,7 @@ export default function Order(props) {
   }
 
   const renderMeasurement = () => {
-    if(productData.product_typeid === "BFM"){
+    if (productData.product_typeid === "BFM" || productData.product_typeid === "TFM" || productData.product_typeid === "SFM" ) {
       return (
         <>
           <Grid item xs={6}>

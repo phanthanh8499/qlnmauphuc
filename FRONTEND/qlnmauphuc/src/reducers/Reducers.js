@@ -74,7 +74,7 @@ export const productReducer = (
       const data = action.payload.sort(function (a, b) {
         return a.id - b.id;
       });
-      return { loading: true, productData: data };
+      return { loading: false, productData: data };
     case LIET_KE_BFM:
       return {
         ...state,
@@ -322,9 +322,19 @@ export const orderReducer = (
     case XOA_DON_HANG:
       return {
         ...state,
-        orderData: state.orderData.filter(
-          (orderData) => orderData.id !== action.payload
-        ),
+        orderData: state.orderData.map((item) => {
+          if (item.id === parseInt(action.payload)) {
+            item.order_statusid = 10;
+            item.os_name = "Đã huỷ";
+            item.id = parseInt(action.payload);
+            return item;
+          } else {
+            return item;
+          }
+        }),
+        // orderData: state.orderData.filter(
+        //   (orderData) => orderData.id !== action.payload
+        // ),
       };
     case XEM_DON_HANG:
       return {

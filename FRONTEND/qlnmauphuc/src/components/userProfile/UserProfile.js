@@ -20,6 +20,7 @@ import CameraAltIcon from "@mui/icons-material/CameraAlt";
 import { useDispatch } from "react-redux";
 import { editUserInfo } from "../../redux/Action";
 import { FRONTEND_ADM_URL, FRONTEND_URL } from "../../constants/Constants";
+import { useSnackbar } from "notistack";
 
 const useStyles = makeStyles((theme) => ({
   btngroup: {
@@ -57,6 +58,7 @@ const useStyles = makeStyles((theme) => ({
 export default function UserProfile() {
   const classes = useStyles();
   const dispatch = useDispatch();
+  const { enqueueSnackbar } = useSnackbar();
   const [id, setId] = useState();
   const [firstName, setFirstName] = useState();
   const [lastName, setLastName] = useState();
@@ -130,9 +132,17 @@ export default function UserProfile() {
       formData.append("fileName", fileName);
       formData.append("fileRecv", 1);
       dispatch(editUserInfo(formData));
+      enqueueSnackbar("Cập nhật thông tin thành công", {
+        variant: "success",
+        autoHideDuration: 2000,
+      });
     } else {
       formData.append("fileRecv", 0);
       dispatch(editUserInfo(formData));
+      enqueueSnackbar("Cập nhật thông tin thành công", {
+        variant: "success",
+        autoHideDuration: 2000,
+      });
     }
   };
 

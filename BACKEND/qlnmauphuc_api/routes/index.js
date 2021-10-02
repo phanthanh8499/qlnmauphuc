@@ -726,10 +726,11 @@ router.get("/getOrderData.:id", function (req, res) {
   const { id } = req.params;
   if (parseInt(id) === 0) {
     pool.query(
-      `SELECT order_details.*, order_customername, order_customeraddress, order_customerphone, order_customeremail, order_startdate, order_enddate, order_subtotal, order_discount, order_total, order_paymentid, order_shippingid, order_statusid, order_userid, products.product_name, products.product_typeid, products.product_image1, cloth.cloth_name, cloth.cloth_image, cloth.cloth_quantity FROM order_details 
+      `SELECT order_details.*, order_customername, order_customeraddress, order_customerphone, order_customeremail, order_startdate, order_enddate, order_subtotal, order_discount, order_total, order_paymentid, order_shippingid, order_statusid, order_userid, products.product_name, products.product_typeid, products.product_image1, cloth.cloth_name, cloth.cloth_image, cloth.cloth_quantity, os_name FROM order_details 
               INNER JOIN orders ON orders.id = order_details.od_orderid 
               INNER JOIN products ON products.id = order_details.od_productid
-			  INNER JOIN cloth ON cloth.id = order_details.od_clothid `,
+			  INNER JOIN cloth ON cloth.id = order_details.od_clothid
+			  INNER JOIN order_status ON order_status.id = orders.order_statusid `,
       (error, response) => {
         if (error) {
           console.log(error);
@@ -740,10 +741,11 @@ router.get("/getOrderData.:id", function (req, res) {
     );
   } else {
     pool.query(
-      `SELECT order_details.*, order_customername, order_customeraddress, order_customerphone, order_customeremail, order_startdate, order_enddate, order_subtotal, order_discount, order_total, order_paymentid, order_shippingid, order_statusid, order_userid, products.product_name, products.product_typeid, products.product_image1, cloth.cloth_name, cloth.cloth_image, cloth.cloth_quantity FROM order_details 
+      `SELECT order_details.*, order_customername, order_customeraddress, order_customerphone, order_customeremail, order_startdate, order_enddate, order_subtotal, order_discount, order_total, order_paymentid, order_shippingid, order_statusid, order_userid, products.product_name, products.product_typeid, products.product_image1, cloth.cloth_name, cloth.cloth_image, cloth.cloth_quantity, os_name FROM order_details 
               INNER JOIN orders ON orders.id = order_details.od_orderid 
               INNER JOIN products ON products.id = order_details.od_productid
 			  INNER JOIN cloth ON cloth.id = order_details.od_clothid
+			  INNER JOIN order_status ON order_status.id = orders.order_statusid
 			  WHERE orders.order_userid = '${id}'`,
       (error, response) => {
         if (error) {

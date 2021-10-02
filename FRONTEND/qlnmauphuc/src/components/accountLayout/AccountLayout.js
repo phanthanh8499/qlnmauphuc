@@ -31,15 +31,19 @@ export default function AccountLayout (props){
   
   useEffect(() => {
     function Title () {
-      if (pathname === "/account/profile") {
+      if (pathname === "/account/orders") {
+        setTitle("Danh sách đơn hàng");
+      } else if (pathname === "/account/profile") {
         setTitle("Thông tin cá nhân");
-      }
-      if (pathname === "/account/measurements") {
+      } else if (pathname === "/account") {
+        setTitle("");
+      } else if (pathname === "/account/measurements") {
         setTitle("Số hiệu đăng ký");
-      }
-      if (pathname === "/account/measurements-add") {
-        setTitle("Số hiệu đăng ký");
-      }
+      } else if (pathname === "/account/measurements-add") {
+        setTitle("Thêm số hiệu đăng ký");
+      } else {
+        setTitle("Sửa số hiệu đăng ký");
+      } 
     };
     Title();
   }, [title]);

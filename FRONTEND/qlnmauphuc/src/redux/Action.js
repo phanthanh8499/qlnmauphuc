@@ -70,9 +70,9 @@ export const getProductData = () => async (dispatch) => {
   try {
     const { data } = await Axios.get("/getProductData");
     dispatch({ type: LIET_KE_SAN_PHAM, payload: data});
-    dispatch({ type: LIET_KE_BFM });
-    dispatch({ type: LIET_KE_TFM });
-    dispatch({ type: LIET_KE_SFM });
+    // dispatch({ type: LIET_KE_BFM });
+    // dispatch({ type: LIET_KE_TFM });
+    // dispatch({ type: LIET_KE_SFM });
   } catch (error) {
     dispatch({ type: LIET_KE_THAT_BAI, payload: error.message});
   }
@@ -196,6 +196,7 @@ export const editOrder = (dataReq) => async (dispatch) => {
 };
 
 export const deleteOrder = (data) => async (dispatch) => {
+  console.log("delete", data)
   dispatch({ type: XOA_DON_HANG, payload: data });
   // await Axios.get(`/admin/Order/delete.${data}`);
 };

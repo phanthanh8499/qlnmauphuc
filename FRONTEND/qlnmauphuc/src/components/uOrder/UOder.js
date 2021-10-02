@@ -44,13 +44,15 @@ export default function UOder() {
     dispatch(getOrderData(userInfo.id));
   }, []);
   useEffect(() => {
+    console.log("?? - ??")
     setAll(orderData);
     setProcessing(
-      orderData.filter((orderData) => orderData.order_statusid === 1)
+      orderData.filter((orderData) => orderData.order_statusid === 0)
     );
     setSewing(
       orderData.filter(
         (orderData) =>
+          orderData.order_statusid === 1 ||
           orderData.order_statusid === 2 ||
           orderData.order_statusid === 3 ||
           orderData.order_statusid === 4
@@ -140,12 +142,12 @@ export default function UOder() {
               <TabPanel value="1">
                 <All userid={userInfo.id} data={all} />
               </TabPanel>
-              <TabPanel value="2"><Processing data={processing}/></TabPanel>
-              <TabPanel value="3"><Sewing data={sewing}/></TabPanel>
-              <TabPanel value="4"><Transport data={transport}/></TabPanel>
+              <TabPanel value="2"><All data={processing}/></TabPanel>
+              <TabPanel value="3"><All data={sewing}/></TabPanel>
+              <TabPanel value="4"><All data={transport}/></TabPanel>
               <TabPanel value="5">Item Two</TabPanel>
-              <TabPanel value="6"><Complete data={complete}/></TabPanel>
-              <TabPanel value="7"><Cancel data={cancel}/></TabPanel>
+              <TabPanel value="6"><All data={complete}/></TabPanel>
+              <TabPanel value="7"><All data={cancel}/></TabPanel>
             </TabContext>
           </Grid>
           <Grid item xs={12}></Grid>

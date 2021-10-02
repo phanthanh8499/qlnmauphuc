@@ -9,7 +9,7 @@ import {
   IconButton,
 } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import NavigateNextIcon from "@mui/icons-material/NavigateNext";
 import NavigateBeforeIcon from "@mui/icons-material/NavigateBefore";
 import { useSelector } from "react-redux";
@@ -72,10 +72,21 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function Items() {
+const center = {
+  display: "flex",
+  justifyContent: "center",
+  alignItems: "center",
+};
+
+export default function Items(props) {
   const classes = useStyles();
-  const products = useSelector((state) => state.products);
-  const { BFM, TFM, SFM } = products;
+  const {data} = props;
+  const [dataRender, setDataRender] = useState([]);
+  
+  // const products = useSelector((state) => state.products);
+  // const { BFM, TFM, SFM } = products;
+
+  useEffect(() => {setDataRender(data);}, [data]);
   const [page, setPage] = useState(0);
   const [rowsPerPage] = useState(4);
   const onPreClick = () => {
@@ -84,7 +95,7 @@ export default function Items() {
     }
   };
   const onNextClick = () => {
-    const temp = BFM.length / rowsPerPage;
+    const temp = dataRender.length / rowsPerPage;
     if (page < temp - 1) {
       setPage(page + 1);
     }
@@ -105,11 +116,11 @@ export default function Items() {
     return str;
   };
   const printData = () => {
-    if (BFM !== null) {
+    if (dataRender !== null) {
       return (
         rowsPerPage > 0
-          ? BFM.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-          : BFM
+          ? dataRender.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+          : dataRender
       ).map((value, key) => (
         <Grid item xs={3} key={key}>
           <Link
@@ -157,7 +168,12 @@ export default function Items() {
 
   return (
     <div className={classes.root}>
-      <Grid container className={classes.gridroot} spacing={2} xs={12}>
+      <Grid
+        container
+        className={classes.gridroot}
+        spacing={2}
+        sx={center}
+      >
         <IconButton
           className={classes.navigateBeforeIcon}
           size="large"
@@ -172,6 +188,7 @@ export default function Items() {
         >
           <NavigateNextIcon></NavigateNextIcon>
         </IconButton>
+
         {printData()}
       </Grid>
     </div>

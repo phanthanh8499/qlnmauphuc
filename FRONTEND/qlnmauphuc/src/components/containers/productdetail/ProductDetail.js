@@ -17,6 +17,25 @@ export default function ProductDetail (props){
   const products = useSelector(state => state.products);
   const {loading, error} = products
   const dispatch = useDispatch();
+  // const { productData } = products;
+  // const [BFM, setBFM] = useState();
+  // const [TFM, setTFM] = useState();
+  // const [SFM, setSFM] = useState();
+  // const [loading, setLoading] = useState(true);
+  // useEffect(() => {
+  //   setBFM(
+  //     productData.filter((productData) => productData.product_typeid === "BFM")
+  //   );
+  //   setTFM(
+  //     productData.filter((productData) => productData.product_typeid === "TFM")
+  //   );
+  //   setSFM(
+  //     productData.filter((productData) => productData.product_typeid === "SFM")
+  //   );
+  //   setLoading(false);
+  // }, [productData]);
+
+  
    useEffect(() => {
      dispatch(getProductData());
      async function getDetailProduct() {
@@ -25,18 +44,23 @@ export default function ProductDetail (props){
        setLoadingPage(false);
      }
      getDetailProduct();
+     
    }, [dispatch, id]);
-   const renderSameProduct = () => {
-     if(data[0].product_typeid === "BFM"){
-       return <SameProduct data={products.BFM} id={id}></SameProduct>;
-     }
-     if(data[0].product_typeid === "TFM"){
-       return <SameProduct data={products.TFM} id={id}></SameProduct>;
-     }
-     if(data[0].product_typeid === "SFM"){
-       return <SameProduct data={products.SFM} id={id}></SameProduct>;
-     }
-   }
+
+   
+
+  //  const renderSameProduct = () => {
+  //    if(data[0].product_typeid === "BFM"){
+  //      return <SameProduct data={BFM} id={id}></SameProduct>;
+  //    }
+  //    if(data[0].product_typeid === "TFM"){
+  //      return <SameProduct data={TFM} id={id}></SameProduct>;
+  //    }
+  //    if(data[0].product_typeid === "SFM"){
+  //      return <SameProduct data={SFM} id={id}></SameProduct>;
+  //    }
+  //  }
+   console.log(data)
   return (
     <Container>
       {loading ? (
@@ -47,7 +71,8 @@ export default function ProductDetail (props){
         <>
           <MainDetail data={data}></MainDetail>
           <AdditionalDetails data={data}></AdditionalDetails>
-          {renderSameProduct()}
+          <SameProduct type={data[0].product_typeid} id={id}></SameProduct>
+          {/* {renderSameProduct()} */}
         </>
       )}
     </Container>

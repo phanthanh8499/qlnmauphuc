@@ -27,11 +27,12 @@ export default function Pants() {
   const getParamsCrotchlength = (event) => {
     setCrotchlength(event.target.value);
   };
-  const { userid } = JSON.parse(localStorage.getItem("userInfo")).userInfo;
+  const { id } = JSON.parse(localStorage.getItem("userInfo")).userInfo;
+  console.log("??", id)
   const handleSubmit = () => {
     const formData = new FormData();
     formData.append("id", 1);
-    formData.append("m_userid", userid);
+    formData.append("m_userid", id);
     formData.append("m_neckline", 0);
     formData.append("m_bust", 0);
     formData.append("m_waist", waist);
@@ -60,7 +61,7 @@ export default function Pants() {
       });
     } else {
       dispatch(addMeasurements(formData));
-      dispatch(getMeasurementsData(userid));
+      dispatch(getMeasurementsData(id));
       enqueueSnackbar("Chỉnh sửa thông tin thành công", {
         variant: "success",
         autoHideDuration: 2000,

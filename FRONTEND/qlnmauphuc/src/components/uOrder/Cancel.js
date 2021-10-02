@@ -44,9 +44,6 @@ export default function Cancel(props) {
   const handleClickEdit = () => {
     console.log("abc");
   };
-  const handleClickDelete = () => {
-    console.log("abc");
-  };
 
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(0);
@@ -59,6 +56,18 @@ export default function Cancel(props) {
     setRowsPerPage(rowsPerPage);
     setCount(Math.ceil(data.length / rowsPerPage));
   }, [data]);
+
+  const formatDate = (dateString) => {
+    const options = {
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit",
+    };
+    return new Date(dateString).toLocaleDateString(undefined, options);
+  };
 
   const renderData = () => {
     return (
@@ -80,40 +89,41 @@ export default function Cancel(props) {
               <Typography className={classes.title}>
                 {value.product_name}
               </Typography>
-              {/* <Typography className={classes.subTitle}>
-                  Phân loại: {productTypeName}
-                </Typography> */}
+              <Typography className={classes.subTitle}>
+                Trạng thái: {value.os_name}
+              </Typography>
               <Typography className={classes.subTitle}>
                 Loại vải: {value.cloth_name}
               </Typography>
               <Typography className={classes.subTitle}>
-                Tổng tiền: {value.order_total}
+                Tổng tiền:{" "}
+                {value.order_total.toLocaleString("it-IT", {
+                  style: "currency",
+                  currency: "VND",
+                })}
               </Typography>
             </Grid>
             <Grid item xs={4}>
               <Typography className={classes.title}>Ngày đặt may:</Typography>
               <Typography className={classes.subTitle}>
-                {value.order_startdate}
+                {formatDate(value.order_startdate)}
               </Typography>
               <Typography className={classes.title}>
                 Ngày hoàn tất (dự định):
               </Typography>
               <Typography className={classes.subTitle}>
-                {value.order_enddate}
+                {formatDate(value.order_enddate)}
               </Typography>
             </Grid>
           </Grid>
         </Grid>
-        <Grid item xs={2} sx={center}>
-          <ButtonGroup>
+        
+          <Grid item xs={2} sx={center}>
             <IconButton onClick={handleClickEdit} size="large">
-              <VisibilityIcon />
+              <VisibilityIcon color="primary" />
             </IconButton>
-            <IconButton onClick={handleClickDelete} size="large">
-              <DeleteOutlineIcon color="error" />
-            </IconButton>
-          </ButtonGroup>
-        </Grid>
+          </Grid>
+
       </Grid>
     ));
   };
