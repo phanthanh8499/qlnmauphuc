@@ -12,6 +12,7 @@ import { deleteOrder, getOrderData } from "../../redux/Action";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import { LOCAL_PATH, XOA_DON_HANG } from "../../constants/Constants";
+import DeleteForm from "./deleteForm/DeteleForm";
 
 const center = {
   display: "flex",
@@ -74,10 +75,37 @@ export default function All(props) {
     
     console.log("edit", id);
   };
+
+  const [detailForm, setDetailForm] = useState(false);
+  const [deleteForm, setDeleteForm] = useState(false);
+  const [orderid, setOrderid] = useState(0)
+
+  const openDeleteForm = () => {
+    setDeleteForm(true);
+  };
+  const closeDeleteForm = () => {
+    setDeleteForm(false);
+  };
+
   const handleClickDelete = (id) => {
     console.log("delete", id);
-    dispatch(deleteOrder(id));
+    setDeleteForm(true)
+    setOrderid(parseInt(id))
+    // dispatch(deleteOrder(id));
   };
+
+  const renderForm = () => {
+    if (deleteForm) {
+      return (
+        <DeleteForm
+          open={deleteForm}
+          onClose={closeDeleteForm}
+          id={parseInt(orderid)}
+        ></DeleteForm>
+      );
+    }
+  };
+
   const renderData = () => {
     return (
       rowsPerPage > 0
@@ -171,6 +199,7 @@ export default function All(props) {
               color="primary"
             />
           </Grid>
+          {renderForm()}
         </Grid>
       )}
     </>

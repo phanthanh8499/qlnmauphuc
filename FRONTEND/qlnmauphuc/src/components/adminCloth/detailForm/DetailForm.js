@@ -2,6 +2,7 @@ import {
   Button,
   ButtonBase,
   ButtonGroup,
+  CircularProgress,
   Dialog,
   FormControl,
   Grid,
@@ -23,6 +24,7 @@ import axios from "axios";
 import makeStyles from "@mui/styles/makeStyles";
 import { editCloth, editProduct } from "../../../redux/Action";
 import ImageMagnify from "./ImageMagnify";
+import { LOCAL_PATH } from "../../../constants/Constants";
 
 const markThickness = [
   {
@@ -140,19 +142,34 @@ function DetailForm(props) {
     setType(event.target.value);
   };
   const [loading, setLoading] = useState(true);
+  const [clothType, setClothType] = useState([]);
+  const renderClothType = () => {
+    return clothType.map((value, key) => (
+      <MenuItem value={value.id} key={key}>
+        {value.ct_name}
+      </MenuItem>
+    ));
+  };
+
   useEffect(() => {
     async function getDetailProduct() {
       const { data } = await axios.get(`/getDetailCloth.${id}`);
-       setName(`${data[0].cloth_name}`);
-       setQuantity(`${data[0].cloth_quantity}`);
-       setUserId(`${data[0].cloth_userid}`);
-       setMaterial(`${data[0].cloth_material}`);
-       setType(`${data[0].cloth_typeid}`);
-       setImgUpload(`${data[0].cloth_image}`);
-       setLoading(false);
-    };
+      setName(`${data[0].cloth_name}`);
+      setQuantity(`${data[0].cloth_quantity}`);
+      setUserId(`${data[0].cloth_userid}`);
+      setMaterial(`${data[0].cloth_material}`);
+      setType(`${data[0].cloth_typeid}`);
+      setImgUpload(LOCAL_PATH + `${data[0].cloth_image.substring(2)}`);
+    }
+    async function getClothType() {
+      const { data } = await axios.get("/getClothTypeData");
+      setClothType(data);
+      setLoading(false);
+    }
     getDetailProduct();
-  }, [])
+    getClothType();
+  }, []);
+
   const handleSubmit = () => {
     const formData = new FormData();
     formData.append("id", parseInt(id));
@@ -161,7 +178,25 @@ function DetailForm(props) {
     formData.append("cloth_quantity", quantity);
     formData.append("cloth_userid", userId);
     formData.append("cloth_typeid", type);
-    dispatch(editCloth(formData));    
+    if (!type) {
+      enqueueSnackbar("Vui lòng chọn loại vải", {
+        variant: "error",
+        autoHideDuration: 2000,
+      });
+      return false;
+    }
+    if (!name || !quantity || !userId || !type) {
+      enqueueSnackbar("Vui lòng điền đầy đủ thông tin", {
+        variant: "error",
+        autoHideDuration: 2000,
+      });
+      return false;
+    }
+    enqueueSnackbar("Cập nhật thông tin thành công", {
+      variant: "success",
+      autoHideDuration: 2000,
+    });
+    dispatch(editCloth(formData));
     onClose();
   };
   return (
@@ -177,7 +212,18 @@ function DetailForm(props) {
         </Grid>
         <Grid item xs={8} className={classes.detailBox}>
           {loading ? (
-            <img src="./images/loading.gif" alt="loading" />
+            <Grid
+              item
+              xs={12}
+              sx={{
+                width: "682px",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
+              <CircularProgress />
+            </Grid>
           ) : (
             <>
               <Grid container spacing={1} className={classes.box}>
@@ -200,10 +246,7 @@ function DetailForm(props) {
                       <MenuItem value="">
                         <em>None</em>
                       </MenuItem>
-                      <MenuItem value="CARO">Vải caro</MenuItem>
-                      <MenuItem value="VPOL">Vải polyester</MenuItem>
-                      <MenuItem value="HTHH">Vải hoạ tiết hình học</MenuItem>
-                      <MenuItem value="VCKH">Vải khách hàng gửi</MenuItem>
+                      {renderClothType()}
                     </Select>
                   </FormControl>
                 </Grid>
@@ -246,7 +289,6 @@ function DetailForm(props) {
                     margin="normal"
                     fullWidth
                     size="small"
-                    disabled
                     onChange={getParamsName}
                     defaultValue={name}
                     InputLabelProps={{

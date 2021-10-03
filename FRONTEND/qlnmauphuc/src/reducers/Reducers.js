@@ -202,7 +202,10 @@ export const clothReducer = (
       return { loading: false, error: action.payload };
     case THEM_VAI:
       const product = action.payload;
-      return { ...state, clothData: [...state.clothData, product] };
+      return {
+        ...state,
+        clothData: [...state.clothData, product]
+      };
     case CHINH_SUA_THONG_TIN_VAI:
       return {
         ...state,

@@ -37,6 +37,11 @@ export const routes = [
     component: lazy(() => import("./../pages/users/order/Order")),
   },
   {
+    path: "/account/cloth",
+    exact: true,
+    component: lazy(() => import("./../pages/users/cloth/Cloth")),
+  },
+  {
     path: "/account/measurements-edit-:id",
     exact: true,
     component: lazy(() => import("./../pages/users/measurementsEdit/MeasurementsEdit")),

@@ -113,8 +113,9 @@ export const getMyClothData = (dataReq) => async (dispatch) => {
 }
 
 export const addCloth = (data) => async (dispatch) => {
-  const abc = {};
+  let abc = {};
   data.forEach((value, key) => (abc[key] = value));
+  abc.id = parseInt(abc.id)
   dispatch({ type: THEM_VAI, payload: abc });
   await Axios.post("/admin/cloth/add", data);
 };

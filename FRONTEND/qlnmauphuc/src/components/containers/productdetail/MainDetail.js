@@ -119,29 +119,33 @@ export default function MainDetail(props) {
     setMau(abc);
   };
   const renderBreadCrumbs = () => {
-    if (data[0].product_typeid === "BFM" || data[0].product_typeid === "SFM" || data[0].product_typeid === "TFM" ){
+    if (
+      data[0].product_typeid === "BFM" ||
+      data[0].product_typeid === "SFM" ||
+      data[0].product_typeid === "TFM" ||
+      data[0].product_typeid === "GFM"
+    ) {
       return (
         <Breadcrumbs aria-label="breadcrumb">
-          <Link color="inherit" href="/">
+          <Link color="inherit" href="/home">
             Trang chủ
           </Link>
-          <Link color="inherit" href="/getting-started/installation/">
+          <Link color="inherit" href="/">
             Thời trang Nam
           </Link>
-          <Typography color="textPrimary">{data[0].product_typeid}</Typography>
+          <Typography color="textPrimary">{data[0].pt_name}</Typography>
         </Breadcrumbs>
       );
-    }
-    else {
+    } else {
       return (
         <Breadcrumbs aria-label="breadcrumb">
-          <Link color="inherit" href="/">
+          <Link color="inherit" href="/home">
             Trang chủ
           </Link>
-          <Link color="inherit" href="/getting-started/installation/">
+          <Link color="inherit" href="/">
             Thời trang Nữ
           </Link>
-          <Typography color="textPrimary">{data[0].product_typeid}</Typography>
+          <Typography color="textPrimary">{data[0].pt_name}</Typography>
         </Breadcrumbs>
       );
     }

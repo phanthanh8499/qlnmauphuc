@@ -105,6 +105,32 @@ router.get("/admin/users", function (req, res) {
   );
 });
 
+router.get("/getProductTypeData", function (req, res) {
+  pool.query(
+    `SELECT * FROM producttypes`,
+    (error, response) => {
+      if (error) {
+        console.log(error);
+      } else {
+        res.send(response.rows);
+      }
+    }
+  );
+});
+
+router.get("/getClothTypeData", function (req, res) {
+  pool.query(
+    `SELECT * FROM clothtypes`,
+    (error, response) => {
+      if (error) {
+        console.log(error);
+      } else {
+        res.send(response.rows);
+      }
+    }
+  );
+});
+
 router.get("/getProductData", function (req, res) {
   pool.query(`SELECT * FROM products`,
   (error, response) => {
@@ -151,38 +177,13 @@ router.post("/admin/products/add", function (req, res) {
   var product_image2 = "./images";
   var product_image3 = "./images";
   var product_image4 = "./images";
-  if (product_typeid === "BFM") {
-    newpath = frontEndURL + "/images/Blazer/" + product_code + "/";
-    admpath = frontEndAdmURL + "/images/Blazer/" + product_code + "/";
-    product_image1 =
-      product_image1 + "/Blazer/" + product_code + "/" + filename1;
-    product_image2 =
-      product_image2 + "/Blazer/" + product_code + "/" + filename2;
-    product_image3 =
-      product_image3 + "/Blazer/" + product_code + "/" + filename3;
-    product_image4 =
-      product_image4 + "/Blazer/" + product_code + "/" + filename4;
-  }
-  if (product_typeid === "SFM") {
-    newpath = frontEndURL + "/images/Suit/" + product_code + "/";
-    admpath = frontEndAdmURL + "/images/Suit/" + product_code + "/";
-    product_image1 = product_image1 + "/Suit/" + product_code + "/" + filename1;
-    product_image2 = product_image2 + "/Suit/" + product_code + "/" + filename2;
-    product_image3 = product_image3 + "/Suit/" + product_code + "/" + filename3;
-    product_image4 = product_image4 + "/Suit/" + product_code + "/" + filename4;
-  }
-  if (product_typeid === "TFM") {
-    newpath = frontEndURL + "/images/Tuxedo/" + product_code + "/";
-    admpath = frontEndAdmURL + "/images/Tuxedo/" + product_code + "/";
-    product_image1 =
-      product_image1 + "/Tuxedo/" + product_code + "/" + filename1;
-    product_image2 =
-      product_image2 + "/Tuxedo/" + product_code + "/" + filename2;
-    product_image3 =
-      product_image3 + "/Tuxedo/" + product_code + "/" + filename3;
-    product_image4 =
-      product_image4 + "/Tuxedo/" + product_code + "/" + filename4;
-  }
+  newpath = frontEndURL + "/images/" + product_typeid +"/" + product_code + "/";
+
+  product_image1 = product_image1 + "/" + product_typeid + "/" + product_code + "/" + filename1;
+  product_image2 = product_image2 + "/" + product_typeid + "/" + product_code + "/" + filename2;
+  product_image3 = product_image3 + "/" + product_typeid + "/" + product_code + "/" + filename3;
+  product_image4 = product_image4 + "/" + product_typeid + "/" + product_code + "/" + filename4;
+
   console.log(newpath);
   console.log(admpath);
   console.log(product_image1, product_image2, product_image3, product_image4);
@@ -218,44 +219,25 @@ router.post("/admin/products/add", function (req, res) {
         if (!fs.existsSync(newpath)) {
           fs.mkdirSync(newpath);
         }
-        if (!fs.existsSync(admpath)) {
-          fs.mkdirSync(admpath);
-        }
-        file1.mv(`${admpath}${filename1}`, (err) => {
-          if (err) {
-            console.log(err);
-          }
-        });
+      
         file1.mv(`${newpath}${filename1}`, (err) => {
           if (err) {
             console.log(err);
           }
         });
-        file2.mv(`${admpath}${filename2}`, (err) => {
-          if (err) {
-            console.log(err);
-          }
-        });
+      
         file2.mv(`${newpath}${filename2}`, (err) => {
           if (err) {
             console.log(err);
           }
         });
-        file3.mv(`${admpath}${filename3}`, (err) => {
-          if (err) {
-            console.log(err);
-          }
-        });
+       
         file3.mv(`${newpath}${filename3}`, (err) => {
           if (err) {
             console.log(err);
           }
         });
-        file4.mv(`${admpath}${filename4}`, (err) => {
-          if (err) {
-            console.log(err);
-          }
-        });
+     
         file4.mv(`${newpath}${filename4}`, (err) => {
           if (err) {
             console.log(err);
@@ -268,14 +250,18 @@ router.post("/admin/products/add", function (req, res) {
 
 router.get("/getDetailProduct.:id", function (req, res){
   const {id} = req.params;
-  pool.query(`SELECT * FROM products WHERE id = ${id}`,
-  (error, response) => {
-    if(error){
-      console.log(error);
-    } else {
-      res.send(response.rows);
+  pool.query(
+    `SELECT products.*, producttypes.pt_name FROM products 
+INNER JOIN producttypes ON producttypes.id = products.product_typeid 
+WHERE products.id = ${id}`,
+    (error, response) => {
+      if (error) {
+        console.log(error);
+      } else {
+        res.send(response.rows);
+      }
     }
-  })
+  );
 });
 
 router.post("/admin/products/edit", function (req, res){
@@ -372,7 +358,6 @@ WHERE cloth.cloth_userid = '${cloth_userid}'`,
 });
 
 router.post("/admin/cloth/add", function (req, res) {
-  // console.log("???");
   const {
     id,
     cloth_material,
@@ -381,16 +366,30 @@ router.post("/admin/cloth/add", function (req, res) {
     cloth_userid,
     cloth_typeid,
     frontEndURL,
-    frontEndAdmURL,
   } = req.body;
   const file = req.files.file;
-  const filename = file.name;
+  
   var newpath = "";
-  var admpath = "";
   var cloth_image = "./images";
-  newpath = frontEndURL + "/images/Cloth/" + cloth_typeid + "/";
-  admpath = frontEndAdmURL + "/images/Cloth/" + cloth_typeid + "/";
-  cloth_image = cloth_image + "/Cloth/" + cloth_typeid + "/" + filename;
+  let date_ob = new Date().toISOString().split("T")[0];
+  const filename = date_ob + "-" + file.name;
+  if (cloth_typeid === "VCKH") {
+    newpath =
+      frontEndURL +
+      "/images/Cloth/" +
+      cloth_typeid +
+      "/" +
+      "User" +
+      cloth_userid + "/";
+    cloth_image = cloth_image + "/Cloth/" + cloth_typeid +
+      "/" +
+      "User" +
+      cloth_userid + "/" + filename;
+  } else {
+    newpath = frontEndURL + "/images/Cloth/" + cloth_typeid + "/";
+    cloth_image = cloth_image + "/Cloth/" + cloth_typeid + "/" + filename;
+  }
+ 
   pool.query(
     `INSERT INTO cloth(
 	id, cloth_material, cloth_name, cloth_quantity, cloth_userid, cloth_typeid, cloth_image)
@@ -403,14 +402,6 @@ router.post("/admin/cloth/add", function (req, res) {
         if (!fs.existsSync(newpath)) {
           fs.mkdirSync(newpath);
         }
-        if (!fs.existsSync(admpath)) {
-          fs.mkdirSync(admpath);
-        }
-        file.mv(`${admpath}${filename}`, (err) => {
-          if (err) {
-            console.log(err);
-          }
-        });
         file.mv(`${newpath}${filename}`, (err) => {
           if (err) {
             console.log(err);

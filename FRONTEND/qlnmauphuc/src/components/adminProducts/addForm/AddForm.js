@@ -2,6 +2,7 @@ import {
   Button,
   ButtonBase,
   ButtonGroup,
+  CircularProgress,
   Dialog,
   FormControl,
   Grid,
@@ -23,6 +24,7 @@ import PhotoCamera from "@mui/icons-material/PhotoCamera";
 import makeStyles from "@mui/styles/makeStyles";
 import { FRONTEND_ADM_URL, FRONTEND_URL } from "../../../constants/Constants";
 import { addProduct } from "../../../redux/Action";
+import axios from "axios";
 
 const markThickness = [
   {
@@ -125,6 +127,8 @@ function AddForm(props) {
   const dispatch = useDispatch();
   const { open, onClose, id } = props;
 
+  const [loading, setLoading] = useState(true);
+  const [productTypeList, setProductTypeList] = useState([]);
   const [imgUpload1, setImgUpload1] = useState("./images/loadingImg.gif");
   const [imgUpload2, setImgUpload2] = useState("./images/loadingImg.gif");
   const [imgUpload3, setImgUpload3] = useState("./images/loadingImg.gif");
@@ -253,7 +257,12 @@ function AddForm(props) {
       console.log("Error: ", error);
     };
   };
-  const handleSubmit = () => {
+  const renderProductTypeMenu = () => {
+    return productTypeList.map((value, key) => (
+      <MenuItem value={value.id} key={key}>{value.pt_name}</MenuItem>
+    ));
+  }
+    const handleSubmit = () => {
     let thicknessValue = "";
     let softnessValue = "";
     let elasticityValue = "";
@@ -286,7 +295,7 @@ function AddForm(props) {
     formData.append("product_typeid", type);
     formData.append("product_size", size);
     formData.append("product_color", color);
-    formData.append("product_material", material);
+    formData.append("product_material", material.toLowerCase());
     formData.append("product_lining", lining);
     formData.append("product_thickness", thicknessValue);
     formData.append("product_softness", softnessValue);
@@ -325,10 +334,24 @@ function AddForm(props) {
         autoHideDuration: 2000,
       });
     } else {
+      enqueueSnackbar("Thêm sản phẩm thành công", {
+        variant: "success",
+        autoHideDuration: 2000,
+      });
       dispatch(addProduct(formData));
       onClose();
     }
   };
+
+  useEffect(() => {
+    async function getProductType () {
+      const { data } = await axios.get("/getProductTypeData");
+      setProductTypeList(data);
+      setLoading(false);
+    } 
+    getProductType();
+  }, [])
+
   return (
     <Dialog
       onClose={onClose}
@@ -345,352 +368,375 @@ function AddForm(props) {
             img4={imgUpload4}
           ></ProductImageGallery>
         </Grid>
-        <Grid item xs={8} className={classes.detailBox}>
-          <Grid container spacing={1} className={classes.box}>
-            <Grid item xs={12}>
-              <FormControl style={{ width: "30%" }}>
-                <InputLabel
-                  shrink
-                  id="demo-simple-select-placeholder-label-label"
-                >
-                  Loại sản phẩm
-                </InputLabel>
-                <Select
-                  labelId="demo-simple-select-placeholder-label-label"
-                  id="demo-simple-select-placeholder-label"
-                  value={type}
-                  onChange={getParamType}
-                  displayEmpty
-                  style={{ padding: "0px !important" }}
-                >
-                  <MenuItem value="">
-                    <em>None</em>
-                  </MenuItem>
-                  <MenuItem value="BFM">Blazer</MenuItem>
-                  <MenuItem value="SFM">Suit</MenuItem>
-                  <MenuItem value="TFM">Tuxedo</MenuItem>
-                </Select>
-              </FormControl>
-            </Grid>
-            <Grid item xs={6}>
-              <TextField
-                id="product_name"
-                label="Tên sản phẩm"
-                placeholder="Nhập tên sản phẩm"
-                margin="normal"
-                fullWidth
-                size="small"
-                onChange={getParamName}
-                InputLabelProps={{
-                  shrink: true,
-                }}
-              />
-            </Grid>
-            <Grid item xs={3}>
-              <TextField
-                id="product_code"
-                label="Mã sản phẩm"
-                placeholder="Nhập mã sản phẩm"
-                margin="normal"
-                fullWidth
-                onChange={getParamCode}
-                size="small"
-                InputLabelProps={{
-                  shrink: true,
-                }}
-              />
-            </Grid>
-            <Grid item xs={3}>
-              <TextField
-                id="product_price"
-                label="Giá"
-                placeholder="Nhập giá"
-                margin="normal"
-                onChange={getParamPrice}
-                size="small"
-                InputLabelProps={{
-                  shrink: true,
-                }}
-                InputProps={{
-                  endAdornment: (
-                    <InputAdornment position="end">VNĐ</InputAdornment>
-                  ),
-                }}
-              />
-            </Grid>
+        {loading ? (
+          <Grid
+            item
+            xs={8}
+            className={classes.detailBox}
+            sx={{
+              width: "762px",
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
+            <CircularProgress />
           </Grid>
-          <Grid container spacing={1} className={classes.box}>
-            <Grid item xs={3}>
-              <TextField
-                id="product_color"
-                label="Màu"
-                placeholder="Nhập màu sắc"
-                margin="normal"
-                fullWidth
-                onChange={getParamColor}
-                size="small"
-                InputLabelProps={{
-                  shrink: true,
-                }}
-              />
+        ) : (
+          <Grid
+            item
+            xs={8}
+            className={classes.detailBox}
+            sx={{ width: "762px" }}
+          >
+            <Grid container spacing={1} className={classes.box}>
+              <Grid item xs={12}>
+                <FormControl style={{ width: "30%" }}>
+                  <InputLabel
+                    shrink
+                    id="demo-simple-select-placeholder-label-label"
+                  >
+                    Loại sản phẩm
+                  </InputLabel>
+                  <Select
+                    labelId="demo-simple-select-placeholder-label-label"
+                    id="demo-simple-select-placeholder-label"
+                    value={type}
+                    onChange={getParamType}
+                    displayEmpty
+                    style={{ padding: "0px !important" }}
+                  >
+                    <MenuItem value="">
+                      <em>None</em>
+                    </MenuItem>
+                    {renderProductTypeMenu()}
+                  </Select>
+                </FormControl>
+              </Grid>
+              <Grid item xs={6}>
+                <TextField
+                  id="product_name"
+                  label="Tên sản phẩm"
+                  placeholder="Nhập tên sản phẩm"
+                  margin="normal"
+                  fullWidth
+                  size="small"
+                  onChange={getParamName}
+                  InputLabelProps={{
+                    shrink: true,
+                  }}
+                />
+              </Grid>
+              <Grid item xs={3}>
+                <TextField
+                  id="product_code"
+                  label="Mã sản phẩm"
+                  placeholder="Nhập mã sản phẩm"
+                  margin="normal"
+                  fullWidth
+                  onChange={getParamCode}
+                  size="small"
+                  InputLabelProps={{
+                    shrink: true,
+                  }}
+                />
+              </Grid>
+              <Grid item xs={3}>
+                <TextField
+                  id="product_price"
+                  label="Giá"
+                  placeholder="Nhập giá"
+                  margin="normal"
+                  onChange={getParamPrice}
+                  size="small"
+                  InputLabelProps={{
+                    shrink: true,
+                  }}
+                  InputProps={{
+                    endAdornment: (
+                      <InputAdornment position="end">VNĐ</InputAdornment>
+                    ),
+                  }}
+                />
+              </Grid>
             </Grid>
-            <Grid item xs={3}>
-              <TextField
-                id="product_material"
-                label="Chất liệu"
-                placeholder="Nhập chất liệu"
-                margin="normal"
-                fullWidth
-                onChange={getParamMaterial}
-                size="small"
-                InputLabelProps={{
-                  shrink: true,
-                }}
-              />
+            <Grid container spacing={1} className={classes.box}>
+              <Grid item xs={3}>
+                <TextField
+                  id="product_color"
+                  label="Màu"
+                  placeholder="Nhập màu sắc"
+                  margin="normal"
+                  fullWidth
+                  onChange={getParamColor}
+                  size="small"
+                  InputLabelProps={{
+                    shrink: true,
+                  }}
+                />
+              </Grid>
+              <Grid item xs={3}>
+                <TextField
+                  id="product_material"
+                  label="Chất liệu"
+                  placeholder="Nhập chất liệu"
+                  margin="normal"
+                  fullWidth
+                  onChange={getParamMaterial}
+                  size="small"
+                  InputLabelProps={{
+                    shrink: true,
+                  }}
+                />
+              </Grid>
+              <Grid item xs={3}>
+                <TextField
+                  id="product_lining"
+                  label="Lớp lót"
+                  placeholder="Nhập lớp lót"
+                  margin="normal"
+                  fullWidth
+                  onChange={getParamLining}
+                  size="small"
+                  InputLabelProps={{
+                    shrink: true,
+                  }}
+                />
+              </Grid>
+              <Grid item xs={3}>
+                <TextField
+                  id="product_size"
+                  label="Size"
+                  placeholder="Nhập size"
+                  margin="normal"
+                  fullWidth
+                  onChange={getParamSize}
+                  size="small"
+                  InputLabelProps={{
+                    shrink: true,
+                  }}
+                />
+              </Grid>
             </Grid>
-            <Grid item xs={3}>
-              <TextField
-                id="product_lining"
-                label="Lớp lót"
-                placeholder="Nhập lớp lót"
-                margin="normal"
-                fullWidth
-                onChange={getParamLining}
-                size="small"
-                InputLabelProps={{
-                  shrink: true,
-                }}
-              />
-            </Grid>
-            <Grid item xs={3}>
-              <TextField
-                id="product_size"
-                label="Size"
-                placeholder="Nhập size"
-                margin="normal"
-                fullWidth
-                onChange={getParamSize}
-                size="small"
-                InputLabelProps={{
-                  shrink: true,
-                }}
-              />
-            </Grid>
-          </Grid>
 
-          <Grid container>
-            <Grid item xs={3} className={classes.sliderBox}>
-              <Typography gutterBottom className={classes.label}>
-                Độ mỏng
-              </Typography>
-              <Slider
-                defaultValue={thickness}
-                aria-labelledby="discrete-slider-restrict"
-                step={null}
-                valueLabelDisplay="auto"
-                marks={markThickness}
-                onChange={getParamThickness}
-              />
+            <Grid container>
+              <Grid item xs={3} className={classes.sliderBox}>
+                <Typography gutterBottom className={classes.label}>
+                  Độ mỏng
+                </Typography>
+                <Slider
+                  defaultValue={thickness}
+                  aria-labelledby="discrete-slider-restrict"
+                  step={null}
+                  valueLabelDisplay="auto"
+                  marks={markThickness}
+                  onChange={getParamThickness}
+                />
+              </Grid>
+              <Grid item xs={3} className={classes.sliderBox}>
+                <Typography gutterBottom className={classes.label}>
+                  Độ mềm
+                </Typography>
+                <Slider
+                  defaultValue={softness}
+                  aria-labelledby="discrete-slider-restrict"
+                  step={null}
+                  valueLabelDisplay="auto"
+                  marks={markSoftness}
+                  onChange={getParamSoftness}
+                />
+              </Grid>
+              <Grid item xs={3} className={classes.sliderBox}>
+                <Typography gutterBottom className={classes.label}>
+                  Độ co giãn
+                </Typography>
+                <Slider
+                  defaultValue={elasticity}
+                  aria-labelledby="discrete-slider-restrict"
+                  step={null}
+                  valueLabelDisplay="auto"
+                  marks={markElasticity}
+                  onChange={getParamElasticity}
+                />
+              </Grid>
             </Grid>
-            <Grid item xs={3} className={classes.sliderBox}>
-              <Typography gutterBottom className={classes.label}>
-                Độ mềm
-              </Typography>
-              <Slider
-                defaultValue={softness}
-                aria-labelledby="discrete-slider-restrict"
-                step={null}
-                valueLabelDisplay="auto"
-                marks={markSoftness}
-                onChange={getParamSoftness}
-              />
-            </Grid>
-            <Grid item xs={3} className={classes.sliderBox}>
-              <Typography gutterBottom className={classes.label}>
-                Độ co giãn
-              </Typography>
-              <Slider
-                defaultValue={elasticity}
-                aria-labelledby="discrete-slider-restrict"
-                step={null}
-                valueLabelDisplay="auto"
-                marks={markElasticity}
-                onChange={getParamElasticity}
-              />
-            </Grid>
-          </Grid>
 
-          <Grid container className={classes.box}>
-            <Grid item xs={3}>
-              <Typography className={classes.label}>
-                Hình ảnh sản phẩm
-              </Typography>
-              <input
-                accept="image/*"
-                className={classes.input}
-                id="icon-button-file1"
-                type="file"
-                onChange={saveFile1}
-              />
-              <label htmlFor="icon-button-file1">
-                <IconButton
-                  color="primary"
-                  aria-label="upload picture"
-                  component="span"
-                  size="large"
-                >
-                  <PhotoCamera />
-                </IconButton>
-              </label>
-              {/* <Typography className={classes.imgTitle}>{fileName1}</Typography> */}
+            <Grid container className={classes.box}>
+              <Grid item xs={3}>
+                <Typography className={classes.label}>
+                  Hình ảnh sản phẩm
+                </Typography>
+                <input
+                  accept="image/*"
+                  className={classes.input}
+                  id="icon-button-file1"
+                  type="file"
+                  onChange={saveFile1}
+                />
+                <label htmlFor="icon-button-file1">
+                  <IconButton
+                    color="primary"
+                    aria-label="upload picture"
+                    component="span"
+                    size="large"
+                  >
+                    <PhotoCamera />
+                  </IconButton>
+                </label>
+                {/* <Typography className={classes.imgTitle}>{fileName1}</Typography> */}
+              </Grid>
+              <Grid item xs={3}>
+                <Typography className={classes.label}>
+                  Hình ảnh sản phẩm
+                </Typography>
+                <input
+                  accept="image/*"
+                  className={classes.input}
+                  id="icon-button-file2"
+                  type="file"
+                  onChange={saveFile2}
+                />
+                <label htmlFor="icon-button-file2">
+                  <IconButton
+                    color="primary"
+                    aria-label="upload picture"
+                    component="span"
+                    size="large"
+                  >
+                    <PhotoCamera />
+                  </IconButton>
+                </label>
+              </Grid>
+              <Grid item xs={3}>
+                <Typography className={classes.label}>
+                  Hình ảnh sản phẩm
+                </Typography>
+                <input
+                  accept="image/*"
+                  className={classes.input}
+                  id="icon-button-file3"
+                  type="file"
+                  onChange={saveFile3}
+                />
+                <label htmlFor="icon-button-file3">
+                  <IconButton
+                    color="primary"
+                    aria-label="upload picture"
+                    component="span"
+                    size="large"
+                  >
+                    <PhotoCamera />
+                  </IconButton>
+                </label>
+              </Grid>
+              <Grid item xs={3}>
+                <Typography className={classes.label}>Bảng size</Typography>
+                <input
+                  accept="image/*"
+                  className={classes.input}
+                  id="icon-button-file4"
+                  type="file"
+                  onChange={saveFile4}
+                />
+                <label htmlFor="icon-button-file4">
+                  <IconButton
+                    color="primary"
+                    aria-label="upload picture"
+                    component="span"
+                    size="large"
+                  >
+                    <PhotoCamera />
+                  </IconButton>
+                </label>
+              </Grid>
             </Grid>
-            <Grid item xs={3}>
-              <Typography className={classes.label}>
-                Hình ảnh sản phẩm
-              </Typography>
-              <input
-                accept="image/*"
-                className={classes.input}
-                id="icon-button-file2"
-                type="file"
-                onChange={saveFile2}
-              />
-              <label htmlFor="icon-button-file2">
-                <IconButton
-                  color="primary"
-                  aria-label="upload picture"
-                  component="span"
-                  size="large"
-                >
-                  <PhotoCamera />
-                </IconButton>
-              </label>
-            </Grid>
-            <Grid item xs={3}>
-              <Typography className={classes.label}>
-                Hình ảnh sản phẩm
-              </Typography>
-              <input
-                accept="image/*"
-                className={classes.input}
-                id="icon-button-file3"
-                type="file"
-                onChange={saveFile3}
-              />
-              <label htmlFor="icon-button-file3">
-                <IconButton
-                  color="primary"
-                  aria-label="upload picture"
-                  component="span"
-                  size="large"
-                >
-                  <PhotoCamera />
-                </IconButton>
-              </label>
-            </Grid>
-            <Grid item xs={3}>
-              <Typography className={classes.label}>Bảng size</Typography>
-              <input
-                accept="image/*"
-                className={classes.input}
-                id="icon-button-file4"
-                type="file"
-                onChange={saveFile4}
-              />
-              <label htmlFor="icon-button-file4">
-                <IconButton
-                  color="primary"
-                  aria-label="upload picture"
-                  component="span"
-                  size="large"
-                >
-                  <PhotoCamera />
-                </IconButton>
-              </label>
-            </Grid>
-          </Grid>
 
-          <Grid container spacing={1} className={classes.box}>
-            <Grid item xs={6}>
-              <TextField
-                id="product_introduction1"
-                label="Giới thiệu sản phẩm 1"
-                placeholder="Nhập giới thiệu sản phẩm 1"
-                margin="normal"
-                fullWidth
-                onChange={getParamIntroduction1}
-                size="small"
-                InputLabelProps={{
-                  shrink: true,
-                }}
-              />
+            <Grid container spacing={1} className={classes.box}>
+              <Grid item xs={6}>
+                <TextField
+                  id="product_introduction1"
+                  label="Giới thiệu sản phẩm 1"
+                  placeholder="Nhập giới thiệu sản phẩm 1"
+                  margin="normal"
+                  fullWidth
+                  onChange={getParamIntroduction1}
+                  size="small"
+                  InputLabelProps={{
+                    shrink: true,
+                  }}
+                />
+              </Grid>
+              <Grid item xs={6}>
+                <TextField
+                  id="product_introduction2"
+                  label="Giới thiệu sản phẩm 2"
+                  placeholder="Nhập giới thiệu sản phẩm 2"
+                  margin="normal"
+                  fullWidth
+                  onChange={getParamIntroduction2}
+                  size="small"
+                  InputLabelProps={{
+                    shrink: true,
+                  }}
+                />
+              </Grid>
+              <Grid item xs={6}>
+                <TextField
+                  id="product_introduction3"
+                  label="Giới thiệu sản phẩm 3"
+                  placeholder="Nhập giới thiệu sản phẩm 3"
+                  margin="normal"
+                  fullWidth
+                  onChange={getParamIntroduction3}
+                  size="small"
+                  InputLabelProps={{
+                    shrink: true,
+                  }}
+                />
+              </Grid>
+              <Grid item xs={6}>
+                <TextField
+                  id="product_introduction4"
+                  label="Giới thiệu sản phẩm 4"
+                  placeholder="Nhập giới thiệu sản phẩm 4"
+                  margin="normal"
+                  fullWidth
+                  onChange={getParamIntroduction4}
+                  size="small"
+                  InputLabelProps={{
+                    shrink: true,
+                  }}
+                />
+              </Grid>
+              <Grid item xs={6}>
+                <TextField
+                  id="product_introduction5"
+                  label="Giới thiệu sản phẩm 5"
+                  placeholder="Nhập giới thiệu sản phẩm 5"
+                  margin="normal"
+                  fullWidth
+                  onChange={getParamIntroduction5}
+                  size="small"
+                  InputLabelProps={{
+                    shrink: true,
+                  }}
+                />
+              </Grid>
+              <ButtonGroup className={classes.btngroup}>
+                <Button
+                  variant="outlined"
+                  color="primary"
+                  onClick={handleSubmit}
+                >
+                  Cập nhật thông tin
+                </Button>
+                <Button variant="outlined" color="error" onClick={onClose}>
+                  Hủy bỏ
+                </Button>
+              </ButtonGroup>
             </Grid>
-            <Grid item xs={6}>
-              <TextField
-                id="product_introduction2"
-                label="Giới thiệu sản phẩm 2"
-                placeholder="Nhập giới thiệu sản phẩm 2"
-                margin="normal"
-                fullWidth
-                onChange={getParamIntroduction2}
-                size="small"
-                InputLabelProps={{
-                  shrink: true,
-                }}
-              />
-            </Grid>
-            <Grid item xs={6}>
-              <TextField
-                id="product_introduction3"
-                label="Giới thiệu sản phẩm 3"
-                placeholder="Nhập giới thiệu sản phẩm 3"
-                margin="normal"
-                fullWidth
-                onChange={getParamIntroduction3}
-                size="small"
-                InputLabelProps={{
-                  shrink: true,
-                }}
-              />
-            </Grid>
-            <Grid item xs={6}>
-              <TextField
-                id="product_introduction4"
-                label="Giới thiệu sản phẩm 4"
-                placeholder="Nhập giới thiệu sản phẩm 4"
-                margin="normal"
-                fullWidth
-                onChange={getParamIntroduction4}
-                size="small"
-                InputLabelProps={{
-                  shrink: true,
-                }}
-              />
-            </Grid>
-            <Grid item xs={6}>
-              <TextField
-                id="product_introduction5"
-                label="Giới thiệu sản phẩm 5"
-                placeholder="Nhập giới thiệu sản phẩm 5"
-                margin="normal"
-                fullWidth
-                onChange={getParamIntroduction5}
-                size="small"
-                InputLabelProps={{
-                  shrink: true,
-                }}
-              />
-            </Grid>
-            <ButtonGroup className={classes.btngroup}>
-              <Button variant="outlined" color="primary" onClick={handleSubmit}>
-                Cập nhật thông tin
-              </Button>
-              <Button variant="outlined" color="error" onClick={onClose}>
-                Hủy bỏ
-              </Button>
-            </ButtonGroup>
           </Grid>
-        </Grid>
+        )}
       </Grid>
     </Dialog>
   );

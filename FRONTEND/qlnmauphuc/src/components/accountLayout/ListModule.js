@@ -33,6 +33,14 @@ export default function ListModule () {
               <ListItemText primary="Số hiệu đăng ký" />
             </ListItem>
           </Link>
+          <Link to="/account/cloth">
+            <ListItem >
+              <ListItemIcon>
+                <PermIdentityIcon />
+              </ListItemIcon>
+              <ListItemText primary="Quản lý vải" />
+            </ListItem>
+          </Link>
           <Link to="/">
             <ListItem >
               <ListItemIcon>

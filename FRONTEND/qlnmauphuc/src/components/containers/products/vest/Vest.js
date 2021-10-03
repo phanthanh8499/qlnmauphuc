@@ -64,15 +64,15 @@ export default function Vest() {
   const products = useSelector((state) => state.products);
   const { productData } = products;
   const [BFM, setBFM] = useState();
-  const [TFM, setTFM] = useState();
+  const [GFM, setGFM] = useState();
   const [SFM, setSFM] = useState();
   const [loading, setLoading] = useState(true);
   useEffect(() => {
     setBFM(
       productData.filter((productData) => productData.product_typeid === "BFM")
     );
-    setTFM(
-      productData.filter((productData) => productData.product_typeid === "TFM")
+    setGFM(
+      productData.filter((productData) => productData.product_typeid === "GFM")
     );
     setSFM(
       productData.filter((productData) => productData.product_typeid === "SFM")
@@ -121,15 +121,15 @@ export default function Vest() {
                   aria-label="lab API tabs example"
                 >
                   <MyTab label="Blazer" value="1" />
+                  <MyTab label="Gile" value="2" />
                   <MyTab label="Suit" value="3" />
-                  <MyTab label="Tuxedo" value="2" />
                 </TabList>
               </Box>
               <TabPanel value="1">
                 <Items data={BFM}></Items>
               </TabPanel>
               <TabPanel value="2">
-                <Items data={TFM}></Items>
+                <Items data={GFM}></Items>
               </TabPanel>
               <TabPanel value="3">
                 <Items data={SFM}></Items>

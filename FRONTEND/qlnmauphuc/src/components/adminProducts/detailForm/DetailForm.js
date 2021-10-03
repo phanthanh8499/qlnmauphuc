@@ -22,6 +22,7 @@ import PhotoCamera from "@mui/icons-material/PhotoCamera";
 import axios from "axios";
 import makeStyles from "@mui/styles/makeStyles";
 import { editProduct } from "../../../redux/Action";
+import { LOCAL_PATH } from "../../../constants/Constants";
 
 const markThickness = [
   {
@@ -136,6 +137,7 @@ function DetailForm(props) {
   const [introduction3, setIntroduction3] = useState("");
   const [introduction4, setIntroduction4] = useState("");
   const [introduction5, setIntroduction5] = useState("");
+  const [productTypeList, setProductTypeList] = useState([]);
   const getParamName = (event) => {
     setName(event.target.value);
   };
@@ -248,6 +250,7 @@ function DetailForm(props) {
   useEffect(() => {
     async function getDetailProduct() {
       const { data } = await axios.get(`/getDetailProduct.${id}`);
+      console.log("data1", data)
       if (`${data[0].product_thickness}` === "Mỏng") {
         setThickness(0);
       } else if (`${data[0].product_thickness}` === "Vừa") {
@@ -277,19 +280,33 @@ function DetailForm(props) {
       setColor(`${data[0].product_color}`);
       setMaterial(`${data[0].product_material}`);
       setLining(`${data[0].product_lining}`);
-      setImgUpload1(`${data[0].product_image1}`);
-      setImgUpload2(`${data[0].product_image2}`);
-      setImgUpload3(`${data[0].product_image3}`);
-      setImgUpload4(`${data[0].product_sizeimage}`);
+      setImgUpload1(LOCAL_PATH + `${data[0].product_image1.substring(2)}`);
+      setImgUpload2(LOCAL_PATH + `${data[0].product_image2.substring(2)}`);
+      setImgUpload3(LOCAL_PATH + `${data[0].product_image3.substring(2)}`);
+      setImgUpload4(LOCAL_PATH + `${data[0].product_sizeimage.substring(2)}`);
       setIntroduction1(`${data[0].product_introduction1}`);
       setIntroduction2(`${data[0].product_introduction2}`);
       setIntroduction3(`${data[0].product_introduction3}`);
       setIntroduction4(`${data[0].product_introduction4}`);
       setIntroduction5(`${data[0].product_introduction5}`);
+      
+    }
+    async function getProductType() {
+      const { data } = await axios.get("/getProductTypeData");
+      setProductTypeList(data);
       setLoading(false);
-    };
+    }
     getDetailProduct();
-  }, [])
+    getProductType();
+  }, []);
+
+  const renderProductTypeMenu = () => {
+    return productTypeList.map((value, key) => (
+      <MenuItem value={value.id} key={key}>
+        {value.pt_name}
+      </MenuItem>
+    ));
+  }
   const handleSubmit = () => {
     let thicknessValue = "";
     let softnessValue = "";
@@ -361,8 +378,7 @@ function DetailForm(props) {
       });
       dispatch(editProduct(formData));
       onClose();
-    } 
-      
+    }
   };
   return (
     <Dialog
@@ -404,9 +420,10 @@ function DetailForm(props) {
                       <MenuItem value="">
                         <em>None</em>
                       </MenuItem>
-                      <MenuItem value="BFM">Blazer</MenuItem>
+                      {renderProductTypeMenu()}
+                      {/* <MenuItem value="BFM">Blazer</MenuItem>
                       <MenuItem value="SFM">Suit</MenuItem>
-                      <MenuItem value="TFM">Tuxedo</MenuItem>
+                      <MenuItem value="TFM">Tuxedo</MenuItem> */}
                     </Select>
                   </FormControl>
                 </Grid>

@@ -90,7 +90,7 @@ export default function AdminProducts() {
     { field: "product_lining", headerName: "Lớp lót", width: 130 },
     { field: "product_thickness", headerName: "Độ dày", width: 130 },
     { field: "product_softness", headerName: "Độ mềm", width: 130 },
-    { field: "product_elasticity", headerName: "Độ dày", width: 130 },
+    { field: "product_elasticity", headerName: "Độ co giãn", width: 130 },
     {
       field: "Hành động",
       headerName: "Hành động",

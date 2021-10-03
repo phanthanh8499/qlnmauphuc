@@ -210,7 +210,7 @@ export default function Order(props) {
   const [measurement, setMeasurement] = useState();
 
   const { userInfo } = JSON.parse(localStorage.getItem("userInfo"));
-  console.log(userInfo);
+ 
   const [loading, setLoading] = useState(true);
   const measurements = useSelector((state) => state.measurements);
   const { measurementsData } = measurements;
@@ -218,11 +218,7 @@ export default function Order(props) {
   // console.log("???", detailData);
   console.log(measurementsData);
 
-  const renderMenuMeasurement = () => {
-    return measurementsData.map((value, key) => (
-      <MenuItem value={value.id} key={key}>Mã số đăng ký thứ {key + 1}</MenuItem>
-    ));
-  };
+  
 
   const [loadingMeasurement, setLoadingMeasurement] = useState(false);
   const handleChangeMeasurement = (event, value) => {
@@ -277,6 +273,7 @@ export default function Order(props) {
   };
 
   const [imgUpload, setImgUpload] = useState("");
+  const [clothQuantity, setClothQuantity] = useState(0);
   const [clothSelected, setClothSelected] = useState("");
   const [clothSelectedId, setClothSelectedId] = useState("");
   const [owner, setOwner] = useState("nm");
@@ -290,6 +287,7 @@ export default function Order(props) {
     setClothSelectedId("");
     setClothSelected("");
     setImgUpload("./images/loadingImg.gif");
+    setClothQuantity(0);
     event.target.value === "kh"
       ? setDiscount(price * 0.3)
       : setDiscount(0);
@@ -323,6 +321,7 @@ export default function Order(props) {
     setClothSelectedId(event.target.value);
     setClothSelected(abc[0]);
     setImgUpload(abc[0].cloth_image);
+    setClothQuantity(abc[0].cloth_quantity);
   };
 
   const [shippingMethod, setShippingMethod] = useState("TNM");
@@ -354,11 +353,12 @@ export default function Order(props) {
   };
 
   const { productData } = props;
+
   const data1 = {
     cloth_material: productData.product_material,
   };
   const data2 = {
-    cloth_userid: 1,
+    cloth_userid: userInfo.id,
   };
 
   const formatDate = (dateString) => {
@@ -425,6 +425,33 @@ export default function Order(props) {
         formData.append("od_biceps", 0);
         formData.append("od_wristaround", wristaround);
         formData.append("od_sleevelength", sleevelength);
+        formData.append("od_shirtlength", shirtlength);
+        formData.append("od_crotchlength", 0);
+        formData.append("od_thighcircumference", 0);
+        formData.append("od_dresslength", 0);
+        formData.append("od_pantslength", 0);
+      }
+    }
+    // Gile man
+    if (
+      productData.product_typeid === "GFM" 
+    ) {
+      if(!neckline || !bust || !waist || !buttock || !shoulderwidth || !shirtlength ){
+        enqueueSnackbar("Vui điền nhập đầy đủ số đo", {
+          variant: "error",
+          autoHideDuration: 2000,
+        });
+        return false;
+      } else {
+        formData.append("od_neckline", neckline);
+        formData.append("od_bust", bust);
+        formData.append("od_waist", waist);
+        formData.append("od_buttock", buttock);
+        formData.append("od_shoulderwidth", shoulderwidth);
+        formData.append("od_armpitcircumference", 0);
+        formData.append("od_biceps", 0);
+        formData.append("od_wristaround", 0);
+        formData.append("od_sleevelength", 0);
         formData.append("od_shirtlength", shirtlength);
         formData.append("od_crotchlength", 0);
         formData.append("od_thighcircumference", 0);
@@ -545,6 +572,12 @@ export default function Order(props) {
         autoHideDuration: 2000,
       });
       return false;
+    } else if (clothQuantity < 2*qty) {
+      enqueueSnackbar("Không đủ vải", {
+        variant: "error",
+        autoHideDuration: 2000,
+      });
+      return false;
     } else {
       formData.append("od_clothid", clothSelectedId);
     }
@@ -558,6 +591,32 @@ export default function Order(props) {
     }
     onClose()
   }
+
+  const renderMenuMeasurement = () => {
+    if (
+      productData.product_typeid === "BFM" ||
+      productData.product_typeid === "TFM" ||
+      productData.product_typeid === "SFM" ||
+      productData.product_typeid === "GFM"
+    ) {
+      return measurementsData
+        .filter((item) => item.m_gender === "male")
+        .map((value, key) => (
+          <MenuItem value={value.id} key={key}>
+            Mã số đăng ký (nam) thứ {key + 1}
+          </MenuItem>
+        ));
+    } else {
+      return measurementsData
+        .filter((item) => item.m_gender === "female")
+        .map((value, key) => (
+          <MenuItem value={value.id} key={key}>
+            Mã số đăng ký (nữ) thứ {key + 1}
+          </MenuItem>
+        ));
+    }
+      
+  };
 
   const renderMeasurement = () => {
     if (productData.product_typeid === "BFM" || productData.product_typeid === "TFM" || productData.product_typeid === "SFM" ) {
@@ -663,6 +722,102 @@ export default function Order(props) {
               fullWidth
               size="small"
               onChange={getParamsSleevelength}
+              InputLabelProps={{
+                shrink: true,
+              }}
+            />
+          </Grid>
+          <Grid item xs={6}>
+            <TextField
+              id="shirtlength"
+              label="Dài áo"
+              placeholder="Từ đốt xương cổ thứ 7 đến ngang mông"
+              margin="normal"
+              defaultValue={shirtlength}
+              fullWidth
+              size="small"
+              onChange={getParamsShirtlength}
+              InputLabelProps={{
+                shrink: true,
+              }}
+            />
+          </Grid>
+        </>
+      );
+    }
+    if (productData.product_typeid === "GFM") {
+      return (
+        <>
+          <Grid item xs={6}>
+            <TextField
+              id="neckline"
+              label="Vòng cổ"
+              placeholder="Đo vòng quanh chân cổ"
+              margin="normal"
+              defaultValue={neckline}
+              fullWidth
+              size="small"
+              onChange={getParamsNeckline}
+              InputLabelProps={{
+                shrink: true,
+              }}
+            />
+          </Grid>
+          <Grid item xs={6}>
+            <TextField
+              id="bust"
+              label="Vòng ngực"
+              placeholder="Đo vòng quanh ngực, chỗ nở nhất"
+              margin="normal"
+              defaultValue={bust}
+              fullWidth
+              size="small"
+              onChange={getParamsBust}
+              InputLabelProps={{
+                shrink: true,
+              }}
+            />
+          </Grid>
+          <Grid item xs={6}>
+            <TextField
+              id="waist"
+              label="Vòng eo"
+              placeholder="Đo vòng quanh eo"
+              margin="normal"
+              defaultValue={waist}
+              fullWidth
+              size="small"
+              onChange={getParamsWaist}
+              InputLabelProps={{
+                shrink: true,
+              }}
+            />
+          </Grid>
+          <Grid item xs={6}>
+            <TextField
+              id="buttock"
+              label="Vòng mông"
+              placeholder="Đo vòng quanh mông, chỗ nở nhất"
+              margin="normal"
+              defaultValue={buttock}
+              fullWidth
+              size="small"
+              onChange={getParamsButtock}
+              InputLabelProps={{
+                shrink: true,
+              }}
+            />
+          </Grid>
+          <Grid item xs={6}>
+            <TextField
+              id="shoulderwidth"
+              label="Rộng vai"
+              placeholder="Từ đầu vai trái sang đầu vai phải"
+              margin="normal"
+              defaultValue={shoulderwidth}
+              fullWidth
+              size="small"
+              onChange={getParamsShoulderwidth}
               InputLabelProps={{
                 shrink: true,
               }}
@@ -1343,16 +1498,17 @@ export default function Order(props) {
                                 <LinearProgress />
                               </Box>
                             ) : (
-                              <>
-                                {renderMeasurement()}
-                              </>
+                              <>{renderMeasurement()}</>
                             )}
                           </Grid>
                         </TabPanel>
                         <TabPanel value="2">
                           <Grid container>
                             <Grid item xs={4}>
-                              <ImageMagnify image={imgUpload}></ImageMagnify>
+                              <ImageMagnify
+                                image={imgUpload}
+                                quantity={clothQuantity}
+                              ></ImageMagnify>
                             </Grid>
                             <Grid item xs={8} sx={{ padding: 2 }}>
                               <Grid container>
@@ -1594,7 +1750,12 @@ export default function Order(props) {
                 </Grid>
               </Grid>
               <Divider sx={{ margin: "10px 0px" }} />
-              <Button variant="outlined" color="primary" fullWidth onClick={handleSubmit}>
+              <Button
+                variant="outlined"
+                color="primary"
+                fullWidth
+                onClick={handleSubmit}
+              >
                 Xác nhận
               </Button>
             </Grid>

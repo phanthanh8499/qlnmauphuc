@@ -44,7 +44,6 @@ export default function UOder() {
     dispatch(getOrderData(userInfo.id));
   }, []);
   useEffect(() => {
-    console.log("?? - ??")
     setAll(orderData);
     setProcessing(
       orderData.filter((orderData) => orderData.order_statusid === 0)

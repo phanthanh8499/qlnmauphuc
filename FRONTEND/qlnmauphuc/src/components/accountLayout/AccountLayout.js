@@ -35,6 +35,8 @@ export default function AccountLayout (props){
         setTitle("Danh sách đơn hàng");
       } else if (pathname === "/account/profile") {
         setTitle("Thông tin cá nhân");
+      } else if (pathname === "/account/cloth") {
+        setTitle("Quản lý vải");
       } else if (pathname === "/account") {
         setTitle("");
       } else if (pathname === "/account/measurements") {

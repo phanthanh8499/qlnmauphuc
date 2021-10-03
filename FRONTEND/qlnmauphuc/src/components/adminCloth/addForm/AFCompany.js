@@ -1,6 +1,7 @@
 import {
   Button,
   ButtonGroup,
+  CircularProgress,
   FormControl,
   Grid,
   IconButton,
@@ -10,13 +11,14 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { useSnackbar } from "notistack";
 import PhotoCamera from "@mui/icons-material/PhotoCamera";
 import makeStyles from "@mui/styles/makeStyles";
 import { CAP_NHAT_HINH_ANH, FRONTEND_ADM_URL, FRONTEND_URL } from "../../../constants/Constants";
 import { addCloth } from "../../../redux/Action";
+import axios from "axios";
 
 
 const useStyle = makeStyles((theme) => ({
@@ -100,110 +102,158 @@ function AFCompany(props) {
     formData.append("file", file);
     formData.append("fileName", fileName);
     formData.append("frontEndURL", FRONTEND_URL);
-    formData.append("frontEndAdmURL", FRONTEND_ADM_URL);
+    if (!type) {
+      enqueueSnackbar("Vui lòng chọn loại vải", {
+        variant: "error",
+        autoHideDuration: 2000,
+      });
+      return false;
+    }
+    if (!material || !name || !quantity) {
+      enqueueSnackbar("Vui lòng điền đầy đủ thông tin", {
+        variant: "error",
+        autoHideDuration: 2000,
+      });
+      return false;
+    }
+    if (!file) {
+      enqueueSnackbar("Vui lòng import hình ảnh", {
+        variant: "error",
+        autoHideDuration: 2000,
+      });
+      return false;
+    }
+    enqueueSnackbar("Thêm vải thành công", {
+      variant: "success",
+      autoHideDuration: 2000,
+    });
     dispatch(addCloth(formData));
     onClose();
   };
+
+  const [loading, setLoading] = useState(true);
+  const [clothType, setClothType] = useState([]);
+  const renderClothType = () => {
+    return clothType.map((value, key) => (
+      <MenuItem value={value.id} key={key}>{value.ct_name}</MenuItem>
+    ));
+  }
+  useEffect(() => {
+   async function getClothType () {
+     const { data } = await axios.get("/getClothTypeData");
+     setClothType(data);
+     setLoading(false);
+   }
+   getClothType();
+  }, [])
   return (
     <>
-        <Grid item xs={12}>
-          <FormControl style={{ width: "30%" }}>
-            <InputLabel shrink id="demo-simple-select-placeholder-label-label">
-              Loại vải
-            </InputLabel>
-            <Select
-              labelId="demo-simple-select-placeholder-label-label"
-              id="demo-simple-select-placeholder-label"
-              value={type}
-              onChange={getParamsType}
-              displayEmpty
-              style={{ padding: "0px !important" }}
-            >
-              <MenuItem value="">
-                <em>None</em>
-              </MenuItem>
-              <MenuItem value="CARO">Vải caro</MenuItem>
-              <MenuItem value="VPOL">Vải polyester</MenuItem>
-              <MenuItem value="HTHH">Vải hoạ tiết hình học</MenuItem>
-              <MenuItem value="VCKH">Vải khách hàng gửi</MenuItem>
-            </Select>
-          </FormControl>
+      {loading ? (
+        <Grid item xs={12} sx={{width: '682px', display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
+          <CircularProgress />
         </Grid>
-        <Grid item xs={12}>
-          <TextField
-            id="product_code"
-            label="Thành phẩn vải"
-            placeholder="Nhập thành phẩn vải"
-            margin="normal"
-            fullWidth
-            onChange={getParamsMaterial}
-            size="small"
-            InputLabelProps={{
-              shrink: true,
-            }}
-          />
-        </Grid>
-        <Grid item xs={10}>
-          <TextField
-            id="product_name"
-            label="Tên sản phẩm"
-            placeholder="Nhập tên sản phẩm"
-            margin="normal"
-            fullWidth
-            size="small"
-            onChange={getParamsName}
-            InputLabelProps={{
-              shrink: true,
-            }}
-          />
-        </Grid>
-        <Grid item xs={2}>
-          <TextField
-            id="product_color"
-            label="Số lượng"
-            placeholder="Nhập số lượng"
-            margin="normal"
-            fullWidth
-            onChange={getParamsQuantity}
-            size="small"
-            InputLabelProps={{
-              shrink: true,
-            }}
-          />
-        </Grid>
-        <Grid item xs={3}>
-          <Typography className={classes.label}>Hình ảnh vải</Typography>
-          <input
-            accept="image/*"
-            className={classes.input}
-            id="icon-button-file1"
-            type="file"
-            onChange={saveFile}
-          />
-          <label htmlFor="icon-button-file1">
-            <IconButton
-              color="primary"
-              aria-label="upload picture"
-              component="span"
-              size="large"
-            >
-              <PhotoCamera />
-            </IconButton>
-            {/* {fileName} */}
-          </label>
-          {/* <Typography className={classes.imgTitle}>{fileName1}</Typography> */}
-        </Grid>
-        <Grid container className={classes.box}>
-          <ButtonGroup className={classes.btngroup}>
-            <Button variant="outlined" color="primary" onClick={handleSubmit}>
-              Xác nhận thêm
-            </Button>
-            <Button variant="outlined" color="error" onClick={onClose}>
-              Hủy bỏ
-            </Button>
-          </ButtonGroup>
-        </Grid>
-      </>
+      ) : (
+        <>
+          <Grid item xs={12}>
+            <FormControl style={{ width: "30%" }}>
+              <InputLabel
+                shrink
+                id="demo-simple-select-placeholder-label-label"
+              >
+                Loại vải
+              </InputLabel>
+              <Select
+                labelId="demo-simple-select-placeholder-label-label"
+                id="demo-simple-select-placeholder-label"
+                value={type}
+                onChange={getParamsType}
+                displayEmpty
+                style={{ padding: "0px !important" }}
+              >
+                <MenuItem value="">
+                  <em>None</em>
+                </MenuItem>
+                {renderClothType()}
+              </Select>
+            </FormControl>
+          </Grid>
+          <Grid item xs={12}>
+            <TextField
+              id="product_code"
+              label="Thành phẩn vải"
+              placeholder="Nhập thành phẩn vải"
+              margin="normal"
+              fullWidth
+              onChange={getParamsMaterial}
+              size="small"
+              InputLabelProps={{
+                shrink: true,
+              }}
+            />
+          </Grid>
+          <Grid item xs={10}>
+            <TextField
+              id="product_name"
+              label="Tên sản phẩm"
+              placeholder="Nhập tên sản phẩm"
+              margin="normal"
+              fullWidth
+              size="small"
+              onChange={getParamsName}
+              InputLabelProps={{
+                shrink: true,
+              }}
+            />
+          </Grid>
+          <Grid item xs={2}>
+            <TextField
+              id="product_color"
+              label="Số lượng"
+              placeholder="Nhập số lượng"
+              margin="normal"
+              fullWidth
+              onChange={getParamsQuantity}
+              size="small"
+              InputLabelProps={{
+                shrink: true,
+              }}
+            />
+          </Grid>
+          <Grid item xs={3}>
+            <Typography className={classes.label}>Hình ảnh vải</Typography>
+            <input
+              accept="image/*"
+              className={classes.input}
+              id="icon-button-file1"
+              type="file"
+              onChange={saveFile}
+            />
+            <label htmlFor="icon-button-file1">
+              <IconButton
+                color="primary"
+                aria-label="upload picture"
+                component="span"
+                size="large"
+              >
+                <PhotoCamera />
+              </IconButton>
+              {/* {fileName} */}
+            </label>
+            {/* <Typography className={classes.imgTitle}>{fileName1}</Typography> */}
+          </Grid>
+          <Grid container className={classes.box}>
+            <ButtonGroup className={classes.btngroup}>
+              <Button variant="outlined" color="primary" onClick={handleSubmit}>
+                Xác nhận thêm
+              </Button>
+              <Button variant="outlined" color="error" onClick={onClose}>
+                Hủy bỏ
+              </Button>
+            </ButtonGroup>
+          </Grid>
+        </>
+      )}
+    </>
   );
 }
 

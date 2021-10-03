@@ -25,13 +25,20 @@ export default function AdminCloth() {
   const { enqueueSnackbar } = useSnackbar();
   const cloth = useSelector((state) => state.cloth);
   const { loading, clothData, error } = cloth;
+  const [loadingState, setLoadingState] = useState(false)
+  const [data, setData] = useState()
   const dispatch = useDispatch()
   useEffect(() => {
     dispatch(getClothData());
-    
-  }, [dispatch])
+  }, [dispatch]);
+  // useEffect(() => {
+  //   setLoadingState(true);
+  //   setData(clothData);
+  //   setLoadingState(false);
+  // }, [clothData]);
+
   const rows = clothData;
-  const [clothId, setClothId] = useState("");
+  const [clothId, setClothId] = useState(0);
   
   const [addForm, setAddForm] = useState(false);
   const [detailForm, setDetailForm] = useState(false);
@@ -65,7 +72,10 @@ export default function AdminCloth() {
         <AddForm
           open={addForm}
           onClose={closeAddForm}
-          id={parseInt(clothData[Object.keys(clothData).sort().pop()].id)}
+          // id={parseInt(data[Object.keys(data).sort().pop()].id)}
+          id={parseInt(clothData[Object.keys(clothData).sort(function (a, b) {
+            if(a.id >= b.id) return a
+          }).pop()].id)}
         ></AddForm>
       );
     }
@@ -122,13 +132,13 @@ export default function AdminCloth() {
     <>
       {loading ? (
         <div>Loading....</div>
-      ) : error ? (
+      ) : loadingState ? (<div>loading....</div>) : error ? (
         <div>error</div>
       ) : (
         <Grid container >
           <Grid item xs={12} className={classes.topBar} component={Paper}>
             <Button variant="outlined" color="primary" onClick={openAddForm}>
-              Thêm sản phẩm
+              Thêm vải
             </Button>
           </Grid>
           <Grid item xs={12} style={{ height: 515, width: "100%", 'background-color': '#ffffff' }}>
