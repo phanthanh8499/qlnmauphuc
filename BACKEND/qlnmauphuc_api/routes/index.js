@@ -611,7 +611,6 @@ router.post("/admin/users/edit", function (req, res) {
     fileRecv,
     token,
     FRONTEND_URL,
-    FRONTEND_ADM_URL,
   } = req.body;
   console.log(
     id,
@@ -628,19 +627,16 @@ router.post("/admin/users/edit", function (req, res) {
     fileRecv,
     token,
     FRONTEND_URL,
-    FRONTEND_ADM_URL,
   );
   if(parseInt(fileRecv) === 1){
     const file = req.files.file;
     const filename = Date.now() + "-" + id + "-" + file.name;
     var newpath = "";
-    var admpath = "";
     var image_path = "./images";
     newpath = FRONTEND_URL + "/images/avatar/";
-    admpath = FRONTEND_ADM_URL + "/images/avatar/";
     image_path = image_path + "/avatar/" + filename;
     console.log("co file");
-    console.log(newpath, admpath, image_path);
+    console.log(newpath, image_path);
     pool.query(
       `UPDATE users
 	SET user_typeid='${user_typeid}', user_username='${user_username}', user_firstname='${user_firstname}', user_lastname='${user_lastname}', user_address='${user_address}', user_tel='${user_tel}', user_status='${user_status}', user_date='${user_date}', user_avatar='${image_path}', user_email='${user_email}'
@@ -653,14 +649,6 @@ router.post("/admin/users/edit", function (req, res) {
           if (!fs.existsSync(newpath)) {
             fs.mkdirSync(newpath);
           }
-          if (!fs.existsSync(admpath)) {
-            fs.mkdirSync(admpath);
-          }
-          file.mv(`${admpath}${filename}`, (err) => {
-            if (err) {
-              console.log(err);
-            }
-          });
           file.mv(`${newpath}${filename}`, (err) => {
             if (err) {
               console.log(err);
@@ -717,11 +705,13 @@ router.get("/getOrderData.:id", function (req, res) {
   const { id } = req.params;
   if (parseInt(id) === 0) {
     pool.query(
-      `SELECT order_details.*, order_customername, order_customeraddress, order_customerphone, order_customeremail, order_startdate, order_enddate, order_subtotal, order_discount, order_total, order_paymentid, order_shippingid, order_statusid, order_userid, products.product_name, products.product_typeid, products.product_image1, cloth.cloth_name, cloth.cloth_image, cloth.cloth_quantity, os_name FROM order_details 
+      `SELECT order_details.*, order_customername, order_customeraddress, order_customerphone, order_customeremail, order_startdate, order_enddate, order_subtotal, order_discount, order_total, order_paymentid, opm_name, order_shippingid, osm_name, order_statusid, order_userid, products.product_name, products.product_typeid, products.product_image1, cloth.cloth_name, cloth.cloth_image, cloth.cloth_quantity, cloth.cloth_material, os_name FROM order_details 
               INNER JOIN orders ON orders.id = order_details.od_orderid 
               INNER JOIN products ON products.id = order_details.od_productid
 			  INNER JOIN cloth ON cloth.id = order_details.od_clothid
-			  INNER JOIN order_status ON order_status.id = orders.order_statusid `,
+			  INNER JOIN order_status ON order_status.id = orders.order_statusid
+			  INNER JOIN order_paymentmethod ON order_paymentmethod.id = orders.order_paymentid
+			  INNER JOIN order_shippingmethod ON order_shippingmethod.id = orders.order_shippingid `,
       (error, response) => {
         if (error) {
           console.log(error);
@@ -732,11 +722,13 @@ router.get("/getOrderData.:id", function (req, res) {
     );
   } else {
     pool.query(
-      `SELECT order_details.*, order_customername, order_customeraddress, order_customerphone, order_customeremail, order_startdate, order_enddate, order_subtotal, order_discount, order_total, order_paymentid, order_shippingid, order_statusid, order_userid, products.product_name, products.product_typeid, products.product_image1, cloth.cloth_name, cloth.cloth_image, cloth.cloth_quantity, os_name FROM order_details 
+      `SELECT order_details.*, order_customername, order_customeraddress, order_customerphone, order_customeremail, order_startdate, order_enddate, order_subtotal, order_discount, order_total, order_paymentid, opm_name, order_shippingid, osm_name, order_statusid, order_userid, products.product_name, products.product_typeid, products.product_image1, cloth.cloth_name, cloth.cloth_image, cloth.cloth_quantity, cloth.cloth_material, os_name FROM order_details 
               INNER JOIN orders ON orders.id = order_details.od_orderid 
               INNER JOIN products ON products.id = order_details.od_productid
 			  INNER JOIN cloth ON cloth.id = order_details.od_clothid
 			  INNER JOIN order_status ON order_status.id = orders.order_statusid
+			  INNER JOIN order_paymentmethod ON order_paymentmethod.id = orders.order_paymentid
+			  INNER JOIN order_shippingmethod ON order_shippingmethod.id = orders.order_shippingid
 			  WHERE orders.order_userid = '${id}'`,
       (error, response) => {
         if (error) {

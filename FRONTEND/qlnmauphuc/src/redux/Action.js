@@ -94,7 +94,7 @@ export const editProduct = (data) =>  (dispatch) => {
 
 export const deleteProduct = (data) => async (dispatch) => {
   dispatch({ type: XOA_SAN_PHAM, payload: data});
-  await Axios.get(`/admin/products/delete.${data}`);
+  // await Axios.get(`/admin/products/delete.${data}`);
 }
 
 export const getClothData = (dataReq) => async (dispatch) => {
@@ -129,7 +129,7 @@ export const editCloth = (data) => (dispatch) => {
 
 export const deleteCloth = (data) => async (dispatch) => {
   dispatch({ type: XOA_VAI, payload: data });
-  await Axios.get(`/admin/cloth/delete.${data}`);
+  // await Axios.get(`/admin/cloth/delete.${data}`);
 };
 
 export const getMeasurementsData = (id) => async (dispatch) => {

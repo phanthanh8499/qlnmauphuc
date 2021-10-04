@@ -8,11 +8,11 @@ import {
 import { makeStyles } from "@mui/styles";
 import React, { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
-import { deleteOrder, getOrderData } from "../../redux/Action";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
-import { LOCAL_PATH, XOA_DON_HANG } from "../../constants/Constants";
+import { LOCAL_PATH } from "../../constants/Constants";
 import DeleteForm from "./deleteForm/DeteleForm";
+import DetailForm from "./detailForm/DetailForm";
 
 const center = {
   display: "flex",
@@ -25,10 +25,14 @@ const useStyles = makeStyles((theme) => ({
     padding: 10,
     boxShadow: "0 0 0 1px rgb(0 0 0 / 10%) inset",
     margin: "0px 0px 5px 0px",
+    "&:hover": {
+      backgroundColor: "#f5f5f5",
+    },
   },
   img: {
     width: 67,
     heigth: 67,
+    borderRadius: '4px',
   },
   title: {
     fontSize: "14px !important",
@@ -42,7 +46,6 @@ export default function All(props) {
   const dispatch = useDispatch();
   const { userid, data } = props;
 
-  
   const [loading, setLoading] = useState(true);
   const [dataRender, setDataRender] = useState([]);
   const [page, setPage] = useState(0);
@@ -72,13 +75,20 @@ export default function All(props) {
   };
   const handleClickEdit = (id) => {
     console.log("edit", id);
-    
+
     console.log("edit", id);
   };
 
   const [detailForm, setDetailForm] = useState(false);
   const [deleteForm, setDeleteForm] = useState(false);
-  const [orderid, setOrderid] = useState(0)
+  const [orderid, setOrderid] = useState(0);
+  const [orderSelected, setOrderSelected] = useState([])
+  const openDetailForm = () => {
+    setDetailForm(true);
+  };
+  const closeDetailForm = () => {
+    setDetailForm(false);
+  };
 
   const openDeleteForm = () => {
     setDeleteForm(true);
@@ -88,10 +98,16 @@ export default function All(props) {
   };
 
   const handleClickDelete = (id) => {
-    console.log("delete", id);
-    setDeleteForm(true)
-    setOrderid(parseInt(id))
-    // dispatch(deleteOrder(id));
+    // setDeleteForm(true);
+    openDeleteForm();
+    setOrderid(parseInt(id));
+  };
+
+  const handleClickDetail = (id) => {
+    // setDetailForm(true);
+    openDetailForm();
+    setOrderid(parseInt(id));
+    setOrderSelected(dataRender.filter((item) => item.id === parseInt(id)));
   };
 
   const renderForm = () => {
@@ -102,6 +118,16 @@ export default function All(props) {
           onClose={closeDeleteForm}
           id={parseInt(orderid)}
         ></DeleteForm>
+      );
+    }
+    if (detailForm) {
+      return (
+        <DetailForm
+          open={detailForm}
+          onClose={closeDetailForm}
+          id={parseInt(orderid)}
+          data={orderSelected[0]}
+        ></DetailForm>
       );
     }
   };
@@ -158,7 +184,7 @@ export default function All(props) {
           <Grid item xs={2} sx={center}>
             <ButtonGroup>
               <IconButton
-                onClick={() => handleClickEdit(value.id)}
+                onClick={() => handleClickDetail(value.id)}
                 size="large"
               >
                 <VisibilityIcon color="primary" />
@@ -173,7 +199,10 @@ export default function All(props) {
           </Grid>
         ) : (
           <Grid item xs={2} sx={center}>
-            <IconButton onClick={() => handleClickEdit(value.id)} size="large">
+            <IconButton
+              onClick={() => handleClickDetail(value.id)}
+              size="large"
+            >
               <VisibilityIcon color="primary" />
             </IconButton>
           </Grid>

@@ -16,6 +16,9 @@ const useStyles = makeStyles((theme) => ({
   root: {
     padding: 10,
     boxShadow: "0 0 0 1px rgb(0 0 0 / 10%) inset",
+    "&:hover": {
+      backgroundColor: "#f5f5f5",
+    },
   },
   img: {
     height: 134,

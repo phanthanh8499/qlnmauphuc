@@ -14,6 +14,7 @@ import NavigateNextIcon from "@mui/icons-material/NavigateNext";
 import NavigateBeforeIcon from "@mui/icons-material/NavigateBefore";
 import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
+import { LOCAL_PATH } from "../../../../constants/Constants";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -130,7 +131,7 @@ export default function Items(props) {
               <CardActionArea>
                 <CardMedia
                   className={classes.media}
-                  image={value.product_image1}
+                  image={LOCAL_PATH + value.product_image1.substring(2)}
                   title="Contemplative Reptile"
                 />
                 <CardContent>

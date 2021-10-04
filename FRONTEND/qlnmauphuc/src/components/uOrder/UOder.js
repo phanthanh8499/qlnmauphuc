@@ -1,5 +1,5 @@
 import { TabContext, TabList, TabPanel } from "@mui/lab";
-import { Badge, Grid, Tab, Typography } from "@mui/material";
+import { Badge, Grid, Tab } from "@mui/material";
 import { makeStyles } from "@mui/styles";
 import { Box } from "@mui/system";
 import React, { useEffect, useState } from "react";
@@ -7,11 +7,6 @@ import { useDispatch, useSelector } from "react-redux";
 import { getOrderData } from "../../redux/Action";
 import All from "./All";
 import { styled } from "@mui/material/styles";
-import Processing from "./Processing";
-import Sewing from "./Sewing";
-import Transport from "./Transport";
-import Complete from "./Complete";
-import Cancel from "./Cancel";
 
 const MyBadge = styled(Badge)`
   .MuiBadge-badge {
@@ -20,29 +15,29 @@ const MyBadge = styled(Badge)`
 `;
 
 const useStyles = makeStyles((theme) => ({}));
+
 export default function UOder() {
-  const classes = useStyles();
   const dispatch = useDispatch();
   const [loading, setLoading] = useState(true);
   const order = useSelector((state) => state.order);
   const { orderData } = order;
-  const [all, setAll] = useState(
-    
-  );
-  const [processing, setProcessing] = useState()
-  const [sewing, setSewing] = useState()
-  const [transport, setTransport] = useState()
-  const [complete, setComplete] = useState()
-  const [cancel, setCancel] = useState()
+  const [all, setAll] = useState();
+  const [processing, setProcessing] = useState();
+  const [sewing, setSewing] = useState();
+  const [transport, setTransport] = useState();
+  const [complete, setComplete] = useState();
+  const [cancel, setCancel] = useState();
   const [value, setValue] = useState("1");
   const { userInfo } = JSON.parse(localStorage.getItem("userInfo"));
-  
+
   const handleChange = (event, newValue) => {
     setValue(newValue);
   };
+
   useEffect(() => {
     dispatch(getOrderData(userInfo.id));
   }, []);
+
   useEffect(() => {
     setAll(orderData);
     setProcessing(
@@ -141,12 +136,22 @@ export default function UOder() {
               <TabPanel value="1">
                 <All userid={userInfo.id} data={all} />
               </TabPanel>
-              <TabPanel value="2"><All data={processing}/></TabPanel>
-              <TabPanel value="3"><All data={sewing}/></TabPanel>
-              <TabPanel value="4"><All data={transport}/></TabPanel>
+              <TabPanel value="2">
+                <All data={processing} />
+              </TabPanel>
+              <TabPanel value="3">
+                <All data={sewing} />
+              </TabPanel>
+              <TabPanel value="4">
+                <All data={transport} />
+              </TabPanel>
               <TabPanel value="5">Item Two</TabPanel>
-              <TabPanel value="6"><All data={complete}/></TabPanel>
-              <TabPanel value="7"><All data={cancel}/></TabPanel>
+              <TabPanel value="6">
+                <All data={complete} />
+              </TabPanel>
+              <TabPanel value="7">
+                <All data={cancel} />
+              </TabPanel>
             </TabContext>
           </Grid>
           <Grid item xs={12}></Grid>

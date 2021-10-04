@@ -14,7 +14,7 @@ export default function ListModule () {
               <ListItemIcon>
                 <ListAltIcon />
               </ListItemIcon>
-              <ListItemText primary="Danh sách đơn hàng" />
+              <ListItemText primary="Danh sách đơn đặt may" />
             </ListItem>
           </Link>
           <Link to="/account/profile">

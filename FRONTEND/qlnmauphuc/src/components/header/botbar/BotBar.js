@@ -4,6 +4,7 @@ import React, { useEffect } from "react";
 import { Link, NavLink } from "react-router-dom";
 import ShoppingBasketIcon from "@mui/icons-material/ShoppingBasket";
 import SearchIcon from "@mui/icons-material/Search";
+import { LOCAL_PATH } from "../../../constants/Constants";
 
 const useStyles = makeStyles((theme) => ({
   bg: {
@@ -33,7 +34,7 @@ const useStyles = makeStyles((theme) => ({
     right: 0,
     margin: "0 auto",
     boxShadow: "1px 1px 10px rgb(0 0 0 / 15%)",
-    zIndex: 9999,
+    zIndex: 2,
     opacity: 0.9,
     animation: "stuckMoveDown .6s",
   },
@@ -79,7 +80,7 @@ export default function BotBar() {
             <Grid item xs={3}>
               <Link to="/home">
                 <img
-                  src="./images/logo.png"
+                  src={LOCAL_PATH + "images/logo.png"} 
                   alt="logo"
                   className={classes.logoimg}
                 ></img>

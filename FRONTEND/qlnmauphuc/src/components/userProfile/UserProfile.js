@@ -19,7 +19,7 @@ import path from "path";
 import CameraAltIcon from "@mui/icons-material/CameraAlt";
 import { useDispatch } from "react-redux";
 import { editUserInfo } from "../../redux/Action";
-import { FRONTEND_ADM_URL, FRONTEND_URL } from "../../constants/Constants";
+import { FRONTEND_ADM_URL, FRONTEND_URL, LOCAL_PATH } from "../../constants/Constants";
 import { useSnackbar } from "notistack";
 
 const useStyles = makeStyles((theme) => ({
@@ -105,7 +105,7 @@ export default function UserProfile() {
       setTel(userInfo.user_tel);
       setAddress(userInfo.user_address);
       setEmail(userInfo.user_email);
-      setImgUpload("http://localhost:3000" + userInfo.user_avatar.substring(1));
+      setImgUpload(LOCAL_PATH + userInfo.user_avatar.substring(2));
       setLoading(false);
     }
     setState();
@@ -126,7 +126,6 @@ export default function UserProfile() {
     formData.append("user_avatar", userInfo.user_avatar);
     formData.append("token", userInfo.token);
     formData.append("FRONTEND_URL", FRONTEND_URL);
-    formData.append("FRONTEND_ADM_URL", FRONTEND_ADM_URL);
     if (file) {
       formData.append("file", file);
       formData.append("fileName", fileName);
