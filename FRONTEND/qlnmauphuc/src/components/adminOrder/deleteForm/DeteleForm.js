@@ -11,7 +11,7 @@ import { useSnackbar } from "notistack";
 import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
 import makeStyles from "@mui/styles/makeStyles";
 import clsx from "clsx";
-import { cancelOrder, deleteOrder, deleteProduct } from "../../../redux/Action";
+import { deleteOrder, deleteProduct } from "../../../redux/Action";
 
 const useStyle = makeStyles((theme) => ({
   root: {
@@ -41,12 +41,11 @@ function DeleteForm(props) {
   const dispatch = useDispatch();
   const { open, onClose, id } = props;
   const handleSubmit = () => {
-    console.log("onClick", id);
-    enqueueSnackbar("Huỷ đơn hàng thành công", {
+    enqueueSnackbar("Xoá sản phẩm thành công", {
       variant: "success",
       autoHideDuration: 2000,
     });
-    dispatch(cancelOrder(id));
+    dispatch(deleteOrder(id));
     onClose();
   }
   return (
@@ -64,8 +63,8 @@ function DeleteForm(props) {
             className={clsx(classes.center, classes.title)}
             xs={{ mb: 2 }}
           >
-            <Typography variant="h5">Xác nhận huỷ đơn hàng?</Typography>
-            <Typography>Bạn có chắc chắn muốn huỷ đơn hàng</Typography>
+            <Typography variant="h5">Xác nhận xoá?</Typography>
+            <Typography>Bạn có chắc chắn muốn xoá</Typography>
           </Stack>
         </Grid>
         <Grid item xs={12}>
@@ -74,7 +73,7 @@ function DeleteForm(props) {
               Hủy bỏ
             </Button>
             <Button variant="outlined" color="primary" onClick={handleSubmit}>
-              Xác nhận huỷ
+              Xác nhận xoá
             </Button>
           </Stack>
         </Grid>

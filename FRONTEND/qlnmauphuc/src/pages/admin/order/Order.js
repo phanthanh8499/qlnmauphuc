@@ -1,11 +1,11 @@
 import React, { Component } from "react";
-import AdminProducts from "../../../components/adminProducts";
+import AdminOrder from "../../../components/adminOrder";
 import AdminLayout from "../../../components/layout/AdminLayout";
 
-export default function Product() {
+export default function Order() {
   return (
     <AdminLayout>
-      <AdminProducts></AdminProducts>
+      <AdminOrder></AdminOrder>
     </AdminLayout>
   );
 }

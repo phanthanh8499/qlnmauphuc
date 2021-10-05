@@ -7,6 +7,7 @@ import {
   DANG_NHAP_THANH_CONG,
   DANG_NHAP_THAT_BAI,
   DANG_XUAT,
+  HUY_DON_HANG,
   LIET_KE_BFM,
   LIET_KE_DON_HANG,
   LIET_KE_DON_HANG_THAT_BAI,
@@ -323,6 +324,13 @@ export const orderReducer = (
         msg: action.msg,
       };
     case XOA_DON_HANG:
+      return {
+        ...state,
+        orderData: state.orderData.filter(
+          (orderData) => orderData.id !== action.payload
+        ),
+      };
+    case HUY_DON_HANG:
       return {
         ...state,
         orderData: state.orderData.map((item) => {

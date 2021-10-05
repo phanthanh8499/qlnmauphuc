@@ -7,6 +7,7 @@ import {
   CHINH_SUA_THONG_TIN_VAI,
   DANG_NHAP_THANH_CONG,
   DANG_NHAP_THAT_BAI,
+  HUY_DON_HANG,
   LIET_KE_BFM,
   LIET_KE_DON_HANG,
   LIET_KE_DON_HANG_THAT_BAI,
@@ -199,6 +200,12 @@ export const editOrder = (dataReq) => async (dispatch) => {
 export const deleteOrder = (data) => async (dispatch) => {
   console.log("delete", data)
   dispatch({ type: XOA_DON_HANG, payload: data });
+  // await Axios.get(`/admin/Order/delete.${data}`);
+};
+
+export const cancelOrder = (data) => async (dispatch) => {
+  console.log("delete", data)
+  dispatch({ type: HUY_DON_HANG, payload: data });
   // await Axios.get(`/admin/Order/delete.${data}`);
 };
 

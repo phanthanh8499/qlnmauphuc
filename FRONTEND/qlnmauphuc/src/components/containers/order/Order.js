@@ -42,6 +42,7 @@ import PropTypes from "prop-types";
 import ImageMagnify from "./ImageMagnify";
 import { format } from "date-fns";
 import { useSnackbar } from "notistack";
+import { LOCAL_PATH } from "../../../constants/Constants";
 
 
 const Accordion = styled((props) => (
@@ -286,7 +287,7 @@ export default function Order(props) {
     setOwner(event.target.value);
     setClothSelectedId("");
     setClothSelected("");
-    setImgUpload("./images/loadingImg.gif");
+    setImgUpload(LOCAL_PATH + "images/loading.gif");
     setClothQuantity(0);
     event.target.value === "kh"
       ? setDiscount(price * 0.3)

@@ -863,10 +863,17 @@ router.post("/admin/order/add", function (req, res) {
   );
 });
 
-router.get("/getDetailorder.:id", function (req, res) {
+router.get("/getDetailOrder.:id", function (req, res) {
   const { id } = req.params;
   pool.query(
-    `SELECT * FROM order WHERE id = ${id}`,
+    `SELECT order_details.*, order_customername, order_customeraddress, order_customerphone, order_customeremail, order_startdate, order_enddate, order_subtotal, order_discount, order_total, order_paymentid, opm_name, order_shippingid, osm_name, order_statusid, order_userid, products.product_name, products.product_typeid, products.product_image1, cloth.cloth_name, cloth.cloth_image, cloth.cloth_quantity, cloth.cloth_material, os_name FROM order_details 
+              INNER JOIN orders ON orders.id = order_details.od_orderid 
+              INNER JOIN products ON products.id = order_details.od_productid
+			  INNER JOIN cloth ON cloth.id = order_details.od_clothid
+			  INNER JOIN order_status ON order_status.id = orders.order_statusid
+			  INNER JOIN order_paymentmethod ON order_paymentmethod.id = orders.order_paymentid
+			  INNER JOIN order_shippingmethod ON order_shippingmethod.id = orders.order_shippingid
+			  WHERE order_details.id = ${id}`,
     (error, response) => {
       if (error) {
         console.log(error);
