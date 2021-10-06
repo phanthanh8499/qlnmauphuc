@@ -873,7 +873,7 @@ router.get("/getDetailOrder.:id", function (req, res) {
 			  INNER JOIN order_status ON order_status.id = orders.order_statusid
 			  INNER JOIN order_paymentmethod ON order_paymentmethod.id = orders.order_paymentid
 			  INNER JOIN order_shippingmethod ON order_shippingmethod.id = orders.order_shippingid
-			  WHERE order_details.id = ${id}`,
+			  WHERE order_details.od_orderid = '${id}'`,
     (error, response) => {
       if (error) {
         console.log(error);

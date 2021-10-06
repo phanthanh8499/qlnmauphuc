@@ -66,3 +66,4 @@ export const CHINH_SUA_THONG_TIN_DON_HANG = "CHINH_SUA_THONG_TIN_DON_HANG";
 export const XOA_DON_HANG = "XOA_DON_HANG";
 export const HUY_DON_HANG = "HUY_DON_HANG";
 export const XEM_DON_HANG = "XEM_DON_HANG";
+export const XU_LY_DON_HANG = "XU_LY_DON_HANG";

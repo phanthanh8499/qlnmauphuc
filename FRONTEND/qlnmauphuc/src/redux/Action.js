@@ -35,6 +35,7 @@ import {
   XOA_SAN_PHAM,
   XOA_SO_DO,
   XOA_VAI,
+  XU_LY_DON_HANG,
   YEU_CAU_DANG_NHAP,
   YEU_CAU_LIET_KE_DON_HANG,
   YEU_CAU_LIET_KE_SO_DO,
@@ -206,6 +207,12 @@ export const deleteOrder = (data) => async (dispatch) => {
 export const cancelOrder = (data) => async (dispatch) => {
   console.log("delete", data)
   dispatch({ type: HUY_DON_HANG, payload: data });
+  // await Axios.get(`/admin/Order/delete.${data}`);
+};
+
+export const processingOrder = (data) => async (dispatch) => {
+  console.log("xu ly", data)
+  dispatch({ type: XU_LY_DON_HANG, payload: data });
   // await Axios.get(`/admin/Order/delete.${data}`);
 };
 

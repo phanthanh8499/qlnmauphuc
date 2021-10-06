@@ -20,6 +20,8 @@ import {
   Grid,
   IconButton,
   InputBase,
+  Menu,
+  MenuItem,
   Paper,
 } from "@mui/material";
 import { getOrderData, getProductData } from "../../redux/Action";
@@ -32,6 +34,16 @@ import Tab from "@mui/material/Tab";
 import TabContext from "@mui/lab/TabContext";
 import TabList from "@mui/lab/TabList";
 import TabPanel from "@mui/lab/TabPanel";
+import EditIcon from "@mui/icons-material/Edit";
+import Divider from "@mui/material/Divider";
+import ArchiveIcon from "@mui/icons-material/Archive";
+import FileCopyIcon from "@mui/icons-material/FileCopy";
+import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
+import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
+import BlockIcon from "@mui/icons-material/Block";
+import CloseIcon from "@mui/icons-material/Close";
+import CancelIcon from "@mui/icons-material/Cancel";
+import { cancelOrder, deleteOrder } from "../../redux/Action";
 
 function CustomToolbar() {
   return (
@@ -42,6 +54,51 @@ function CustomToolbar() {
     </GridToolbarContainer>
   );
 }
+
+const StyledMenu = styled((props) => (
+  <Menu
+    elevation={0}
+    anchorOrigin={{
+      vertical: "bottom",
+      horizontal: "right",
+    }}
+    transformOrigin={{
+      vertical: "top",
+      horizontal: "right",
+    }}
+    {...props}
+  />
+))(({ theme }) => ({
+  "& .MuiPaper-root": {
+    borderRadius: 6,
+    marginTop: theme.spacing(1),
+    minWidth: 180,
+    top: '130px !important',
+    left: '204px !important',
+    color:
+      theme.palette.mode === "light"
+        ? "rgb(55, 65, 81)"
+        : theme.palette.grey[300],
+    boxShadow:
+      "rgb(255, 255, 255) 0px 0px 0px 0px, rgba(0, 0, 0, 0.05) 0px 0px 0px 1px, rgba(0, 0, 0, 0.1) 0px 10px 15px -3px, rgba(0, 0, 0, 0.05) 0px 4px 6px -2px",
+    "& .MuiMenu-list": {
+      padding: "4px 0",
+    },
+    "& .MuiMenuItem-root": {
+      "& .MuiSvgIcon-root": {
+        fontSize: 18,
+        color: theme.palette.text.secondary,
+        marginRight: theme.spacing(1.5),
+      },
+      "&:active": {
+        backgroundColor: alpha(
+          theme.palette.primary.main,
+          theme.palette.action.selectedOpacity
+        ),
+      },
+    },
+  },
+}));
 
 const useStyles = makeStyles((theme) => ({
   topBar: {
@@ -318,9 +375,9 @@ const MyButton = styled(Button)`
 export default function Data(props) {
   const classes = useStyles();
   const antDesignClasses = useStylesAntDesign();
-  const {data} = props;
+  const { data } = props;
   const dispatch = useDispatch();
-  const [dataRender, setDataRender] = useState([])
+  const [dataRender, setDataRender] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -346,6 +403,34 @@ export default function Data(props) {
       second: "2-digit",
     };
     return new Date(dateString).toLocaleDateString(undefined, options);
+  };
+
+  const [anchorEl, setAnchorEl] = useState(null);
+  const openMenu = Boolean(anchorEl);
+  const handleClickMenu = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+  const handleCloseMenu = () => {
+    setAnchorEl(null);
+  };
+  const handleClickEdit = () => {
+    setAnchorEl(null);
+    console.log(orderIdList);
+    orderIdList.forEach((element) => {
+      console.log(element.od_orderid);
+    });
+  };
+  const handleClickCancel = () => {
+    setAnchorEl(null);
+    orderIdList.forEach((element) => {
+      dispatch(cancelOrder(element.od_orderid));
+    });
+  };
+  const handleClickDelete = () => {
+    setAnchorEl(null);
+    orderIdList.forEach((element) => {
+      dispatch(deleteOrder(element.od_orderid));
+    });
   };
 
   const liveSreach = (event) => {
@@ -376,6 +461,7 @@ export default function Data(props) {
 
   const rows = dataRender;
   const [orderId, setOrderId] = useState("");
+  const [orderIdList, setOrderIdList] = useState([]);
 
   const [addForm, setAddForm] = useState(false);
   const [detailForm, setDetailForm] = useState(false);
@@ -417,7 +503,7 @@ export default function Data(props) {
         <DetailForm
           open={detailForm}
           onClose={closeDetailForm}
-          id={parseInt(orderId)}
+          id={orderId}
         ></DetailForm>
       );
     }
@@ -426,7 +512,7 @@ export default function Data(props) {
         <DeleteForm
           open={deleteForm}
           onClose={closeDeleteForm}
-          id={parseInt(orderId)}
+          id={orderId}
         ></DeleteForm>
       );
     }
@@ -501,12 +587,17 @@ export default function Data(props) {
       renderCell: (params) => {
         const handleClickEdit = () => {
           openDetailForm();
-          setOrderId(params.value);
+          setOrderId(
+            dataRender.filter((item) => item.id === params.value)[0].od_orderid
+          );
+         
         };
 
         const handleClickDelete = () => {
           openDeleteForm();
-          setOrderId(params.value);
+          setOrderId(
+            dataRender.filter((item) => item.id === params.value)[0].od_orderid
+          );
         };
 
         return (
@@ -524,11 +615,7 @@ export default function Data(props) {
   ];
 
   const CustomToolbar = () => {
-    return (
-      <GridToolbarContainer>
-        
-      </GridToolbarContainer>
-    );
+    return <GridToolbarContainer></GridToolbarContainer>;
   };
 
   return (
@@ -550,9 +637,47 @@ export default function Data(props) {
         </Grid>
       ) : (
         <>
-          <Grid item xs={12} sx={{marginBottom: '5px'}}>
+          <Grid item xs={12} sx={{ marginBottom: "5px" }}>
             <Grid container>
-              <Grid item xs={9}></Grid>
+              <Grid item xs={3}>
+                <Button
+                  id="demo-customized-button"
+                  aria-controls="demo-customized-menu"
+                  aria-haspopup="true"
+                  aria-expanded={openMenu ? "true" : undefined}
+                  variant="contained"
+                  disableElevation
+                  onClick={handleClickMenu}
+                  endIcon={<KeyboardArrowDownIcon />}
+                  sx={{ml: 0.5}}
+                >
+                  Hành động
+                </Button>
+                <StyledMenu
+                  id="demo-customized-menu"
+                  MenuListProps={{
+                    "aria-labelledby": "demo-customized-button",
+                  }}
+                  anchorEl={anchorEl}
+                  open={openMenu}
+                  onClose={handleCloseMenu}
+                >
+                  <MenuItem onClick={handleClickEdit} disableRipple>
+                    <EditIcon />
+                    Cập nhật trạng thái
+                  </MenuItem>
+                  <MenuItem onClick={handleClickCancel} disableRipple>
+                    <BlockIcon />
+                    Huỷ 
+                  </MenuItem>
+                  <MenuItem onClick={handleClickDelete} disableRipple>
+                    <CancelIcon />
+                    Xoá
+                  </MenuItem>
+                  
+                </StyledMenu>
+              </Grid>
+              <Grid item xs={6}></Grid>
               <Grid item xs={3}>
                 <Search>
                   <SearchIconWrapper>
@@ -585,9 +710,14 @@ export default function Data(props) {
               disableSelectionOnClick
               components={{
                 NoRowsOverlay: CustomNoRowsOverlay,
-                Toolbar: CustomToolbar,
               }}
-              // onSelectionModelChange={(row) => setOrderId(row)}
+              onSelectionModelChange={(ids) => {
+            const selectedIDs = new Set(ids);
+            console.log(ids)
+            const selectedRowData = dataRender.filter((row) => selectedIDs.has(row.id));
+            console.log(selectedRowData);
+            setOrderIdList(selectedRowData);
+            }}
             />
           </Grid>
 

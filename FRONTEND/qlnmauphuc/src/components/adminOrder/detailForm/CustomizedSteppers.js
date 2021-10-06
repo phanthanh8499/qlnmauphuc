@@ -12,7 +12,7 @@ import VideoLabelIcon from "@mui/icons-material/VideoLabel";
 import StepConnector, {
   stepConnectorClasses,
 } from "@mui/material/StepConnector";
-import { Button, Typography } from "@mui/material";
+import { Button, ButtonGroup, Grid, Typography } from "@mui/material";
 import { Box } from "@mui/system";
 import LocalShippingIcon from "@mui/icons-material/LocalShipping";
 import CropRotateIcon from "@mui/icons-material/CropRotate";
@@ -20,6 +20,8 @@ import FactCheckOutlinedIcon from "@mui/icons-material/FactCheckOutlined";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import AlarmIcon from "@mui/icons-material/Alarm";
 import AlarmOnIcon from "@mui/icons-material/AlarmOn";
+import {useDispatch} from 'react-redux';
+import { processingOrder } from "../../../redux/Action";
 
 const ColorlibConnector = styled(StepConnector)(({ theme }) => ({
   [`&.${stepConnectorClasses.alternativeLabel}`]: {
@@ -108,41 +110,16 @@ ColorlibStepIcon.propTypes = {
   icon: PropTypes.node,
 };
 
-const steps = [
-  {
-    label: "Chờ xác nhận",
-    date: "01/01/2021",
-  },
-  {
-    label: "Đã xác nhận",
-    date: "02/01/2021",
-  },
-  {
-    label: "Đang lấy vải",
-    date: "03/01/2021",
-  },
-  {
-    label: "Đang may",
-    date: "03/01/2021",
-  },
-  {
-    label: "Đã may xong",
-    date: "04/01/2021",
-  },
-  {
-    label: "Đang vận chuyển",
-    date: "05/01/2021",
-  },
-  {
-    label: "Hoàn tất",
-    date: "06/01/2021",
-  },
-];
+
 
 export default function CustomizedSteppers(props) {
+  const dispatch = useDispatch();
   const [activeStep, setActiveStep] = useState(0);
   const [skipped, setSkipped] = useState(new Set());
-  const {activeId} = props
+  const {activeId, id} = props
+  useEffect(() => {
+    setActiveStep(activeId);
+  }, [activeId]);
   const isStepOptional = (step) => {
     return step === 1;
   };
@@ -159,21 +136,54 @@ export default function CustomizedSteppers(props) {
     }
 
     setActiveStep((prevActiveStep) => prevActiveStep + 1);
+    dispatch(processingOrder({ order_statusid: activeStep + 1, od_orderid: id }));
     setSkipped(newSkipped);
   };
 
   const handleBack = () => {
     setActiveStep((prevActiveStep) => prevActiveStep - 1);
   };
+
   const handleReset = () => {
     setActiveStep(0);
   };
-  console.log("??", activeId)
+
+  const steps = [
+    {
+      label: "Chờ xác nhận",
+      date: "01/01/2021",
+    },
+    {
+      label: "Đã xác nhận",
+      date: "02/01/2021",
+    },
+    {
+      label: "Đang lấy vải",
+      date: "03/01/2021",
+    },
+    {
+      label: "Đang may",
+      date: "03/01/2021",
+    },
+    {
+      label: "Đã may xong",
+      date: "04/01/2021",
+    },
+    {
+      label: "Đang vận chuyển",
+      date: "05/01/2021",
+    },
+    {
+      label: "Hoàn tất",
+      date: "06/01/2021",
+    },
+  ];
+
   return (
     <Stack sx={{ width: "100%" }} spacing={4}>
       <Stepper
         alternativeLabel
-        activeStep={activeId === 10 ? -1 : activeId}
+        activeStep={activeStep === 10 ? -1 : activeStep}
         connector={<ColorlibConnector />}
       >
         {steps.map((step, index) => (
@@ -192,34 +202,36 @@ export default function CustomizedSteppers(props) {
           </Step>
         ))}
       </Stepper>
-      {/* {activeStep === steps.length ? (
-        <React.Fragment>
-         
-          <Box sx={{ display: "flex", flexDirection: "row", pt: 2 }}>
-            <Box sx={{ flex: "1 1 auto" }} />
-            <Button onClick={handleReset}>Reset</Button>
-          </Box>
-        </React.Fragment>
+      {activeStep === steps.length - 1 ? (
+        // <React.Fragment>
+        //   <Box sx={{ display: "flex", flexDirection: "row", pt: 2 }}>
+        //     <Box sx={{ flex: "1 1 auto" }} />
+        //     <Button onClick={handleReset}>Reset</Button>
+        //   </Box>
+        // </React.Fragment>
+        <></>
+      ) : activeStep === 10 ? (
+        <></>
       ) : (
-        <React.Fragment>
-          
-          <Box sx={{ display: "flex", flexDirection: "row", pt: 2 }}>
-            <Button
-              color="inherit"
-              disabled={activeStep === 0}
-              onClick={handleBack}
-              sx={{ mr: 1 }}
-            >
-              Back
-            </Button>
-            <Box sx={{ flex: "1 1 auto" }} />
+        <Grid container sx={{ margin: "0px !important" }}>
+          <Grid item xs={10}></Grid>
+          <Grid item xs={2}>
+            <ButtonGroup>
+              <Button
+                color="error"
+                disabled={activeStep === 0 || activeStep === 1}
+                onClick={handleBack}
+              >
+                Back
+              </Button>
 
-            <Button onClick={handleNext}>
-              {activeStep === steps.length - 1 ? "Finish" : "Next"}
-            </Button>
-          </Box>
-        </React.Fragment>
-      )} */}
+              <Button onClick={handleNext} disabled={activeStep === 1}>
+                {activeStep === steps.length - 1 ? "Finish" : "Next"}
+              </Button>
+            </ButtonGroup>
+          </Grid>
+        </Grid>
+      )}
     </Stack>
   );
 }

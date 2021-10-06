@@ -1,4 +1,4 @@
-import { CircularProgress, Dialog, Grid, Typography } from "@mui/material";
+import { ButtonGroup, CircularProgress, Dialog, FormControl, Grid, IconButton, InputLabel, MenuItem, Select, Typography } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import React, { useEffect, useState } from "react";
 import makeStyles from "@mui/styles/makeStyles";
@@ -12,7 +12,11 @@ import PhoneIcon from "@mui/icons-material/Phone";
 import HomeIcon from "@mui/icons-material/Home";
 import ImageMagnify from "./ImageMagnify";
 import { useDispatch, useSelector } from "react-redux";
-import { getDetailOrder } from "../../../redux/Action";
+import { getDetailOrder, processingOrder } from "../../../redux/Action";
+import EditIcon from "@mui/icons-material/Edit";
+import CheckIcon from "@mui/icons-material/Check";
+import CloseIcon from "@mui/icons-material/Close";
+import { useSnackbar } from "notistack";
 
 const useStyle = makeStyles((theme) => ({
   root: {
@@ -71,13 +75,16 @@ const center = {
 function DetailForm(props) {
   const classes = useStyle();
   const dispatch = useDispatch();
+  const { enqueueSnackbar } = useSnackbar();
   const { open, onClose, id, data } = props;
   const [loading, setLoading] = useState(true);
+  const [isEdit, setIsEdit] = useState(true);
+
   const order = useSelector((state) => state.order);
   const { loadingDetail, detailData } = order;
   useEffect(() => {
     dispatch(getDetailOrder(id));
-  }, []);
+  }, [id]);
 
 
   const formatDate = (dateString) => {
@@ -92,6 +99,30 @@ function DetailForm(props) {
     return new Date(dateString).toLocaleDateString(undefined, options);
   };
 
+  const setEdit = () => {
+    setIsEdit(!isEdit)
+  }
+
+  const [tailor, setTailor] = useState();
+  const handleChangeEdit = () => {
+    if (!tailor) {
+      enqueueSnackbar("Chưa chọn thợ may", {
+        variant: "error",
+        autoHideDuration: 2000,
+      });
+    } else {
+      enqueueSnackbar("OK", {
+        variant: "success",
+        autoHideDuration: 2000,
+      });
+       setIsEdit(!isEdit);
+    }
+    dispatch(processingOrder({order_statusid: 2, od_orderid: id}));
+  }
+  const handleChangeTailor = (e) => {
+    
+    setTailor(e.target.value);
+  }
   const orderInfo = () => {
     return (
       <Grid container>
@@ -196,26 +227,61 @@ function DetailForm(props) {
       <Grid container sx={{ mt: 1 }}>
         <Grid item xs={12}>
           <SpanButton>Thông tin người may</SpanButton>
+          {detailData[0].order_statusid === 1 ? (isEdit ? (
+            <IconButton size="small" onClick={setEdit} color="primary">
+              <EditIcon />
+            </IconButton>
+          ) : (
+            <>
+              <IconButton size="small" onClick={handleChangeEdit} color="success">
+                <CheckIcon />
+              </IconButton>
+              <IconButton size="small" onClick={setEdit} color="error">
+                <CloseIcon />
+              </IconButton>
+            </>
+          )) : (<></>)}
+          
         </Grid>
+
         <Grid item xs={12} className={classes.infoBox}>
-          <MyTitle>
-            <PersonIcon />
-            <Typography className={classes.title}>
-              <MySpan>Người may:</MySpan>...
-            </Typography>
-          </MyTitle>
-          <MyTitle>
-            <HomeIcon />
-            <Typography className={classes.title}>
-              <MySpan>Địa chỉ:</MySpan>...
-            </Typography>
-          </MyTitle>
-          <MyTitle>
-            <PhoneIcon />
-            <Typography className={classes.title}>
-              <MySpan>Số điện thoại:</MySpan>...
-            </Typography>
-          </MyTitle>
+          {!isEdit ? (
+            <FormControl fullWidth>
+              <InputLabel id="tailor-label">Thợ may</InputLabel>
+              <Select
+                labelId="tailor-label"
+                id="demo-simple-select"
+                value={tailor}
+                label="Thợ may"
+                onChange={handleChangeTailor}
+              >
+                <MenuItem value={10}>Ten</MenuItem>
+                <MenuItem value={20}>Twenty</MenuItem>
+                <MenuItem value={30}>Thirty</MenuItem>
+              </Select>
+            </FormControl>
+          ) : (
+            <>
+              <MyTitle>
+                <PersonIcon />
+                <Typography className={classes.title}>
+                  <MySpan>Người may:</MySpan>...
+                </Typography>
+              </MyTitle>
+              <MyTitle>
+                <HomeIcon />
+                <Typography className={classes.title}>
+                  <MySpan>Địa chỉ:</MySpan>...
+                </Typography>
+              </MyTitle>
+              <MyTitle>
+                <PhoneIcon />
+                <Typography className={classes.title}>
+                  <MySpan>Số điện thoại:</MySpan>...
+                </Typography>
+              </MyTitle>
+            </>
+          )}
         </Grid>
       </Grid>
     );
@@ -450,7 +516,10 @@ function DetailForm(props) {
                   {orderInfo()}
                 </Grid>
                 <Grid item xs={8}>
-                  <CustomizedSteppers activeId={detailData[0].order_statusid} />
+                  <CustomizedSteppers
+                    activeId={detailData[0].order_statusid}
+                    id={id}
+                  />
                 </Grid>
               </Grid>
             </Grid>

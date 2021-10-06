@@ -40,6 +40,7 @@ import {
   XOA_USER_THANH_CONG,
   XOA_USER_THAT_BAI,
   XOA_VAI,
+  XU_LY_DON_HANG,
   YEU_CAU_DANG_NHAP,
   YEU_CAU_LIET_KE_DON_HANG,
   YEU_CAU_LIET_KE_SO_DO,
@@ -327,25 +328,44 @@ export const orderReducer = (
       return {
         ...state,
         orderData: state.orderData.filter(
-          (orderData) => orderData.id !== action.payload
+          (orderData) => orderData.od_orderid !== action.payload
         ),
       };
     case HUY_DON_HANG:
       return {
         ...state,
         orderData: state.orderData.map((item) => {
-          if (item.id === parseInt(action.payload)) {
+          if (item.od_orderid === action.payload) {
             item.order_statusid = 10;
             item.os_name = "Đã huỷ";
-            item.id = parseInt(action.payload);
+            item.od_orderid = action.payload;
             return item;
           } else {
             return item;
           }
         }),
-        // orderData: state.orderData.filter(
-        //   (orderData) => orderData.id !== action.payload
-        // ),
+      };
+    case XU_LY_DON_HANG:
+      return {
+        ...state,
+        orderData: state.orderData.map((item) => {
+          if (item.od_orderid === action.payload.od_orderid) {
+            item.order_statusid = action.payload.order_statusid;
+            item.od_orderid = action.payload.od_orderid;
+            return item;
+          } else {
+            return item;
+          }
+        }),
+        detailData: state.detailData.map((item) => {
+          if (item.od_orderid === action.payload.od_orderid) {
+            item.order_statusid = action.payload.order_statusid;
+            item.od_orderid = action.payload.od_orderid;
+            return item;
+          } else {
+            return item;
+          }
+        }),
       };
     case XEM_DON_HANG:
       return {

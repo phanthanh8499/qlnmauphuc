@@ -100,7 +100,7 @@ export default function All(props) {
   const handleClickDelete = (id) => {
     // setDeleteForm(true);
     openDeleteForm();
-    setOrderid(parseInt(id));
+    setOrderid(id);
   };
 
   const handleClickDetail = (id) => {
@@ -116,7 +116,7 @@ export default function All(props) {
         <DeleteForm
           open={deleteForm}
           onClose={closeDeleteForm}
-          id={parseInt(orderid)}
+          id={orderid}
         ></DeleteForm>
       );
     }
@@ -191,7 +191,7 @@ export default function All(props) {
               </IconButton>
             </ButtonGroup>
             <IconButton
-              onClick={() => handleClickDelete(value.id)}
+              onClick={() => handleClickDelete(value.od_orderid)}
               size="large"
             >
               <DeleteOutlineIcon color="error" />
