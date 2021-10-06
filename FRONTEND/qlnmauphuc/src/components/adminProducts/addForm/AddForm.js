@@ -22,7 +22,7 @@ import { useSnackbar } from "notistack";
 import ProductImageGallery from "./ProductImageGallery";
 import PhotoCamera from "@mui/icons-material/PhotoCamera";
 import makeStyles from "@mui/styles/makeStyles";
-import { FRONTEND_ADM_URL, FRONTEND_URL } from "../../../constants/Constants";
+import { FRONTEND_ADM_URL, FRONTEND_URL, LOCAL_PATH } from "../../../constants/Constants";
 import { addProduct } from "../../../redux/Action";
 import axios from "axios";
 
@@ -314,7 +314,7 @@ function AddForm(props) {
     formData.append("file4", file4);
     formData.append("fileName4", fileName4);
     formData.append("frontEndURL", FRONTEND_URL);
-    formData.append("frontEndAdmURL", FRONTEND_ADM_URL);
+    formData.append("product_image1",  "./images/" + type + "/" + code + "/" + fileName1)
     if (
       !code ||
       !name ||

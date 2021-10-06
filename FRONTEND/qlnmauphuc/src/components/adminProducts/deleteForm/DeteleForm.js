@@ -1,14 +1,8 @@
-import {
-  Button,
-  Dialog,
-  Grid,
-  Stack,
-  Typography,
-} from "@mui/material";
+import { Button, Dialog, Grid, Stack, Typography } from "@mui/material";
 import React from "react";
 import { useDispatch } from "react-redux";
 import { useSnackbar } from "notistack";
-import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
+import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline";
 import makeStyles from "@mui/styles/makeStyles";
 import clsx from "clsx";
 import { deleteProduct } from "../../../redux/Action";
@@ -31,7 +25,7 @@ const useStyle = makeStyles((theme) => ({
     alignItems: "center",
   },
   title: {
-    margin: '10px 0px',
+    margin: "10px 0px",
   },
 }));
 
@@ -39,16 +33,21 @@ function DeleteForm(props) {
   const classes = useStyle();
   const { enqueueSnackbar } = useSnackbar();
   const dispatch = useDispatch();
-  const { open, onClose, id } = props;
+  const { open, onClose, id, listId } = props;
   const handleSubmit = () => {
-    console.log("onClick", id);
+    if (listId.length !== 0) {
+      listId.forEach((element) => {
+        dispatch(deleteProduct(element.id));
+      });
+    } else {
+      dispatch(deleteProduct(id));
+    }
     enqueueSnackbar("Xoá sản phẩm thành công", {
       variant: "success",
       autoHideDuration: 2000,
     });
-    dispatch(deleteProduct(id));
     onClose();
-  }
+  };
   return (
     <Dialog
       onClose={onClose}

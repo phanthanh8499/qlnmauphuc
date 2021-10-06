@@ -7,18 +7,56 @@ import { DataGrid, GridOverlay } from "@mui/x-data-grid";
 import AddForm from "./addForm/AddForm";
 import DetailForm from "./detailForm/DetailForm";
 import DeleteForm from "./deleteForm/DeteleForm";
-import { Button, ButtonGroup, CircularProgress, Grid, IconButton, Paper } from "@mui/material";
+import { Badge, Button, ButtonGroup, CircularProgress, Divider, Grid, IconButton, Paper, Tab } from "@mui/material";
 import { getProductData } from "../../redux/Action";
 import { createTheme } from "@mui/material/styles";
 import { createStyles, makeStyles } from "@mui/styles";
+import { LOCAL_PATH } from "../../constants/Constants";
+import { styled } from "@mui/material/styles";
+import { Search, SearchIconWrapper, StyledInputBase } from "../utility/Utility";
+import SearchIcon from "@mui/icons-material/Search";
+import { Box } from "@mui/system";
+import TabList from "@mui/lab/TabList";
+import TabContext from "@mui/lab/TabContext";
+import TabPanel from "@mui/lab/TabPanel";
+import Data from "./Data";
+
+
+const MyBadge = styled(Badge)(({theme}) => ({
+  "& .MuiBadge-badge": {
+    right: '-10px',
+  },
+}));
+
+const MyTab = styled(Tab)(({ theme }) => ({
+  textTransform: "none",
+  padding: "12px 21px",
+}));
 
 const useStyles = makeStyles((theme) => ({
   topBar: {
     padding: 5,
     margin: "0px 0px 5px 0px !important",
   },
+  img: {
+    height: 100,
+    width: 100,
+  },
 }));
 
+const MyDataGrid = styled(DataGrid)(({ theme }) => ({
+  "& .MuiDataGrid-row": {
+    minHeight: "100px !important",
+    maxHeight: "100px !important",
+  },
+  "& .MuiDataGrid-cell": {
+    minHeight: "100px !important",
+    maxHeight: "100px !important",
+  },
+  "& .MuiDataGrid-viewport": {
+    height: "500px !important",
+  },
+}));
 const defaultTheme = createTheme();
 const useStyles2 = makeStyles(
   (theme) =>
@@ -236,12 +274,40 @@ export default function AdminProducts() {
   const products = useSelector((state) => state.products);
   const { loading, productData, error } = products;
   const dispatch = useDispatch();
+console.log("123", productData)
   useEffect(() => {
     dispatch(getProductData());
-  }, [dispatch]);
-  const rows = productData;
-  const [productid, setProductid] = useState("");
+  }, []);
 
+  const [all, setAll] = useState();
+  const [blazer, setBlazer] = useState();
+  const [suit, setSuit] = useState();
+  const [gile, setGile] = useState();
+  // const [loading, setLoading] = useState(true);
+  useEffect(() => { 
+    console.log("345", productData);
+    // setAll(productData);
+    // const abc = productData.filter((productData) => productData.id === 1);
+    // console.log(abc);
+    setBlazer(productData.filter((item) => item.id === 1));
+    // setBlazer(
+      productData.filter(
+        (productData) => productData.product_typeid === "BFM" || productData.product_typeid === "BFF"
+      )
+    // );
+    // setSuit(
+    //   productData.filter(
+    //     (productData) => productData.product_typeid === "SFM" || productData.product_typeid === "SFF"
+    //   )
+    // );
+    // setGile(
+    //   productData.filter(
+    //     (productData) => productData.product_typeid === "GFM" || productData.product_typeid === "GFF"
+    //   )
+    // );
+    // setLoading(false);
+  }, []);
+  
   const [addForm, setAddForm] = useState(false);
   const [detailForm, setDetailForm] = useState(false);
   const [deleteForm, setDeleteForm] = useState(false);
@@ -267,6 +333,11 @@ export default function AdminProducts() {
     setDeleteForm(false);
   };
 
+  const [value, setValue] = useState("1");
+  const handleChange = (event, newValue) => {
+    setValue(newValue);
+  };
+
   const renderForm = () => {
     if (addForm) {
       return (
@@ -277,74 +348,12 @@ export default function AdminProducts() {
         ></AddForm>
       );
     }
-    if (detailForm) {
-      return (
-        <DetailForm
-          open={detailForm}
-          onClose={closeDetailForm}
-          id={parseInt(productid)}
-        ></DetailForm>
-      );
-    }
-    if (deleteForm) {
-      return (
-        <DeleteForm
-          open={deleteForm}
-          onClose={closeDeleteForm}
-          id={parseInt(productid)}
-        ></DeleteForm>
-      );
-    }
   };
 
-  const columns = [
-    { field: "id", headerName: "ID", resizable: true },
-    { field: "product_code", headerName: "Mã SP", width: 120 },
-    { field: "product_name", headerName: "Tên sản phẩm", width: 400 },
-    { field: "product_price", headerName: "Giá", width: 100, type: "number" },
-    {
-      field: "product_old_price",
-      headerName: "Giá cũ",
-      width: 130,
-      type: "number",
-    },
-    { field: "product_color", headerName: "Màu sắc", width: 250 },
-    { field: "product_material", headerName: "Chất liệu", width: 300 },
-    { field: "product_lining", headerName: "Lớp lót", width: 130 },
-    { field: "product_thickness", headerName: "Độ dày", width: 130 },
-    { field: "product_softness", headerName: "Độ mềm", width: 130 },
-    { field: "product_elasticity", headerName: "Độ co giãn", width: 130 },
-    {
-      field: "Hành động",
-      headerName: "Hành động",
-      sortable: false,
-      width: 110,
-      disableClickEventBubbling: true,
-      renderCell: (params) => {
-        const handleClickEdit = () => {
-          openDetailForm();
-        };
-
-        const handleClickDelete = () => {
-          openDeleteForm();
-        };
-
-        return (
-          <ButtonGroup variant="outlined">
-            <IconButton onClick={handleClickEdit} size="large">
-              <VisibilityIcon />
-            </IconButton>
-            <IconButton onClick={handleClickDelete} size="large">
-              <DeleteOutlineIcon color="error" />
-            </IconButton>
-          </ButtonGroup>
-        );
-      },
-    },
-  ];
+ 
 
   return (
-    <Grid container>
+    <Grid container component={Paper}>
       {loading ? (
         <Grid
           item
@@ -364,32 +373,116 @@ export default function AdminProducts() {
         <div>error</div>
       ) : (
         <>
-          <Grid item xs={12} className={classes.topBar} component={Paper}>
-            <Button variant="outlined" color="primary" onClick={openAddForm}>
-              Thêm sản phẩm
-            </Button>
-          </Grid>
-          <Grid
-            item
-            xs={12}
-            style={{
-              height: 515,
-              width: "100%",
-              "background-color": "#ffffff",
-            }}
-          >
-            <DataGrid
-              rows={rows}
-              columns={columns}
-              pageSize={8}
-              className={antDesignClasses.root}
-              components={{
-                NoRowsOverlay: CustomNoRowsOverlay,
-              }}
-              onSelectionModelChange={(row) => setProductid(row.toString())}
-            />
-          </Grid>
-          {renderForm()}
+          <TabContext value={value}>
+            <Grid item xs={12} className={classes.topBar}>
+              <Grid container>
+                <Grid item xs={12}>
+                  <Box sx={{ borderColor: "divider" }}>
+                    <TabList
+                      onChange={handleChange}
+                      aria-label="lab API tabs example"
+                    >
+                      <MyTab
+                        label={
+                          <MyBadge
+                            badgeContent={productData.length}
+                            color="primary"
+                          >
+                            Tất cả
+                          </MyBadge>
+                        }
+                        value="1"
+                      />
+                      <MyTab
+                        label={
+                          <MyBadge
+                            badgeContent={
+                              productData.filter(
+                                (productData) =>
+                                  productData.product_typeid === "BFM" ||
+                                  productData.product_typeid === "BFF"
+                              ).length
+                            }
+                            color="primary"
+                          >
+                            Blazer
+                          </MyBadge>
+                        }
+                        value="2"
+                      />
+                      <MyTab
+                        label={
+                          <MyBadge
+                            badgeContent={
+                              productData.filter(
+                                (productData) =>
+                                  productData.product_typeid === "SFM" ||
+                                  productData.product_typeid === "SFF"
+                              ).length
+                            }
+                            color="primary"
+                          >
+                            Suit
+                          </MyBadge>
+                        }
+                        value="3"
+                      />
+                      <MyTab
+                        label={
+                          <MyBadge
+                            badgeContent={
+                              productData.filter(
+                                (productData) =>
+                                  productData.product_typeid === "GFM" ||
+                                  productData.product_typeid === "GFF"
+                              ).length
+                            }
+                            color="primary"
+                          >
+                            Gile
+                          </MyBadge>
+                        }
+                        value="4"
+                      />
+                    </TabList>
+                  </Box>
+                </Grid>
+              </Grid>
+            </Grid>
+            <Grid item xs={12}>
+              <Divider sx={{ margin: "0px 0px 5px 0px" }} />
+            </Grid>
+            
+            <Grid item xs={12}>
+              <TabPanel value="1" sx={{ padding: 0 }}>
+                <Data
+                  data={productData}
+                />
+              </TabPanel>
+              <TabPanel value="2" sx={{ padding: 0 }}>
+                <Data data={productData.filter(
+                    (productData) =>
+                      productData.product_typeid === "BFM" ||
+                      productData.product_typeid === "BFF"
+                  )} />
+              </TabPanel>
+              <TabPanel value="3" sx={{ padding: 0 }}>
+                <Data data={productData.filter(
+                    (productData) =>
+                      productData.product_typeid === "SFM" ||
+                      productData.product_typeid === "SFF"
+                  )} />
+              </TabPanel>
+              <TabPanel value="4" sx={{ padding: 0 }}>
+                <Data data={productData.filter(
+                    (productData) =>
+                      productData.product_typeid === "GFM" ||
+                      productData.product_typeid === "GFF"
+                  )} />
+              </TabPanel>
+            </Grid>
+            {renderForm()}
+          </TabContext>
         </>
       )}
     </Grid>

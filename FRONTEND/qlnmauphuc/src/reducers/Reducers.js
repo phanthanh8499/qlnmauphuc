@@ -76,7 +76,7 @@ export const productReducer = (
       const data = action.payload.sort(function (a, b) {
         return a.id - b.id;
       });
-      return { loading: false, productData: data };
+      return { ...state, loading: false, productData: data };
     case LIET_KE_BFM:
       return {
         ...state,

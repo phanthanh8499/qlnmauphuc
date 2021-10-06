@@ -3,12 +3,7 @@ import { useSelector, useDispatch } from "react-redux";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import { useSnackbar } from "notistack";
-import {
-  DataGrid,
-  GridOverlay,
-  GridToolbarContainer,
-  GridToolbarExport,
-} from "@mui/x-data-grid";
+import { DataGrid, GridOverlay } from "@mui/x-data-grid";
 import AddForm from "./addForm/AddForm";
 import DetailForm from "./detailForm/DetailForm";
 import DeleteForm from "./deleteForm/DeteleForm";
@@ -17,57 +12,65 @@ import {
   Button,
   ButtonGroup,
   CircularProgress,
+  Divider,
   Grid,
   IconButton,
-  InputBase,
-  Menu,
   MenuItem,
   Paper,
+  Tab,
 } from "@mui/material";
-import { getOrderData, getProductData } from "../../redux/Action";
+import { getProductData } from "../../redux/Action";
 import { createTheme } from "@mui/material/styles";
 import { createStyles, makeStyles } from "@mui/styles";
-import { styled, alpha } from "@mui/material/styles";
+import { LOCAL_PATH } from "../../constants/Constants";
+import { styled } from "@mui/material/styles";
+import { Search, SearchIconWrapper, StyledInputBase, StyledMenu } from "../utility/Utility";
 import SearchIcon from "@mui/icons-material/Search";
-import Box from "@mui/material/Box";
-import Tab from "@mui/material/Tab";
-import TabContext from "@mui/lab/TabContext";
+import { Box } from "@mui/system";
 import TabList from "@mui/lab/TabList";
+import TabContext from "@mui/lab/TabContext";
 import TabPanel from "@mui/lab/TabPanel";
-import EditIcon from "@mui/icons-material/Edit";
-import Divider from "@mui/material/Divider";
-import ArchiveIcon from "@mui/icons-material/Archive";
-import FileCopyIcon from "@mui/icons-material/FileCopy";
-import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import BlockIcon from "@mui/icons-material/Block";
 import CloseIcon from "@mui/icons-material/Close";
 import CancelIcon from "@mui/icons-material/Cancel";
-import { cancelOrder, deleteOrder } from "../../redux/Action";
-import { Search, SearchIconWrapper, StyledInputBase, StyledMenu } from "../utility/Utility";
-import CancelForm from "./cancelForm/cancelForm";
+import EditIcon from "@mui/icons-material/Edit";
 
-function CustomToolbar() {
-  return (
-    <GridToolbarContainer>
-      <GridToolbarExport variant="outlined" utf8WithBom={true} />
-      {/* <Button variant="outlined" color="primary">
-      </Button> */}
-    </GridToolbarContainer>
-  );
-}
+const MyBadge = styled(Badge)(({ theme }) => ({
+  "& .MuiBadge-badge": {
+    right: "-10px",
+  },
+}));
+
+const MyTab = styled(Tab)(({ theme }) => ({
+  textTransform: "none",
+  padding: "12px 21px",
+}));
 
 const useStyles = makeStyles((theme) => ({
   topBar: {
     padding: 5,
     margin: "0px 0px 5px 0px !important",
   },
+  img: {
+    height: 100,
+    width: 100,
+  },
 }));
 
-const MyTab = styled(Tab)(({ theme }) => ({
-  textTransform: "none",
+const MyDataGrid = styled(DataGrid)(({ theme }) => ({
+  "& .MuiDataGrid-row": {
+    minHeight: "100px !important",
+    maxHeight: "100px !important",
+  },
+  "& .MuiDataGrid-cell": {
+    minHeight: "100px !important",
+    maxHeight: "100px !important",
+  },
+  "& .MuiDataGrid-viewport": {
+    height: "500px !important",
+  },
 }));
-
 const defaultTheme = createTheme();
 const useStyles2 = makeStyles(
   (theme) =>
@@ -278,83 +281,27 @@ function CustomNoRowsOverlay() {
   );
 }
 
-const MyButton = styled(Button)`
-  text-transform: none;
-  border-radius: 25px;
-`;
-
 export default function Data(props) {
   const classes = useStyles();
   const antDesignClasses = useStylesAntDesign();
-  const { data } = props;
-  const dispatch = useDispatch();
+  const { enqueueSnackbar } = useSnackbar();
+  const products = useSelector((state) => state.products);
+  const { loading, productData, error } = products;
+  const {data} = props;
   const [dataRender, setDataRender] = useState([]);
-  const [loading, setLoading] = useState(true);
-
+  const dispatch = useDispatch();
   useEffect(() => {
-    setDataRender(data);
-    setLoading(false);
+    setDataRender(data)
+    // dispatch(getProductData());
   }, [data]);
-
-  const removeAccents = (str) => {
-    return str
-      .normalize("NFD")
-      .replace(/[\u0300-\u036f]/g, "")
-      .replace(/đ/g, "d")
-      .replace(/Đ/g, "D");
-  };
-
-  const formatDate = (dateString) => {
-    const options = {
-      year: "numeric",
-      month: "2-digit",
-      day: "2-digit",
-      hour: "2-digit",
-      minute: "2-digit",
-      second: "2-digit",
-    };
-    return new Date(dateString).toLocaleDateString(undefined, options);
-  };
-
-  const [anchorEl, setAnchorEl] = useState(null);
-  const openMenu = Boolean(anchorEl);
-  
-
-  const liveSearch = (event) => {
-    let string = event.target.value;
-    event.preventDefault();
-    if (string) {
-      let filtered = data.filter((data) => {
-        return (
-          data.od_orderid.includes(string.toLowerCase()) ||
-          removeAccents(data.order_customername)
-            .toLowerCase()
-            .includes(removeAccents(string).toLowerCase()) ||
-          removeAccents(data.product_name)
-            .toLowerCase()
-            .includes(removeAccents(string).toLowerCase()) ||
-          removeAccents(data.os_name)
-            .toLowerCase()
-            .includes(removeAccents(string).toLowerCase()) ||
-          formatDate(data.order_startdate).includes(string) ||
-          data.order_total.toString().includes(string)
-        );
-      });
-      setDataRender(filtered);
-    } else {
-      setDataRender(data);
-    }
-  };
-
   const rows = dataRender;
-  const [orderId, setOrderId] = useState("");
-  const [orderIdList, setOrderIdList] = useState([]);
-const { enqueueSnackbar } = useSnackbar();
+  const [productid, setProductid] = useState("");
+
   const [addForm, setAddForm] = useState(false);
   const [detailForm, setDetailForm] = useState(false);
   const [deleteForm, setDeleteForm] = useState(false);
-  const [cancelForm, setCancelForm] = useState(false);
-
+  const [productIdList, setProductIdList] = useState([]);
+  const [productId, setProductId] = useState(0)
   const openAddForm = () => {
     setAddForm(true);
   };
@@ -376,13 +323,8 @@ const { enqueueSnackbar } = useSnackbar();
     setDeleteForm(false);
   };
 
-  const openCancelForm = () => {
-    setCancelForm(true);
-  };
-  const closeCancelForm = () => {
-    setCancelForm(false);
-  };
-
+  const [anchorEl, setAnchorEl] = useState(null);
+  const openMenu = Boolean(anchorEl);
   const handleClickMenu = (event) => {
     setAnchorEl(event.currentTarget);
   };
@@ -391,29 +333,83 @@ const { enqueueSnackbar } = useSnackbar();
   };
   const handleClickEdit = () => {
     setAnchorEl(null);
-    console.log(orderIdList);
     
   };
-  const handleClickCancel = () => {
-    setAnchorEl(null);
-    if (orderIdList.length === 0) {
-      enqueueSnackbar("Vui lòng chọn đơn hàng cần huỷ", {
-        variant: "error",
-        autoHideDuration: 2000,
-      });
-    } else {
-      openCancelForm();
-    }
-  };
+ 
   const handleClickDelete = () => {
     setAnchorEl(null);
-    if (orderIdList.length === 0) {
-      enqueueSnackbar("Vui lòng chọn đơn hàng cần xoá", {
+    if(productIdList.length === 0){
+      enqueueSnackbar("Vui lòng chọn sản phẩm cần xoá", {
         variant: "error",
         autoHideDuration: 2000,
       });
+      return false;
+    }
+    openDeleteForm();
+  };
+
+  const [value, setValue] = useState("1");
+  const handleChange = (event, newValue) => {
+    setValue(newValue);
+  };
+
+  const removeAccents = (str) => {
+    return str
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .replace(/đ/g, "d")
+      .replace(/Đ/g, "D");
+  };
+
+  const formatDate = (dateString) => {
+    const options = {
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit",
+    };
+    return new Date(dateString).toLocaleDateString(undefined, options);
+  };
+
+  const liveSearch = (event) => {
+    let string = event.target.value;
+    event.preventDefault();
+    if (string) {
+      let filtered = data.filter((data) => {
+        return (
+          data.id === parseInt(string) ||
+          data.product_code.toLowerCase().includes(string.toLowerCase()) ||
+          removeAccents(data.product_name)
+            .toLowerCase()
+            .includes(removeAccents(string).toLowerCase()) ||
+          removeAccents(data.product_material)
+            .toLowerCase()
+            .includes(removeAccents(string).toLowerCase()) ||
+          removeAccents(data.product_lining)
+            .toLowerCase()
+            .includes(removeAccents(string).toLowerCase()) ||
+          removeAccents(data.product_thickness)
+            .toLowerCase()
+            .includes(removeAccents(string).toLowerCase()) ||
+          removeAccents(data.product_softness)
+            .toLowerCase()
+            .includes(removeAccents(string).toLowerCase()) ||
+          removeAccents(data.product_color)
+            .toLowerCase()
+            .includes(removeAccents(string).toLowerCase()) ||
+          removeAccents(data.product_elasticity)
+            .toLowerCase()
+            .includes(removeAccents(string).toLowerCase()) ||
+          
+          data.product_price.toString().includes(string) 
+          // data.product_old_price.toString().includes(string)
+        );
+      });
+      setDataRender(filtered);
     } else {
-      openDeleteForm();
+      setDataRender(data);
     }
   };
 
@@ -432,7 +428,7 @@ const { enqueueSnackbar } = useSnackbar();
         <DetailForm
           open={detailForm}
           onClose={closeDetailForm}
-          id={orderId}
+          id={parseInt(productId)}
         ></DetailForm>
       );
     }
@@ -441,83 +437,44 @@ const { enqueueSnackbar } = useSnackbar();
         <DeleteForm
           open={deleteForm}
           onClose={closeDeleteForm}
-          id={orderId}
-          listId={orderIdList}
+          id={parseInt(productId)}
+          listId={productIdList}
         ></DeleteForm>
-      );
-    }
-    if (cancelForm) {
-      return (
-        <CancelForm
-          open={cancelForm}
-          onClose={closeCancelForm}
-          id={orderId}
-          listId={orderIdList}
-        ></CancelForm>
       );
     }
   };
 
   const columns = [
-    { field: "od_orderid", headerName: "Mã đơn hàng", width: 350 },
-
+    // { field: "id", headerName: "ID", resizable: true },
+    { field: "product_code", headerName: "Mã SP", width: 120 },
     {
-      field: "order_startdate",
-      headerName: "Ngày tạo",
-      width: 150,
+      field: "product_image1",
+      headerName: "Hình ảnh",
+      width: 120,
       renderCell: (params) => {
-        return formatDate(params.value);
-      },
-    },
-    {
-      field: "order_statusid",
-      headerName: "Trạng thái",
-      width: 200,
-      renderCell: (params) => {
-        return params.value === 0 ? (
-          <MyButton variant="outlined" color="warning" fullWidth>
-            Đang đợi xử lý
-          </MyButton>
-        ) : params.value === 1 ? (
-          <MyButton variant="outlined" color="primary" fullWidth>
-            Đợi thợ may
-          </MyButton>
-        ) : params.value === 2 ? (
-          <MyButton variant="outlined" color="primary" fullWidth>
-            Đang lấy vải
-          </MyButton>
-        ) : params.value === 3 ? (
-          <MyButton variant="outlined" color="primary" fullWidth>
-            Đang may
-          </MyButton>
-        ) : params.value === 4 ? (
-          <MyButton variant="outlined" color="primary" fullWidth>
-            Đã may xong
-          </MyButton>
-        ) : params.value === 5 ? (
-          <MyButton variant="outlined" color="secondary" fullWidth>
-            Đang vận chuyển
-          </MyButton>
-        ) : params.value === 6 ? (
-          <MyButton variant="outlined" color="success" fullWidth>
-            Hoàn tất
-          </MyButton>
-        ) : (
-          <MyButton variant="outlined" color="error" fullWidth>
-            Đã huỷ
-          </MyButton>
+        return (
+          <img
+            src={LOCAL_PATH + params.value.substring(2)}
+            alt="HinhAnhSP"
+            className={classes.img}
+          ></img>
         );
       },
     },
-    { field: "order_customername", headerName: "Tên khách hàng", width: 200 },
-    { field: "product_name", headerName: "Tên sản phẩm", width: 300 },
+    { field: "product_name", headerName: "Tên sản phẩm", width: 400 },
+    { field: "product_price", headerName: "Giá", width: 100, type: "number" },
     {
-      field: "order_total",
-      headerName: "Tổng tiên",
-      width: 150,
+      field: "product_old_price",
+      headerName: "Giá cũ",
+      width: 130,
       type: "number",
     },
-
+    { field: "product_color", headerName: "Màu sắc", width: 250 },
+    { field: "product_material", headerName: "Chất liệu", width: 300 },
+    { field: "product_lining", headerName: "Lớp lót", width: 130 },
+    { field: "product_thickness", headerName: "Độ dày", width: 130 },
+    { field: "product_softness", headerName: "Độ mềm", width: 130 },
+    { field: "product_elasticity", headerName: "Độ co giãn", width: 130 },
     {
       field: "id",
       headerName: "Hành động",
@@ -527,16 +484,12 @@ const { enqueueSnackbar } = useSnackbar();
       renderCell: (params) => {
         const handleClickEdit = () => {
           openDetailForm();
-          setOrderId(
-            dataRender.filter((item) => item.id === params.value)[0].od_orderid
-          );
+          setProductId(params.value);
         };
 
         const handleClickDelete = () => {
           openDeleteForm();
-          setOrderId(
-            dataRender.filter((item) => item.id === params.value)[0].od_orderid
-          );
+          setProductId(params.value);
         };
 
         return (
@@ -553,12 +506,8 @@ const { enqueueSnackbar } = useSnackbar();
     },
   ];
 
-  const CustomToolbar = () => {
-    return <GridToolbarContainer></GridToolbarContainer>;
-  };
-
   return (
-    <Grid container>
+    <Grid container component={Paper} component={Paper}>
       {loading ? (
         <Grid
           item
@@ -574,11 +523,20 @@ const { enqueueSnackbar } = useSnackbar();
         >
           <CircularProgress />
         </Grid>
+      ) : error ? (
+        <div>error</div>
       ) : (
         <>
-          <Grid item xs={12} sx={{ marginBottom: "5px" }}>
+          <Grid item xs={12} className={classes.topBar}>
             <Grid container>
-              <Grid item xs={3}>
+              <Grid item xs={9}>
+                <Button
+                  variant="outlined"
+                  color="primary"
+                  onClick={openAddForm}
+                >
+                  Thêm sản phẩm
+                </Button>
                 <Button
                   id="demo-customized-button"
                   aria-controls="demo-customized-menu"
@@ -605,17 +563,12 @@ const { enqueueSnackbar } = useSnackbar();
                     <EditIcon />
                     Cập nhật trạng thái
                   </MenuItem>
-                  <MenuItem onClick={handleClickCancel} disableRipple>
-                    <BlockIcon />
-                    Huỷ
-                  </MenuItem>
                   <MenuItem onClick={handleClickDelete} disableRipple>
                     <CancelIcon />
                     Xoá
                   </MenuItem>
                 </StyledMenu>
               </Grid>
-              <Grid item xs={6}></Grid>
               <Grid item xs={3}>
                 <Search>
                   <SearchIconWrapper>
@@ -630,19 +583,20 @@ const { enqueueSnackbar } = useSnackbar();
               </Grid>
             </Grid>
           </Grid>
+
           <Grid
             item
             xs={12}
             style={{
-              height: 460,
+              height: 425,
               width: "100%",
               "background-color": "#ffffff",
             }}
           >
-            <DataGrid
-              rows={dataRender}
+            <MyDataGrid
+              rows={rows}
               columns={columns}
-              pageSize={6}
+              pageSize={3}
               className={antDesignClasses.root}
               checkboxSelection
               disableSelectionOnClick
@@ -654,11 +608,10 @@ const { enqueueSnackbar } = useSnackbar();
                 const selectedRowData = dataRender.filter((row) =>
                   selectedIDs.has(row.id)
                 );
-                setOrderIdList(selectedRowData);
+                setProductIdList(selectedRowData);
               }}
             />
           </Grid>
-
           {renderForm()}
         </>
       )}

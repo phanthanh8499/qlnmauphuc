@@ -36,6 +36,11 @@ const MyBadge = styled(Badge)`
   }
 `;
 
+const MyTab = styled(Tab)(({theme}) => ({
+  textTransform: "none",
+  padding: '12px 21px',
+}));
+
 function CustomToolbar() {
   return (
     <GridToolbarContainer>
@@ -53,10 +58,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const MyTab = styled(Tab)(({theme}) => ({
-  textTransform: "none",
-  padding: '12px 21px',
-}));
+
 
 export default function AdminOrder() {
   const classes = useStyles();

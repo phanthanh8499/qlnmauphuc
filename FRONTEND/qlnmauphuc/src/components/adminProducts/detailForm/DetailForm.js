@@ -138,6 +138,7 @@ function DetailForm(props) {
   const [introduction4, setIntroduction4] = useState("");
   const [introduction5, setIntroduction5] = useState("");
   const [productTypeList, setProductTypeList] = useState([]);
+  const [productImage, setProductImage] = useState([]);
   const getParamName = (event) => {
     setName(event.target.value);
   };
@@ -289,6 +290,7 @@ function DetailForm(props) {
       setIntroduction3(`${data[0].product_introduction3}`);
       setIntroduction4(`${data[0].product_introduction4}`);
       setIntroduction5(`${data[0].product_introduction5}`);
+      setProductImage(`${data[0].product_image1}`);
       
     }
     async function getProductType() {
@@ -350,6 +352,7 @@ function DetailForm(props) {
     formData.append("product_introduction3", introduction3);
     formData.append("product_introduction4", introduction4);
     formData.append("product_introduction5", introduction5);
+    formData.append("product_image1", productImage);
     const abc = {};
     formData.forEach((value, key) => (abc[key] = value));
     // Log the data.

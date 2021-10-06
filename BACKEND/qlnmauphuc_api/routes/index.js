@@ -161,7 +161,6 @@ router.post("/admin/products/add", function (req, res) {
     product_introduction4,
     product_introduction5,
     frontEndURL,
-    frontEndAdmURL,
   } = req.body;
   const file1 = req.files.file1;
   const filename1 = file1.name;
@@ -204,8 +203,7 @@ router.post("/admin/products/add", function (req, res) {
     product_introduction3,
     product_introduction4,
     product_introduction5,
-    frontEndURL,
-    frontEndAdmURL
+    frontEndURL
   );
   pool.query(
     `INSERT INTO products(

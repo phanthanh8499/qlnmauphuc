@@ -11,7 +11,8 @@ import { useSnackbar } from "notistack";
 import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
 import makeStyles from "@mui/styles/makeStyles";
 import clsx from "clsx";
-import { deleteOrder, deleteProduct } from "../../../redux/Action";
+import { cancelOrder } from "../../../redux/Action";
+import BlockIcon from "@mui/icons-material/Block";
 
 const useStyle = makeStyles((theme) => ({
   root: {
@@ -35,20 +36,20 @@ const useStyle = makeStyles((theme) => ({
   },
 }));
 
-function DeleteForm(props) {
+function CancelForm(props) {
   const classes = useStyle();
   const { enqueueSnackbar } = useSnackbar();
   const dispatch = useDispatch();
-  const { open, onClose, id, listId} = props;
+  const { open, onClose, id, listId } = props;
   const handleSubmit = () => {
     if (listId.length !== 0) {
       listId.forEach((element) => {
-        dispatch(deleteOrder(element.od_orderid));
+        dispatch(cancelOrder(element.od_orderid));
       });
     } else {
-      dispatch(deleteOrder(id));
+      dispatch(cancelOrder(id));
     }
-    enqueueSnackbar("Xoá sản phẩm thành công", {
+    enqueueSnackbar("Huỷ đơn hàng thành công", {
       variant: "success",
       autoHideDuration: 2000,
     });
@@ -62,15 +63,15 @@ function DeleteForm(props) {
       maxWidth="xs"
     >
       <Grid container className={classes.root}>
-        <ErrorOutlineIcon className={classes.img}></ErrorOutlineIcon>
+        <BlockIcon className={classes.img}></BlockIcon>
         <Grid item xs={12}>
           <Stack
             spacing={1}
             className={clsx(classes.center, classes.title)}
             xs={{ mb: 2 }}
           >
-            <Typography variant="h5">Xác nhận xoá?</Typography>
-            <Typography>Bạn có chắc chắn muốn xoá</Typography>
+            <Typography variant="h5">Xác nhận huỷ?</Typography>
+            <Typography>Bạn có chắc chắn muốn huỷ đơn hàng</Typography>
           </Stack>
         </Grid>
         <Grid item xs={12}>
@@ -79,7 +80,7 @@ function DeleteForm(props) {
               Hủy bỏ
             </Button>
             <Button variant="outlined" color="primary" onClick={handleSubmit}>
-              Xác nhận xoá
+              Xác nhận huỷ
             </Button>
           </Stack>
         </Grid>
@@ -88,4 +89,4 @@ function DeleteForm(props) {
   );
 }
 
-export default DeleteForm;
+export default CancelForm;
