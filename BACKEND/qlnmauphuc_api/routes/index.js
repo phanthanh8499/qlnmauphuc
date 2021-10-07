@@ -310,9 +310,10 @@ router.post("/getClothData", function(req, res) {
   const { cloth_material } = req.body;
   if(cloth_material){
      pool.query(
-       `SELECT DISTINCT cloth.id, cloth.cloth_material, cloth.cloth_name, cloth.cloth_quantity, cloth.cloth_userid, cloth.cloth_typeid, cloth.cloth_image, clothtypes.ct_name
+       `SELECT DISTINCT cloth.id, cloth.cloth_material, cloth.cloth_name, cloth.cloth_quantity, cloth.cloth_userid, cloth.cloth_typeid, cloth.cloth_image, clothtypes.ct_name, user_username, user_firstname, user_lastname
 FROM cloth
 INNER JOIN clothtypes ON clothtypes.id = cloth.cloth_typeid
+INNER JOIN users ON users.id = cloth.cloth_userid
 WHERE cloth.cloth_material = '${cloth_material}'`,
        (error, response) => {
          if (error) {
@@ -324,9 +325,10 @@ WHERE cloth.cloth_material = '${cloth_material}'`,
      );
   } else {
      pool.query(
-       `SELECT DISTINCT cloth.id, cloth.cloth_material, cloth.cloth_name, cloth.cloth_quantity, cloth.cloth_userid, cloth.cloth_typeid, cloth.cloth_image, clothtypes.ct_name
+       `SELECT DISTINCT cloth.id, cloth.cloth_material, cloth.cloth_name, cloth.cloth_quantity, cloth.cloth_userid, cloth.cloth_typeid, cloth.cloth_image, clothtypes.ct_name, user_username, user_firstname, user_lastname
 FROM cloth
-INNER JOIN clothtypes ON clothtypes.id = cloth.cloth_typeid`,
+INNER JOIN clothtypes ON clothtypes.id = cloth.cloth_typeid
+INNER JOIN users ON users.id = cloth.cloth_userid`,
        (error, response) => {
          if (error) {
            console.log(error);

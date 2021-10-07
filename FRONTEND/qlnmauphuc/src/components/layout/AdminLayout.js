@@ -73,25 +73,25 @@ export default function AdminLayout(props) {
   const dangNhap = useSelector((state) => state.dangNhap);
   const { userInfo } = dangNhap;
   return (
-        <Box sx={{ display: "flex" }}>
-          <CssBaseline />
-          <AAppBar></AAppBar>
-          <Box
-            component="main"
-            sx={{
-              backgroundColor: (theme) =>
-                theme.palette.mode === "light"
-                  ? theme.palette.grey[100]
-                  : theme.palette.grey[900],
-              flexGrow: 1,
-              overflow: "auto",
-            }}
-          >
-            <Toolbar />
-            <main className={classes.content}>
-             {props.children}
-            </main>
-          </Box>
-        </Box>
+    <Box sx={{ display: "flex" }}>
+      <CssBaseline />
+      <AAppBar></AAppBar>
+      <Box
+        component="main"
+        sx={{
+          backgroundColor: (theme) =>
+            theme.palette.mode === "light"
+              ? theme.palette.grey[100]
+              : theme.palette.grey[900],
+          flexGrow: 1,
+          overflow: "auto",
+        }}
+      >
+        <Toolbar />
+        <main className={classes.content}>
+          {props.children}
+        </main>
+      </Box>
+    </Box>
   );
 }

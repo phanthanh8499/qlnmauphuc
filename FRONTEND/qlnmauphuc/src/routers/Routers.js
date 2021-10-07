@@ -44,31 +44,35 @@ export const routes = [
   {
     path: "/account/measurements-edit-:id",
     exact: true,
-    component: lazy(() => import("./../pages/users/measurementsEdit/MeasurementsEdit")),
+    component: lazy(() =>
+      import("./../pages/users/measurementsEdit/MeasurementsEdit")
+    ),
   },
   {
     path: "/account/measurements-add",
     exact: true,
-    component: lazy(() => import("./../pages/users/measurementsAdd/MeasurementsAdd")),
+    component: lazy(() =>
+      import("./../pages/users/measurementsAdd/MeasurementsAdd")
+    ),
   },
   {
     path: "/admin",
-    exact: true,
+    exact: false,
     component: lazy(() => import("./../pages/admin/home/Home")),
   },
-  {
-    path: "/admin/products",
-    exact: true,
-    component: lazy(() => import("./../pages/admin/product/Product")),
-  },
-  {
-    path: "/admin/cloth",
-    exact: true,
-    component: lazy(() => import("./../pages/admin/cloth/Cloth")),
-  },
-  {
-    path: "/admin/orders",
-    exact: true,
-    component: lazy(() => import("./../pages/admin/order/Order")),
-  },
+  // {
+  //   path: "/admin/products",
+  //   exact: false,
+  //   component: lazy(() => import("./../pages/admin/product/Product")),
+  // },
+  // {
+  //   path: "/admin/cloth",
+  //   exact: false,
+  //   component: lazy(() => import("./../pages/admin/cloth/Cloth")),
+  // },
+  // {
+  //   path: "/admin/orders",
+  //   exact: true,
+  //   component: lazy(() => import("./../pages/admin/order/Order")),
+  // },
 ];

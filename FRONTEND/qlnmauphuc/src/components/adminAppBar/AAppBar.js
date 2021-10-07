@@ -28,6 +28,21 @@ import MuiAppBar from "@mui/material/AppBar";
 import MuiDrawer from "@mui/material/Drawer";
 import { useSelector } from "react-redux";
 import { useLocation } from "react-router";
+import AppsIcon from "@mui/icons-material/Apps";
+
+const MyListItem = styled(ListItem)(({ theme }) => ({
+  color: "#000000",
+  "&.Mui-selected": {
+    color: "#ffffff !important",
+    backgroundColor: "#000000",
+    "& .MuiListItemIcon-root": {
+      color: "#ffffff",
+    },
+    ":hover": {
+      backgroundColor: "#000000",
+    },
+  },
+}));
 
 function Copyright(props) {
   return (
@@ -137,77 +152,87 @@ const useStyles = makeStyles((theme) => ({
 export default function AAppBar(props) {
   const classes = useStyles();
   const abc = useLocation().pathname.substring(7).toUpperCase();
-  console.log(abc);
   const [open, setOpen] = React.useState(true);
   const toggleDrawer = () => {
     setOpen(!open);
   };
   const [title, setTitle] = useState("Dashboard");
-
+  console.log(abc)
+  console.log(useLocation().pathname);
   const dangNhap = useSelector((state) => state.dangNhap);
   const { userInfo } = dangNhap;
 
-  const changeTitle = (name) => {
-    setTitle(name);
+  const [selected, setSelected] = useState(0)
+  const changeTitle = (event, index) => {
+    setSelected(index);
   };
+  useEffect(() => {
+    abc === "DASHBOARD"
+      ? setSelected(0)
+      : abc === "CUSTOMERS"
+      ? setSelected(1)
+      : abc === "PRODUCTS"
+      ? setSelected(2)
+      : abc === "CLOTH"
+      ? setSelected(3)
+      : abc === "ORDERS"
+      ? setSelected(4)
+      : setSelected(5)
+  }, [])
   const renderListModule = () => {
     return (
       <List>
-        <Link to="/admin/dashboard" onClick={() => changeTitle("Dashboard")}>
-          <ListItem button>
+        <Link to="/admin/dashboard" onClick={(e) => changeTitle(e, 0)}>
+          <MyListItem button selected={selected === 0}>
             <ListItemIcon>
               <DashboardIcon />
             </ListItemIcon>
             <ListItemText primary="Dashboard" />
-          </ListItem>
+          </MyListItem>
         </Link>
-        <Link to="/admin/orders" onClick={() => changeTitle("Orders")}>
-          <ListItem button>
-            <ListItemIcon>
-              <ShoppingCartIcon />
-            </ListItemIcon>
-            <ListItemText primary="Orders" />
-          </ListItem>
-        </Link>
-        <Link to="/admin/customers" onClick={() => changeTitle("Customers")}>
-          <ListItem button>
+        <Link to="/admin/customers" onClick={(e) => changeTitle(e, 1)}>
+          <MyListItem button selected={selected === 1}>
             <ListItemIcon>
               <PeopleIcon />
             </ListItemIcon>
             <ListItemText primary="Customers" />
-          </ListItem>
+          </MyListItem>
         </Link>
-        <Link to="/admin/products" onClick={() => changeTitle("Products")}>
-          <ListItem button>
+        <Link to="/admin/products">
+          <MyListItem
+            button
+            selected={selected === 2}
+            onClick={(e) => changeTitle(e, 2)}
+          >
             <ListItemIcon>
               <CategoryIcon />
             </ListItemIcon>
             <ListItemText primary="Products" />
-          </ListItem>
+          </MyListItem>
         </Link>
-        <Link to="/admin/cloth" onClick={() => changeTitle("Cloth")}>
-          <ListItem button>
+        <Link to="/admin/cloth" onClick={(e) => changeTitle(e, 3)}>
+          <MyListItem button selected={selected === 3}>
             <ListItemIcon>
-              <CategoryIcon />
+              <AppsIcon />
             </ListItemIcon>
             <ListItemText primary="Cloth" />
-          </ListItem>
+          </MyListItem>
         </Link>
-        <Link to="/admin/orders" onClick={() => changeTitle("Orders")}>
-          <ListItem button>
+        <Link to="/admin/orders" onClick={(e) => changeTitle(e, 4)}>
+          <MyListItem button selected={selected === 4}>
             <ListItemIcon>
-              <CategoryIcon />
+              <ShoppingCartIcon />
             </ListItemIcon>
             <ListItemText primary="Orders" />
-          </ListItem>
+          </MyListItem>
         </Link>
-        <Link to="/admin/statistic" onClick={() => changeTitle("Statistic")}>
-          <ListItem button>
+        <Link to="/admin/statistic" onClick={(e) => changeTitle(e, 5)}>
+          <MyListItem button selected={selected === 5}>
             <ListItemIcon>
               <TrendingUpIcon />
             </ListItemIcon>
             <ListItemText primary="Statistic" />
-          </ListItem>
+          </MyListItem>
         </Link>
       </List>
     );
@@ -242,7 +267,7 @@ export default function AAppBar(props) {
           >
             {abc}
           </Typography>
-          {/* <TitleDB dbtitle={title}></TitleDB> */}
+       
           <IconButton color="inherit" size="large">
             <Badge badgeContent={4} color="secondary">
               <NotificationsIcon />

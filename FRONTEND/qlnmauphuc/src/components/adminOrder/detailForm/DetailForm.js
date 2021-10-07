@@ -110,6 +110,7 @@ function DetailForm(props) {
         variant: "error",
         autoHideDuration: 2000,
       });
+      return false;
     } else {
       enqueueSnackbar("OK", {
         variant: "success",

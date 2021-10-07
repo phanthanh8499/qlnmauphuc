@@ -219,7 +219,9 @@ export default function CustomizedSteppers(props) {
             <ButtonGroup>
               <Button
                 color="error"
-                disabled={activeStep === 0 || activeStep === 1}
+                disabled={
+                  activeStep === 0 || activeStep === 1 || activeStep === 2
+                }
                 onClick={handleBack}
               >
                 Back

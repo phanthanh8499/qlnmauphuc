@@ -8,7 +8,7 @@ import AddForm from "./addForm/AddForm";
 import DetailForm from "./detailForm/DetailForm";
 import DeleteForm from "./deleteForm/DeteleForm";
 import { Badge, Button, ButtonGroup, CircularProgress, Divider, Grid, IconButton, Paper } from "@mui/material";
-import { getClothData, getProductData } from "../../redux/Action";
+import { getClothData, getProductData, getUserData } from "../../redux/Action";
 import { XOA_HINH_ANH } from "../../constants/Constants";
 import { createTheme, styled } from "@mui/material/styles";
 import { createStyles, makeStyles } from "@mui/styles";
@@ -251,32 +251,29 @@ export default function AdminCloth() {
   const classes = useStyles();
   const { enqueueSnackbar } = useSnackbar();
   const antDesignClasses = useStylesAntDesign();
-  const cloth = useSelector((state) => state.cloth);
-  const { loading, clothData, error } = cloth;
+  const users = useSelector((state) => state.users);
+  const { loading, userData, error } = users;
   const [loadingState, setLoadingState] = useState(true)
   const [data, setData] = useState()
   const dispatch = useDispatch()
 
   useEffect(() => {
-    dispatch(getClothData());
+    dispatch(getUserData());
   }, [dispatch]);
 
   const [all, setAll] = useState([]);
-  const [caro, setCaro] = useState([]);
-  const [hthh, setHthh] = useState([]);
-  const [vckh, setVckh] = useState([]);
-  const [vkso, setVkso] = useState([]);
-  const [vpol, setVpol] = useState([]);
+  const [nv, setNv] = useState([]);
+  const [kh, setKh] = useState([]);
+  const [qt, setQt] = useState([]);
+
  
   useEffect(() => {
-    setAll(clothData);
-    setCaro(clothData.filter((item) => item.cloth_typeid === "CARO"));
-    setHthh(clothData.filter((item) => item.cloth_typeid === "HTHH"));
-    setVckh(clothData.filter((item) => item.cloth_typeid === "VCKH"));
-    setVkso(clothData.filter((item) => item.cloth_typeid === "VKSO"));
-    setVpol(clothData.filter((item) => item.cloth_typeid === "VPOL"));
-    setLoadingState(false)
-  }, [clothData]);
+    setAll(userData);
+    setNv(userData.filter((item) => item.user_typeid === "NV"));
+    setKh(userData.filter((item) => item.user_typeid === "KH"));
+    setQt(userData.filter((item) => item.user_typeid === "AD"));
+    setLoadingState(false);
+  }, [userData]);
   const [value, setValue] = useState("1");
 
   const handleChange = (event, newValue) => {
@@ -300,7 +297,7 @@ export default function AdminCloth() {
         >
           <CircularProgress />
         </Grid>
-      ) :  (
+      ) : (
         <>
           <TabContext value={value}>
             <Grid item xs={12} className={classes.topBar}>
@@ -321,44 +318,27 @@ export default function AdminCloth() {
                       />
                       <MyTab
                         label={
-                          <MyBadge badgeContent={caro.length} color="primary">
-                            Vải caro
+                          <MyBadge badgeContent={nv.length} color="primary">
+                            Nhân viên
                           </MyBadge>
                         }
                         value="2"
                       />
                       <MyTab
                         label={
-                          <MyBadge badgeContent={hthh.length} color="primary">
-                            Vải hoạ tiết hình học
+                          <MyBadge badgeContent={kh.length} color="primary">
+                            Khách hàng
                           </MyBadge>
                         }
                         value="3"
                       />
                       <MyTab
                         label={
-                          <MyBadge badgeContent={vkso.length} color="primary">
-                            Vải kẻ sọc
+                          <MyBadge badgeContent={qt.length} color="primary">
+                            Quản trị
                           </MyBadge>
                         }
                         value="4"
-                      />
-
-                      <MyTab
-                        label={
-                          <MyBadge badgeContent={vpol.length} color="primary">
-                            Vải polyester
-                          </MyBadge>
-                        }
-                        value="5"
-                      />
-                      <MyTab
-                        label={
-                          <MyBadge badgeContent={vckh.length} color="primary">
-                            Vải khách hàng gửi
-                          </MyBadge>
-                        }
-                        value="6"
                       />
                     </TabList>
                   </Box>
@@ -374,19 +354,13 @@ export default function AdminCloth() {
                 <Data data={all} />
               </TabPanel>
               <TabPanel value="2" sx={{ padding: 0 }}>
-                <Data data={caro} />
+                <Data data={nv} />
               </TabPanel>
               <TabPanel value="3" sx={{ padding: 0 }}>
-                <Data data={hthh} />
+                <Data data={kh} />
               </TabPanel>
               <TabPanel value="4" sx={{ padding: 0 }}>
-                <Data data={vkso} />
-              </TabPanel>
-              <TabPanel value="5" sx={{ padding: 0 }}>
-                <Data data={vpol} />
-              </TabPanel>
-              <TabPanel value="6" sx={{ padding: 0 }}>
-                <Data data={vckh} />
+                <Data data={qt} />
               </TabPanel>
             </Grid>
           </TabContext>
