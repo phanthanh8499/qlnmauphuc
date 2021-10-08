@@ -17,9 +17,11 @@ export const LIET_KE_USERS_CHUA_CAP_NHAT = "LIET_KE_USERS_CHUA_CAP_NHAT";
 export const LIET_KE_USERS_THAT_BAI = "LIET_KE_USERS_THAT_BAI";
 
 export const SUA_THONG_TIN_USER = "SUA_THONG_TIN_USER";
-export const SUA_THONG_TIN_USER_THANH_CONG = "SUA_THONG_TIN_USER_THANH_CONG";
-export const SUA_THONG_TIN_USER_THAT_BAI = "SUA_THONG_TIN_USER_THAT_BAI";
-export const XOA_USER_THANH_CONG = "XOA_USER_THANH_CONG";
+export const SUA_USER = "SUA_USER";
+
+export const XOA_USER = "XOA_USER";
+export const THAY_DOI_TRANG_THAI_USER = "THAY_DOI_TRANG_THAI_USER";
+export const THEM_USER = "THEM_USER";
 export const XOA_USER_THAT_BAI = "XOA_USER_THAT_BAI";
 
 //======================== SAN PHAM =====================================

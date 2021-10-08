@@ -94,7 +94,7 @@ router.post("/signup", async function (req, res, next) {
 
 router.get("/admin/users", function (req, res) {
   pool.query(
-    `SELECT * FROM users WHERE user_typeid='KH'`,
+    `SELECT * FROM users`,
     (error, response) => {
       if (error) {
         console.log(error);
@@ -595,19 +595,262 @@ router.get("/admin/measurements/delete.:id", function (req, res) {
   // });
 });
 
+router.get("/getDetailUser.:id", function (req, res) {
+  const { id } = req.params;
+  pool.query(`SELECT * FROM users WHERE id='${id}'`, (error, response) => {
+    if (error) {
+      console.log(error);
+    } else {
+      res.send(response.rows);
+    }
+  });
+});
+
+router.post("/admin/users/changeStatus", function (req, res) {
+  const {id, status} = req.body;
+  pool.query(
+    `UPDATE users
+	SET user_status='${status}'
+	WHERE id='${id}'`,
+    (error, response) => {
+      if (error) {
+        console.log(error);
+        res.send("ERROR");
+      } else {
+        res.send("OK");
+      }
+    }
+  );
+});
+
+router.post("/admin/users/add", async function (req, res) {
+  const {
+    id,
+    user_firstname,
+    user_password,
+    user_lastname,
+    user_address,
+    user_username,
+    user_email,
+    user_tel,
+    user_status,
+    user_date,
+    user_typeid,
+    user_avatar,
+    fileRecv,
+    FRONTEND_URL,
+  } = req.body;
+  const salt = await bcrypt.genSalt(10);
+  const hashPass = await bcrypt.hash(user_password, salt);
+  var newpassword = hashPass;
+  console.log(
+    id,
+    user_firstname,
+    user_password,
+    user_lastname,
+    user_address,
+    user_username,
+    user_email,
+    user_tel,
+    user_status,
+    user_date,
+    user_typeid,
+    user_avatar,
+    fileRecv,
+    FRONTEND_URL,
+    newpassword
+  );
+  if(parseInt(fileRecv) === 1){
+    const file = req.files.file;
+    const filename = Date.now() + "-" + id + "-" + file.name;
+    var newpath = "";
+    var image_path = "./images";
+    newpath = FRONTEND_URL + "/images/avatar/";
+    image_path = image_path + "/avatar/" + filename;
+    console.log("co file");
+    console.log(newpath, image_path);
+    pool.query(
+      `INSERT INTO users(
+	user_typeid, user_username, user_password, user_firstname, user_lastname, user_address, user_tel, user_status, user_date, user_avatar, user_email)
+	VALUES ('${user_typeid}', '${user_username}', '${newpassword}', '${user_firstname}', '${user_lastname}', '${user_address}', '${user_tel}', '${user_status}', '${user_date}', '${image_path}', '${user_email}')`,
+      (error, response) => {
+        if (error) {
+          console.log(error);
+          res.send({ msg: "ERROR" });
+        } else {
+          if (!fs.existsSync(newpath)) {
+            fs.mkdirSync(newpath);
+          }
+          file.mv(`${newpath}${filename}`, (err) => {
+            if (err) {
+              console.log(err);
+            }
+          });
+          res.send({
+            id: parseInt(id),
+            user_username: user_username,
+            user_address: user_address,
+            user_tel: user_tel,
+            user_city: null,
+            user_firstname: user_firstname,
+            user_lastname: user_lastname,
+            user_status: user_status,
+            user_typeid: user_typeid,
+            user_date: user_date,
+            user_avatar: image_path,
+            user_email: user_email,
+          });
+        }
+      }
+    );
+  } else {
+    pool.query(
+      `INSERT INTO users(
+	user_typeid, user_username, user_password, user_firstname, user_lastname, user_address, user_tel, user_status, user_date, user_avatar, user_email)
+	VALUES ('${user_typeid}', '${user_username}', '${newpassword}', '${user_firstname}', '${user_lastname}', '${user_address}', '${user_tel}', '${user_status}', '${user_date}', '${user_avatar}', '${user_email}')`,
+      (error, response) => {
+        if (error) {
+          console.log(error);
+          res.send({ msg: "ERROR" });
+        } else {
+          res.send({
+            id: parseInt(id),
+            user_username: user_username,
+            user_address: user_address,
+            user_tel: user_tel,
+            user_city: null,
+            user_firstname: user_firstname,
+            user_lastname: user_lastname,
+            user_status: user_status,
+            user_typeid: user_typeid,
+            user_date: user_date,
+            user_avatar: user_avatar,
+            user_email: user_email,
+          });
+        }
+      }
+    );
+  }
+});
+
 router.post("/admin/users/edit", function (req, res) {
   const {
     id,
-     user_username,
-     user_address,
-     user_tel,
-     user_firstname,
-     user_lastname,
-     user_status,
-     user_typeid,
-     user_date,
-     user_avatar,
-     user_email,
+    user_username,
+    user_address,
+    user_tel,
+    user_firstname,
+    user_lastname,
+    user_status,
+    user_typeid,
+    user_date,
+    user_avatar,
+    user_email,
+    fileRecv,
+    user_city,
+    FRONTEND_URL,
+  } = req.body;
+  console.log(
+    id,
+    user_username,
+    user_address,
+    user_tel,
+    user_firstname,
+    user_lastname,
+    user_status,
+    user_typeid,
+    user_date,
+    user_avatar,
+    user_email,
+    fileRecv,
+    FRONTEND_URL
+  );
+  if (parseInt(fileRecv) === 1) {
+    const file = req.files.file;
+    const filename = Date.now() + "-" + id + "-" + file.name;
+    var newpath = "";
+    var image_path = "./images";
+    newpath = FRONTEND_URL + "/images/avatar/";
+    image_path = image_path + "/avatar/" + filename;
+    console.log("co file");
+    console.log(newpath, image_path);
+    pool.query(
+      `UPDATE users
+	SET user_typeid='${user_typeid}', user_username='${user_username}', user_firstname='${user_firstname}', user_lastname='${user_lastname}', user_address='${user_address}', user_tel='${user_tel}', user_status='${user_status}', user_avatar='${image_path}', user_email='${user_email}'
+	WHERE id='${id}'`,
+      (error, response) => {
+        if (error) {
+          console.log(error);
+          res.send({ msg: "ERROR" });
+        } else {
+          if (!fs.existsSync(newpath)) {
+            fs.mkdirSync(newpath);
+          }
+          file.mv(`${newpath}${filename}`, (err) => {
+            if (err) {
+              console.log(err);
+            }
+          });
+          res.send({
+            id: parseInt(id),
+            user_username: user_username,
+            user_address: user_address,
+            user_tel: user_tel,
+            user_city: user_city,
+            user_firstname: user_firstname,
+            user_lastname: user_lastname,
+            user_status: user_status,
+            user_typeid: user_typeid,
+            user_date: user_date,
+            user_avatar: image_path,
+            user_email: user_email,
+          });
+        }
+      }
+    );
+  } else {
+    pool.query(
+      `UPDATE users
+	SET  user_typeid='${user_typeid}', user_username='${user_username}', user_firstname='${user_firstname}', user_lastname='${user_lastname}', user_address='${user_address}', user_tel='${user_tel}', user_status='${user_status}', user_avatar='${user_avatar}', user_email='${user_email}'
+	WHERE id='${id}'`,
+      (error, response) => {
+        if (error) {
+          console.log(error);
+          res.send({ msg: "ERROR" });
+        } else {
+          res.send({
+            id: parseInt(id),
+            user_username: user_username,
+            user_address: user_address,
+            user_tel: user_tel,
+            user_city: user_city,
+            user_firstname: user_firstname,
+            user_lastname: user_lastname,
+            user_status: user_status,
+            user_typeid: user_typeid,
+            user_date: user_date,
+            user_avatar: user_avatar,
+            user_email: user_email,
+          });
+        }
+      }
+    );
+  }
+});
+
+router.post("/admin/users/editUserInfo", function (req, res) {
+  const {
+    id,
+    user_username,
+    user_address,
+    user_tel,
+    user_firstname,
+    user_lastname,
+    user_status,
+    user_typeid,
+    user_date,
+    user_avatar,
+    user_email,
     fileRecv,
     token,
     FRONTEND_URL,
@@ -626,9 +869,9 @@ router.post("/admin/users/edit", function (req, res) {
     user_email,
     fileRecv,
     token,
-    FRONTEND_URL,
+    FRONTEND_URL
   );
-  if(parseInt(fileRecv) === 1){
+  if (parseInt(fileRecv) === 1) {
     const file = req.files.file;
     const filename = Date.now() + "-" + id + "-" + file.name;
     var newpath = "";
@@ -681,20 +924,20 @@ router.post("/admin/users/edit", function (req, res) {
           console.log(error);
           res.send({ msg: "ERROR" });
         } else {
-           res.send({
-             id: parseInt(id),
-             user_username: user_username,
-             user_address: user_address,
-             user_tel: user_tel,
-             user_firstname: user_firstname,
-             user_lastname: user_lastname,
-             user_status: user_status,
-             user_typeid: user_typeid,
-             user_date: user_date,
-             user_avatar: user_avatar,
-             user_email: user_email,
-             token: token,
-           });
+          res.send({
+            id: parseInt(id),
+            user_username: user_username,
+            user_address: user_address,
+            user_tel: user_tel,
+            user_firstname: user_firstname,
+            user_lastname: user_lastname,
+            user_status: user_status,
+            user_typeid: user_typeid,
+            user_date: user_date,
+            user_avatar: user_avatar,
+            user_email: user_email,
+            token: token,
+          });
         }
       }
     );

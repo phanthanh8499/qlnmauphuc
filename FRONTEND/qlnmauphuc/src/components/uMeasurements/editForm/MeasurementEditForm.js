@@ -34,50 +34,68 @@ export default function MeasurementEditForm() {
     setLoading(false);
   }, [id]);
   return (
-    <>
-      {loadingDetail ? (
-        <div>loading....</div>
-      ) : loading ? (
-        <CircularProgress color="primary" />
+    <Grid container>
+      {loadingDetail || loading ? (
+        <Grid
+          item
+          xs={12}
+          sx={{
+            height: 303,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
+          <CircularProgress color="primary" />
+        </Grid>
       ) : (
-        <Grid container>
-          <Grid item xs={12}>
-            <TabContext value={value}>
-              {detailData[0].id !== parseInt(id) ? (
+        <Grid item xs={12}>
+          <TabContext value={value}>
+            {detailData[0].id !== parseInt(id) ? (
+              <Grid
+                item
+                xs={12}
+                sx={{
+                  height: 303,
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+              >
                 <CircularProgress color="primary" />
-              ) : detailData[0].m_gender === "male" ? (
-                <>
-                  <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
-                    <TabList
-                      onChange={handleChange}
-                      aria-label="lab API tabs example"
-                    >
-                      <Tab label="Nam" value="1" />
-                    </TabList>
-                  </Box>
-                  <TabPanel value="1">
-                    <Male></Male>
-                  </TabPanel>
-                </>
-              ) : (
-                <>
-                  <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
-                    <TabList
-                      onChange={handleChange}
-                      aria-label="lab API tabs example"
-                    >
-                      <Tab label="Nữ" value="1" />
-                    </TabList>
-                  </Box>
-                  <TabPanel value="1">
-                    <Female></Female>
-                  </TabPanel>
-                </>
-              )}
-            </TabContext>
-          </Grid>
+              </Grid>
+            ) : detailData[0].m_gender === "male" ? (
+              <>
+                <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
+                  <TabList
+                    onChange={handleChange}
+                    aria-label="lab API tabs example"
+                  >
+                    <Tab label="Nam" value="1" />
+                  </TabList>
+                </Box>
+                <TabPanel value="1">
+                  <Male></Male>
+                </TabPanel>
+              </>
+            ) : (
+              <>
+                <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
+                  <TabList
+                    onChange={handleChange}
+                    aria-label="lab API tabs example"
+                  >
+                    <Tab label="Nữ" value="1" />
+                  </TabList>
+                </Box>
+                <TabPanel value="1">
+                  <Female></Female>
+                </TabPanel>
+              </>
+            )}
+          </TabContext>
         </Grid>
       )}
-    </>
+    </Grid>
   );
 }

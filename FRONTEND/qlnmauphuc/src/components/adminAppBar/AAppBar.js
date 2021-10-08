@@ -175,9 +175,11 @@ export default function AAppBar(props) {
       ? setSelected(2)
       : abc === "CLOTH"
       ? setSelected(3)
-      : abc === "ORDERS"
+      : abc === "USERS"
       ? setSelected(4)
-      : setSelected(5)
+      : abc === ""
+      ? setSelected(0)
+      : setSelected(5);
   }, [])
   const renderListModule = () => {
     return (
@@ -190,12 +192,12 @@ export default function AAppBar(props) {
             <ListItemText primary="Dashboard" />
           </MyListItem>
         </Link>
-        <Link to="/admin/customers" onClick={(e) => changeTitle(e, 1)}>
+        <Link to="/admin/users" onClick={(e) => changeTitle(e, 1)}>
           <MyListItem button selected={selected === 1}>
             <ListItemIcon>
               <PeopleIcon />
             </ListItemIcon>
-            <ListItemText primary="Customers" />
+            <ListItemText primary="Users" />
           </MyListItem>
         </Link>
         <Link to="/admin/products">

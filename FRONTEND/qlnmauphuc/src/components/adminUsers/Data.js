@@ -8,6 +8,7 @@ import AddForm from "./addForm/AddForm";
 import DetailForm from "./detailForm/DetailForm";
 import DeleteForm from "./deleteForm/DeteleForm";
 import {
+  Avatar,
   Badge,
   Button,
   ButtonGroup,
@@ -18,7 +19,7 @@ import {
   Paper,
 } from "@mui/material";
 import { getClothData, getProductData } from "../../redux/Action";
-import { XOA_HINH_ANH } from "../../constants/Constants";
+import { LOCAL_PATH, XOA_HINH_ANH } from "../../constants/Constants";
 import { createTheme, styled } from "@mui/material/styles";
 import { createStyles, makeStyles } from "@mui/styles";
 import Box from "@mui/material/Box";
@@ -38,6 +39,7 @@ import CloseIcon from "@mui/icons-material/Close";
 import CancelIcon from "@mui/icons-material/Cancel";
 import EditIcon from "@mui/icons-material/Edit";
 import SearchIcon from "@mui/icons-material/Search";
+import ChangeForm from "./changeForm/changeForm";
 
 const MyBadge = styled(Badge)`
   .MuiBadge-badge {
@@ -283,7 +285,7 @@ export default function Data(props) {
   const antDesignClasses = useStylesAntDesign();
   const dispatch = useDispatch();
   const [dataRender, setDataRender] = useState();
-  const { data } = props;
+  const { data, isNv } = props;
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -292,11 +294,12 @@ export default function Data(props) {
   }, [data]);
 
   const rows = dataRender;
-  const [clothId, setClothId] = useState(0);
+  const [userId, setUserId] = useState(0);
   const [addForm, setAddForm] = useState(false);
   const [detailForm, setDetailForm] = useState(false);
   const [deleteForm, setDeleteForm] = useState(false);
-  const [clothIdList, setClothIdList] = useState([]);
+  const [changeForm, setChangeForm] = useState(false);
+  const [userIdList, setUserIdList] = useState([]);
   const openAddForm = () => {
     setAddForm(true);
   };
@@ -319,6 +322,13 @@ export default function Data(props) {
     setDeleteForm(false);
   };
 
+  const openChangeForm = () => {
+    setChangeForm(true);
+  };
+  const closeChangeForm = () => {
+    setChangeForm(false);
+  };
+
   const handleClickMenu = (event) => {
     setAnchorEl(event.currentTarget);
   };
@@ -332,13 +342,25 @@ export default function Data(props) {
 
   const handleClickDelete = () => {
     setAnchorEl(null);
-    if (clothIdList.length === 0) {
-      enqueueSnackbar("Vui lòng chọn đơn hàng cần xoá", {
+    if (userIdList.length === 0) {
+      enqueueSnackbar("Vui lòng chọn tài khoản cần xoá", {
         variant: "error",
         autoHideDuration: 2000,
       });
     } else {
       openDeleteForm();
+    }
+  };
+
+  const handleClickChange = () => {
+    setAnchorEl(null);
+    if (userIdList.length === 0) {
+      enqueueSnackbar("Vui lòng chọn tài khoản cần thay đổi", {
+        variant: "error",
+        autoHideDuration: 2000,
+      });
+    } else {
+      openChangeForm();
     }
   };
 
@@ -413,7 +435,7 @@ export default function Data(props) {
         <DetailForm
           open={detailForm}
           onClose={closeDetailForm}
-          id={parseInt(clothId)}
+          id={parseInt(userId)}
         ></DetailForm>
       );
     }
@@ -422,18 +444,38 @@ export default function Data(props) {
         <DeleteForm
           open={deleteForm}
           onClose={closeDeleteForm}
-          id={parseInt(clothId)}
-          listId={clothIdList}
+          id={parseInt(userId)}
+          listId={userIdList}
         ></DeleteForm>
+      );
+    }
+    if (changeForm) {
+      return (
+        <ChangeForm
+          open={changeForm}
+          onClose={closeChangeForm}
+          id={parseInt(userId)}
+          listId={userIdList}
+        ></ChangeForm>
       );
     }
   };
 
   const columns = [
+    { field: "user_avatar", headerName: "Avatar", width: 100, 
+  renderCell: (params) => {
+    return <Avatar src={LOCAL_PATH + params.value.substring(2)} />;
+  } },
     { field: "user_username", headerName: "UserName", width: 100 },
     { field: "user_lastname", headerName: "Họ", width: 200 },
     { field: "user_firstname", headerName: "Tên", width: 130 },
-    { field: "user_tel", headerName: "Số điện thoại", width: 140 },
+    { field: "user_tel", headerName: "Số điện thoại", width: 140,
+  renderCell: (params) => {
+    const formatTel = (text) => {
+    return text.replace(/(\d{3})(\d{3})(\d{4})/, '$1-$2-$3');
+      };
+      return formatTel(params.value)
+  } },
     { field: "user_address", headerName: "Địa chỉ", width: 300 },
     {
       field: "user_status",
@@ -467,10 +509,12 @@ export default function Data(props) {
             </MyButton>
           );
         }
-        if (params.value === "QT") {
-          <MyButton variant="outlined" color="primary" fullWidth>
-            Quản trị
-          </MyButton>;
+        if (params.value === "NV") {
+          return (
+            <MyButton variant="outlined" color="secondary" fullWidth>
+            Nhân viên
+          </MyButton>
+          );
         } else {
           return (
             <MyButton variant="outlined" color="success" fullWidth>
@@ -480,10 +524,14 @@ export default function Data(props) {
         }
       },
     },
-    { field: "user_date", headerName: "Ngày tạo", width: 180,
-  renderCell: (params) => {
-    return formatDate(params.value)
-  } },
+    {
+      field: "user_date",
+      headerName: "Ngày tạo",
+      width: 180,
+      renderCell: (params) => {
+        return formatDate(params.value);
+      },
+    },
     {
       field: "id",
       headerName: "Hành động",
@@ -493,12 +541,12 @@ export default function Data(props) {
       renderCell: (params) => {
         const handleClickEdit = () => {
           openDetailForm();
-          setClothId(params.value);
+          setUserId(params.value);
         };
 
         const handleClickDelete = () => {
           openDeleteForm();
-          setClothId(params.value);
+          setUserId(params.value);
         };
 
         return (
@@ -536,15 +584,16 @@ export default function Data(props) {
         <>
           <Grid item xs={12} sx={{ marginBottom: "5px" }}>
             <Grid container>
-              <Grid item xs={3}>
-                <Button
+              <Grid item xs={6}>
+                {isNv ? <Button
                   variant="outlined"
                   color="primary"
                   onClick={openAddForm}
                   sx={{ ml: 0.5 }}
                 >
                   Thêm người dùng
-                </Button>
+                </Button> : null}
+                
                 <Button
                   id="demo-customized-button"
                   aria-controls="demo-customized-menu"
@@ -567,7 +616,7 @@ export default function Data(props) {
                   open={openMenu}
                   onClose={handleCloseMenu}
                 >
-                  <MenuItem onClick={handleClickEdit} disableRipple>
+                  <MenuItem onClick={handleClickChange} disableRipple>
                     <EditIcon />
                     Cập nhật trạng thái
                   </MenuItem>
@@ -578,7 +627,7 @@ export default function Data(props) {
                   </MenuItem>
                 </StyledMenu>
               </Grid>
-              <Grid item xs={6}></Grid>
+              <Grid item xs={3}></Grid>
               <Grid item xs={3}>
                 <Search>
                   <SearchIconWrapper>
@@ -617,7 +666,7 @@ export default function Data(props) {
                 const selectedRowData = dataRender.filter((row) =>
                   selectedIDs.has(row.id)
                 );
-                setClothIdList(selectedRowData);
+                setUserIdList(selectedRowData);
               }}
             />
           </Grid>

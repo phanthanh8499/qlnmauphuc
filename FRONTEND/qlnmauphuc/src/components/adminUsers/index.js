@@ -259,14 +259,13 @@ export default function AdminCloth() {
 
   useEffect(() => {
     dispatch(getUserData());
-  }, [dispatch]);
+  }, []);
 
   const [all, setAll] = useState([]);
   const [nv, setNv] = useState([]);
   const [kh, setKh] = useState([]);
   const [qt, setQt] = useState([]);
 
- 
   useEffect(() => {
     setAll(userData);
     setNv(userData.filter((item) => item.user_typeid === "NV"));
@@ -351,10 +350,10 @@ export default function AdminCloth() {
             </Grid>
             <Grid item xs={12}>
               <TabPanel value="1" sx={{ padding: 0 }}>
-                <Data data={all} />
+                <Data data={all} isNv />
               </TabPanel>
               <TabPanel value="2" sx={{ padding: 0 }}>
-                <Data data={nv} />
+                <Data data={nv} isNv />
               </TabPanel>
               <TabPanel value="3" sx={{ padding: 0 }}>
                 <Data data={kh} />

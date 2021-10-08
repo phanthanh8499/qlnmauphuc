@@ -1,10 +1,13 @@
 import {
+  Avatar,
+  Badge,
   Button,
   ButtonBase,
   ButtonGroup,
   CircularProgress,
   Dialog,
   FormControl,
+  FormControlLabel,
   Grid,
   IconButton,
   InputAdornment,
@@ -22,94 +25,34 @@ import ProductImageGallery from "./ProductImageGallery";
 import PhotoCamera from "@mui/icons-material/PhotoCamera";
 import axios from "axios";
 import makeStyles from "@mui/styles/makeStyles";
-import { editCloth, editProduct } from "../../../redux/Action";
+import { editCloth, editProduct, editUser } from "../../../redux/Action";
 import ImageMagnify from "./ImageMagnify";
-import { LOCAL_PATH } from "../../../constants/Constants";
-
-const markThickness = [
-  {
-    value: 0,
-    label: "Mỏng",
-  },
-  {
-    value: 50,
-    label: "Vừa",
-  },
-  {
-    value: 100,
-    label: "Dày",
-  },
-];
-
-const markSoftness = [
-  {
-    value: 0,
-    label: "Mềm",
-  },
-  {
-    value: 50,
-    label: "Vừa",
-  },
-  {
-    value: 100,
-    label: "Cứng",
-  },
-];
-
-const markElasticity = [
-  {
-    value: 0,
-    label: "Không",
-  },
-  {
-    value: 50,
-    label: "Vừa",
-  },
-  {
-    value: 100,
-    label: "Có",
-  },
-];
+import { FRONTEND_URL, LOCAL_PATH } from "../../../constants/Constants";
+import CameraAltIcon from "@mui/icons-material/CameraAlt";
+import { IOSSwitch } from "../../utility/Utility";
 
 const useStyle = makeStyles((theme) => ({
   root: {
     padding: 20,
   },
-  img: {
-    width: 300,
-    height: 300,
+  detailBox: {
+    padding: "0px 0px",
   },
   btngroup: {
     float: "right",
-    marginTop: 20,
   },
-  image: {
-    margin: "30px 10px 10px 10px",
+  avatar: {
+    width: "207px !important",
+    height: "207px !important",
+    // borderRadius: "50%",
   },
-  label: {
-    color: "#00000099",
-    padding: 0,
-    fontSize: "14px",
-    fontFamily: `"Roboto", "Helvetica", "Arial", sans-serif`,
-    fontWeight: 400,
-    lineHeight: 1,
-    letterSpacing: "0.00938em",
-    fontSize: 13,
+  avatarItem: {
+    justifyItems: "center",
+    alignItems: "center",
+    display: "flex",
   },
   input: {
     display: "none",
-  },
-  sliderBox: {
-    margin: "0px 50px 0px 7px !important",
-  },
-  detailBox: {
-    padding: "0px 20px",
-  },
-  marginLeft: {
-    margin: "0px 0px 0px 9px",
-  },
-  box: {
-    margin: "0px 4px",
   },
 }));
 
@@ -119,32 +62,22 @@ function DetailForm(props) {
   const dispatch = useDispatch();
   const { open, onClose, id } = props;
 
-  const [imgUpload, setImgUpload] = useState("./images/loadingImg.gif");
-
-  const [name, setName] = useState("");
-  const [material, setMaterial] = useState("");
-  const [quantity, setQuantity] = useState("");
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [email, setEmail] = useState("");
+  const [tel, setTel] = useState("");
+  const [address, setAddress] = useState("");
+  const [firstname, setFirstname] = useState("");
+  const [lastname, setLastname] = useState("");
   const [type, setType] = useState("");
-  const [userId, setUserId] = useState("");
-  const [userName, setUserName] = useState("");
-  const [firstName, setFirstName] = useState("");
-  const [lastName, setLastName] = useState("");
-  const [clothName, setClothName] = useState("");
-  const getParamsName = (event) => {
-    setName(event.target.value);
-  };
-  const getParamsUserId = (event) => {
-    setUserId(event.target.value);
-  };
-  const getParamsMaterial = (event) => {
-    setMaterial(event.target.value);
-  };
-  const getParamsQuantity = (event) => {
-    setQuantity(event.target.value);
-  };
-  const getParamsType = (event) => {
-    setType(event.target.value);
-  };
+  const [status, setStatus] = useState("");
+  const [date, setDate] = useState("");
+  const [file, setFile] = useState();
+  const [avatar, setAvatar] = useState();
+  const [city, setCity] = useState("");
+  const [fileName, setFileName] = useState("");
+  const [imgUpload, setImgUpload] = useState("");
+
   const [loading, setLoading] = useState(true);
   const [clothType, setClothType] = useState([]);
   const renderClothType = () => {
@@ -156,122 +89,208 @@ function DetailForm(props) {
   };
 
   useEffect(() => {
-    async function getDetailProduct() {
-      const { data } = await axios.get(`/getDetailCloth.${id}`);
-      setName(`${data[0].cloth_name}`);
-      setQuantity(`${data[0].cloth_quantity}`);
-      setUserId(`${data[0].cloth_userid}`);
-      setMaterial(`${data[0].cloth_material}`);
-      setType(`${data[0].cloth_typeid}`);
-      setUserName(`${data[0].user_username}`);
-      setFirstName(`${data[0].user_firstname}`);
-      setLastName(`${data[0].user_lastname}`);
-      setClothName(`${data[0].ct_name}`);
-      setImgUpload(LOCAL_PATH + `${data[0].cloth_image.substring(2)}`);
-    }
-    async function getClothType() {
-      const { data } = await axios.get("/getClothTypeData");
-      setClothType(data);
+    async function getDetailUser() {
+      const { data } = await axios.get(`/getDetailUser.${id}`);
+      setUsername(`${data[0].user_username}`);
+      setPassword(`${data[0].user_password}`);
+      setEmail(`${data[0].user_email}`);
+      setTel(`${data[0].user_tel}`);
+      setAddress(`${data[0].user_address}`);
+      setFirstname(`${data[0].user_firstname}`);
+      setLastname(`${data[0].user_lastname}`);
+      setType(`${data[0].user_typeid}`);
+      setStatus(`${data[0].user_status}`);
+      setDate(`${data[0].user_date}`);
+      setImgUpload(LOCAL_PATH + `${data[0].user_avatar.substring(2)}`);
+      setAvatar(`${data[0].user_avatar}`);
+      setCity(`${data[0].user_city}`);
       setLoading(false);
     }
-    getDetailProduct();
-    getClothType();
+    getDetailUser();
   }, []);
+
+  const saveFile = (e) => {
+    setFile(e.target.files[0]);
+    setFileName(e.target.files[0].name);
+    let reader = new FileReader();
+    var fileInput = e.target.files[0];
+    reader.readAsDataURL(fileInput);
+    reader.onload = () => {
+      setImgUpload(reader.result);
+    };
+    reader.onerror = function (error) {
+      console.log("Error: ", error);
+    };
+  };
+  
+  const handleChangeSwitch = (e) => {
+    if(status === "active"){
+      setStatus("block");
+    } else {
+      setStatus("active");
+    }
+  }
 
   const handleSubmit = () => {
     const formData = new FormData();
-    formData.append("id", parseInt(id));
-    formData.append("cloth_material", material);
-    formData.append("cloth_name", name);
-    formData.append("cloth_quantity", quantity);
-    formData.append("cloth_userid", userId);
-    formData.append("cloth_typeid", type);
-    formData.append("ct_name", clothName);
-    formData.append("user_username", userName);
-    formData.append("user_firstname", firstName);
-    formData.append("user_lastname", lastName);
-    if (!type) {
-      enqueueSnackbar("Vui lòng chọn loại vải", {
-        variant: "error",
+    formData.append("id", id);
+    formData.append("user_firstname", firstname.trim());
+    formData.append("user_lastname", lastname.trim());
+    formData.append("user_address", address.trim());
+    formData.append("user_username", username.trim());
+    formData.append("user_email", email.trim());
+    formData.append("user_tel", tel.trim());
+    formData.append("user_status", status.trim());
+    formData.append("user_typeid", type.trim());
+    formData.append("user_date", date.trim());
+    formData.append("user_avatar", avatar.trim());
+    formData.append("user_city", city.trim());
+    formData.append("FRONTEND_URL", FRONTEND_URL);
+    if (file) {
+      formData.append("file", file);
+      formData.append("fileName", fileName);
+      formData.append("fileRecv", 1);
+      dispatch(editUser(formData));
+      enqueueSnackbar("Cập nhật thông tin thành công", {
+        variant: "success",
         autoHideDuration: 2000,
       });
-      return false;
-    }
-    if (!name || !quantity || !userId || !type) {
-      enqueueSnackbar("Vui lòng điền đầy đủ thông tin", {
-        variant: "error",
+    } else {
+      formData.append("fileRecv", 0);
+      dispatch(editUser(formData));
+      enqueueSnackbar("Cập nhật thông tin thành công", {
+        variant: "success",
         autoHideDuration: 2000,
       });
-      return false;
     }
-    enqueueSnackbar("Cập nhật thông tin thành công", {
-      variant: "success",
-      autoHideDuration: 2000,
-    });
-    dispatch(editCloth(formData));
     onClose();
   };
+
   return (
     <Dialog
       onClose={onClose}
       aria-labelledby="customized-dialog-title"
       open={true}
-      maxWidth="lg"
+      maxWidth="md"
     >
       <Grid container className={classes.root}>
-        <Grid item xs={4}>
-          <ImageMagnify img={imgUpload}></ImageMagnify>
-        </Grid>
-        <Grid item xs={8} className={classes.detailBox}>
-          {loading ? (
-            <Grid
-              item
-              xs={12}
-              sx={{
-                width: "682px",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-              }}
-            >
-              <CircularProgress />
+        {loading ? (
+          <Grid
+            item
+            xs={12}
+            sx={{
+              width: "900px",
+              height: "376px",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            <CircularProgress />
+          </Grid>
+        ) : (
+          <>
+            <Grid item xs={3} className={classes.avatarItem}>
+              <Badge
+                overlap="circular"
+                anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+                badgeContent={
+                  <>
+                    <input
+                      accept="image/*"
+                      className={classes.input}
+                      id="icon-button-file"
+                      type="file"
+                      onChange={saveFile}
+                    />
+                    <label htmlFor="icon-button-file">
+                      <CameraAltIcon sx={{ cursor: "pointer" }}></CameraAltIcon>
+                    </label>
+                  </>
+                }
+              >
+                <Avatar
+                  alt="Travis Howard"
+                  src={imgUpload}
+                  className={classes.avatar}
+                />
+              </Badge>
             </Grid>
-          ) : (
-            <>
-              <Grid container spacing={1} className={classes.box}>
-                <Grid item xs={8}>
-                  <FormControl style={{ width: "50%" }}>
-                    <InputLabel
-                      shrink
-                      id="demo-simple-select-placeholder-label-label"
-                    >
-                      Loại vải
-                    </InputLabel>
-                    <Select
-                      labelId="demo-simple-select-placeholder-label-label"
-                      id="demo-simple-select-placeholder-label"
-                      value={type}
-                      onChange={getParamsType}
-                      displayEmpty
-                      style={{ padding: "0px !important" }}
-                    >
-                      <MenuItem value="">
-                        <em>None</em>
-                      </MenuItem>
-                      {renderClothType()}
-                    </Select>
-                  </FormControl>
-                </Grid>
-                <Grid item xs={4}>
+
+            <Grid item xs={9} className={classes.detailBox}>
+              <Grid spacing={1} container>
+                <Grid item xs={6}>
                   <TextField
-                    id="product_code"
-                    label="Số tài khoản"
-                    placeholder="Nhập user id"
+                    id="username"
+                    label="Tên đăng nhập"
+                    placeholder="Nhập tên đăng nhập"
                     margin="normal"
-                    onChange={getParamsUserId}
-                    defaultValue={userId}
-                    size="small"
+                    fullWidth
+                    defaultValue={username}
                     disabled
+                    onChange={(e) => setUsername(e.target.value)}
+                    size="small"
+                    InputLabelProps={{
+                      shrink: true,
+                    }}
+                  />
+                </Grid>
+                <Grid item xs={6}></Grid>
+                <Grid item xs={6}>
+                  <TextField
+                    id="lastname"
+                    label="Họ"
+                    placeholder="Nhập họ"
+                    margin="normal"
+                    fullWidth
+                    defaultValue={lastname}
+                    onChange={(e) => setLastname(e.target.value)}
+                    size="small"
+                    InputLabelProps={{
+                      shrink: true,
+                    }}
+                  />
+                </Grid>
+                <Grid item xs={6}>
+                  <TextField
+                    id="firstname"
+                    label="Tên"
+                    placeholder="Nhập tên"
+                    margin="normal"
+                    fullWidth
+                    defaultValue={firstname}
+                    onChange={(e) => setFirstname(e.target.value)}
+                    size="small"
+                    InputLabelProps={{
+                      shrink: true,
+                    }}
+                  />
+                </Grid>
+                <Grid item xs={6}>
+                  <TextField
+                    id="tel"
+                    label="Số điện thoại"
+                    placeholder="Nhập số điện thoại"
+                    margin="normal"
+                    fullWidth
+                    defaultValue={tel}
+                    onChange={(e) => setTel(e.target.value)}
+                    size="small"
+                    InputLabelProps={{
+                      shrink: true,
+                    }}
+                  />
+                </Grid>
+                <Grid item xs={6}>
+                  <TextField
+                    id="email"
+                    label="Email"
+                    placeholder="Nhập email"
+                    margin="normal"
+                    fullWidth
+                    defaultValue={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    size="small"
                     InputLabelProps={{
                       shrink: true,
                     }}
@@ -279,44 +298,13 @@ function DetailForm(props) {
                 </Grid>
                 <Grid item xs={12}>
                   <TextField
-                    id="product_code"
-                    label="Thành phẩn vải"
-                    placeholder="Nhập thành phẩn vải"
+                    id="address"
+                    label="Địa chỉ"
+                    placeholder="Nhập địa chỉ"
                     margin="normal"
                     fullWidth
-                    disabled
-                    onChange={getParamsMaterial}
-                    defaultValue={material}
-                    size="small"
-                    InputLabelProps={{
-                      shrink: true,
-                    }}
-                  />
-                </Grid>
-                <Grid item xs={10}>
-                  <TextField
-                    id="product_name"
-                    label="Tên sản phẩm"
-                    placeholder="Nhập tên sản phẩm"
-                    margin="normal"
-                    fullWidth
-                    size="small"
-                    onChange={getParamsName}
-                    defaultValue={name}
-                    InputLabelProps={{
-                      shrink: true,
-                    }}
-                  />
-                </Grid>
-                <Grid item xs={2}>
-                  <TextField
-                    id="product_color"
-                    label="Số lượng"
-                    placeholder="Nhập số lượng"
-                    margin="normal"
-                    fullWidth
-                    onChange={getParamsQuantity}
-                    defaultValue={quantity}
+                    defaultValue={address}
+                    onChange={(e) => setAddress(e.target.value)}
                     size="small"
                     InputLabelProps={{
                       shrink: true,
@@ -324,19 +312,35 @@ function DetailForm(props) {
                   />
                 </Grid>
               </Grid>
-            </>
-          )}
-          <Grid item xs={12}>
-            <ButtonGroup className={classes.btngroup}>
-              <Button variant="outlined" color="primary" onClick={handleSubmit}>
-                Cập nhật thông tin
-              </Button>
-              <Button variant="outlined" color="error" onClick={onClose}>
-                Hủy bỏ
-              </Button>
-            </ButtonGroup>
-          </Grid>
-        </Grid>
+              <Grid item xs={12}>
+                <FormControlLabel
+                  control={
+                    <IOSSwitch
+                      sx={{ m: 1 }}
+                      defaultChecked={status === "active"}
+                      onClick={handleChangeSwitch}
+                    />
+                  }
+                  label={status === "active" ? "Hoạt động" : "Đã khoá"}
+                />
+              </Grid>
+            </Grid>
+            <Grid item xs={12}>
+              <ButtonGroup className={classes.btngroup}>
+                <Button
+                  variant="outlined"
+                  color="primary"
+                  onClick={handleSubmit}
+                >
+                  Xác nhận sửa
+                </Button>
+                <Button variant="outlined" color="error" onClick={onClose}>
+                  Hủy bỏ
+                </Button>
+              </ButtonGroup>
+            </Grid>
+          </>
+        )}
       </Grid>
     </Dialog>
   );

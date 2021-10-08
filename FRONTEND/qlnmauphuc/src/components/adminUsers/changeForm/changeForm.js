@@ -11,7 +11,8 @@ import { useSnackbar } from "notistack";
 import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
 import makeStyles from "@mui/styles/makeStyles";
 import clsx from "clsx";
-import { deleteCloth, deleteUser } from "../../../redux/Action";
+import { changeStatusUser, deleteCloth, deleteUser } from "../../../redux/Action";
+import ChangeCircleIcon from "@mui/icons-material/ChangeCircle";
 
 const useStyle = makeStyles((theme) => ({
   root: {
@@ -23,7 +24,7 @@ const useStyle = makeStyles((theme) => ({
   },
   img: {
     fontSize: "125px !important",
-    color: "#ff0000",
+    color: "#0095ff",
   },
   center: {
     display: "flex",
@@ -31,11 +32,11 @@ const useStyle = makeStyles((theme) => ({
     alignItems: "center",
   },
   title: {
-    margin: '10px 0px',
+    margin: "10px 0px",
   },
 }));
 
-function DeleteForm(props) {
+function ChangeForm(props) {
   const classes = useStyle();
   const { enqueueSnackbar } = useSnackbar();
   const dispatch = useDispatch();
@@ -43,10 +44,17 @@ function DeleteForm(props) {
   const handleSubmit = () => {
     if (listId.length !== 0) {
       listId.forEach((element) => {
-        dispatch(deleteUser(element.id));
+        if (element.user_status === "active") {
+          const data = { id: element.id, status: "block" };
+          dispatch(changeStatusUser(data));
+        } else {
+          const data = { id: element.id, status: "active" };
+          dispatch(changeStatusUser(data));
+        }
+        
       });
     } else {
-      dispatch(deleteUser(parseInt(id)));
+      dispatch(changeStatusUser(parseInt(id)));
     }
     enqueueSnackbar("Xoá sản phẩm thành công", {
       variant: "success",
@@ -62,15 +70,15 @@ function DeleteForm(props) {
       maxWidth="xs"
     >
       <Grid container className={classes.root}>
-        <ErrorOutlineIcon className={classes.img}></ErrorOutlineIcon>
+        <ChangeCircleIcon className={classes.img}></ChangeCircleIcon>
         <Grid item xs={12}>
           <Stack
             spacing={1}
             className={clsx(classes.center, classes.title)}
             xs={{ mb: 2 }}
           >
-            <Typography variant="h5">Xác nhận xoá?</Typography>
-            <Typography>Bạn có chắc chắn muốn xoá</Typography>
+            <Typography variant="h5">Xác nhận thay thay đổi?</Typography>
+            <Typography>Bạn có chắc chắn muốn thay đổi trạng thái</Typography>
           </Stack>
         </Grid>
         <Grid item xs={12}>
@@ -79,7 +87,7 @@ function DeleteForm(props) {
               Hủy bỏ
             </Button>
             <Button variant="outlined" color="primary" onClick={handleSubmit}>
-              Xác nhận xoá
+              Xác nhận thay đổi
             </Button>
           </Stack>
         </Grid>
@@ -88,4 +96,4 @@ function DeleteForm(props) {
   );
 }
 
-export default DeleteForm;
+export default ChangeForm;

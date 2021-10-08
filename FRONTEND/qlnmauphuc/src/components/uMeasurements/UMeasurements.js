@@ -24,6 +24,8 @@ import { useDispatch, useSelector } from "react-redux";
 import { getMeasurementsData } from "../../redux/Action";
 import { renderEditInputCell } from "@mui/x-data-grid";
 import measurementBox from "./MeasurementBox";
+import FemaleIcon from "@mui/icons-material/Female";
+import MaleIcon from "@mui/icons-material/Male";
 
 const useStyles = makeStyles((theme) => ({
   list: {
@@ -54,12 +56,27 @@ export default function UMeasurements(props) {
   const renderList = () => {
     return measurementsData.map((value, key) => (
       <>
-        <Link to={`/account/measurements-edit-${value.id}`}>
-          <ListItem button>
-            <ListItemText primary={key + 1} sx={center} />
-          </ListItem>
-        </Link>
-        <Divider />
+        {value.m_gender === "male" ? (
+          <>
+            <Link to={`/account/measurements-edit-${value.id}`}>
+              <ListItem button>
+                <MaleIcon />
+                <ListItemText primary={key + 1} sx={center} />
+              </ListItem>
+            </Link>
+            <Divider />
+          </>
+        ) : (
+          <>
+            <Link to={`/account/measurements-edit-${value.id}`}>
+              <ListItem button>
+                <FemaleIcon sx={{ color: "#ff0000" }} />
+                <ListItemText primary={key + 1} sx={center} />
+              </ListItem>
+            </Link>
+            <Divider />
+          </>
+        )}
       </>
     ));
   };
@@ -70,7 +87,7 @@ export default function UMeasurements(props) {
           {renderList()}
           <Link to="/account/measurements-add">
             <ListItem button sx={center}>
-              <ControlPointIcon />
+              <ControlPointIcon sx={{ color: "#196600" }} />
             </ListItem>
           </Link>
         </List>

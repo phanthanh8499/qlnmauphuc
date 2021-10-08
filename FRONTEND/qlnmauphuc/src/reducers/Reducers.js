@@ -27,9 +27,12 @@ import {
   SUA_THONG_TIN_USER,
   SUA_THONG_TIN_USER_THANH_CONG,
   SUA_THONG_TIN_USER_THAT_BAI,
+  SUA_USER,
+  THAY_DOI_TRANG_THAI_USER,
   THEM_DON_HANG,
   THEM_SAN_PHAM,
   THEM_SO_DO,
+  THEM_USER,
   THEM_VAI,
   XEM_DON_HANG,
   XEM_SO_DO,
@@ -37,7 +40,7 @@ import {
   XOA_HINH_ANH,
   XOA_SAN_PHAM,
   XOA_SO_DO,
-  XOA_USER_THANH_CONG,
+  XOA_USER,
   XOA_USER_THAT_BAI,
   XOA_VAI,
   XU_LY_DON_HANG,
@@ -143,7 +146,10 @@ export const userReducer = (
     case YEU_CAU_LIET_KE_USERS:
       return { ...state, loading: true };
     case LIET_KE_USERS_THANH_CONG:
-      return { ...state, loading: false, userData: action.payload };
+      const data = action.payload.sort(function (a, b) {
+        return a.id - b.id;
+      });
+      return { ...state, loading: false, userData: data };
     case LIET_KE_USERS_DA_CAP_NHAT:
       return {
         ...state,
@@ -160,19 +166,50 @@ export const userReducer = (
       };
     case LIET_KE_USERS_THAT_BAI:
       return { loading: false, error: action.payload };
-    case SUA_THONG_TIN_USER_THANH_CONG:
-      return { loading: false, message: action.message };
-    case SUA_THONG_TIN_USER_THAT_BAI:
-      return { loading: false, editError: action.message };
-    case XOA_USER_THANH_CONG:
+    case SUA_USER:
       return {
         ...state,
+        userData: state.userData.map((item) => {
+          if (item.id === parseInt(action.payload.id)) {
+            item = action.payload;
+            item.id = parseInt(action.payload.id);
+            return item;
+          } else {
+            return item;
+          }
+        }),
+      };
+    case THAY_DOI_TRANG_THAI_USER:
+      return {
+        ...state,
+        userData: state.userData.map((item) => {
+          if (item.id === parseInt(action.payload.id)) {
+            item.user_status = action.payload.status;
+            item.id = parseInt(action.payload.id);
+            return item;
+          } else {
+            return item;
+          }
+        }),
+      };
+    case XOA_USER:
+      return {
+        ...state,
+        userData: state.userData.filter(
+          (userData) => userData.id !== action.payload
+        ),
         userData1: state.userData1.filter(
           (userData) => userData.id !== action.deleteid
         ),
         userData2: state.userData2.filter(
           (userData) => userData.id !== action.deleteid
         ),
+      };
+    case THEM_USER:
+      const user = action.payload;
+      return {
+        ...state,
+        userData: [...state.userData, user],
       };
     case XOA_USER_THAT_BAI:
       return { loading: false, deleteError: action.message };

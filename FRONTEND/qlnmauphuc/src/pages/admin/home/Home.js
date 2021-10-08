@@ -5,7 +5,6 @@ import AdminProducts from '../../../components/adminProducts';
 import AdminLayout from "../../../components/layout/AdminLayout";
 
 export default function Home () {
-
     return (
       <AdminLayout>
         <Switch>
@@ -23,7 +22,7 @@ export default function Home () {
             component={lazy(() => import("../../../components/adminProducts"))}
           ></Route>
           <Route
-            path="/admin/customers"
+            path="/admin/users"
             component={lazy(() => import("../../../components/adminUsers"))}
           ></Route>
         </Switch>

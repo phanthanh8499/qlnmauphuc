@@ -42,6 +42,10 @@ import {
   YEU_CAU_LIET_KE_SP,
   YEU_CAU_LIET_KE_USERS,
   YEU_CAU_LIET_KE_VAI,
+  XOA_USER,
+  THEM_USER,
+  SUA_USER,
+  THAY_DOI_TRANG_THAI_USER,
 } from "../constants/Constants";
 
 export const dangNhapKhangHang = (username, password) => async (dispatch) => {
@@ -66,6 +70,33 @@ export const getUserData = () => async (dispatch) => {
     dispatch({ type: LIET_KE_USERS_THAT_BAI, payload: error.message });
   }
 };
+
+export const addUser = (dataReq) => async (dispatch) => {
+  const abc = {};
+  dataReq.forEach((value, key) => (abc[key] = value));
+  abc.id = parseInt(abc.id);
+  const { data } = await Axios.post("/admin/users/add", dataReq);
+  dispatch({ type: THEM_USER, payload: data });
+};
+
+export const editUser = (dataReq) => async (dispatch) => {
+  const abc = {};
+  dataReq.forEach((value, key) => (abc[key] = value));
+  const { data } = await Axios.post(`/admin/users/edit`, dataReq);
+  dispatch({ type: SUA_USER, payload: data });
+  // console.log(data);
+};
+
+export const deleteUser = (data) => async (dispatch) => {
+  // const {data} = await Axios.get("/admin/users/delete");
+  dispatch({type: XOA_USER, payload: data})
+}
+
+export const changeStatusUser = (dataReq) => async (dispatch) => {
+  const { data } = await Axios.post("/admin/users/changeStatus", dataReq);
+  dispatch({ type: THAY_DOI_TRANG_THAI_USER, payload: dataReq });
+  console.log(data);
+}
 
 export const getProductData = () => async (dispatch) => {
   dispatch({ type: YEU_CAU_LIET_KE_SP});
@@ -173,7 +204,7 @@ export const getDetailMeasurements = (dataReq) => async (dispatch) => {
 export const editUserInfo = (dataReq) => async (dispatch) => {
   const abc = {};
   dataReq.forEach((value, key) => (abc[key] = value));
-  const { data } = await Axios.post(`/admin/users/edit`, dataReq);
+  const { data } = await Axios.post(`/admin/users/editUserInfo`, dataReq);
   dispatch({ type: SUA_THONG_TIN_USER, payload: abc });
   localStorage.setItem("userInfo", JSON.stringify({ userInfo: data }));
   console.log(data);
