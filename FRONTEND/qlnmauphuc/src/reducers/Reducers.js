@@ -221,7 +221,13 @@ export const userReducer = (
 };
 
 export const clothReducer = (
-  state = { loading: true, loadingMyData: true, clothData: [], myClothData: [], image: "./images/loadingImg.gif" },
+  state = {
+    loading: true,
+    loadingMyData: true,
+    clothData: [],
+    myClothData: [],
+    image: "./images/loadingImg.gif",
+  },
   action
 ) => {
   switch (action.type) {
@@ -243,7 +249,7 @@ export const clothReducer = (
       const product = action.payload;
       return {
         ...state,
-        clothData: [...state.clothData, product]
+        clothData: [...state.clothData, product],
       };
     case CHINH_SUA_THONG_TIN_VAI:
       return {
@@ -280,9 +286,14 @@ export const clothReducer = (
   }
 };
 
-
 export const measurementsReducer = (
-  state = { loading: true, loadingDetail: true, measurementsData: [], detailData: [], msg : {}},
+  state = {
+    loading: true,
+    loadingDetail: true,
+    measurementsData: [],
+    detailData: [],
+    msg: {},
+  },
   action
 ) => {
   switch (action.type) {
@@ -297,7 +308,10 @@ export const measurementsReducer = (
       return { loading: false, error: action.payload };
     case THEM_SO_DO:
       const product = action.payload;
-      return { ...state, measurementsData: [...state.measurementsData, product] };
+      return {
+        ...state,
+        measurementsData: [...state.measurementsData, product],
+      };
     case CHINH_SUA_THONG_TIN_SO_DO:
       return {
         ...state,
@@ -331,7 +345,13 @@ export const measurementsReducer = (
 };
 
 export const orderReducer = (
-  state = { loading: true, loadingDetail: true, orderData: [], detailData: [], msg : {}},
+  state = {
+    loading: true,
+    loadingDetail: true,
+    orderData: [],
+    detailData: [],
+    msg: {},
+  },
   action
 ) => {
   switch (action.type) {
@@ -389,6 +409,22 @@ export const orderReducer = (
           if (item.od_orderid === action.payload.od_orderid) {
             item.order_statusid = action.payload.order_statusid;
             item.od_orderid = action.payload.od_orderid;
+            if (action.payload.order_statusid === 1) {
+              item.order_processingtime1 = action.payload.date;
+            } else if (action.payload.order_statusid === 2) {
+              item.order_processingtime2 = action.payload.date;
+              item.order_tailorid = action.payload.tailorid;
+            } else if (action.payload.order_statusid === 3) {
+              item.order_processingtime3 = action.payload.date;
+            } else if (action.payload.order_statusid === 4) {
+              item.order_processingtime4 = action.payload.date;
+            } else if (action.payload.order_statusid === 5) {
+              item.order_shippingtime = action.payload.date;
+            } else if (action.payload.order_statusid === 6) {
+              item.order_enddate = action.payload.date;
+            } else {
+              item.os_name = "Đã huỷ";
+            }
             return item;
           } else {
             return item;
@@ -398,6 +434,26 @@ export const orderReducer = (
           if (item.od_orderid === action.payload.od_orderid) {
             item.order_statusid = action.payload.order_statusid;
             item.od_orderid = action.payload.od_orderid;
+            if (action.payload.order_statusid === 1) {
+              item.order_processingtime1 = action.payload.date;
+            } else if (action.payload.order_statusid === 2) {
+              item.order_processingtime2 = action.payload.date;
+              item.order_tailorid = action.payload.order_tailorid;
+              item.tailor_firstname = action.payload.tailor_firstname;
+              item.tailor_lastname = action.payload.tailor_lastname;
+              item.tailor_address = action.payload.tailor_address;
+              item.tailor_tel = action.payload.tailor_tel;
+            } else if (action.payload.order_statusid === 3) {
+              item.order_processingtime3 = action.payload.date;
+            } else if (action.payload.order_statusid === 4) {
+              item.order_processingtime4 = action.payload.date;
+            } else if (action.payload.order_statusid === 5) {
+              item.order_shippingtime = action.payload.date;
+            } else if (action.payload.order_statusid === 6) {
+              item.order_enddate = action.payload.date;
+            } else {
+              item.os_name = "Đã huỷ";
+            }
             return item;
           } else {
             return item;

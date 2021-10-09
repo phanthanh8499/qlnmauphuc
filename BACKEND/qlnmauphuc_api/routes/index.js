@@ -1051,8 +1051,8 @@ router.post("/admin/order/add", function (req, res) {
   );
   pool.query(
     `INSERT INTO orders(
-	id, order_customername, order_customeraddress, order_customerphone, order_customeremail, order_startdate, order_enddate, order_subtotal, order_discount, order_total, order_paymentid, order_shippingid, order_statusid, order_userid)
-	VALUES ('${id}', '${order_customername}', '${order_customeraddress}', '${order_customerphone}', '${order_customeremail}', '${order_startdate}', '${order_enddate}', '${order_subtotal}', '${order_discount}', '${order_total}', '${order_paymentid}', '${order_shippingid}', '${order_statusid}', '${order_userid}')`,
+	id, order_customername, order_customeraddress, order_customerphone, order_customeremail, order_startdate, order_enddate, order_subtotal, order_discount, order_total, order_paymentid, order_shippingid, order_statusid, order_userid, order_tailorid)
+	VALUES ('${id}', '${order_customername}', '${order_customeraddress}', '${order_customerphone}', '${order_customeremail}', '${order_startdate}', '${order_enddate}', '${order_subtotal}', '${order_discount}', '${order_total}', '${order_paymentid}', '${order_shippingid}', '${order_statusid}', '${order_userid}', '1')`,
     (error, response) => {
       if (error) {
         console.log("1", error);
@@ -1109,13 +1109,14 @@ router.post("/admin/order/add", function (req, res) {
 router.get("/getDetailOrder.:id", function (req, res) {
   const { id } = req.params;
   pool.query(
-    `SELECT order_details.*, order_customername, order_customeraddress, order_customerphone, order_customeremail, order_startdate, order_enddate, order_subtotal, order_discount, order_total, order_paymentid, opm_name, order_shippingid, osm_name, order_statusid, order_userid, products.product_name, products.product_typeid, products.product_image1, cloth.cloth_name, cloth.cloth_image, cloth.cloth_quantity, cloth.cloth_material, os_name FROM order_details 
+    `SELECT order_details.*, order_customername, order_customeraddress, order_customerphone, order_customeremail, order_startdate, order_processingtime1, order_processingtime2, order_processingtime3, order_processingtime4, order_shippingtime, order_enddate, order_subtotal, order_discount, order_total, order_paymentid, opm_name, order_shippingid, order_tailorid, user_firstname as tailor_firstname, user_lastname as tailor_lastname, user_address as tailor_address, user_tel as tailor_tel, osm_name, order_statusid, order_userid, products.product_name, products.product_typeid, products.product_image1, cloth.cloth_name, cloth.cloth_image, cloth.cloth_quantity, cloth.cloth_material, os_name FROM order_details 
               INNER JOIN orders ON orders.id = order_details.od_orderid 
               INNER JOIN products ON products.id = order_details.od_productid
 			  INNER JOIN cloth ON cloth.id = order_details.od_clothid
 			  INNER JOIN order_status ON order_status.id = orders.order_statusid
 			  INNER JOIN order_paymentmethod ON order_paymentmethod.id = orders.order_paymentid
 			  INNER JOIN order_shippingmethod ON order_shippingmethod.id = orders.order_shippingid
+			  INNER JOIN users ON users.id = orders.order_tailorid
 			  WHERE order_details.od_orderid = '${id}'`,
     (error, response) => {
       if (error) {
@@ -1144,6 +1145,130 @@ router.post("/admin/order/edit", function (req, res) {
       }
     }
   );
+});
+
+router.post("/admin/order/processing", function (req, res) {
+  const { order_statusid, order_tailorid, date, od_orderid } = req.body;
+  if (order_statusid === 1) {
+    console.log("đợi thợ may");
+    console.log(order_statusid, order_tailorid, date, od_orderid);
+    pool.query(
+      `UPDATE orders
+	SET order_statusid='${order_statusid}', order_processingtime1='${date}'
+	WHERE id='${od_orderid}'`,
+      (error, response) => {
+        if (error) {
+          console.log(error);
+          res.send("ERROR");
+        } else {
+          console.log("OK");
+          res.send("OK");
+        }
+      }
+    );
+  } else if (order_statusid === 2) {
+    console.log("đang lấy vải");
+    console.log(order_statusid, order_tailorid, date, od_orderid);
+    pool.query(
+      `UPDATE orders
+	SET order_statusid='${order_statusid}', order_tailorid='${order_tailorid}', order_processingtime2='${date}'
+	WHERE id='${od_orderid}'`,
+      (error, response) => {
+        if (error) {
+          console.log(error);
+          res.send("ERROR");
+        } else {
+          console.log("OK");
+          res.send("OK");
+        }
+      }
+    );
+  } else if (order_statusid === 3) {
+    console.log("đang may");
+    console.log(order_statusid, order_tailorid, date, od_orderid);
+    pool.query(
+      `UPDATE orders
+	SET order_statusid='${order_statusid}', order_processingtime3='${date}'
+	WHERE id='${od_orderid}'`,
+      (error, response) => {
+        if (error) {
+          console.log(error);
+          res.send("ERROR");
+        } else {
+          console.log("OK");
+          res.send("OK");
+        }
+      }
+    );
+  } else if (order_statusid === 4) {
+    console.log("đã may xong");
+    console.log(order_statusid, order_tailorid, date, od_orderid);
+    pool.query(
+      `UPDATE orders
+	SET order_statusid='${order_statusid}', order_processingtime4='${date}'
+	WHERE id='${od_orderid}'`,
+      (error, response) => {
+        if (error) {
+          console.log(error);
+          res.send("ERROR");
+        } else {
+          console.log("OK");
+          res.send("OK");
+        }
+      }
+    );
+  } else if (order_statusid === 5) {
+    console.log("đang vận chuyểny");
+    console.log(order_statusid, order_tailorid, date, od_orderid);
+    pool.query(
+      `UPDATE orders
+	SET order_statusid='${order_statusid}', order_shippingtime='${date}'
+	WHERE id='${od_orderid}'`,
+      (error, response) => {
+        if (error) {
+          console.log(error);
+          res.send("ERROR");
+        } else {
+          console.log("OK");
+          res.send("OK");
+        }
+      }
+    );
+  } else if (order_statusid === 6) {
+    console.log("hoàn tất");
+    console.log(order_statusid, order_tailorid, date, od_orderid);
+    pool.query(
+      `UPDATE orders
+	SET order_statusid='${order_statusid}', order_enddate='${date}'
+	WHERE id='${od_orderid}'`,
+      (error, response) => {
+        if (error) {
+          console.log(error);
+          res.send("ERROR");
+        } else {
+          console.log("OK");
+          res.send("OK");
+        }
+      }
+    );
+  } else {
+    console.log("Da huy");
+    console.log(order_statusid, order_tailorid, date, od_orderid);
+    pool.query(
+      `UPDATE orders
+	SET order_statusid='${order_statusid}'
+	WHERE id='${od_orderid}'`,
+      (error, response) => {
+        if (error) {
+          console.log(error);
+          res.send("ERROR");
+        } else {
+          console.log("OK");
+          res.send("OK");
+        }
+      }
+    );
+  }
 });
 
 router.get("/admin/order/delete.:id", function (req, res) {

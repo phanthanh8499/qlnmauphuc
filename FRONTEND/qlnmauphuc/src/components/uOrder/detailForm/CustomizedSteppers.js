@@ -108,41 +108,12 @@ ColorlibStepIcon.propTypes = {
   icon: PropTypes.node,
 };
 
-const steps = [
-  {
-    label: "Chờ xác nhận",
-    date: "01/01/2021",
-  },
-  {
-    label: "Đã xác nhận",
-    date: "02/01/2021",
-  },
-  {
-    label: "Đang lấy vải",
-    date: "03/01/2021",
-  },
-  {
-    label: "Đang may",
-    date: "03/01/2021",
-  },
-  {
-    label: "Đã may xong",
-    date: "04/01/2021",
-  },
-  {
-    label: "Đang vận chuyển",
-    date: "05/01/2021",
-  },
-  {
-    label: "Hoàn tất",
-    date: "06/01/2021",
-  },
-];
+
 
 export default function CustomizedSteppers(props) {
   const [activeStep, setActiveStep] = useState(0);
   const [skipped, setSkipped] = useState(new Set());
-  const {activeId} = props
+  const {activeId, data} = props
   const isStepOptional = (step) => {
     return step === 1;
   };
@@ -168,7 +139,68 @@ export default function CustomizedSteppers(props) {
   const handleReset = () => {
     setActiveStep(0);
   };
-  console.log("??", activeId)
+
+  const formatDate = (dateString) => {
+    const options = {
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit",
+    };
+    return new Date(dateString).toLocaleDateString(undefined, options);
+  };
+
+  const steps = [
+    {
+      label: "Chờ xác nhận",
+      date: formatDate(data.order_startdate),
+    },
+    {
+      label: "Đã xác nhận",
+      date:
+        data.order_processingtime1 === null
+          ? null
+          : formatDate(data.order_processingtime1),
+    },
+    {
+      label: "Đang lấy vải",
+      date:
+        data.order_processingtime2 === null
+          ? null
+          : formatDate(data.order_processingtime2),
+    },
+    {
+      label: "Đang may",
+      date:
+        data.order_processingtime3 === null
+          ? null
+          : formatDate(data.order_processingtime3),
+    },
+    {
+      label: "Đã may xong",
+      date:
+        data.order_processingtime4 === null
+          ? null
+          : formatDate(data.order_processingtime4),
+    },
+    {
+      label: "Đang vận chuyển",
+      date:
+        data.order_shippingtime === null
+          ? null
+          : formatDate(data.order_shippingtime),
+    },
+    {
+      label: "Hoàn tất",
+      date:
+        data.order_enddate === null
+          ? null
+          : formatDate(data.order_enddate),
+    },
+  ];
+
   return (
     <Stack sx={{ width: "100%" }} spacing={4}>
       <Stepper

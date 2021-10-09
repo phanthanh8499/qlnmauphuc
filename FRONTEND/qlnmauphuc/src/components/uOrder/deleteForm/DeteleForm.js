@@ -11,7 +11,7 @@ import { useSnackbar } from "notistack";
 import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
 import makeStyles from "@mui/styles/makeStyles";
 import clsx from "clsx";
-import { cancelOrder, deleteOrder, deleteProduct } from "../../../redux/Action";
+import { cancelOrder, deleteOrder, deleteProduct, processingOrder } from "../../../redux/Action";
 
 const useStyle = makeStyles((theme) => ({
   root: {
@@ -41,12 +41,16 @@ function DeleteForm(props) {
   const dispatch = useDispatch();
   const { open, onClose, id } = props;
   const handleSubmit = () => {
-    console.log("onClick", id);
     enqueueSnackbar("Huỷ đơn hàng thành công", {
       variant: "success",
       autoHideDuration: 2000,
     });
-    dispatch(cancelOrder(id));
+    dispatch(
+      processingOrder({
+        order_statusid: 10,
+        od_orderid: id,
+      })
+    );
     onClose();
   }
   return (

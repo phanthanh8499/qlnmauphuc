@@ -11,7 +11,7 @@ import { useSnackbar } from "notistack";
 import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
 import makeStyles from "@mui/styles/makeStyles";
 import clsx from "clsx";
-import { cancelOrder } from "../../../redux/Action";
+import { cancelOrder, processingOrder } from "../../../redux/Action";
 import BlockIcon from "@mui/icons-material/Block";
 
 const useStyle = makeStyles((theme) => ({
@@ -44,10 +44,20 @@ function CancelForm(props) {
   const handleSubmit = () => {
     if (listId.length !== 0) {
       listId.forEach((element) => {
-        dispatch(cancelOrder(element.od_orderid));
+        if (element.order_statusid === 0){
+          dispatch(
+            processingOrder({
+              order_statusid: 10,
+              od_orderid: element.od_orderid,
+            })
+          );
+        }        
       });
     } else {
-      dispatch(cancelOrder(id));
+      dispatch(processingOrder({
+          order_statusid: 10,
+          od_orderid: id,
+        }));
     }
     enqueueSnackbar("Huỷ đơn hàng thành công", {
       variant: "success",

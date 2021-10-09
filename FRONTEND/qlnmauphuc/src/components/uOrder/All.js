@@ -106,8 +106,8 @@ export default function All(props) {
   const handleClickDetail = (id) => {
     // setDetailForm(true);
     openDetailForm();
-    setOrderid(parseInt(id));
-    setOrderSelected(dataRender.filter((item) => item.id === parseInt(id)));
+    setOrderid(id);
+    // setOrderSelected(dataRender.filter((item) => item.order_id === id));
   };
 
   const renderForm = () => {
@@ -125,7 +125,7 @@ export default function All(props) {
         <DetailForm
           open={detailForm}
           onClose={closeDetailForm}
-          id={parseInt(orderid)}
+          id={orderid}
           data={orderSelected[0]}
         ></DetailForm>
       );
@@ -184,7 +184,7 @@ export default function All(props) {
           <Grid item xs={2} sx={center}>
             <ButtonGroup>
               <IconButton
-                onClick={() => handleClickDetail(value.id)}
+                onClick={() => handleClickDetail(value.od_orderid)}
                 size="large"
               >
                 <VisibilityIcon color="primary" />
@@ -200,7 +200,7 @@ export default function All(props) {
         ) : (
           <Grid item xs={2} sx={center}>
             <IconButton
-              onClick={() => handleClickDetail(value.id)}
+              onClick={() => handleClickDetail(value.od_orderid)}
               size="large"
             >
               <VisibilityIcon color="primary" />

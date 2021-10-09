@@ -22,6 +22,8 @@ import AlarmIcon from "@mui/icons-material/Alarm";
 import AlarmOnIcon from "@mui/icons-material/AlarmOn";
 import {useDispatch} from 'react-redux';
 import { processingOrder } from "../../../redux/Action";
+import { format } from "date-fns";
+import { useSnackbar } from "notistack";
 
 const ColorlibConnector = styled(StepConnector)(({ theme }) => ({
   [`&.${stepConnectorClasses.alternativeLabel}`]: {
@@ -116,7 +118,8 @@ export default function CustomizedSteppers(props) {
   const dispatch = useDispatch();
   const [activeStep, setActiveStep] = useState(0);
   const [skipped, setSkipped] = useState(new Set());
-  const {activeId, id} = props
+  const { enqueueSnackbar } = useSnackbar();
+  const { activeId, id, data } = props;
   useEffect(() => {
     setActiveStep(activeId);
   }, [activeId]);
@@ -134,9 +137,34 @@ export default function CustomizedSteppers(props) {
       newSkipped = new Set(newSkipped.values());
       newSkipped.delete(activeStep);
     }
-
-    setActiveStep((prevActiveStep) => prevActiveStep + 1);
-    dispatch(processingOrder({ order_statusid: activeStep + 1, od_orderid: id }));
+    const today = new Date();
+    if(data.order_statusid === 2){
+      if(data.cloth_quantity >= 2){
+        dispatch(
+          processingOrder({
+            order_statusid: activeStep + 1,
+            od_orderid: id,
+            date: format(today, "yyyy-MM-dd HH:mm:ss"),
+          })
+        );
+      setActiveStep((prevActiveStep) => prevActiveStep + 1);
+      } else {
+        enqueueSnackbar("Không đủ vải để tiến hành may", {
+          variant: "error",
+          autoHideDuration: 2000,
+        });
+        return false;
+      }
+    } else {
+      setActiveStep((prevActiveStep) => prevActiveStep + 1);
+      dispatch(
+        processingOrder({
+          order_statusid: activeStep + 1,
+          od_orderid: id,
+          date: format(today, "yyyy-MM-dd HH:mm:ss"),
+        })
+      );
+    }
     setSkipped(newSkipped);
   };
 
@@ -148,37 +176,65 @@ export default function CustomizedSteppers(props) {
     setActiveStep(0);
   };
 
+  const formatDate = (dateString) => {
+    const options = {
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit",
+    };
+    return new Date(dateString).toLocaleDateString(undefined, options);
+  };
+
   const steps = [
     {
       label: "Chờ xác nhận",
-      date: "01/01/2021",
+      date: formatDate(data.order_startdate),
     },
     {
       label: "Đã xác nhận",
-      date: "02/01/2021",
+      date:
+        data.order_processingtime1 === null
+          ? null
+          : formatDate(data.order_processingtime1),
     },
     {
       label: "Đang lấy vải",
-      date: "03/01/2021",
+      date:
+        data.order_processingtime2 === null
+          ? null
+          : formatDate(data.order_processingtime2),
     },
     {
       label: "Đang may",
-      date: "03/01/2021",
+      date:
+        data.order_processingtime3 === null
+          ? null
+          : formatDate(data.order_processingtime3),
     },
     {
       label: "Đã may xong",
-      date: "04/01/2021",
+      date:
+        data.order_processingtime4 === null
+          ? null
+          : formatDate(data.order_processingtime4),
     },
     {
       label: "Đang vận chuyển",
-      date: "05/01/2021",
+      date:
+        data.order_shippingtime === null
+          ? null
+          : formatDate(data.order_shippingtime),
     },
     {
       label: "Hoàn tất",
-      date: "06/01/2021",
+      date: data.order_enddate === null ? null : formatDate(data.order_enddate),
     },
   ];
 
+  console.log(steps)
   return (
     <Stack sx={{ width: "100%" }} spacing={4}>
       <Stepper

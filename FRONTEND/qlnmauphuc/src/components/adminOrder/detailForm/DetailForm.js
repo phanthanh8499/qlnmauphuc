@@ -12,11 +12,12 @@ import PhoneIcon from "@mui/icons-material/Phone";
 import HomeIcon from "@mui/icons-material/Home";
 import ImageMagnify from "./ImageMagnify";
 import { useDispatch, useSelector } from "react-redux";
-import { getDetailOrder, processingOrder } from "../../../redux/Action";
+import { getDetailOrder, getUserData, processingOrder } from "../../../redux/Action";
 import EditIcon from "@mui/icons-material/Edit";
 import CheckIcon from "@mui/icons-material/Check";
 import CloseIcon from "@mui/icons-material/Close";
 import { useSnackbar } from "notistack";
+import { format } from "date-fns";
 
 const useStyle = makeStyles((theme) => ({
   root: {
@@ -77,7 +78,7 @@ function DetailForm(props) {
   const dispatch = useDispatch();
   const { enqueueSnackbar } = useSnackbar();
   const { open, onClose, id, data } = props;
-  const [loading, setLoading] = useState(true);
+
   const [isEdit, setIsEdit] = useState(true);
 
   const order = useSelector((state) => state.order);
@@ -85,7 +86,14 @@ function DetailForm(props) {
   useEffect(() => {
     dispatch(getDetailOrder(id));
   }, [id]);
+  const users = useSelector((state) => state.users);
+  const { loading, userData, error } = users;
 
+  useEffect(() => {
+    dispatch(getUserData());
+  }, []);
+
+  const [tailorSelected, setTailorSelected] = useState();
 
   const formatDate = (dateString) => {
     const options = {
@@ -118,12 +126,40 @@ function DetailForm(props) {
       });
        setIsEdit(!isEdit);
     }
-    dispatch(processingOrder({order_statusid: 2, od_orderid: id}));
+    const today = new Date();
+    dispatch(
+      processingOrder({
+        order_statusid: 2,
+        od_orderid: id,
+        date: format(today, "yyyy-MM-dd HH:mm:ss"),
+        tailorid: parseInt(tailor),
+        order_tailorid: tailorSelected[0].id,
+        tailor_firstname: tailorSelected[0].user_firstname,
+        tailor_lastname: tailorSelected[0].user_lastname,
+        tailor_address: tailorSelected[0].user_address,
+        tailor_tel: tailorSelected[0].user_tel
+      })
+    );
   }
+
+  
   const handleChangeTailor = (e) => {
-    
     setTailor(e.target.value);
+    setTailorSelected(
+      userData.filter((item) => item.id === parseInt(e.target.value))
+    ); 
   }
+
+  const renderMenuTailor = () => {
+    return (
+      userData.filter((item) => item.user_typeid === "NV").map((value, key) => {
+        return (
+          <MenuItem value={value.id} key={key}>{value.user_lastname + " " + value.user_firstname}</MenuItem>
+        )
+      })
+    )
+  }
+
   const orderInfo = () => {
     return (
       <Grid container>
@@ -143,10 +179,17 @@ function DetailForm(props) {
           </MyTitle>
           <MyTitle>
             <AccessAlarmIcon />
-            <Typography className={classes.title}>
-              <MySpan>Ngày hoàn thành (dự kiến):</MySpan>
-              {formatDate(detailData[0].order_enddate)}
-            </Typography>
+            {parseInt(detailData[0].order_statusid) === 6 ? (
+              <Typography className={classes.title}>
+                <MySpan>Ngày hoàn thành:</MySpan>
+                {formatDate(detailData[0].order_enddate)}
+              </Typography>
+            ) : (
+              <Typography className={classes.title}>
+                <MySpan>Ngày hoàn thành (dự kiến):</MySpan>
+                {formatDate(detailData[0].order_enddate)}
+              </Typography>
+            )}
           </MyTitle>
           <MyTitle>
             <LocalShippingIcon />
@@ -198,7 +241,7 @@ function DetailForm(props) {
   };
 
   const tailorInfo = () => {
-    return detailData[0].order_statusid >= 2 ? (
+    return detailData[0].order_statusid >= 2 && detailData[0].order_statusid <= 6 ? (
       <Grid container sx={{ mt: 1 }}>
         <Grid item xs={12}>
           <SpanButton>Thông tin người may</SpanButton>
@@ -207,19 +250,24 @@ function DetailForm(props) {
           <MyTitle>
             <PersonIcon />
             <Typography className={classes.title}>
-              <MySpan>Người may:</MySpan>Nguyễn Văn B
+              <MySpan>Người may:</MySpan>
+              {detailData[0].tailor_lastname +
+                " " +
+                detailData[0].tailor_firstname}
             </Typography>
           </MyTitle>
-          <MyTitle>
+          <MyTitle sx={{ flexFlow: "nowrap" }}>
             <HomeIcon />
             <Typography className={classes.title}>
-              <MySpan>Địa chỉ:</MySpan>300, Nguyễn Văn Linh, Ninh Kiều, Cần Thơ
+              <MySpan>Địa chỉ:</MySpan>
+              {detailData[0].tailor_address}
             </Typography>
           </MyTitle>
           <MyTitle>
             <PhoneIcon />
             <Typography className={classes.title}>
-              <MySpan>Số điện thoại:</MySpan>0915518099
+              <MySpan>Số điện thoại:</MySpan>
+              {detailData[0].tailor_tel}
             </Typography>
           </MyTitle>
         </Grid>
@@ -228,21 +276,28 @@ function DetailForm(props) {
       <Grid container sx={{ mt: 1 }}>
         <Grid item xs={12}>
           <SpanButton>Thông tin người may</SpanButton>
-          {detailData[0].order_statusid === 1 ? (isEdit ? (
-            <IconButton size="small" onClick={setEdit} color="primary">
-              <EditIcon />
-            </IconButton>
+          {detailData[0].order_statusid === 1 ? (
+            isEdit ? (
+              <IconButton size="small" onClick={setEdit} color="primary">
+                <EditIcon />
+              </IconButton>
+            ) : (
+              <>
+                <IconButton
+                  size="small"
+                  onClick={handleChangeEdit}
+                  color="success"
+                >
+                  <CheckIcon />
+                </IconButton>
+                <IconButton size="small" onClick={setEdit} color="error">
+                  <CloseIcon />
+                </IconButton>
+              </>
+            )
           ) : (
-            <>
-              <IconButton size="small" onClick={handleChangeEdit} color="success">
-                <CheckIcon />
-              </IconButton>
-              <IconButton size="small" onClick={setEdit} color="error">
-                <CloseIcon />
-              </IconButton>
-            </>
-          )) : (<></>)}
-          
+            <></>
+          )}
         </Grid>
 
         <Grid item xs={12} className={classes.infoBox}>
@@ -256,9 +311,8 @@ function DetailForm(props) {
                 label="Thợ may"
                 onChange={handleChangeTailor}
               >
-                <MenuItem value={10}>Ten</MenuItem>
-                <MenuItem value={20}>Twenty</MenuItem>
-                <MenuItem value={30}>Thirty</MenuItem>
+                {renderMenuTailor()}
+                
               </Select>
             </FormControl>
           ) : (
@@ -495,7 +549,7 @@ function DetailForm(props) {
       maxWidth="lg"
     >
       <Grid container className={classes.root}>
-        {loadingDetail ? (
+        {loading || loadingDetail ? (
           <Grid
             item
             xs={12}
@@ -520,6 +574,7 @@ function DetailForm(props) {
                   <CustomizedSteppers
                     activeId={detailData[0].order_statusid}
                     id={id}
+                    data={detailData[0]}
                   />
                 </Grid>
               </Grid>

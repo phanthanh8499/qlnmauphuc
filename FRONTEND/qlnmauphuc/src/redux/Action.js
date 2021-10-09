@@ -244,9 +244,8 @@ export const cancelOrder = (data) => async (dispatch) => {
 };
 
 export const processingOrder = (data) => async (dispatch) => {
-  console.log("xu ly", data)
   dispatch({ type: XU_LY_DON_HANG, payload: data });
-  // await Axios.get(`/admin/Order/delete.${data}`);
+  await Axios.post(`/admin/order/processing`, data);
 };
 
 export const getDetailOrder = (dataReq) => async (dispatch) => {

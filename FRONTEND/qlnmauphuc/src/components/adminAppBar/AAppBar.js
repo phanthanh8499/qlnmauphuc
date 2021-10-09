@@ -169,13 +169,13 @@ export default function AAppBar(props) {
   useEffect(() => {
     abc === "DASHBOARD"
       ? setSelected(0)
-      : abc === "CUSTOMERS"
+      : abc === "USERS"
       ? setSelected(1)
       : abc === "PRODUCTS"
       ? setSelected(2)
       : abc === "CLOTH"
       ? setSelected(3)
-      : abc === "USERS"
+      : abc === "ORDERS"
       ? setSelected(4)
       : abc === ""
       ? setSelected(0)

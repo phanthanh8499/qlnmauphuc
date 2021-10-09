@@ -16,6 +16,8 @@ import PersonIcon from "@mui/icons-material/Person";
 import PhoneIcon from "@mui/icons-material/Phone";
 import HomeIcon from "@mui/icons-material/Home";
 import ImageMagnify from "./ImageMagnify";
+import { useDispatch, useSelector } from "react-redux";
+import { getDetailOrder } from "../../../redux/Action";
 
 const useStyle = makeStyles((theme) => ({
   root: {
@@ -74,12 +76,22 @@ const center = {
 function DetailForm(props) {
   const classes = useStyle();
   const { open, onClose, id, data } = props;
-  const [loading, setLoading] = useState(true);
-  const [dataRender, setDataRender] = useState([]);
+  const [loadingState, setLoadingState] = useState(true);
+  const dispatch = useDispatch()
+  // const [detailData[0], setdetailData[0]] = useState([]);
+
+  
+
+  const order = useSelector((state) => state.order);
+  const { loadingDetail, detailData } = order;
   useEffect(() => {
-    setDataRender(data);
-    setLoading(false);
-  }, [data]);
+    dispatch(getDetailOrder(id));
+  }, [id]);
+
+  useEffect(() => {
+    // setdetailData[0](detailData[0]);
+    setLoadingState(false);
+  }, [detailData]);
 
   const formatDate = (dateString) => {
     const options = {
@@ -99,7 +111,7 @@ function DetailForm(props) {
         <Grid item xs={12}>
           <Typography className={classes.orderid}>
             <SpanButton>Mã đơn hàng</SpanButton>
-            {dataRender.od_orderid}
+            {detailData[0].od_orderid}
           </Typography>
         </Grid>
         <Grid item xs={12} className={classes.infoBox}>
@@ -107,28 +119,34 @@ function DetailForm(props) {
             <AccessAlarmIcon />
             <Typography className={classes.title}>
               <MySpan>Ngày đặt hàng:</MySpan>
-              {formatDate(dataRender.order_startdate)}
+              {formatDate(detailData[0].order_startdate)}
             </Typography>
           </MyTitle>
           <MyTitle>
-            <AccessAlarmIcon />
-            <Typography className={classes.title}>
-              <MySpan>Ngày hoàn thành (dự kiến):</MySpan>
-              {formatDate(dataRender.order_enddate)}
-            </Typography>
+            {parseInt(detailData[0].order_statusid) === 6 ? (
+              <Typography className={classes.title}>
+                <MySpan>Ngày hoàn thành:</MySpan>
+                {formatDate(detailData[0].order_enddate)}
+              </Typography>
+            ) : (
+              <Typography className={classes.title}>
+                <MySpan>Ngày hoàn thành (dự kiến):</MySpan>
+                {formatDate(detailData[0].order_enddate)}
+              </Typography>
+            )}
           </MyTitle>
           <MyTitle>
             <LocalShippingIcon />
             <Typography className={classes.title}>
               <MySpan>P. Thức vận chuyển:</MySpan>
-              {dataRender.osm_name}
+              {detailData[0].osm_name}
             </Typography>
           </MyTitle>
           <MyTitle>
             <PaymentOutlinedIcon />
             <Typography className={classes.title}>
               <MySpan>P. Thức thanh toán:</MySpan>
-              {dataRender.opm_name}
+              {detailData[0].opm_name}
             </Typography>
           </MyTitle>
         </Grid>
@@ -146,19 +164,19 @@ function DetailForm(props) {
           <MyTitle>
             <PersonIcon />
             <Typography className={classes.title}>
-              <MySpan>Người nhận:</MySpan> {dataRender.order_customername}
+              <MySpan>Người nhận:</MySpan> {detailData[0].order_customername}
             </Typography>
           </MyTitle>
           <MyTitle>
             <HomeIcon />
             <Typography className={classes.title}>
-              <MySpan>Địa chỉ:</MySpan> {dataRender.order_customeraddress}
+              <MySpan>Địa chỉ:</MySpan> {detailData[0].order_customeraddress}
             </Typography>
           </MyTitle>
           <MyTitle>
             <PhoneIcon />
             <Typography className={classes.title}>
-              <MySpan>Số điện thoại:</MySpan> {dataRender.order_customerphone}
+              <MySpan>Số điện thoại:</MySpan> {detailData[0].order_customerphone}
             </Typography>
           </MyTitle>
         </Grid>
@@ -167,8 +185,8 @@ function DetailForm(props) {
   };
 
   const tailorInfo = () => {
-    return (
-      dataRender.order_statusid >= 2 ? (<Grid container sx={{ mt: 1 }}>
+    return detailData[0].order_statusid >= 2 ? (
+      <Grid container sx={{ mt: 1 }}>
         <Grid item xs={12}>
           <SpanButton>Thông tin người may</SpanButton>
         </Grid>
@@ -176,23 +194,30 @@ function DetailForm(props) {
           <MyTitle>
             <PersonIcon />
             <Typography className={classes.title}>
-              <MySpan>Người may:</MySpan>Nguyễn Văn B
+              <MySpan>Người may:</MySpan>
+              {detailData[0].tailor_lastname +
+                " " +
+                detailData[0].tailor_firstname}
             </Typography>
           </MyTitle>
-          <MyTitle>
+          <MyTitle sx={{ flexFlow: "nowrap" }}>
             <HomeIcon />
             <Typography className={classes.title}>
-              <MySpan>Địa chỉ:</MySpan>300, Nguyễn Văn Linh, Ninh Kiều, Cần Thơ
+              <MySpan>Địa chỉ:</MySpan>
+              {detailData[0].tailor_address}
             </Typography>
           </MyTitle>
           <MyTitle>
             <PhoneIcon />
             <Typography className={classes.title}>
-              <MySpan>Số điện thoại:</MySpan>0915518099
+              <MySpan>Số điện thoại:</MySpan>
+              {detailData[0].tailor_tel}
             </Typography>
           </MyTitle>
         </Grid>
-      </Grid>) : (<Grid container sx={{ mt: 1 }}>
+      </Grid>
+    ) : (
+      <Grid container sx={{ mt: 1 }}>
         <Grid item xs={12}>
           <SpanButton>Thông tin người may</SpanButton>
         </Grid>
@@ -216,8 +241,7 @@ function DetailForm(props) {
             </Typography>
           </MyTitle>
         </Grid>
-      </Grid>)
-      
+      </Grid>
     );
   };
 
@@ -231,17 +255,17 @@ function DetailForm(props) {
           <Grid container>
             <Grid item xs={12}>
               <ImageMagnify
-                image={LOCAL_PATH + dataRender.cloth_image.substring(2)}
+                image={LOCAL_PATH + detailData[0].cloth_image.substring(2)}
               ></ImageMagnify>
             </Grid>
             <Grid item xs={12}>
               <Typography className={classes.title}>
                 <MySpan>Tên vải: </MySpan>
-                {dataRender.cloth_name}
+                {detailData[0].cloth_name}
               </Typography>
               <Typography className={classes.title}>
                 <MySpan>Chất liệu: </MySpan>
-                {dataRender.cloth_material}
+                {detailData[0].cloth_material}
               </Typography>
             </Grid>
           </Grid>
@@ -259,90 +283,90 @@ function DetailForm(props) {
         <Grid item xs={12} className={classes.infoBox}>
           <Grid container>
             <Grid item xs={6}>
-              {dataRender.od_neckline === 0 ? null : (
+              {detailData[0].od_neckline === 0 ? null : (
                 <Typography className={classes.title}>
                   <MySpan>Vòng cổ: </MySpan>
-                  {dataRender.od_neckline}
+                  {detailData[0].od_neckline}
                 </Typography>
               )}
-              {dataRender.od_bust === 0 ? null : (
+              {detailData[0].od_bust === 0 ? null : (
                 <Typography className={classes.title}>
                   <MySpan>Vòng ngực: </MySpan>
-                  {dataRender.od_bust}
+                  {detailData[0].od_bust}
                 </Typography>
               )}
-              {dataRender.od_shoulderwidth === 0 ? null : (
+              {detailData[0].od_shoulderwidth === 0 ? null : (
                 <Typography className={classes.title}>
                   <MySpan>Rộng vai: </MySpan>
-                  {dataRender.od_shoulderwidth}
+                  {detailData[0].od_shoulderwidth}
                 </Typography>
               )}
-              {dataRender.od_wristaround === 0 ? null : (
+              {detailData[0].od_wristaround === 0 ? null : (
                 <Typography className={classes.title}>
                   <MySpan>Cửa tay: </MySpan>
-                  {dataRender.od_wristaround}
+                  {detailData[0].od_wristaround}
                 </Typography>
               )}
-              {dataRender.od_sleevelength === 0 ? null : (
+              {detailData[0].od_sleevelength === 0 ? null : (
                 <Typography className={classes.title}>
                   <MySpan>Dài tay: </MySpan>
-                  {dataRender.od_sleevelength}
+                  {detailData[0].od_sleevelength}
                 </Typography>
               )}
-              {dataRender.od_shirtlength === 0 ? null : (
+              {detailData[0].od_shirtlength === 0 ? null : (
                 <Typography className={classes.title}>
                   <MySpan>Dài áo: </MySpan>
-                  {dataRender.od_shirtlength}
+                  {detailData[0].od_shirtlength}
                 </Typography>
               )}
-              {dataRender.od_armpitcircumference === 0 ? null : (
+              {detailData[0].od_armpitcircumference === 0 ? null : (
                 <Typography className={classes.title}>
                   <MySpan>Vòng nách: </MySpan>
-                  {dataRender.od_armpitcircumference}
+                  {detailData[0].od_armpitcircumference}
                 </Typography>
               )}
-              {dataRender.od_biceps === 0 ? null : (
+              {detailData[0].od_biceps === 0 ? null : (
                 <Typography className={classes.title}>
                   <MySpan>Bắp tay: </MySpan>
-                  {dataRender.od_biceps}
+                  {detailData[0].od_biceps}
                 </Typography>
               )}
             </Grid>
             <Grid item xs={6}>
-              {dataRender.od_waist === 0 ? null : (
+              {detailData[0].od_waist === 0 ? null : (
                 <Typography className={classes.title}>
                   <MySpan>Vòng eo: </MySpan>
-                  {dataRender.od_waist}
+                  {detailData[0].od_waist}
                 </Typography>
               )}
-              {dataRender.od_buttock === 0 ? null : (
+              {detailData[0].od_buttock === 0 ? null : (
                 <Typography className={classes.title}>
                   <MySpan>Vòng mông: </MySpan>
-                  {dataRender.od_buttock}
+                  {detailData[0].od_buttock}
                 </Typography>
               )}
-              {dataRender.od_thighcircumference === 0 ? null : (
+              {detailData[0].od_thighcircumference === 0 ? null : (
                 <Typography className={classes.title}>
                   <MySpan>Vòng đùi: </MySpan>
-                  {dataRender.od_thighcircumference}
+                  {detailData[0].od_thighcircumference}
                 </Typography>
               )}
-              {dataRender.od_crotchlength === 0 ? null : (
+              {detailData[0].od_crotchlength === 0 ? null : (
                 <Typography className={classes.title}>
                   <MySpan>Vòng dáy: </MySpan>
-                  {dataRender.od_crotchlength}
+                  {detailData[0].od_crotchlength}
                 </Typography>
               )}
-              {dataRender.od_dresslength === 0 ? null : (
+              {detailData[0].od_dresslength === 0 ? null : (
                 <Typography className={classes.title}>
                   <MySpan>Dài váy: </MySpan>
-                  {dataRender.od_dresslength}
+                  {detailData[0].od_dresslength}
                 </Typography>
               )}
-              {dataRender.od_pantslength === 0 ? null : (
+              {detailData[0].od_pantslength === 0 ? null : (
                 <Typography className={classes.title}>
                   <MySpan>Dài quần: </MySpan>
-                  {dataRender.od_pantslength}
+                  {detailData[0].od_pantslength}
                 </Typography>
               )}
             </Grid>
@@ -364,23 +388,23 @@ function DetailForm(props) {
               <Grid item xs={12} sx={center}>
                 <img
                   className={classes.img}
-                  src={LOCAL_PATH + dataRender.product_image1.substring(2)}
-                  alt={dataRender.product_name}
+                  src={LOCAL_PATH + detailData[0].product_image1.substring(2)}
+                  alt={detailData[0].product_name}
                 ></img>
               </Grid>
               <Grid item xs={12} sx={center}>
                 <Typography className={classes.title}>
                   <MySpan>Tổng tiền: </MySpan>
-                  {dataRender.order_total.toLocaleString("it-IT", {
+                  {detailData[0].order_total.toLocaleString("it-IT", {
                     style: "currency",
                     currency: "VND",
                   })}
                 </Typography>
               </Grid>
-              {dataRender.order_statusid >= 1 ? (<><Grid item xs={12} sx={center}>
+              {detailData[0].order_statusid >= 1 ? (<><Grid item xs={12} sx={center}>
                 <Typography className={classes.title}>
                   <MySpan>Đã trả: </MySpan>
-                  {(dataRender.order_total * 0.5).toLocaleString("it-IT", {
+                  {(detailData[0].order_total * 0.5).toLocaleString("it-IT", {
                     style: "currency",
                     currency: "VND",
                   })}
@@ -389,7 +413,7 @@ function DetailForm(props) {
               <Grid item xs={12} sx={center}>
                 <Typography className={classes.title}>
                   <MySpan>Còn lại: </MySpan>
-                  {(dataRender.order_total * 0.5).toLocaleString("it-IT", {
+                  {(detailData[0].order_total * 0.5).toLocaleString("it-IT", {
                     style: "currency",
                     currency: "VND",
                   })}
@@ -420,8 +444,18 @@ function DetailForm(props) {
       maxWidth="lg"
     >
       <Grid container className={classes.root}>
-        {loading ? (
-          <Grid item xs={12} sx={{ width: 1200, height: 416, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        {loadingDetail || loadingState ? (
+          <Grid
+            item
+            xs={12}
+            sx={{
+              width: 1200,
+              height: 416,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
             <CircularProgress />
           </Grid>
         ) : (
@@ -432,7 +466,10 @@ function DetailForm(props) {
                   {orderInfo()}
                 </Grid>
                 <Grid item xs={8}>
-                  <CustomizedSteppers activeId={data.order_statusid} />
+                  <CustomizedSteppers
+                    activeId={detailData[0].order_statusid}
+                    data={detailData[0]}
+                  />
                 </Grid>
               </Grid>
             </Grid>
@@ -449,7 +486,7 @@ function DetailForm(props) {
                   {measurementInfo()}
                 </Grid>
                 <Grid item xs={2}>
-                 {productInfo()}
+                  {productInfo()}
                 </Grid>
               </Grid>
             </Grid>
