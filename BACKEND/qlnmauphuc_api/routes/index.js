@@ -365,6 +365,8 @@ router.post("/admin/cloth/add", function (req, res) {
     cloth_quantity,
     cloth_userid,
     cloth_typeid,
+    ct_name,
+    user_username,
     frontEndURL,
   } = req.body;
   const file = req.files.file;
@@ -398,7 +400,17 @@ router.post("/admin/cloth/add", function (req, res) {
       if (error) {
         console.log(error);
       } else {
-        res.send({ message: "Them san pham thanh cong" });
+        res.send({
+          id: parseInt(id),
+          cloth_material: cloth_material,
+          cloth_name: cloth_name,
+          cloth_quantity: cloth_quantity,
+          cloth_userid: cloth_userid,
+          cloth_typeid: cloth_typeid,
+          cloth_image: cloth_image,
+          user_username: user_username,
+          ct_name: ct_name,
+        });
         if (!fs.existsSync(newpath)) {
           fs.mkdirSync(newpath);
         }
@@ -414,13 +426,18 @@ router.post("/admin/cloth/add", function (req, res) {
 
 router.get("/getDetailCloth.:id", function (req, res) {
   const { id } = req.params;
-  pool.query(`SELECT * FROM cloth WHERE id = ${id}`, (error, response) => {
-    if (error) {
-      console.log(error);
-    } else {
-      res.send(response.rows);
+  pool.query(
+    `SELECT cloth.*, user_username, user_firstname, user_lastname, ct_name FROM cloth
+INNER JOIN clothtypes ON clothtypes.id = cloth.cloth_typeid
+INNER JOIN users ON users.id = cloth.cloth_userid WHERE cloth.id = ${id}`,
+    (error, response) => {
+      if (error) {
+        console.log(error);
+      } else {
+        res.send(response.rows);
+      }
     }
-  });
+  );
 });
 
 router.post("/admin/cloth/edit", function (req, res) {

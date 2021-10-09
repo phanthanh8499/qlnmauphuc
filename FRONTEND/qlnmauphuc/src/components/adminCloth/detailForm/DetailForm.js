@@ -158,6 +158,7 @@ function DetailForm(props) {
   useEffect(() => {
     async function getDetailProduct() {
       const { data } = await axios.get(`/getDetailCloth.${id}`);
+      console.log("nhan đc", data)
       setName(`${data[0].cloth_name}`);
       setQuantity(`${data[0].cloth_quantity}`);
       setUserId(`${data[0].cloth_userid}`);
@@ -264,12 +265,12 @@ function DetailForm(props) {
                 </Grid>
                 <Grid item xs={4}>
                   <TextField
-                    id="product_code"
-                    label="Số tài khoản"
+                    id="account"
+                    label="Tài khoản"
                     placeholder="Nhập user id"
                     margin="normal"
                     onChange={getParamsUserId}
-                    defaultValue={userId}
+                    defaultValue={userName}
                     size="small"
                     disabled
                     InputLabelProps={{

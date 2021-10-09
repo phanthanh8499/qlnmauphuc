@@ -528,7 +528,7 @@ export default function Order(props) {
     }
 
     // bộ vest cho nữ
-    if (productData.product_typeid === "FVF") {
+    if (productData.product_typeid === "SFF") {
       if (
         !neckline ||
         !bust ||
@@ -1124,7 +1124,7 @@ export default function Order(props) {
         </>
       );
     }
-    if (productData.product_typeid === "FVF") {
+    if (productData.product_typeid === "SFF") {
       return (
         <>
           <Grid item xs={6}>

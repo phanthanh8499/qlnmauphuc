@@ -400,7 +400,7 @@ console.log("123", productData)
                               productData.filter(
                                 (productData) =>
                                   productData.product_typeid === "BFM" ||
-                                  productData.product_typeid === "BFF"
+                                  productData.product_typeid === "VFF"
                               ).length
                             }
                             color="primary"
@@ -463,7 +463,7 @@ console.log("123", productData)
                 <Data data={productData.filter(
                     (productData) =>
                       productData.product_typeid === "BFM" ||
-                      productData.product_typeid === "BFF"
+                      productData.product_typeid === "VFF"
                   )} />
               </TabPanel>
               <TabPanel value="3" sx={{ padding: 0 }}>

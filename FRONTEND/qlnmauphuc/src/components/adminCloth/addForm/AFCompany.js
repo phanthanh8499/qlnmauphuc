@@ -64,7 +64,7 @@ function AFCompany(props) {
   const [material, setMaterial] = useState("");
   const [quantity, setQuantity] = useState("");
   const [type, setType] = useState("");
-  
+  const [clothTypeName, setClothTypeName] = useState("")
   
   const getParamsName = (event) => {
     setName(event.target.value);
@@ -77,7 +77,11 @@ function AFCompany(props) {
   };
   const getParamsType = (event) => {
     setType(event.target.value);
+    setClothTypeName(
+      clothType.filter((item) => item.id === event.target.value)
+    );
   };
+  
   const [file, setFile] = useState();
   const [fileName, setFileName] = useState("");
   const saveFile = (e) => {
@@ -101,6 +105,8 @@ function AFCompany(props) {
     formData.append("cloth_quantity", quantity);
     formData.append("cloth_userid", 1);
     formData.append("cloth_typeid", type);
+    formData.append("ct_name", clothTypeName[0].ct_name);
+    formData.append("user_username", "admin");
     formData.append("file", file);
     formData.append("fileName", fileName);
     formData.append("frontEndURL", FRONTEND_URL);
@@ -130,7 +136,7 @@ function AFCompany(props) {
       autoHideDuration: 2000,
     });
     dispatch(addCloth(formData));
-    dispatch(getClothData());
+    // dispatch(getClothData());
     onClose();
   };
 

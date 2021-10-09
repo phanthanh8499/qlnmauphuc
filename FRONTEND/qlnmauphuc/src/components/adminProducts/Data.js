@@ -35,6 +35,7 @@ import BlockIcon from "@mui/icons-material/Block";
 import CloseIcon from "@mui/icons-material/Close";
 import CancelIcon from "@mui/icons-material/Cancel";
 import EditIcon from "@mui/icons-material/Edit";
+import XLSX from "xlsx";
 
 const MyBadge = styled(Badge)(({ theme }) => ({
   "& .MuiBadge-badge": {
@@ -294,6 +295,7 @@ export default function Data(props) {
     setDataRender(data)
     // dispatch(getProductData());
   }, [data]);
+
   const rows = dataRender;
   const [productid, setProductid] = useState("");
 
@@ -506,6 +508,14 @@ export default function Data(props) {
     },
   ];
 
+  const exportFile = () => {
+    const ws = XLSX.utils.json_to_sheet(dataRender);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "data");
+    /* generate XLSX file and send to client */
+    XLSX.writeFile(wb, "DataExcel.xlsx");
+  };
+
   return (
     <Grid container component={Paper} component={Paper}>
       {loading ? (
@@ -537,6 +547,9 @@ export default function Data(props) {
                 >
                   Thêm sản phẩm
                 </Button>
+                {/* <Button variant="outlined" color="primary" onClick={exportFile}>
+                  Export
+                </Button> */}
                 <Button
                   id="demo-customized-button"
                   aria-controls="demo-customized-menu"

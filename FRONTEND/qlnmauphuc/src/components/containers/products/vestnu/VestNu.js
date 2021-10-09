@@ -64,7 +64,7 @@ export default function VestNu() {
   const { productData } = products;
   const [VFF, setVFF] = useState();
   const [GFF, setGFF] = useState();
-  const [FVF, setFVF] = useState();
+  const [SFF, setSFF] = useState();
   const [loading, setLoading] = useState(true);
   useEffect(() => {
     setVFF(
@@ -73,8 +73,8 @@ export default function VestNu() {
     setGFF(
       productData.filter((productData) => productData.product_typeid === "GFF")
     );
-    setFVF(
-      productData.filter((productData) => productData.product_typeid === "FVF")
+    setSFF(
+      productData.filter((productData) => productData.product_typeid === "SFF")
     );
     setLoading(false);
   }, [productData]);
@@ -131,7 +131,7 @@ export default function VestNu() {
                 <Items data={VFF}></Items>
               </TabPanel>
               <TabPanel value="3">
-                <Items data={FVF}></Items>
+                <Items data={SFF}></Items>
               </TabPanel>
             </TabContext>
           </Grid>

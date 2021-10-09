@@ -67,11 +67,13 @@ function AFCustomer(props) {
   const [quantity, setQuantity] = useState("");
   const [type, setType] = useState("");
   const [userId, setUserId] = useState("");
+  const [userSelected, setUserSelected] = useState("");
   const getParamsName = (event) => {
     setName(event.target.value);
   };
   const getParamsUserId = (event) => {
     setUserId(event.target.value);
+    setUserSelected(userData.filter((item) => item.id === event.target.value));
   };
   const getParamsMaterial = (event) => {
     setMaterial(event.target.value);
@@ -109,6 +111,8 @@ function AFCustomer(props) {
     formData.append("cloth_quantity", quantity);
     formData.append("cloth_userid", userId);
     formData.append("cloth_typeid", "VCKH");
+    formData.append("ct_name", "Vải khách hàng gửi");
+    formData.append("user_username", userSelected[0].user_username);
     formData.append("file", file);
     formData.append("fileName", fileName);
     formData.append("frontEndURL", FRONTEND_URL);
@@ -132,25 +136,25 @@ function AFCustomer(props) {
       autoHideDuration: 2000,
     });
     dispatch(addCloth(formData));
-    dispatch(getClothData());
+    // dispatch(getClothData());
     onClose()
   };
   const [loading, setLoading] = useState(true);
-  const [clothType, setClothType] = useState([]);
-  const renderClothType = () => {
-    return clothType.map((value, key) => (
+  const [userData, setUserData] = useState([]);
+  const renderUserList = () => {
+    return userData.map((value, key) => (
       <MenuItem value={value.id} key={key}>
-        {value.ct_name}
+        {value.user_username}
       </MenuItem>
     ));
   };
   useEffect(() => {
-    async function getClothType() {
-      const { data } = await axios.get("/getClothTypeData");
-      setClothType(data);
+    async function getUserData() {
+      const { data } = await axios.get("/admin/users");
+      setUserData(data.filter((item) => item.user_typeid === "KH"));
       setLoading(false);
     }
-    getClothType();
+    getUserData();
   }, []);
   return (
     <>
@@ -188,12 +192,12 @@ function AFCustomer(props) {
                 <MenuItem value="">
                   <em>None</em>
                 </MenuItem>
-                {renderClothType()}
+                {renderUserList()}
               </Select>
             </FormControl> */}
           </Grid>
           <Grid item xs={4}>
-            <TextField
+            {/* <TextField
               id="product_code"
               label="Số tài khoản"
               placeholder="Nhập user id"
@@ -203,7 +207,28 @@ function AFCustomer(props) {
               InputLabelProps={{
                 shrink: true,
               }}
-            />
+            /> */}
+            <FormControl style={{ width: "50%" }}>
+              <InputLabel
+                shrink
+                id="demo-simple-select-placeholder-label-label"
+              >
+                Tài khoản
+              </InputLabel>
+              <Select
+                labelId="demo-simple-select-placeholder-label-label"
+                id="demo-simple-select-placeholder-label"
+                value={userId}
+                onChange={getParamsUserId}
+                displayEmpty
+                style={{ padding: "0px !important" }}
+              >
+                <MenuItem value="">
+                  <em>None</em>
+                </MenuItem>
+                {renderUserList()}
+              </Select>
+            </FormControl>
           </Grid>
           <Grid item xs={12}>
             <TextField

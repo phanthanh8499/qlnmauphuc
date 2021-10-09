@@ -123,6 +123,7 @@ function DetailForm(props) {
             </Typography>
           </MyTitle>
           <MyTitle>
+            <AccessAlarmIcon />
             {parseInt(detailData[0].order_statusid) === 6 ? (
               <Typography className={classes.title}>
                 <MySpan>Ngày hoàn thành:</MySpan>
