@@ -36,6 +36,7 @@ import CloseIcon from "@mui/icons-material/Close";
 import CancelIcon from "@mui/icons-material/Cancel";
 import EditIcon from "@mui/icons-material/Edit";
 import XLSX from "xlsx";
+import SaveAltIcon from "@mui/icons-material/SaveAlt";
 
 const MyBadge = styled(Badge)(({ theme }) => ({
   "& .MuiBadge-badge": {
@@ -290,9 +291,11 @@ export default function Data(props) {
   const { loading, productData, error } = products;
   const {data} = props;
   const [dataRender, setDataRender] = useState([]);
+  const [dataExport, setDataExport] = useState([]);
   const dispatch = useDispatch();
   useEffect(() => {
     setDataRender(data)
+    setDataExport(data)
     // dispatch(getProductData());
   }, [data]);
 
@@ -509,11 +512,21 @@ export default function Data(props) {
   ];
 
   const exportFile = () => {
-    const ws = XLSX.utils.json_to_sheet(dataRender);
+    const ws = XLSX.utils.json_to_sheet(
+      dataExport.map((item) => {
+        delete item.product_image2;
+        delete item.product_image3;
+        delete item.product_introduction1;
+        delete item.product_introduction2;
+        delete item.product_introduction3;
+        delete item.product_introduction4;
+        delete item.product_introduction5;
+        return item;
+      })
+    );
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, "data");
-    /* generate XLSX file and send to client */
-    XLSX.writeFile(wb, "DataExcel.xlsx");
+    XLSX.writeFile(wb, "DSSanPham.xlsx");
   };
 
   return (
@@ -547,9 +560,14 @@ export default function Data(props) {
                 >
                   Thêm sản phẩm
                 </Button>
-                {/* <Button variant="outlined" color="primary" onClick={exportFile}>
-                  Export
-                </Button> */}
+                <Button
+                  variant="outlined"
+                  color="success"
+                  onClick={exportFile}
+                  sx={{ ml: 0.5 }}
+                >
+                  <SaveAltIcon />
+                </Button>
                 <Button
                   id="demo-customized-button"
                   aria-controls="demo-customized-menu"

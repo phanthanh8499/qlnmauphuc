@@ -1,4 +1,4 @@
-import { Container } from '@mui/material'
+import { CircularProgress, Container, Grid } from '@mui/material'
 import axios from 'axios';
 import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux';
@@ -17,24 +17,6 @@ export default function ProductDetail (props){
   const products = useSelector(state => state.products);
   const {loading, error} = products
   const dispatch = useDispatch();
-  // const { productData } = products;
-  // const [BFM, setBFM] = useState();
-  // const [TFM, setTFM] = useState();
-  // const [SFM, setSFM] = useState();
-  // const [loading, setLoading] = useState(true);
-  // useEffect(() => {
-  //   setBFM(
-  //     productData.filter((productData) => productData.product_typeid === "BFM")
-  //   );
-  //   setTFM(
-  //     productData.filter((productData) => productData.product_typeid === "TFM")
-  //   );
-  //   setSFM(
-  //     productData.filter((productData) => productData.product_typeid === "SFM")
-  //   );
-  //   setLoading(false);
-  // }, [productData]);
-
   
    useEffect(() => {
      dispatch(getProductData());
@@ -47,20 +29,6 @@ export default function ProductDetail (props){
      
    }, [dispatch, id]);
 
-   
-
-  //  const renderSameProduct = () => {
-  //    if(data[0].product_typeid === "BFM"){
-  //      return <SameProduct data={BFM} id={id}></SameProduct>;
-  //    }
-  //    if(data[0].product_typeid === "TFM"){
-  //      return <SameProduct data={TFM} id={id}></SameProduct>;
-  //    }
-  //    if(data[0].product_typeid === "SFM"){
-  //      return <SameProduct data={SFM} id={id}></SameProduct>;
-  //    }
-  //  }
-   console.log(data)
   return (
     <Container>
       {loading ? (

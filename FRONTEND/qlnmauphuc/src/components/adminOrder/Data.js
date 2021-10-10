@@ -46,6 +46,9 @@ import CancelIcon from "@mui/icons-material/Cancel";
 import { cancelOrder, deleteOrder } from "../../redux/Action";
 import { Search, SearchIconWrapper, StyledInputBase, StyledMenu } from "../utility/Utility";
 import CancelForm from "./cancelForm/cancelForm";
+import XLSX from "xlsx";
+import SaveAltIcon from "@mui/icons-material/SaveAlt";
+
 
 function CustomToolbar() {
   return (
@@ -289,13 +292,16 @@ export default function Data(props) {
   const { data } = props;
   const dispatch = useDispatch();
   const [dataRender, setDataRender] = useState([]);
+  const [dataExport, setDataExport] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     setDataRender(data);
+    setDataExport(data);
     setLoading(false);
   }, [data]);
 
+  console.log(dataRender)
   const removeAccents = (str) => {
     return str
       .normalize("NFD")
@@ -557,6 +563,13 @@ const { enqueueSnackbar } = useSnackbar();
     return <GridToolbarContainer></GridToolbarContainer>;
   };
 
+  const exportFile = () => {
+    const ws = XLSX.utils.json_to_sheet(dataExport);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "data");
+    XLSX.writeFile(wb, "DSDonHang.xlsx");
+  };
+
   return (
     <Grid container>
       {loading ? (
@@ -578,7 +591,15 @@ const { enqueueSnackbar } = useSnackbar();
         <>
           <Grid item xs={12} sx={{ marginBottom: "5px" }}>
             <Grid container>
-              <Grid item xs={3}>
+              <Grid item xs={6}>
+                <Button
+                  variant="outlined"
+                  color="success"
+                  onClick={exportFile}
+                  sx={{ ml: 0.5 }}
+                >
+                  <SaveAltIcon />
+                </Button>
                 <Button
                   id="demo-customized-button"
                   aria-controls="demo-customized-menu"
@@ -615,7 +636,7 @@ const { enqueueSnackbar } = useSnackbar();
                   </MenuItem>
                 </StyledMenu>
               </Grid>
-              <Grid item xs={6}></Grid>
+              <Grid item xs={3}></Grid>
               <Grid item xs={3}>
                 <Search>
                   <SearchIconWrapper>

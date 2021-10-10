@@ -6,6 +6,9 @@ import PermIdentityIcon from "@mui/icons-material/PermIdentity";
 import ExitToAppIcon from "@mui/icons-material/ExitToApp";
 import { styled } from "@mui/material/styles";
 import {useLocation} from 'react-router';
+import { useSnackbar } from 'notistack';
+import { useDispatch } from 'react-redux';
+import { DANG_XUAT } from '../../constants/Constants';
 
 const MyListItem = styled(ListItem)(({ theme }) => ({
   color: "#000000",
@@ -22,6 +25,8 @@ export default function ListModule () {
   const handleClick = (e, index) => {
     setValue(index)
   }
+  const dispatch = useDispatch();
+  const { enqueueSnackbar } = useSnackbar();
   const abc = useLocation().pathname.substring(9);
    useEffect(() => {
      abc === "orders"
@@ -32,10 +37,19 @@ export default function ListModule () {
        ? setValue(2)
        : abc === "cloth"
        ? setValue(3)
-       : abc === "/"
-       ? setValue(0)
+       : abc === ""
+       ? setValue("")
        : setValue(2);
    }, []);
+
+   const dangXuat = () => {
+     enqueueSnackbar("Đăng xuất thành công", {
+       variant: "success",
+       autoHideDuration: 1000,
+     });
+     dispatch({ type: DANG_XUAT });
+   };
+
     return (
       <>
         <List component="nav" aria-label="main mailbox folders">
@@ -83,7 +97,7 @@ export default function ListModule () {
               <ListItemText primary="Quản lý vải" />
             </MyListItem>
           </Link>
-          <Link to="/">
+          <Link to="/" onClick={(e) => dangXuat()}>
             <MyListItem
               selected={value === 4}
               onClick={(e) => handleClick(e, 4)}

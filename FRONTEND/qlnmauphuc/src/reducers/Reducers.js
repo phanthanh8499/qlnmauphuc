@@ -416,6 +416,7 @@ export const orderReducer = (
               item.order_tailorid = action.payload.tailorid;
             } else if (action.payload.order_statusid === 3) {
               item.order_processingtime3 = action.payload.date;
+              item.cloth_quantity = action.payload.cloth_quantity;
             } else if (action.payload.order_statusid === 4) {
               item.order_processingtime4 = action.payload.date;
             } else if (action.payload.order_statusid === 5) {
@@ -445,6 +446,7 @@ export const orderReducer = (
               item.tailor_tel = action.payload.tailor_tel;
             } else if (action.payload.order_statusid === 3) {
               item.order_processingtime3 = action.payload.date;
+              item.cloth_quantity = action.payload.cloth_quantity;
             } else if (action.payload.order_statusid === 4) {
               item.order_processingtime4 = action.payload.date;
             } else if (action.payload.order_statusid === 5) {

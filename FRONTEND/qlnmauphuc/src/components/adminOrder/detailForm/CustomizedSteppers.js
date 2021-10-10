@@ -130,7 +130,7 @@ export default function CustomizedSteppers(props) {
   const isStepSkipped = (step) => {
     return skipped.has(step);
   };
-
+console.log("data-001", data);
   const handleNext = () => {
     let newSkipped = skipped;
     if (isStepSkipped(activeStep)) {
@@ -138,23 +138,46 @@ export default function CustomizedSteppers(props) {
       newSkipped.delete(activeStep);
     }
     const today = new Date();
+    
     if(data.order_statusid === 2){
-      if(data.cloth_quantity >= 2){
-        dispatch(
-          processingOrder({
-            order_statusid: activeStep + 1,
-            od_orderid: id,
-            date: format(today, "yyyy-MM-dd HH:mm:ss"),
-          })
-        );
-      setActiveStep((prevActiveStep) => prevActiveStep + 1);
+      if (data.product_typeid === "SFF" || data.product_typeid === "SFM"){
+        if (data.cloth_quantity >= 6) {
+          dispatch(
+            processingOrder({
+              order_statusid: activeStep + 1,
+              od_orderid: id,
+              date: format(today, "yyyy-MM-dd HH:mm:ss"),
+              cloth_quantity: data.cloth_quantity - 6,
+            })
+          );
+          setActiveStep((prevActiveStep) => prevActiveStep + 1);
+        } else {
+          enqueueSnackbar("Không đủ vải để tiến hành may", {
+            variant: "error",
+            autoHideDuration: 2000,
+          });
+          return false;
+        }
       } else {
-        enqueueSnackbar("Không đủ vải để tiến hành may", {
-          variant: "error",
-          autoHideDuration: 2000,
-        });
-        return false;
+        if (data.cloth_quantity >= 2) {
+          dispatch(
+            processingOrder({
+              order_statusid: activeStep + 1,
+              od_orderid: id,
+              date: format(today, "yyyy-MM-dd HH:mm:ss"),
+              cloth_quantity: data.cloth_quantity - 2,
+            })
+          );
+          setActiveStep((prevActiveStep) => prevActiveStep + 1);
+        } else {
+          enqueueSnackbar("Không đủ vải để tiến hành may", {
+            variant: "error",
+            autoHideDuration: 2000,
+          });
+          return false;
+        }
       }
+        
     } else {
       setActiveStep((prevActiveStep) => prevActiveStep + 1);
       dispatch(

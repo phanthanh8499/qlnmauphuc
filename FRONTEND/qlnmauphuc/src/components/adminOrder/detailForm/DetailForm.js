@@ -364,6 +364,10 @@ function DetailForm(props) {
                 <MySpan>Chất liệu: </MySpan>
                 {detailData[0].cloth_material}
               </Typography>
+              <Typography className={classes.title}>
+                <MySpan>Số lượng còn lại: </MySpan>
+                {detailData[0].cloth_quantity} (mét)
+              </Typography>
             </Grid>
           </Grid>
         </Grid>

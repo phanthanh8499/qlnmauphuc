@@ -40,6 +40,8 @@ import CancelIcon from "@mui/icons-material/Cancel";
 import EditIcon from "@mui/icons-material/Edit";
 import SearchIcon from "@mui/icons-material/Search";
 import ChangeForm from "./changeForm/changeForm";
+import XLSX from "xlsx";
+import SaveAltIcon from "@mui/icons-material/SaveAlt";
 
 const MyBadge = styled(Badge)`
   .MuiBadge-badge {
@@ -285,11 +287,13 @@ export default function Data(props) {
   const antDesignClasses = useStylesAntDesign();
   const dispatch = useDispatch();
   const [dataRender, setDataRender] = useState();
+  const [dataExport, setDataExport] = useState();
   const { data, isNv } = props;
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     setDataRender(data);
+    setDataExport(data);
     setLoading(false);
   }, [data]);
 
@@ -563,6 +567,19 @@ export default function Data(props) {
     },
   ];
 
+  const exportFile = () => {
+    const ws = XLSX.utils.json_to_sheet(
+      dataExport.map((item) => {
+        delete item.user_password;
+        delete item.user_city;
+        return item;
+      })
+    );
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "data");
+    XLSX.writeFile(wb, "DSNguoiDung.xlsx");
+  };
+
   return (
     <Grid container>
       {loading ? (
@@ -585,15 +602,24 @@ export default function Data(props) {
           <Grid item xs={12} sx={{ marginBottom: "5px" }}>
             <Grid container>
               <Grid item xs={6}>
-                {isNv ? <Button
+                {isNv ? (
+                  <Button
+                    variant="outlined"
+                    color="primary"
+                    onClick={openAddForm}
+                    sx={{ ml: 0.5 }}
+                  >
+                    Thêm người dùng
+                  </Button>
+                ) : null}
+                <Button
                   variant="outlined"
-                  color="primary"
-                  onClick={openAddForm}
+                  color="success"
+                  onClick={exportFile}
                   sx={{ ml: 0.5 }}
                 >
-                  Thêm người dùng
-                </Button> : null}
-                
+                  <SaveAltIcon />
+                </Button>
                 <Button
                   id="demo-customized-button"
                   aria-controls="demo-customized-menu"

@@ -26,13 +26,20 @@ import Tab from "@mui/material/Tab";
 import TabContext from "@mui/lab/TabContext";
 import TabList from "@mui/lab/TabList";
 import TabPanel from "@mui/lab/TabPanel";
-import { Search, SearchIconWrapper, StyledInputBase, StyledMenu } from "../utility/Utility";
+import {
+  Search,
+  SearchIconWrapper,
+  StyledInputBase,
+  StyledMenu,
+} from "../utility/Utility";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import BlockIcon from "@mui/icons-material/Block";
 import CloseIcon from "@mui/icons-material/Close";
 import CancelIcon from "@mui/icons-material/Cancel";
 import EditIcon from "@mui/icons-material/Edit";
 import SearchIcon from "@mui/icons-material/Search";
+import XLSX from "xlsx";
+import SaveAltIcon from "@mui/icons-material/SaveAlt";
 
 const MyBadge = styled(Badge)`
   .MuiBadge-badge {
@@ -267,8 +274,8 @@ function CustomNoRowsOverlay() {
 //   border-radius: 25px;
 // `;
 
-const MyButton = styled(Button)(({theme}) => ({
-  textTransform: 'none',
+const MyButton = styled(Button)(({ theme }) => ({
+  textTransform: "none",
   borderRadius: 25,
 }));
 
@@ -276,13 +283,15 @@ export default function Data(props) {
   const classes = useStyles();
   const { enqueueSnackbar } = useSnackbar();
   const antDesignClasses = useStylesAntDesign();
-  const dispatch = useDispatch()
+  const dispatch = useDispatch();
   const [dataRender, setDataRender] = useState();
-  const {data} = props;
-  const [loading, setLoading] = useState(true)
+  const [dataExport, setDataExport] = useState();
+  const { data } = props;
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     setDataRender(data);
+    setDataExport(data);
     setLoading(false);
   }, [data]);
 
@@ -291,7 +300,7 @@ export default function Data(props) {
   const [addForm, setAddForm] = useState(false);
   const [detailForm, setDetailForm] = useState(false);
   const [deleteForm, setDeleteForm] = useState(false);
-  const [clothIdList, setClothIdList] = useState([])
+  const [clothIdList, setClothIdList] = useState([]);
   const openAddForm = () => {
     setAddForm(true);
   };
@@ -324,7 +333,7 @@ export default function Data(props) {
   const handleClickEdit = () => {
     setAnchorEl(null);
   };
- 
+
   const handleClickDelete = () => {
     setAnchorEl(null);
     if (clothIdList.length === 0) {
@@ -449,10 +458,12 @@ export default function Data(props) {
       headerName: "Chủ sở hữu",
       width: 150,
       renderCell: (params) => {
-        if(params.value === "admin"){
+        if (params.value === "admin") {
           return (
-            <MyButton variant="outlined" color="primary" fullWidth>{params.value}</MyButton>
-          )
+            <MyButton variant="outlined" color="primary" fullWidth>
+              {params.value}
+            </MyButton>
+          );
         } else {
           return (
             <MyButton variant="outlined" color="success" fullWidth>
@@ -460,7 +471,7 @@ export default function Data(props) {
             </MyButton>
           );
         }
-      }
+      },
     },
     { field: "ct_name", headerName: "Loại vải", width: 200 },
     {
@@ -494,6 +505,19 @@ export default function Data(props) {
     },
   ];
 
+  const exportFile = () => {
+    const ws = XLSX.utils.json_to_sheet(
+      dataExport.map((item) => {
+        delete item.user_firstname;
+        delete item.user_lastname;
+        return item;
+      })
+    );
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "data");
+    XLSX.writeFile(wb, "DSVai.xlsx");
+  };
+
   return (
     <Grid container>
       {loading ? (
@@ -515,7 +539,7 @@ export default function Data(props) {
         <>
           <Grid item xs={12} sx={{ marginBottom: "5px" }}>
             <Grid container>
-              <Grid item xs={3}>
+              <Grid item xs={6}>
                 <Button
                   variant="outlined"
                   color="primary"
@@ -523,6 +547,14 @@ export default function Data(props) {
                   sx={{ ml: 0.5 }}
                 >
                   Thêm vải
+                </Button>
+                <Button
+                  variant="outlined"
+                  color="success"
+                  onClick={exportFile}
+                  sx={{ ml: 0.5 }}
+                >
+                  <SaveAltIcon />
                 </Button>
                 <Button
                   id="demo-customized-button"
@@ -557,7 +589,7 @@ export default function Data(props) {
                   </MenuItem>
                 </StyledMenu>
               </Grid>
-              <Grid item xs={6}></Grid>
+              <Grid item xs={3}></Grid>
               <Grid item xs={3}>
                 <Search>
                   <SearchIconWrapper>

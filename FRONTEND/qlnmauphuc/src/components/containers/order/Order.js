@@ -407,7 +407,6 @@ export default function Order(props) {
     // Blazer, tuxedo, suit
     if (
       productData.product_typeid === "BFM" ||
-      productData.product_typeid === "SFM" ||
       productData.product_typeid === "TFM"
     ) {
       if(!neckline || !bust || !waist || !buttock || !shoulderwidth || !sleevelength || !shirtlength || !wristaround){
@@ -432,7 +431,65 @@ export default function Order(props) {
         formData.append("od_dresslength", 0);
         formData.append("od_pantslength", 0);
       }
+      if (!clothSelectedId) {
+        enqueueSnackbar("Vui lòng chọn loại vải", {
+          variant: "error",
+          autoHideDuration: 2000,
+        });
+        return false;
+      } else if (clothQuantity < 2 * qty) {
+        enqueueSnackbar("Không đủ vải", {
+          variant: "error",
+          autoHideDuration: 2000,
+        });
+        return false;
+      } else {
+        formData.append("od_clothid", clothSelectedId);
+      }
     }
+    // suit nam
+    if (
+      productData.product_typeid === "SFM" 
+    ) {
+      if(!neckline || !bust || !waist || !buttock || !shoulderwidth || !sleevelength || !shirtlength || !wristaround || !crotchlength || !thighcircumference || !pantslength){
+        enqueueSnackbar("Vui điền nhập đầy đủ số đo", {
+          variant: "error",
+          autoHideDuration: 2000,
+        });
+        return false;
+      } else {
+        formData.append("od_neckline", neckline);
+        formData.append("od_bust", bust);
+        formData.append("od_waist", waist);
+        formData.append("od_buttock", buttock);
+        formData.append("od_shoulderwidth", shoulderwidth);
+        formData.append("od_armpitcircumference", 0);
+        formData.append("od_biceps", 0);
+        formData.append("od_wristaround", wristaround);
+        formData.append("od_sleevelength", sleevelength);
+        formData.append("od_shirtlength", shirtlength);
+        formData.append("od_crotchlength", crotchlength);
+        formData.append("od_thighcircumference", thighcircumference);
+        formData.append("od_dresslength", 0);
+        formData.append("od_pantslength", pantslength);
+      }
+      if (!clothSelectedId) {
+        enqueueSnackbar("Vui lòng chọn loại vải", {
+          variant: "error",
+          autoHideDuration: 2000,
+        });
+        return false;
+      } else if (clothQuantity < 6 * qty) {
+        enqueueSnackbar("Không đủ vải", {
+          variant: "error",
+          autoHideDuration: 2000,
+        });
+        return false;
+      } else {
+        formData.append("od_clothid", clothSelectedId);
+      }
+    }
+
     // Gile man
     if (
       productData.product_typeid === "GFM" 
@@ -458,6 +515,21 @@ export default function Order(props) {
         formData.append("od_thighcircumference", 0);
         formData.append("od_dresslength", 0);
         formData.append("od_pantslength", 0);
+      }
+      if (!clothSelectedId) {
+        enqueueSnackbar("Vui lòng chọn loại vải", {
+          variant: "error",
+          autoHideDuration: 2000,
+        });
+        return false;
+      } else if (clothQuantity < 2 * qty) {
+        enqueueSnackbar("Không đủ vải", {
+          variant: "error",
+          autoHideDuration: 2000,
+        });
+        return false;
+      } else {
+        formData.append("od_clothid", clothSelectedId);
       }
     }
     // gile
@@ -487,6 +559,21 @@ export default function Order(props) {
         formData.append("od_thighcircumference", 0);
         formData.append("od_dresslength", dresslength);
         formData.append("od_pantslength", pantslength);
+      }
+      if (!clothSelectedId) {
+        enqueueSnackbar("Vui lòng chọn loại vải", {
+          variant: "error",
+          autoHideDuration: 2000,
+        });
+        return false;
+      } else if (clothQuantity < 2 * qty) {
+        enqueueSnackbar("Không đủ vải", {
+          variant: "error",
+          autoHideDuration: 2000,
+        });
+        return false;
+      } else {
+        formData.append("od_clothid", clothSelectedId);
       }
     }
 
@@ -524,6 +611,21 @@ export default function Order(props) {
         formData.append("od_thighcircumference", 0);
         formData.append("od_dresslength", 0);
         formData.append("od_pantslength", 0);
+      }
+      if (!clothSelectedId) {
+        enqueueSnackbar("Vui lòng chọn loại vải", {
+          variant: "error",
+          autoHideDuration: 2000,
+        });
+        return false;
+      } else if (clothQuantity < 2 * qty) {
+        enqueueSnackbar("Không đủ vải", {
+          variant: "error",
+          autoHideDuration: 2000,
+        });
+        return false;
+      } else {
+        formData.append("od_clothid", clothSelectedId);
       }
     }
 
@@ -565,23 +667,38 @@ export default function Order(props) {
         formData.append("od_dresslength", dresslength);
         formData.append("od_pantslength", pantslength);
       }
+      if (!clothSelectedId) {
+        enqueueSnackbar("Vui lòng chọn loại vải", {
+          variant: "error",
+          autoHideDuration: 2000,
+        });
+        return false;
+      } else if (clothQuantity < 6 * qty) {
+        enqueueSnackbar("Không đủ vải", {
+          variant: "error",
+          autoHideDuration: 2000,
+        });
+        return false;
+      } else {
+        formData.append("od_clothid", clothSelectedId);
+      }
     }
 
-    if (!clothSelectedId){
-      enqueueSnackbar("Vui lòng chọn loại vải", {
-        variant: "error",
-        autoHideDuration: 2000,
-      });
-      return false;
-    } else if (clothQuantity < 2*qty) {
-      enqueueSnackbar("Không đủ vải", {
-        variant: "error",
-        autoHideDuration: 2000,
-      });
-      return false;
-    } else {
-      formData.append("od_clothid", clothSelectedId);
-    }
+    // if (!clothSelectedId){
+    //   enqueueSnackbar("Vui lòng chọn loại vải", {
+    //     variant: "error",
+    //     autoHideDuration: 2000,
+    //   });
+    //   return false;
+    // } else if (clothQuantity < 6*qty) {
+    //   enqueueSnackbar("Không đủ vải", {
+    //     variant: "error",
+    //     autoHideDuration: 2000,
+    //   });
+    //   return false;
+    // } else {
+    //   formData.append("od_clothid", clothSelectedId);
+    // }
 
     enqueueSnackbar("Đặt may thành công", {
       variant: "success",
@@ -620,7 +737,7 @@ export default function Order(props) {
   };
 
   const renderMeasurement = () => {
-    if (productData.product_typeid === "BFM" || productData.product_typeid === "TFM" || productData.product_typeid === "SFM" ) {
+    if (productData.product_typeid === "BFM" || productData.product_typeid === "TFM" ) {
       return (
         <>
           <Grid item xs={6}>
@@ -738,6 +855,177 @@ export default function Order(props) {
               fullWidth
               size="small"
               onChange={getParamsShirtlength}
+              InputLabelProps={{
+                shrink: true,
+              }}
+            />
+          </Grid>
+        </>
+      );
+    }
+    if (productData.product_typeid === "SFM" ) {
+      return (
+        <>
+          <Grid item xs={6}>
+            <TextField
+              id="neckline"
+              label="Vòng cổ"
+              placeholder="Đo vòng quanh chân cổ"
+              margin="normal"
+              defaultValue={neckline}
+              fullWidth
+              size="small"
+              onChange={getParamsNeckline}
+              InputLabelProps={{
+                shrink: true,
+              }}
+            />
+          </Grid>
+          <Grid item xs={6}>
+            <TextField
+              id="bust"
+              label="Vòng ngực"
+              placeholder="Đo vòng quanh ngực, chỗ nở nhất"
+              margin="normal"
+              defaultValue={bust}
+              fullWidth
+              size="small"
+              onChange={getParamsBust}
+              InputLabelProps={{
+                shrink: true,
+              }}
+            />
+          </Grid>
+          <Grid item xs={6}>
+            <TextField
+              id="waist"
+              label="Vòng eo"
+              placeholder="Đo vòng quanh eo"
+              margin="normal"
+              defaultValue={waist}
+              fullWidth
+              size="small"
+              onChange={getParamsWaist}
+              InputLabelProps={{
+                shrink: true,
+              }}
+            />
+          </Grid>
+          <Grid item xs={6}>
+            <TextField
+              id="buttock"
+              label="Vòng mông"
+              placeholder="Đo vòng quanh mông, chỗ nở nhất"
+              margin="normal"
+              defaultValue={buttock}
+              fullWidth
+              size="small"
+              onChange={getParamsButtock}
+              InputLabelProps={{
+                shrink: true,
+              }}
+            />
+          </Grid>
+          <Grid item xs={6}>
+            <TextField
+              id="shoulderwidth"
+              label="Rộng vai"
+              placeholder="Từ đầu vai trái sang đầu vai phải"
+              margin="normal"
+              defaultValue={shoulderwidth}
+              fullWidth
+              size="small"
+              onChange={getParamsShoulderwidth}
+              InputLabelProps={{
+                shrink: true,
+              }}
+            />
+          </Grid>
+          <Grid item xs={6}>
+            <TextField
+              id="wristaround"
+              label="Cửa tay"
+              placeholder="Đo vòng quanh nắm tay"
+              margin="normal"
+              defaultValue={wristaround}
+              fullWidth
+              size="small"
+              onChange={getParamsWristaround}
+              InputLabelProps={{
+                shrink: true,
+              }}
+            />
+          </Grid>
+          <Grid item xs={6}>
+            <TextField
+              id="sleevelength"
+              label="Dài tay"
+              placeholder="Từ đầu vai đến qua khỏi mắt cá tay"
+              margin="normal"
+              defaultValue={sleevelength}
+              fullWidth
+              size="small"
+              onChange={getParamsSleevelength}
+              InputLabelProps={{
+                shrink: true,
+              }}
+            />
+          </Grid>
+          <Grid item xs={6}>
+            <TextField
+              id="shirtlength"
+              label="Dài áo"
+              placeholder="Từ đốt xương cổ thứ 7 đến ngang mông"
+              margin="normal"
+              defaultValue={shirtlength}
+              fullWidth
+              size="small"
+              onChange={getParamsShirtlength}
+              InputLabelProps={{
+                shrink: true,
+              }}
+            />
+          </Grid>
+          <Grid item xs={6}>
+            <TextField
+              id="thighcircumference"
+              label="Vòng đùi"
+              placeholder="Đo vòng quang đùi chỗ nở nhất"
+              margin="normal"
+              defaultValue={thighcircumference}
+              fullWidth
+              size="small"
+              onChange={getParamsThighcircumference}
+              InputLabelProps={{
+                shrink: true,
+              }}
+            />
+          </Grid>
+          <Grid item xs={6}>
+            <TextField
+              id="crotchlength"
+              label="Vòng đáy"
+              placeholder="Từ eo trướng vòng qua eo sau"
+              margin="normal"
+              defaultValue={crotchlength}
+              fullWidth
+              size="small"
+              onChange={getParamsCrotchlength}
+              InputLabelProps={{
+                shrink: true,
+              }}
+            />
+          </Grid>
+          <Grid item xs={6}>
+            <TextField
+              id="pantslength"
+              label="Dài quần"
+              placeholder="Đo từ eo đến chấm gót chân"
+              margin="normal"
+              defaultValue={pantslength}
+              fullWidth
+              size="small"
+              onChange={getParamsPantslength}
               InputLabelProps={{
                 shrink: true,
               }}

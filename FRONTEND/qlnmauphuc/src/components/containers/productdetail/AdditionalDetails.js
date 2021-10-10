@@ -75,7 +75,7 @@ export default function AdditionalDetails(props) {
                 {data[0].product_material}
               </li>
               <li className={classes.star}>
-                <Typography className={classes.font}>lớp lót:</Typography>{" "}
+                <Typography className={classes.font}>Lớp lót:</Typography>{" "}
                 {data[0].product_lining}
               </li>
               <li className={classes.star}>
