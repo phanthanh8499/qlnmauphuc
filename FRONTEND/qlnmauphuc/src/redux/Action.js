@@ -245,7 +245,7 @@ export const cancelOrder = (data) => async (dispatch) => {
 
 export const processingOrder = (data) => async (dispatch) => {
   dispatch({ type: XU_LY_DON_HANG, payload: data });
-  await Axios.post(`/admin/order/processing`, data);
+  // await Axios.post(`/admin/order/processing`, data);
 };
 
 export const getDetailOrder = (dataReq) => async (dispatch) => {

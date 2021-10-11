@@ -43,7 +43,7 @@ import ImageMagnify from "./ImageMagnify";
 import { format } from "date-fns";
 import { useSnackbar } from "notistack";
 import { LOCAL_PATH } from "../../../constants/Constants";
-
+import clsx from "clsx";
 
 const Accordion = styled((props) => (
   <MuiAccordion disableGutters elevation={0} square {...props} />
@@ -94,8 +94,8 @@ const useStyles = makeStyles((theme) => ({
   img: {
     height: 64,
     width: 64,
-    boxShadow: '0 0 0 1px rgb(0 0 0 / 10%) inset',
-    borderRadius: '8px',
+    boxShadow: "0 0 0 1px rgb(0 0 0 / 10%) inset",
+    borderRadius: "8px",
   },
   box: {
     backgroundColor: "#fafafa",
@@ -103,14 +103,43 @@ const useStyles = makeStyles((theme) => ({
   },
   productTitle: {
     color: "#4b4b4b",
-    padding: '0px 5px',
+    padding: "0px 5px",
+  },
+  dropZone: {
+    border: "1px dashed #000000",
+    height: 100,
+    width: "100%",
+    margin: "2px !important",
+  },
+  dropZone1: {
+    height: 100,
+    width: "100%",
+    margin: "2px !important",
+  },
+  uploadImg: {
+    height: "80%",
+    width: "80%",
+  },
+  uploadImgBig: {
+    height: "100%",
+    width: "100%",
+  },
+  labelInputImg: {
+    height: "100%",
+    width: "100%",
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  input: {
+    display: "none",
   },
 }));
 
 const center = {
-  display: 'flex',
-  justifyContent: 'center',
-  alignItems: 'center',
+  display: "flex",
+  justifyContent: "center",
+  alignItems: "center",
 };
 
 export default function Order(props) {
@@ -211,15 +240,13 @@ export default function Order(props) {
   const [measurement, setMeasurement] = useState();
 
   const { userInfo } = JSON.parse(localStorage.getItem("userInfo"));
- 
+
   const [loading, setLoading] = useState(true);
   const measurements = useSelector((state) => state.measurements);
   const { measurementsData } = measurements;
 
   // console.log("???", detailData);
   console.log(measurementsData);
-
-  
 
   const [loadingMeasurement, setLoadingMeasurement] = useState(false);
   const handleChangeMeasurement = (event, value) => {
@@ -289,9 +316,7 @@ export default function Order(props) {
     setClothSelected("");
     setImgUpload(LOCAL_PATH + "images/loading.gif");
     setClothQuantity(0);
-    event.target.value === "kh"
-      ? setDiscount(price * 0.3)
-      : setDiscount(0);
+    event.target.value === "kh" ? setDiscount(price * 0.3) : setDiscount(0);
   };
 
   const cloth = useSelector((state) => state.cloth);
@@ -327,31 +352,14 @@ export default function Order(props) {
 
   const [shippingMethod, setShippingMethod] = useState("TNM");
   const handleChangeShippingMethod = (event) => {
-    setShippingMethod(event.target.value)
-  }
+    setShippingMethod(event.target.value);
+  };
   const [paymentMethod, setPaymentMethod] = useState("COD");
   const handleChangePaymentMethod = (event) => {
     setPaymentMethod(event.target.value);
   };
-  
-  const increment = () => {
-    const temp = price + productData.product_price;
-    setQty(qty + 1);
-    setPrice(price + productData.product_price); 
-     owner === "kh" ? setDiscount(temp*0.3) : setDiscount(0);
-  };
 
-  const decrement = () => {
-    let temp = 0;
-    qty > 1 ? setQty(qty - 1) : setQty(1);
-    qty > 1
-      ? setPrice(price - productData.product_price)
-      : setPrice(productData.product_price);
-    qty > 1
-      ? (temp = price - productData.product_price)
-      : (temp = productData.product_price);
-    owner === "kh" ? setDiscount(temp * 0.3) : setDiscount(0);
-  };
+  
 
   const { productData } = props;
 
@@ -379,7 +387,7 @@ export default function Order(props) {
     const enddate = new Date();
     enddate.setDate(today.getDate() + 10);
     const formData = new FormData();
-    
+
     formData.append("order_subtotal", price / qty);
     formData.append("order_discount", discount / qty);
     formData.append("order_total", (price - discount) / qty);
@@ -388,8 +396,7 @@ export default function Order(props) {
     formData.append("order_statusid", 0);
     formData.append("order_userid", userInfo.id);
     formData.append("od_productid", productData.id);
-    
-    
+
     if (!lastName || !firstName || !tel || !email || !address) {
       enqueueSnackbar("Vui lòng nhập thông tin cá nhân", {
         variant: "error",
@@ -409,7 +416,16 @@ export default function Order(props) {
       productData.product_typeid === "BFM" ||
       productData.product_typeid === "TFM"
     ) {
-      if(!neckline || !bust || !waist || !buttock || !shoulderwidth || !sleevelength || !shirtlength || !wristaround){
+      if (
+        !neckline ||
+        !bust ||
+        !waist ||
+        !buttock ||
+        !shoulderwidth ||
+        !sleevelength ||
+        !shirtlength ||
+        !wristaround
+      ) {
         enqueueSnackbar("Vui điền nhập đầy đủ số đo", {
           variant: "error",
           autoHideDuration: 2000,
@@ -448,10 +464,20 @@ export default function Order(props) {
       }
     }
     // suit nam
-    if (
-      productData.product_typeid === "SFM" 
-    ) {
-      if(!neckline || !bust || !waist || !buttock || !shoulderwidth || !sleevelength || !shirtlength || !wristaround || !crotchlength || !thighcircumference || !pantslength){
+    if (productData.product_typeid === "SFM") {
+      if (
+        !neckline ||
+        !bust ||
+        !waist ||
+        !buttock ||
+        !shoulderwidth ||
+        !sleevelength ||
+        !shirtlength ||
+        !wristaround ||
+        !crotchlength ||
+        !thighcircumference ||
+        !pantslength
+      ) {
         enqueueSnackbar("Vui điền nhập đầy đủ số đo", {
           variant: "error",
           autoHideDuration: 2000,
@@ -491,10 +517,15 @@ export default function Order(props) {
     }
 
     // Gile man
-    if (
-      productData.product_typeid === "GFM" 
-    ) {
-      if(!neckline || !bust || !waist || !buttock || !shoulderwidth || !shirtlength ){
+    if (productData.product_typeid === "GFM") {
+      if (
+        !neckline ||
+        !bust ||
+        !waist ||
+        !buttock ||
+        !shoulderwidth ||
+        !shirtlength
+      ) {
         enqueueSnackbar("Vui điền nhập đầy đủ số đo", {
           variant: "error",
           autoHideDuration: 2000,
@@ -516,28 +547,52 @@ export default function Order(props) {
         formData.append("od_dresslength", 0);
         formData.append("od_pantslength", 0);
       }
-      if (!clothSelectedId) {
-        enqueueSnackbar("Vui lòng chọn loại vải", {
-          variant: "error",
-          autoHideDuration: 2000,
-        });
-        return false;
-      } else if (clothQuantity < 2 * qty) {
-        enqueueSnackbar("Không đủ vải", {
-          variant: "error",
-          autoHideDuration: 2000,
-        });
-        return false;
+      if (owner === "nm") {
+        if (!clothSelectedId) {
+          enqueueSnackbar("Vui lòng chọn loại vải", {
+            variant: "error",
+            autoHideDuration: 2000,
+          });
+          return false;
+        } else if (clothQuantity < 2 * qty) {
+          enqueueSnackbar("Không đủ vải", {
+            variant: "error",
+            autoHideDuration: 2000,
+          });
+          return false;
+        } else {
+          formData.append("od_clothid", clothSelectedId);
+        }
       } else {
-        formData.append("od_clothid", clothSelectedId);
+        let count = 0;
+        for (let i = 0; i < qty; i++) {
+          if (fileList[i].value === "") {
+            count = count + 1;
+          } 
+        }
+        if(count !== 0){
+          enqueueSnackbar("Chưa import hình ảnh vải", {
+            variant: "error",
+            autoHideDuration: 2000,
+          });
+          console.log("yeu cau nhap day du vai");
+          return false;
+        } 
       }
+        
+        
     }
     // gile
-    if (
-      productData.product_typeid === "GFF"
-    ) {
+    if (productData.product_typeid === "GFF") {
       if (
-        !neckline || !bust || !waist || !buttock || !shoulderwidth || !armpitcircumference || !shirtlength || !dresslength
+        !neckline ||
+        !bust ||
+        !waist ||
+        !buttock ||
+        !shoulderwidth ||
+        !armpitcircumference ||
+        !shirtlength ||
+        !dresslength
       ) {
         enqueueSnackbar("Vui điền nhập đầy đủ số đo", {
           variant: "error",
@@ -704,11 +759,11 @@ export default function Order(props) {
       variant: "success",
       autoHideDuration: 2000,
     });
-    for (let i = 0; i < qty; i++) {
-      dispatch(addOrder(formData));
-    }
-    onClose()
-  }
+    // for (let i = 0; i < qty; i++) {
+    //   dispatch(addOrder(formData));
+    // }
+    // onClose();
+  };
 
   const renderMenuMeasurement = () => {
     if (
@@ -733,11 +788,13 @@ export default function Order(props) {
           </MenuItem>
         ));
     }
-      
   };
 
   const renderMeasurement = () => {
-    if (productData.product_typeid === "BFM" || productData.product_typeid === "TFM" ) {
+    if (
+      productData.product_typeid === "BFM" ||
+      productData.product_typeid === "TFM"
+    ) {
       return (
         <>
           <Grid item xs={6}>
@@ -863,7 +920,7 @@ export default function Order(props) {
         </>
       );
     }
-    if (productData.product_typeid === "SFM" ) {
+    if (productData.product_typeid === "SFM") {
       return (
         <>
           <Grid item xs={6}>
@@ -1613,7 +1670,7 @@ export default function Order(props) {
         </>
       );
     }
-  }
+  };
   useEffect(() => {
     function setState() {
       dispatch(getMeasurementsData(userInfo.id));
@@ -1629,6 +1686,114 @@ export default function Order(props) {
     }
     setState();
   }, []);
+
+  const imgUploadRD = (index) => {
+    let temp = "imgUpload" + index;
+    return temp;
+  }
+
+  const [file1, setFile1] = useState();
+  const [fileName1, setFileName1] = useState("");
+  const [imgUpload1, setImgUpload1] = useState(
+    LOCAL_PATH + "./images/upload-icon2.png"
+  );
+
+  const [fileList, setFileList] = useState([{value : ""}]);
+  const [imageList, setImageList] = useState([
+    { value: LOCAL_PATH + "images/upload-icon2.png" },
+  ]);
+
+  const increment = () => {
+    const temp = price + productData.product_price;
+    fileList.push({ value: "" });
+    imageList.push({ value: LOCAL_PATH + "images/upload-icon2.png" });
+    setQty(qty + 1);
+    setPrice(price + productData.product_price);
+    owner === "kh" ? setDiscount(temp * 0.3) : setDiscount(0);
+  };
+
+  const decrement = () => {
+    let temp = 0;
+    qty > 1 ? setQty(qty - 1) : setQty(1);
+    qty > 1
+      ? setPrice(price - productData.product_price)
+      : setPrice(productData.product_price);
+    qty > 1
+      ? (temp = price - productData.product_price)
+      : (temp = productData.product_price);
+    owner === "kh" ? setDiscount(temp * 0.3) : setDiscount(0);
+    const list = [...fileList ];
+    const imgList = [...imageList];
+    if(qty > 1){
+      list.splice(list.length-1)
+      imgList.splice(imgList.length-1)
+      setFileList(list);
+      setImageList(imgList);
+    }   
+  };
+
+  const saveFile = (e, index) => {
+    // setFile1(e.target.files[0]);
+    // setFileName1(e.target.files[0].name);
+    const list = [...fileList];
+    list[index] = e.target.files[0];
+    const imgList = [...imageList];
+    setFileList(list)
+    let reader = new FileReader();
+    var fileInput = e.target.files[0];
+    reader.readAsDataURL(fileInput);
+    reader.onload = () => {
+      // setImgUpload1(reader.result);
+      imgList[index].value = reader.result;
+      setImageList(imgList)
+    };
+    reader.onerror = function (error) {
+      console.log("Error: ", error);
+    };
+  };
+
+  
+  // const handleChaneInput = (e, index) => {
+  //   const {value} = e.target;
+  //   const list = [...inputList];
+  //   list[index].value = value;
+  //   setInputList(list) 
+  // }
+  const renderImgUpload = () => {
+    fileList.splice(qty);
+    imageList.splice(qty);
+    return fileList.map((value, key) => (
+      <Grid
+        item
+        xs={3}
+        className={clsx(
+          fileList[key].name ? classes.dropZone1 : classes.dropZone
+        )}
+        sx={center}
+        key={key}
+      >
+        <input
+          accept="image/*"
+          className={classes.input}
+          id={`icon-button-file${key}`}
+          type="file"
+          onChange={(e) => saveFile(e, key)}
+        />
+        <label
+          htmlFor={`icon-button-file${key}`}
+          className={classes.labelInputImg}
+        >
+          <img
+            src={imageList[key].value}
+            alt="uploadImg"
+            className={clsx(
+              fileList[key].name ? classes.uploadImgBig : classes.uploadImg
+            )}
+          />
+        </label>
+      </Grid>
+    ));
+  }
 
   return (
     <Dialog
@@ -1793,7 +1958,31 @@ export default function Order(props) {
                         </TabPanel>
                         <TabPanel value="2">
                           <Grid container>
-                            <Grid item xs={4}>
+                            <Grid item xs={3}>
+                              <RadioGroup
+                                aria-label="gender"
+                                defaultValue={owner}
+                                name="radio-buttons-group"
+                                onChange={handleChangeRadio}
+                              >
+                                <FormControlLabel
+                                  value="nm"
+                                  control={<Radio />}
+                                  label="Nhà may"
+                                />
+                                <FormControlLabel
+                                  value="kh"
+                                  control={<Radio />}
+                                  label="Của tôi"
+                                />
+                              </RadioGroup>
+                            </Grid>
+                            <Grid item xs={9}>
+                              <Grid container>
+                                {renderImgUpload()}
+                              </Grid>
+                            </Grid>
+                            {/* <Grid item xs={4}>
                               <ImageMagnify
                                 image={imgUpload}
                                 quantity={clothQuantity}
@@ -1837,7 +2026,7 @@ export default function Order(props) {
                                   </FormControl>
                                 </Grid>
                               </Grid>
-                            </Grid>
+                            </Grid> */}
                           </Grid>
                         </TabPanel>
                       </TabContext>
@@ -1967,13 +2156,20 @@ export default function Order(props) {
                       size="small"
                       value={qty}
                       onChange={(e) => {
-                        setQty(e.target.value);
+                        setQty(parseInt(e.target.value));
                         setPrice(e.target.value * productData.product_price);
                         owner === "kh"
                           ? setDiscount(
                               e.target.value * productData.product_price * 0.3
                             )
                           : setDiscount(0);
+                        console.log("vua nhap", e.target.value, " --- qty", qty)
+                        for (let i = 1; i <= e.target.value; i++) {
+                          fileList.push({ value: "" });
+                          imageList.push({
+                            value: LOCAL_PATH + "images/upload-icon2.png",
+                          });
+                        }
                       }}
                     />
                     <Button
