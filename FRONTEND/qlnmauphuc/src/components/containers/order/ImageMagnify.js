@@ -25,8 +25,8 @@ function ImageMagnify(props) {
           smallImage: {
             alt: "Wristwatch by Ted Baker London",
             src: img,
-            width: 230,
-            height: 152,
+            width: 170,
+            height: 134,
           },
           largeImage: {
             src: img,
@@ -39,7 +39,7 @@ function ImageMagnify(props) {
         <></>
       ) : (
         <Grid container sx={center}>
-          <Typography>Còn lại: {quantity} (mét)</Typography>
+          <Typography sx={{fontSize: 14}}>Còn lại: {quantity} (mét)</Typography>
         </Grid>
       )}
     </>

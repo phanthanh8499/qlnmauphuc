@@ -7,6 +7,7 @@ import {
   Divider,
   FormControl,
   FormControlLabel,
+  FormLabel,
   Grid,
   Icon,
   Input,
@@ -16,6 +17,7 @@ import {
   Radio,
   RadioGroup,
   Select,
+  Switch,
   TextField,
   Typography,
 } from "@mui/material";
@@ -42,7 +44,7 @@ import PropTypes from "prop-types";
 import ImageMagnify from "./ImageMagnify";
 import { format } from "date-fns";
 import { useSnackbar } from "notistack";
-import { LOCAL_PATH } from "../../../constants/Constants";
+import { FRONTEND_URL, LOCAL_PATH } from "../../../constants/Constants";
 import clsx from "clsx";
 
 const Accordion = styled((props) => (
@@ -309,46 +311,11 @@ export default function Order(props) {
   const [discount, setDiscount] = useState(0);
   const [qty, setQty] = useState(1);
 
-  const handleChangeRadio = (event, value) => {
-    const temp = event.target.value;
-    setOwner(event.target.value);
-    setClothSelectedId("");
-    setClothSelected("");
-    setImgUpload(LOCAL_PATH + "images/loading.gif");
-    setClothQuantity(0);
-    event.target.value === "kh" ? setDiscount(price * 0.3) : setDiscount(0);
-  };
+  
 
   const cloth = useSelector((state) => state.cloth);
   const { clothData, myClothData } = cloth;
-  let currentClothData = {};
-  const renderCloth = () => {
-    if (owner === "nm") {
-      currentClothData = clothData;
-      return clothData.map((value, key) => (
-        <MenuItem value={value.id} key={key}>
-          {value.cloth_name}
-        </MenuItem>
-      ));
-    } else {
-      currentClothData = myClothData;
-      return myClothData.map((value, key) => (
-        <MenuItem value={value.id} key={key}>
-          {value.cloth_name}
-        </MenuItem>
-      ));
-    }
-  };
-
-  const handleChangeCloth = (event) => {
-    const abc = currentClothData.filter(
-      (currentClothData) => currentClothData.id === event.target.value
-    );
-    setClothSelectedId(event.target.value);
-    setClothSelected(abc[0]);
-    setImgUpload(abc[0].cloth_image);
-    setClothQuantity(abc[0].cloth_quantity);
-  };
+  
 
   const [shippingMethod, setShippingMethod] = useState("TNM");
   const handleChangeShippingMethod = (event) => {
@@ -366,6 +333,7 @@ export default function Order(props) {
   const data1 = {
     cloth_material: productData.product_material,
   };
+
   const data2 = {
     cloth_userid: userInfo.id,
   };
@@ -447,21 +415,136 @@ export default function Order(props) {
         formData.append("od_dresslength", 0);
         formData.append("od_pantslength", 0);
       }
-      if (!clothSelectedId) {
-        enqueueSnackbar("Vui lòng chọn loại vải", {
-          variant: "error",
-          autoHideDuration: 2000,
-        });
-        return false;
-      } else if (clothQuantity < 2 * qty) {
-        enqueueSnackbar("Không đủ vải", {
-          variant: "error",
-          autoHideDuration: 2000,
-        });
-        return false;
+
+     
+      if (owner === "nm") {
+        if (isMultiColor) {
+          let count = 0;
+          let quantityCount = 0;
+          for (let i = 0; i < qty; i++) {
+            if (clothIdList[i].value === "") {
+              count = count + 1;
+            }
+            if (clothQuantityList[i].value < 2 * qty) {
+              quantityCount = quantityCount + 1;
+            }
+          }
+          if (count !== 0) {
+            enqueueSnackbar("Vui lòng chọn loại vải", {
+              variant: "error",
+              autoHideDuration: 2000,
+            });
+            return false;
+          } else if (quantityCount !== 0) {
+            enqueueSnackbar("Không đủ vải", {
+              variant: "error",
+              autoHideDuration: 2000,
+            });
+            return false;
+          } else {
+            for (let i = 0; i < qty; i++) {
+              formData.set("od_clothid", clothIdList[i].value);
+              formData.set("haveFile", 0);
+              dispatch(addOrder(formData));
+            }
+          }
+        } else {
+          if (clothIdList[0].value === "") {
+            enqueueSnackbar("Vui lòng chọn loại vải", {
+              variant: "error",
+              autoHideDuration: 2000,
+            });
+            return false;
+          } else if (clothQuantityList[0].value < 2 * qty) {
+            enqueueSnackbar("Không đủ vải", {
+              variant: "error",
+              autoHideDuration: 2000,
+            });
+            return false;
+          } else {
+            for (let i = 0; i < qty; i++) {
+              formData.set("od_clothid", clothIdList[0].value);
+              formData.set("haveFile", 0);
+              dispatch(addOrder(formData));
+            }
+          }
+        }
       } else {
-        formData.append("od_clothid", clothSelectedId);
+        if (isMultiColor) {
+          let count = 0;
+          for (let i = 0; i < qty; i++) {
+            if (fileList[i].value === "") {
+              count = count + 1;
+            }
+          }
+          if (count !== 0) {
+            enqueueSnackbar("Chưa import hình ảnh vải", {
+              variant: "error",
+              autoHideDuration: 2000,
+            });
+            console.log("yeu cau nhap day du vai");
+            return false;
+          } else {
+            formData.append("FRONTEND_URL", FRONTEND_URL);
+            let od_id = parseInt(
+              clothData[
+                Object.keys(clothData)
+                  .sort(function (a, b) {
+                    if (a.id >= b.id) return a;
+                  })
+                  .pop()
+              ].id
+            );
+            for (let i = 0; i < qty; i++) {
+              formData.set("haveFile", 1);
+              formData.set("file", fileList[i]);
+              formData.set(
+                "cloth_name",
+                "Vải của user " +
+                  userInfo.id +
+                  " gửi ngày " +
+                  format(today, "yyyy-MM-dd HH:mm:ss")
+              );
+              formData.set("od_clothid", od_id + i + 1);
+              dispatch(addOrder(formData));
+            }
+          }
+        } else {
+          if (fileList[0].value === "") {
+            enqueueSnackbar("Chưa import hình ảnh vải", {
+              variant: "error",
+              autoHideDuration: 2000,
+            });
+            return false;
+          } else {
+            formData.append("FRONTEND_URL", FRONTEND_URL);
+            let od_id = parseInt(
+              clothData[
+                Object.keys(clothData)
+                  .sort(function (a, b) {
+                    if (a.id >= b.id) return a;
+                  })
+                  .pop()
+              ].id
+            );
+            for (let i = 0; i < qty; i++) {
+              formData.set("haveFile", 1);
+              formData.set("file", fileList[0]);
+              formData.set(
+                "cloth_name",
+                "Vải của user " +
+                  userInfo.id +
+                  " gửi ngày " +
+                  format(today, "yyyy-MM-dd HH:mm:ss")
+              );
+              formData.set("od_clothid", od_id + 1);
+              dispatch(addOrder(formData));
+            }
+          }
+        }
       }
+        
+
     }
     // suit nam
     if (productData.product_typeid === "SFM") {
@@ -499,21 +582,136 @@ export default function Order(props) {
         formData.append("od_dresslength", 0);
         formData.append("od_pantslength", pantslength);
       }
-      if (!clothSelectedId) {
-        enqueueSnackbar("Vui lòng chọn loại vải", {
-          variant: "error",
-          autoHideDuration: 2000,
-        });
-        return false;
-      } else if (clothQuantity < 6 * qty) {
-        enqueueSnackbar("Không đủ vải", {
-          variant: "error",
-          autoHideDuration: 2000,
-        });
-        return false;
+
+      
+      if (owner === "nm") {
+        if (isMultiColor) {
+          let count = 0;
+          let quantityCount = 0;
+          for (let i = 0; i < qty; i++) {
+            if (clothIdList[i].value === "") {
+              count = count + 1;
+            }
+            if (clothQuantityList[i].value < 6 * qty) {
+              quantityCount = quantityCount + 1;
+            }
+          }
+          if (count !== 0) {
+            enqueueSnackbar("Vui lòng chọn loại vải", {
+              variant: "error",
+              autoHideDuration: 2000,
+            });
+            return false;
+          } else if (quantityCount !== 0) {
+            enqueueSnackbar("Không đủ vải", {
+              variant: "error",
+              autoHideDuration: 2000,
+            });
+            return false;
+          } else {
+            for (let i = 0; i < qty; i++) {
+              formData.set("od_clothid", clothIdList[i].value);
+              formData.set("haveFile", 0);
+              dispatch(addOrder(formData));
+            }
+          }
+        } else {
+          if (clothIdList[0].value === "") {
+            enqueueSnackbar("Vui lòng chọn loại vải", {
+              variant: "error",
+              autoHideDuration: 2000,
+            });
+            return false;
+          } else if (clothQuantityList[0].value < 6 * qty) {
+            enqueueSnackbar("Không đủ vải", {
+              variant: "error",
+              autoHideDuration: 2000,
+            });
+            return false;
+          } else {
+            for (let i = 0; i < qty; i++) {
+              formData.set("od_clothid", clothIdList[0].value);
+              formData.set("haveFile", 0);
+              dispatch(addOrder(formData));
+            }
+          }
+        }
       } else {
-        formData.append("od_clothid", clothSelectedId);
+        if (isMultiColor) {
+          let count = 0;
+          for (let i = 0; i < qty; i++) {
+            if (fileList[i].value === "") {
+              count = count + 1;
+            }
+          }
+          if (count !== 0) {
+            enqueueSnackbar("Chưa import hình ảnh vải", {
+              variant: "error",
+              autoHideDuration: 2000,
+            });
+            console.log("yeu cau nhap day du vai");
+            return false;
+          } else {
+            formData.append("FRONTEND_URL", FRONTEND_URL);
+            let od_id = parseInt(
+              clothData[
+                Object.keys(clothData)
+                  .sort(function (a, b) {
+                    if (a.id >= b.id) return a;
+                  })
+                  .pop()
+              ].id
+            );
+            for (let i = 0; i < qty; i++) {
+              formData.set("haveFile", 1);
+              formData.set("file", fileList[i]);
+              formData.set(
+                "cloth_name",
+                "Vải của user " +
+                  userInfo.id +
+                  " gửi ngày " +
+                  format(today, "yyyy-MM-dd HH:mm:ss")
+              );
+              formData.set("od_clothid", od_id + i + 1);
+              dispatch(addOrder(formData));
+            }
+          }
+        } else {
+          if (fileList[0].value === "") {
+            enqueueSnackbar("Chưa import hình ảnh vải", {
+              variant: "error",
+              autoHideDuration: 2000,
+            });
+            return false;
+          } else {
+            formData.append("FRONTEND_URL", FRONTEND_URL);
+            let od_id = parseInt(
+              clothData[
+                Object.keys(clothData)
+                  .sort(function (a, b) {
+                    if (a.id >= b.id) return a;
+                  })
+                  .pop()
+              ].id
+            );
+            for (let i = 0; i < qty; i++) {
+              formData.set("haveFile", 1);
+              formData.set("file", fileList[0]);
+              formData.set(
+                "cloth_name",
+                "Vải của user " +
+                  userInfo.id +
+                  " gửi ngày " +
+                  format(today, "yyyy-MM-dd HH:mm:ss")
+              );
+              formData.set("od_clothid", od_id + 1);
+              dispatch(addOrder(formData));
+            }
+          }
+        }
       }
+        
+
     }
 
     // Gile man
@@ -547,42 +745,138 @@ export default function Order(props) {
         formData.append("od_dresslength", 0);
         formData.append("od_pantslength", 0);
       }
+
       if (owner === "nm") {
-        if (!clothSelectedId) {
-          enqueueSnackbar("Vui lòng chọn loại vải", {
-            variant: "error",
-            autoHideDuration: 2000,
-          });
-          return false;
-        } else if (clothQuantity < 2 * qty) {
-          enqueueSnackbar("Không đủ vải", {
-            variant: "error",
-            autoHideDuration: 2000,
-          });
-          return false;
+        if(isMultiColor){
+          let count = 0;
+          let quantityCount = 0;
+          for (let i = 0; i < qty; i++) {
+            if (clothIdList[i].value === "") {
+              count = count + 1;
+            }
+            if (clothQuantityList[i].value < 2 * qty) {
+              quantityCount = quantityCount + 1;
+            }
+          }
+          if (count !== 0) {
+            enqueueSnackbar("Vui lòng chọn loại vải", {
+              variant: "error",
+              autoHideDuration: 2000,
+            });
+            return false;
+          } else if (quantityCount !== 0) {
+            enqueueSnackbar("Không đủ vải", {
+              variant: "error",
+              autoHideDuration: 2000,
+            });
+            return false;
+          } else {
+            for (let i = 0; i < qty; i++) {
+              formData.set("od_clothid", clothIdList[i].value);
+              formData.set("haveFile", 0);
+              dispatch(addOrder(formData));
+            }
+          }
         } else {
-          formData.append("od_clothid", clothSelectedId);
+          if (clothIdList[0].value === "") {
+            enqueueSnackbar("Vui lòng chọn loại vải", {
+              variant: "error",
+              autoHideDuration: 2000,
+            });
+            return false;
+          } else if (clothQuantityList[0].value < 2 * qty) {
+            enqueueSnackbar("Không đủ vải", {
+              variant: "error",
+              autoHideDuration: 2000,
+            });
+            return false;
+          } else {
+            for (let i = 0; i < qty; i++) {
+              formData.set("od_clothid", clothIdList[0].value);
+              formData.set("haveFile", 0);
+              dispatch(addOrder(formData));
+            }
+          }
         }
+        
       } else {
-        let count = 0;
-        for (let i = 0; i < qty; i++) {
-          if (fileList[i].value === "") {
-            count = count + 1;
-          } 
+        if(isMultiColor){
+          let count = 0;
+          for (let i = 0; i < qty; i++) {
+            if (fileList[i].value === "") {
+              count = count + 1;
+            }
+          }
+          if (count !== 0) {
+            enqueueSnackbar("Chưa import hình ảnh vải", {
+              variant: "error",
+              autoHideDuration: 2000,
+            });
+            console.log("yeu cau nhap day du vai");
+            return false;
+          } else {
+            formData.append("FRONTEND_URL", FRONTEND_URL);
+            let od_id = parseInt(
+              clothData[
+                Object.keys(clothData)
+                  .sort(function (a, b) {
+                    if (a.id >= b.id) return a;
+                  })
+                  .pop()
+              ].id
+            );
+            for (let i = 0; i < qty; i++) {
+              formData.set("haveFile", 1);
+              formData.set("file", fileList[i]);
+              formData.set(
+                "cloth_name",
+                "Vải của user " +
+                  userInfo.id +
+                  " gửi ngày " +
+                  format(today, "yyyy-MM-dd HH:mm:ss")
+              );
+              formData.set("od_clothid", od_id + i + 1);
+              dispatch(addOrder(formData));
+            }
+          }
+        } else {
+          if (fileList[0].value === "") {
+            enqueueSnackbar("Chưa import hình ảnh vải", {
+              variant: "error",
+              autoHideDuration: 2000,
+            });
+            return false;
+          } else {
+            formData.append("FRONTEND_URL", FRONTEND_URL);
+            let od_id = parseInt(
+              clothData[
+                Object.keys(clothData)
+                  .sort(function (a, b) {
+                    if (a.id >= b.id) return a;
+                  })
+                  .pop()
+              ].id
+            );
+            for (let i = 0; i < qty; i++) {
+              formData.set("haveFile", 1);
+              formData.set("file", fileList[0]);
+              formData.set(
+                "cloth_name",
+                "Vải của user " +
+                  userInfo.id +
+                  " gửi ngày " +
+                  format(today, "yyyy-MM-dd HH:mm:ss")
+              );
+              formData.set("od_clothid", od_id+1);
+              dispatch(addOrder(formData));
+            }
+          }
         }
-        if(count !== 0){
-          enqueueSnackbar("Chưa import hình ảnh vải", {
-            variant: "error",
-            autoHideDuration: 2000,
-          });
-          console.log("yeu cau nhap day du vai");
-          return false;
-        } 
       }
         
         
     }
-    // gile
+    // gile nu
     if (productData.product_typeid === "GFF") {
       if (
         !neckline ||
@@ -615,21 +909,134 @@ export default function Order(props) {
         formData.append("od_dresslength", dresslength);
         formData.append("od_pantslength", pantslength);
       }
-      if (!clothSelectedId) {
-        enqueueSnackbar("Vui lòng chọn loại vải", {
-          variant: "error",
-          autoHideDuration: 2000,
-        });
-        return false;
-      } else if (clothQuantity < 2 * qty) {
-        enqueueSnackbar("Không đủ vải", {
-          variant: "error",
-          autoHideDuration: 2000,
-        });
-        return false;
+      
+      if (owner === "nm") {
+        if (isMultiColor) {
+          let count = 0;
+          let quantityCount = 0;
+          for (let i = 0; i < qty; i++) {
+            if (clothIdList[i].value === "") {
+              count = count + 1;
+            }
+            if (clothQuantityList[i].value < 2 * qty) {
+              quantityCount = quantityCount + 1;
+            }
+          }
+          if (count !== 0) {
+            enqueueSnackbar("Vui lòng chọn loại vải", {
+              variant: "error",
+              autoHideDuration: 2000,
+            });
+            return false;
+          } else if (quantityCount !== 0) {
+            enqueueSnackbar("Không đủ vải", {
+              variant: "error",
+              autoHideDuration: 2000,
+            });
+            return false;
+          } else {
+            for (let i = 0; i < qty; i++) {
+              formData.set("od_clothid", clothIdList[i].value);
+              formData.set("haveFile", 0);
+              dispatch(addOrder(formData));
+            }
+          }
+        } else {
+          if (clothIdList[0].value === "") {
+            enqueueSnackbar("Vui lòng chọn loại vải", {
+              variant: "error",
+              autoHideDuration: 2000,
+            });
+            return false;
+          } else if (clothQuantityList[0].value < 2 * qty) {
+            enqueueSnackbar("Không đủ vải", {
+              variant: "error",
+              autoHideDuration: 2000,
+            });
+            return false;
+          } else {
+            for (let i = 0; i < qty; i++) {
+              formData.set("od_clothid", clothIdList[0].value);
+              formData.set("haveFile", 0);
+              dispatch(addOrder(formData));
+            }
+          }
+        }
       } else {
-        formData.append("od_clothid", clothSelectedId);
+        if (isMultiColor) {
+          let count = 0;
+          for (let i = 0; i < qty; i++) {
+            if (fileList[i].value === "") {
+              count = count + 1;
+            }
+          }
+          if (count !== 0) {
+            enqueueSnackbar("Chưa import hình ảnh vải", {
+              variant: "error",
+              autoHideDuration: 2000,
+            });
+            console.log("yeu cau nhap day du vai");
+            return false;
+          } else {
+            formData.append("FRONTEND_URL", FRONTEND_URL);
+            let od_id = parseInt(
+              clothData[
+                Object.keys(clothData)
+                  .sort(function (a, b) {
+                    if (a.id >= b.id) return a;
+                  })
+                  .pop()
+              ].id
+            );
+            for (let i = 0; i < qty; i++) {
+              formData.set("haveFile", 1);
+              formData.set("file", fileList[i]);
+              formData.set(
+                "cloth_name",
+                "Vải của user " +
+                  userInfo.id +
+                  " gửi ngày " +
+                  format(today, "yyyy-MM-dd HH:mm:ss")
+              );
+              formData.set("od_clothid", od_id + i + 1);
+              dispatch(addOrder(formData));
+            }
+          }
+        } else {
+          if (fileList[0].value === "") {
+            enqueueSnackbar("Chưa import hình ảnh vải", {
+              variant: "error",
+              autoHideDuration: 2000,
+            });
+            return false;
+          } else {
+            formData.append("FRONTEND_URL", FRONTEND_URL);
+            let od_id = parseInt(
+              clothData[
+                Object.keys(clothData)
+                  .sort(function (a, b) {
+                    if (a.id >= b.id) return a;
+                  })
+                  .pop()
+              ].id
+            );
+            for (let i = 0; i < qty; i++) {
+              formData.set("haveFile", 1);
+              formData.set("file", fileList[0]);
+              formData.set(
+                "cloth_name",
+                "Vải của user " +
+                  userInfo.id +
+                  " gửi ngày " +
+                  format(today, "yyyy-MM-dd HH:mm:ss")
+              );
+              formData.set("od_clothid", od_id + 1);
+              dispatch(addOrder(formData));
+            }
+          }
+        }
       }
+        
     }
 
     // vest cho nữ
@@ -667,21 +1074,134 @@ export default function Order(props) {
         formData.append("od_dresslength", 0);
         formData.append("od_pantslength", 0);
       }
-      if (!clothSelectedId) {
-        enqueueSnackbar("Vui lòng chọn loại vải", {
-          variant: "error",
-          autoHideDuration: 2000,
-        });
-        return false;
-      } else if (clothQuantity < 2 * qty) {
-        enqueueSnackbar("Không đủ vải", {
-          variant: "error",
-          autoHideDuration: 2000,
-        });
-        return false;
+      
+      if (owner === "nm") {
+        if (isMultiColor) {
+          let count = 0;
+          let quantityCount = 0;
+          for (let i = 0; i < qty; i++) {
+            if (clothIdList[i].value === "") {
+              count = count + 1;
+            }
+            if (clothQuantityList[i].value < 2 * qty) {
+              quantityCount = quantityCount + 1;
+            }
+          }
+          if (count !== 0) {
+            enqueueSnackbar("Vui lòng chọn loại vải", {
+              variant: "error",
+              autoHideDuration: 2000,
+            });
+            return false;
+          } else if (quantityCount !== 0) {
+            enqueueSnackbar("Không đủ vải", {
+              variant: "error",
+              autoHideDuration: 2000,
+            });
+            return false;
+          } else {
+            for (let i = 0; i < qty; i++) {
+              formData.set("od_clothid", clothIdList[i].value);
+              formData.set("haveFile", 0);
+              dispatch(addOrder(formData));
+            }
+          }
+        } else {
+          if (clothIdList[0].value === "") {
+            enqueueSnackbar("Vui lòng chọn loại vải", {
+              variant: "error",
+              autoHideDuration: 2000,
+            });
+            return false;
+          } else if (clothQuantityList[0].value < 2 * qty) {
+            enqueueSnackbar("Không đủ vải", {
+              variant: "error",
+              autoHideDuration: 2000,
+            });
+            return false;
+          } else {
+            for (let i = 0; i < qty; i++) {
+              formData.set("od_clothid", clothIdList[0].value);
+              formData.set("haveFile", 0);
+              dispatch(addOrder(formData));
+            }
+          }
+        }
       } else {
-        formData.append("od_clothid", clothSelectedId);
+        if (isMultiColor) {
+          let count = 0;
+          for (let i = 0; i < qty; i++) {
+            if (fileList[i].value === "") {
+              count = count + 1;
+            }
+          }
+          if (count !== 0) {
+            enqueueSnackbar("Chưa import hình ảnh vải", {
+              variant: "error",
+              autoHideDuration: 2000,
+            });
+            console.log("yeu cau nhap day du vai");
+            return false;
+          } else {
+            formData.append("FRONTEND_URL", FRONTEND_URL);
+            let od_id = parseInt(
+              clothData[
+                Object.keys(clothData)
+                  .sort(function (a, b) {
+                    if (a.id >= b.id) return a;
+                  })
+                  .pop()
+              ].id
+            );
+            for (let i = 0; i < qty; i++) {
+              formData.set("haveFile", 1);
+              formData.set("file", fileList[i]);
+              formData.set(
+                "cloth_name",
+                "Vải của user " +
+                  userInfo.id +
+                  " gửi ngày " +
+                  format(today, "yyyy-MM-dd HH:mm:ss")
+              );
+              formData.set("od_clothid", od_id + i + 1);
+              dispatch(addOrder(formData));
+            }
+          }
+        } else {
+          if (fileList[0].value === "") {
+            enqueueSnackbar("Chưa import hình ảnh vải", {
+              variant: "error",
+              autoHideDuration: 2000,
+            });
+            return false;
+          } else {
+            formData.append("FRONTEND_URL", FRONTEND_URL);
+            let od_id = parseInt(
+              clothData[
+                Object.keys(clothData)
+                  .sort(function (a, b) {
+                    if (a.id >= b.id) return a;
+                  })
+                  .pop()
+              ].id
+            );
+            for (let i = 0; i < qty; i++) {
+              formData.set("haveFile", 1);
+              formData.set("file", fileList[0]);
+              formData.set(
+                "cloth_name",
+                "Vải của user " +
+                  userInfo.id +
+                  " gửi ngày " +
+                  format(today, "yyyy-MM-dd HH:mm:ss")
+              );
+              formData.set("od_clothid", od_id + 1);
+              dispatch(addOrder(formData));
+            }
+          }
+        }
       }
+        
     }
 
     // bộ vest cho nữ
@@ -722,47 +1242,142 @@ export default function Order(props) {
         formData.append("od_dresslength", dresslength);
         formData.append("od_pantslength", pantslength);
       }
-      if (!clothSelectedId) {
-        enqueueSnackbar("Vui lòng chọn loại vải", {
-          variant: "error",
-          autoHideDuration: 2000,
-        });
-        return false;
-      } else if (clothQuantity < 6 * qty) {
-        enqueueSnackbar("Không đủ vải", {
-          variant: "error",
-          autoHideDuration: 2000,
-        });
-        return false;
+      
+      if (owner === "nm") {
+        if (isMultiColor) {
+          let count = 0;
+          let quantityCount = 0;
+          for (let i = 0; i < qty; i++) {
+            if (clothIdList[i].value === "") {
+              count = count + 1;
+            }
+            if (clothQuantityList[i].value < 6 * qty) {
+              quantityCount = quantityCount + 1;
+            }
+          }
+          if (count !== 0) {
+            enqueueSnackbar("Vui lòng chọn loại vải", {
+              variant: "error",
+              autoHideDuration: 2000,
+            });
+            return false;
+          } else if (quantityCount !== 0) {
+            enqueueSnackbar("Không đủ vải", {
+              variant: "error",
+              autoHideDuration: 2000,
+            });
+            return false;
+          } else {
+            for (let i = 0; i < qty; i++) {
+              formData.set("od_clothid", clothIdList[i].value);
+              formData.set("haveFile", 0);
+              dispatch(addOrder(formData));
+            }
+          }
+        } else {
+          if (clothIdList[0].value === "") {
+            enqueueSnackbar("Vui lòng chọn loại vải", {
+              variant: "error",
+              autoHideDuration: 2000,
+            });
+            return false;
+          } else if (clothQuantityList[0].value < 6 * qty) {
+            enqueueSnackbar("Không đủ vải", {
+              variant: "error",
+              autoHideDuration: 2000,
+            });
+            return false;
+          } else {
+            for (let i = 0; i < qty; i++) {
+              formData.set("od_clothid", clothIdList[0].value);
+              formData.set("haveFile", 0);
+              dispatch(addOrder(formData));
+            }
+          }
+        }
       } else {
-        formData.append("od_clothid", clothSelectedId);
+        if (isMultiColor) {
+          let count = 0;
+          for (let i = 0; i < qty; i++) {
+            if (fileList[i].value === "") {
+              count = count + 1;
+            }
+          }
+          if (count !== 0) {
+            enqueueSnackbar("Chưa import hình ảnh vải", {
+              variant: "error",
+              autoHideDuration: 2000,
+            });
+            console.log("yeu cau nhap day du vai");
+            return false;
+          } else {
+            formData.append("FRONTEND_URL", FRONTEND_URL);
+            let od_id = parseInt(
+              clothData[
+                Object.keys(clothData)
+                  .sort(function (a, b) {
+                    if (a.id >= b.id) return a;
+                  })
+                  .pop()
+              ].id
+            );
+            for (let i = 0; i < qty; i++) {
+              formData.set("haveFile", 1);
+              formData.set("file", fileList[i]);
+              formData.set(
+                "cloth_name",
+                "Vải của user " +
+                  userInfo.id +
+                  " gửi ngày " +
+                  format(today, "yyyy-MM-dd HH:mm:ss")
+              );
+              formData.set("od_clothid", od_id + i + 1);
+              dispatch(addOrder(formData));
+            }
+          }
+        } else {
+          if (fileList[0].value === "") {
+            enqueueSnackbar("Chưa import hình ảnh vải", {
+              variant: "error",
+              autoHideDuration: 2000,
+            });
+            return false;
+          } else {
+            formData.append("FRONTEND_URL", FRONTEND_URL);
+            let od_id = parseInt(
+              clothData[
+                Object.keys(clothData)
+                  .sort(function (a, b) {
+                    if (a.id >= b.id) return a;
+                  })
+                  .pop()
+              ].id
+            );
+            for (let i = 0; i < qty; i++) {
+              formData.set("haveFile", 1);
+              formData.set("file", fileList[0]);
+              formData.set(
+                "cloth_name",
+                "Vải của user " +
+                  userInfo.id +
+                  " gửi ngày " +
+                  format(today, "yyyy-MM-dd HH:mm:ss")
+              );
+              formData.set("od_clothid", od_id + 1);
+              dispatch(addOrder(formData));
+            }
+          }
+        }
       }
+        
     }
-
-    // if (!clothSelectedId){
-    //   enqueueSnackbar("Vui lòng chọn loại vải", {
-    //     variant: "error",
-    //     autoHideDuration: 2000,
-    //   });
-    //   return false;
-    // } else if (clothQuantity < 6*qty) {
-    //   enqueueSnackbar("Không đủ vải", {
-    //     variant: "error",
-    //     autoHideDuration: 2000,
-    //   });
-    //   return false;
-    // } else {
-    //   formData.append("od_clothid", clothSelectedId);
-    // }
 
     enqueueSnackbar("Đặt may thành công", {
       variant: "success",
       autoHideDuration: 2000,
     });
-    // for (let i = 0; i < qty; i++) {
-    //   dispatch(addOrder(formData));
-    // }
-    // onClose();
+   
+    onClose();
   };
 
   const renderMenuMeasurement = () => {
@@ -1674,7 +2289,7 @@ export default function Order(props) {
   useEffect(() => {
     function setState() {
       dispatch(getMeasurementsData(userInfo.id));
-      dispatch(getClothData(data1));
+      dispatch(getClothData());
       dispatch(getMyClothData(data2));
       setFirstName(userInfo.user_firstname);
       setLastName(userInfo.user_lastname);
@@ -1703,34 +2318,7 @@ export default function Order(props) {
     { value: LOCAL_PATH + "images/upload-icon2.png" },
   ]);
 
-  const increment = () => {
-    const temp = price + productData.product_price;
-    fileList.push({ value: "" });
-    imageList.push({ value: LOCAL_PATH + "images/upload-icon2.png" });
-    setQty(qty + 1);
-    setPrice(price + productData.product_price);
-    owner === "kh" ? setDiscount(temp * 0.3) : setDiscount(0);
-  };
-
-  const decrement = () => {
-    let temp = 0;
-    qty > 1 ? setQty(qty - 1) : setQty(1);
-    qty > 1
-      ? setPrice(price - productData.product_price)
-      : setPrice(productData.product_price);
-    qty > 1
-      ? (temp = price - productData.product_price)
-      : (temp = productData.product_price);
-    owner === "kh" ? setDiscount(temp * 0.3) : setDiscount(0);
-    const list = [...fileList ];
-    const imgList = [...imageList];
-    if(qty > 1){
-      list.splice(list.length-1)
-      imgList.splice(imgList.length-1)
-      setFileList(list);
-      setImageList(imgList);
-    }   
-  };
+  
 
   const saveFile = (e, index) => {
     // setFile1(e.target.files[0]);
@@ -1759,40 +2347,257 @@ export default function Order(props) {
   //   list[index].value = value;
   //   setInputList(list) 
   // }
+  let currentClothData = {};
+  const renderCloth = () => {
+    if (owner === "nm") {
+      currentClothData = clothData.filter(
+        (item) => item.cloth_material === productData.product_material
+      );
+      return currentClothData.map((value, key) => (
+        <MenuItem value={value.id} key={key}>
+          {value.cloth_name}
+        </MenuItem>
+      ));
+    } else {
+      currentClothData = myClothData;
+      return myClothData.map((value, key) => (
+        <MenuItem value={value.id} key={key}>
+          {value.cloth_name}
+        </MenuItem>
+      ));
+    }
+  };
+
+
+  const handleChangeCloth = (event) => {
+    const abc = currentClothData.filter(
+      (currentClothData) => currentClothData.id === event.target.value
+    );
+    setClothSelectedId(event.target.value);
+    setClothSelected(abc[0]);
+    setImgUpload(abc[0].cloth_image);
+    setClothQuantity(abc[0].cloth_quantity);
+  };
+
+  
+
+  const [clothIdList, setClothIdList] = useState([{value : ""}]);
+  const [clothQuantityList, setClothQuantityList] = useState([{value: 0}]);
+  const [clothImageList, setClothImageList] = useState([
+    { value: LOCAL_PATH + "images/loading.gif" },
+  ]);
+
+  const increment = () => {
+    const temp = price + productData.product_price;
+    setQty(qty + 1);
+    setPrice(price + productData.product_price);
+    if(owner === "nm"){
+      clothIdList.push({value: ""});
+      clothImageList.push({ value: LOCAL_PATH + "images/loading.gif" });
+      clothQuantityList.push({value: 0})
+    } else {
+      fileList.push({ value: "" });
+      imageList.push({ value: LOCAL_PATH + "images/upload-icon2.png" });
+    }
+    
+    owner === "kh" ? setDiscount(temp * 0.3) : setDiscount(0);
+  };
+
+  const decrement = () => {
+    let temp = 0;
+    qty > 1 ? setQty(qty - 1) : setQty(1);
+    qty > 1
+      ? setPrice(price - productData.product_price)
+      : setPrice(productData.product_price);
+    qty > 1
+      ? (temp = price - productData.product_price)
+      : (temp = productData.product_price);
+    owner === "kh" ? setDiscount(temp * 0.3) : setDiscount(0);
+    
+    if(qty > 1){
+      if(owner === "nm"){
+        clothIdList.splice(clothIdList.length-1);
+        clothImageList.splice(clothImageList.length - 1);
+        clothQuantityList.splice(clothQuantityList.length - 1);
+      } else {
+        const list = [...fileList];
+        const imgList = [...imageList];
+        list.splice(list.length-1)
+        imgList.splice(imgList.length-1)
+        setFileList(list);
+        setImageList(imgList);
+      }
+    }   
+  };
+
+  const [isMultiColor, setIsMultiColor] = useState(true);
+  const handleChangeRadio = (event, value) => {
+    const temp = event.target.value;
+    setOwner(event.target.value);
+    setClothSelectedId("");
+    setClothSelected("");
+    setImgUpload(LOCAL_PATH + "images/loading.gif");
+    setClothQuantity(0);
+    event.target.value === "kh" ? setDiscount(price * 0.3) : setDiscount(0);
+    for(let i=0; i<qty; i++){
+      if (event.target.value === "nm") {
+        clothIdList.push({ value: "" });
+        clothImageList.push({ value: LOCAL_PATH + "images/loading.gif" });
+        clothQuantityList.push({ value: 0 });
+        clothIdList.splice(qty);
+        clothImageList.splice(qty);
+        clothQuantityList.splice(qty);
+      } else {
+        fileList.push({ value: "" });
+        imageList.push({ value: LOCAL_PATH + "images/upload-icon2.png" });
+        fileList.splice(qty);
+        imageList.splice(qty);
+      }
+    }
+  };
+
+  const handleChangeClothList = (event, index) => {
+    const abc = currentClothData.filter(
+      (currentClothData) => currentClothData.id === event.target.value
+    );
+    const list = [...clothIdList];
+    list[index].value = event.target.value;
+    setClothIdList(list);
+    const imageList = [...clothImageList];
+    imageList[index].value = abc[0].cloth_image;
+    setClothImageList(imageList);
+    const quantityList = [...clothQuantityList];
+    quantityList[index].value = abc[0].cloth_quantity;
+    setClothQuantityList(quantityList);
+  };
+
   const renderImgUpload = () => {
+    clothIdList.splice(qty);
+    clothImageList.splice(qty);
+    clothQuantityList.splice(qty);
     fileList.splice(qty);
     imageList.splice(qty);
-    return fileList.map((value, key) => (
-      <Grid
-        item
-        xs={3}
-        className={clsx(
-          fileList[key].name ? classes.dropZone1 : classes.dropZone
-        )}
-        sx={center}
-        key={key}
-      >
-        <input
-          accept="image/*"
-          className={classes.input}
-          id={`icon-button-file${key}`}
-          type="file"
-          onChange={(e) => saveFile(e, key)}
-        />
-        <label
-          htmlFor={`icon-button-file${key}`}
-          className={classes.labelInputImg}
-        >
-          <img
-            src={imageList[key].value}
-            alt="uploadImg"
+    if(owner === "nm") {
+      if(!isMultiColor){
+        return (
+          <Grid container spacing={1}>
+            <Grid item xs={4}>
+              <ImageMagnify
+                image={clothImageList[0].value}
+                quantity={clothQuantityList[0].value}
+              ></ImageMagnify>
+            </Grid>
+            <Grid item xs={8}>
+              <FormControl fullWidth>
+                <InputLabel id={`demo-simple-select-label0`}>
+                  Loại vải 1
+                </InputLabel>
+                <Select
+                  labelId={`demo-simple-select-label0`}
+                  id={`demo-simple-select0`}
+                  value={clothIdList[0].value}
+                  label="Tên vải"
+                  onChange={(e) => handleChangeClothList(e, 0)}
+                >
+                  {renderCloth()}
+                </Select>
+              </FormControl>
+            </Grid>
+          </Grid>
+        );
+      } else return clothIdList.map((value, key) => (
+        <Grid container spacing={1}>
+          <Grid item xs={4}>
+            <ImageMagnify
+              image={clothImageList[key].value}
+              quantity={clothQuantityList[key].value}
+            ></ImageMagnify>
+          </Grid>
+          <Grid item xs={8}>
+            <FormControl fullWidth>
+              <InputLabel id={`demo-simple-select-label${key}`}>
+                Loại vải {key + 1}
+              </InputLabel>
+              <Select
+                labelId={`demo-simple-select-label${key}`}
+                id={`demo-simple-select${key}`}
+                value={clothIdList[key].value}
+                label="Tên vải"
+                onChange={(e) => handleChangeClothList(e, key)}
+              >
+                {renderCloth()}
+              </Select>
+            </FormControl>
+          </Grid>
+          <Grid item xs={12} sx={{m:0.5}}>
+            <Divider />
+          </Grid>
+        </Grid>
+      ));
+    } else {
+      if(!isMultiColor){
+        return (
+          <Grid
+            item
+            xs={3}
             className={clsx(
-              fileList[key].name ? classes.uploadImgBig : classes.uploadImg
+              fileList[0].name ? classes.dropZone1 : classes.dropZone
             )}
+            sx={center}
+          >
+            <input
+              accept="image/*"
+              className={classes.input}
+              id={`icon-button-file0`}
+              type="file"
+              onChange={(e) => saveFile(e, 0)}
+            />
+            <label
+              htmlFor={`icon-button-file0`}
+              className={classes.labelInputImg}
+            >
+              <img
+                src={imageList[0].value}
+                alt="uploadImg"
+                className={clsx(
+                  fileList[0].name ? classes.uploadImgBig : classes.uploadImg
+                )}
+              />
+            </label>
+          </Grid>
+        );
+      } else return fileList.map((value, key) => (
+        <Grid
+          item
+          xs={3}
+          className={clsx(
+            fileList[key].name ? classes.dropZone1 : classes.dropZone
+          )}
+          sx={center}
+          key={key}
+        >
+          <input
+            accept="image/*"
+            className={classes.input}
+            id={`icon-button-file${key}`}
+            type="file"
+            onChange={(e) => saveFile(e, key)}
           />
-        </label>
-      </Grid>
-    ));
+          <label
+            htmlFor={`icon-button-file${key}`}
+            className={classes.labelInputImg}
+          >
+            <img
+              src={imageList[key].value}
+              alt="uploadImg"
+              className={clsx(
+                fileList[key].name ? classes.uploadImgBig : classes.uploadImg
+              )}
+            />
+          </label>
+        </Grid>
+      ));
+    }
   }
 
   return (
@@ -1926,12 +2731,12 @@ export default function Order(props) {
                           <Grid container spacing={1}>
                             <Grid item xs={12}>
                               <FormControl fullWidth>
-                                <InputLabel id="demo-simple-select-label">
+                                <InputLabel id="measurment-select-label">
                                   Mã số đo
                                 </InputLabel>
                                 <Select
-                                  labelId="demo-simple-select-label"
-                                  id="demo-simple-select"
+                                  labelId="measurment-select-label"
+                                  id="measurement-simple-select"
                                   value={measurement}
                                   label="Mã số đo"
                                   onChange={handleChangeMeasurement}
@@ -1976,57 +2781,28 @@ export default function Order(props) {
                                   label="Của tôi"
                                 />
                               </RadioGroup>
+                              <FormControl
+                                component="fieldset"
+                                variant="standard"
+                              >
+                                <FormLabel component="legend">
+                                  Màu sắc
+                                </FormLabel>
+
+                                <FormControlLabel
+                                  control={
+                                    <Switch
+                                      defaultChecked={isMultiColor}
+                                      onClick={(e) => setIsMultiColor(!isMultiColor)}
+                                    />
+                                  }
+                                  label={isMultiColor ? "Nhiều màu" : "Một màu"}
+                                />
+                              </FormControl>
                             </Grid>
                             <Grid item xs={9}>
-                              <Grid container>
-                                {renderImgUpload()}
-                              </Grid>
+                              <Grid container>{renderImgUpload()}</Grid>
                             </Grid>
-                            {/* <Grid item xs={4}>
-                              <ImageMagnify
-                                image={imgUpload}
-                                quantity={clothQuantity}
-                              ></ImageMagnify>
-                            </Grid>
-                            <Grid item xs={8} sx={{ padding: 2 }}>
-                              <Grid container>
-                                <Grid item xs={4}>
-                                  <RadioGroup
-                                    aria-label="gender"
-                                    defaultValue={owner}
-                                    name="radio-buttons-group"
-                                    onChange={handleChangeRadio}
-                                  >
-                                    <FormControlLabel
-                                      value="nm"
-                                      control={<Radio />}
-                                      label="Nhà may"
-                                    />
-                                    <FormControlLabel
-                                      value="kh"
-                                      control={<Radio />}
-                                      label="Của tôi"
-                                    />
-                                  </RadioGroup>
-                                </Grid>
-                                <Grid item xs={8}>
-                                  <FormControl fullWidth>
-                                    <InputLabel id="demo-simple-select-label">
-                                      Tên vải
-                                    </InputLabel>
-                                    <Select
-                                      labelId="demo-simple-select-label"
-                                      id="demo-simple-select"
-                                      value={clothSelectedId}
-                                      label="Tên vải"
-                                      onChange={handleChangeCloth}
-                                    >
-                                      {renderCloth()}
-                                    </Select>
-                                  </FormControl>
-                                </Grid>
-                              </Grid>
-                            </Grid> */}
                           </Grid>
                         </TabPanel>
                       </TabContext>
@@ -2163,8 +2939,13 @@ export default function Order(props) {
                               e.target.value * productData.product_price * 0.3
                             )
                           : setDiscount(0);
-                        console.log("vua nhap", e.target.value, " --- qty", qty)
+                
                         for (let i = 1; i <= e.target.value; i++) {
+                          clothIdList.push({ value: "" });
+                          clothImageList.push({
+                            value: LOCAL_PATH + "images/loading.gif",
+                          });
+                          clothQuantityList.push({ value: 0 });
                           fileList.push({ value: "" });
                           imageList.push({
                             value: LOCAL_PATH + "images/upload-icon2.png",
