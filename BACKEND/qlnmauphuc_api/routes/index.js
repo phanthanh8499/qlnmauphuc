@@ -56,6 +56,7 @@ router.post("/signin", function (req, res, next) {
             user_date: response.rows[0].user_date,
             user_avatar: response.rows[0].user_avatar,
             user_email: response.rows[0].user_email,
+            user_wardid: response.rows[0].user_wardid,
             // Copy het tat ca cac phan tu trong mang
             token,
           });
@@ -90,13 +91,19 @@ router.post("/signup", async function (req, res, next) {
 });
 
 router.get("/admin/users", function (req, res) {
-  pool.query(`SELECT * FROM users`, (error, response) => {
-    if (error) {
-      console.log(error);
-    } else {
-      res.send(response.rows);
+  pool.query(
+    `SELECT users.*, ward.ward_prefix, ward.ward_name, ward.ward_districtid, district.district_prefix, district.district_name, ward.ward_provinceid, province.province_name FROM users
+INNER JOIN ward ON ward.id = users.user_wardid
+INNER JOIN district ON district.id = ward.ward_districtid
+INNER JOIN province ON province.id = ward.ward_provinceid`,
+    (error, response) => {
+      if (error) {
+        console.log(error);
+      } else {
+        res.send(response.rows);
+      }
     }
-  });
+  );
 });
 
 router.get("/getProductTypeData", function (req, res) {
@@ -811,8 +818,8 @@ router.post("/admin/users/edit", function (req, res) {
     const filename = Date.now() + "-" + id + "-" + file.name;
     var newpath = "";
     var image_path = "./images";
-    newpath = FRONTEND_URL + "/images/avatar/";
-    image_path = image_path + "/avatar/" + filename;
+    newpath = FRONTEND_URL + "/images/avatar/User" + id +"/";
+    image_path = image_path + "/avatar/User" + id +"/" + filename;
     console.log("co file");
     console.log(newpath, image_path);
     pool.query(
@@ -894,6 +901,7 @@ router.post("/admin/users/editUserInfo", function (req, res) {
     user_email,
     fileRecv,
     token,
+    user_wardid,
     FRONTEND_URL,
   } = req.body;
   console.log(
@@ -910,6 +918,7 @@ router.post("/admin/users/editUserInfo", function (req, res) {
     user_email,
     fileRecv,
     token,
+    user_wardid,
     FRONTEND_URL
   );
   if (parseInt(fileRecv) === 1) {
@@ -917,13 +926,13 @@ router.post("/admin/users/editUserInfo", function (req, res) {
     const filename = Date.now() + "-" + id + "-" + file.name;
     var newpath = "";
     var image_path = "./images";
-    newpath = FRONTEND_URL + "/images/avatar/";
-    image_path = image_path + "/avatar/" + filename;
+    newpath = FRONTEND_URL + "/images/avatar/User" + id + "/";
+    image_path = image_path + "/avatar/User" + id + "/" + filename;
     console.log("co file");
     console.log(newpath, image_path);
     pool.query(
       `UPDATE users
-	SET user_typeid='${user_typeid}', user_username='${user_username}', user_firstname='${user_firstname}', user_lastname='${user_lastname}', user_address='${user_address}', user_tel='${user_tel}', user_status='${user_status}', user_date='${user_date}', user_avatar='${image_path}', user_email='${user_email}'
+	SET user_typeid='${user_typeid}', user_username='${user_username}', user_firstname='${user_firstname}', user_lastname='${user_lastname}', user_address='${user_address}', user_tel='${user_tel}', user_status='${user_status}', user_date='${user_date}', user_avatar='${image_path}', user_email='${user_email}', user_wardid='${user_wardid}'
 	WHERE id='${id}'`,
       (error, response) => {
         if (error) {
@@ -950,6 +959,7 @@ router.post("/admin/users/editUserInfo", function (req, res) {
             user_date: user_date,
             user_avatar: image_path,
             user_email: user_email,
+            user_wardid: user_wardid,
             token: token,
           });
         }
@@ -958,7 +968,7 @@ router.post("/admin/users/editUserInfo", function (req, res) {
   } else {
     pool.query(
       `UPDATE users
-	SET  user_typeid='${user_typeid}', user_username='${user_username}', user_firstname='${user_firstname}', user_lastname='${user_lastname}', user_address='${user_address}', user_tel='${user_tel}', user_status='${user_status}', user_date='${user_date}', user_avatar='${user_avatar}', user_email='${user_email}'
+	SET  user_typeid='${user_typeid}', user_username='${user_username}', user_firstname='${user_firstname}', user_lastname='${user_lastname}', user_address='${user_address}', user_tel='${user_tel}', user_status='${user_status}', user_date='${user_date}', user_avatar='${user_avatar}', user_email='${user_email}', user_wardid='${user_wardid}'
 	WHERE id='${id}'`,
       (error, response) => {
         if (error) {
@@ -977,6 +987,7 @@ router.post("/admin/users/editUserInfo", function (req, res) {
             user_date: user_date,
             user_avatar: user_avatar,
             user_email: user_email,
+            user_wardid: user_wardid,
             token: token,
           });
         }
@@ -1058,6 +1069,7 @@ router.post("/admin/order/add", function (req, res) {
     od_thighcircumference,
     haveFile,
     cloth_name,
+    order_wardid,
     FRONTEND_URL,
   } = req.body;
   const id = uuidv4();
@@ -1091,7 +1103,8 @@ router.post("/admin/order/add", function (req, res) {
     od_crotchlength,
     od_dresslength,
     od_pantslength,
-    od_thighcircumference
+    od_thighcircumference,
+    order_wardid
   );
   if (parseInt(haveFile) === 0) {
     console.log("****************************************************");
@@ -1099,8 +1112,8 @@ router.post("/admin/order/add", function (req, res) {
     console.log("cloth id", od_clothid);
     pool.query(
       `INSERT INTO orders(
-  id, order_customername, order_customeraddress, order_customerphone, order_customeremail, order_startdate, order_enddate, order_subtotal, order_discount, order_total, order_paymentid, order_shippingid, order_statusid, order_userid, order_tailorid)
-  VALUES ('${id}', '${order_customername}', '${order_customeraddress}', '${order_customerphone}', '${order_customeremail}', '${order_startdate}', '${order_enddate}', '${order_subtotal}', '${order_discount}', '${order_total}', '${order_paymentid}', '${order_shippingid}', '${order_statusid}', '${order_userid}', '1')`,
+  id, order_customername, order_customeraddress, order_customerphone, order_customeremail, order_startdate, order_enddate, order_subtotal, order_discount, order_total, order_paymentid, order_shippingid, order_statusid, order_userid, order_tailorid, order_wardid)
+  VALUES ('${id}', '${order_customername}', '${order_customeraddress}', '${order_customerphone}', '${order_customeremail}', '${order_startdate}', '${order_enddate}', '${order_subtotal}', '${order_discount}', '${order_total}', '${order_paymentid}', '${order_shippingid}', '${order_statusid}', '${order_userid}', '1', '${order_wardid}')`,
       (error, response) => {
         if (error) {
           console.log("1", error);
@@ -1163,8 +1176,8 @@ router.post("/admin/order/add", function (req, res) {
                 });
                 pool.query(
                   `INSERT INTO orders(
-  id, order_customername, order_customeraddress, order_customerphone, order_customeremail, order_startdate, order_enddate, order_subtotal, order_discount, order_total, order_paymentid, order_shippingid, order_statusid, order_userid, order_tailorid)
-  VALUES ('${id}', '${order_customername}', '${order_customeraddress}', '${order_customerphone}', '${order_customeremail}', '${order_startdate}', '${order_enddate}', '${order_subtotal}', '${order_discount}', '${order_total}', '${order_paymentid}', '${order_shippingid}', '${order_statusid}', '${order_userid}', '1')`,
+  id, order_customername, order_customeraddress, order_customerphone, order_customeremail, order_startdate, order_enddate, order_subtotal, order_discount, order_total, order_paymentid, order_shippingid, order_statusid, order_userid, order_tailorid, order_wardid)
+  VALUES ('${id}', '${order_customername}', '${order_customeraddress}', '${order_customerphone}', '${order_customeremail}', '${order_startdate}', '${order_enddate}', '${order_subtotal}', '${order_discount}', '${order_total}', '${order_paymentid}', '${order_shippingid}', '${order_statusid}', '${order_userid}', '1', '${order_wardid}')`,
                   (error, response) => {
                     if (error) {
                       console.log("1", error);
@@ -1194,8 +1207,8 @@ router.post("/admin/order/add", function (req, res) {
           console.log("bo qua insert");
           pool.query(
             `INSERT INTO orders(
-  id, order_customername, order_customeraddress, order_customerphone, order_customeremail, order_startdate, order_enddate, order_subtotal, order_discount, order_total, order_paymentid, order_shippingid, order_statusid, order_userid, order_tailorid)
-  VALUES ('${id}', '${order_customername}', '${order_customeraddress}', '${order_customerphone}', '${order_customeremail}', '${order_startdate}', '${order_enddate}', '${order_subtotal}', '${order_discount}', '${order_total}', '${order_paymentid}', '${order_shippingid}', '${order_statusid}', '${order_userid}', '1')`,
+  id, order_customername, order_customeraddress, order_customerphone, order_customeremail, order_startdate, order_enddate, order_subtotal, order_discount, order_total, order_paymentid, order_shippingid, order_statusid, order_userid, order_tailorid, order_wardid)
+  VALUES ('${id}', '${order_customername}', '${order_customeraddress}', '${order_customerphone}', '${order_customeremail}', '${order_startdate}', '${order_enddate}', '${order_subtotal}', '${order_discount}', '${order_total}', '${order_paymentid}', '${order_shippingid}', '${order_statusid}', '${order_userid}', '1', '${order_wardid}')`,
             (error, response) => {
               if (error) {
                 console.log("1", error);
@@ -1283,7 +1296,7 @@ router.post("/admin/order/add", function (req, res) {
 router.get("/getDetailOrder.:id", function (req, res) {
   const { id } = req.params;
   pool.query(
-    `SELECT order_details.*, order_customername, order_customeraddress, order_customerphone, order_customeremail, order_startdate, order_processingtime1, order_processingtime2, order_processingtime3, order_processingtime4, order_shippingtime, order_enddate, order_subtotal, order_discount, order_total, order_paymentid, opm_name, order_shippingid, order_tailorid, user_firstname as tailor_firstname, user_lastname as tailor_lastname, user_address as tailor_address, user_tel as tailor_tel, osm_name, order_statusid, order_userid, products.product_name, products.product_typeid, products.product_image1, cloth.cloth_name, cloth.cloth_image, cloth.cloth_quantity, cloth.cloth_material, os_name FROM order_details 
+    `SELECT order_details.*, order_customername, order_wardid, CONCAT(order_customeraddress, ', ', ward.ward_prefix, ' ', ward.ward_name, ', ', district.district_prefix, ' ', district.district_name, ', ', province.province_name) AS order_customeraddress, order_customerphone, order_customeremail, order_startdate, order_processingtime1, order_processingtime2, order_processingtime3, order_processingtime4, order_shippingtime, order_enddate, order_subtotal, order_discount, order_total, order_paymentid, opm_name, order_shippingid, order_tailorid, user_firstname as tailor_firstname, user_lastname as tailor_lastname, user_address as tailor_address, user_tel as tailor_tel, osm_name, order_statusid, order_userid, products.product_name, products.product_typeid, products.product_image1, cloth.cloth_name, cloth.cloth_image, cloth.cloth_quantity, cloth.cloth_material, os_name FROM order_details 
               INNER JOIN orders ON orders.id = order_details.od_orderid 
               INNER JOIN products ON products.id = order_details.od_productid
 			  INNER JOIN cloth ON cloth.id = order_details.od_clothid
@@ -1291,6 +1304,9 @@ router.get("/getDetailOrder.:id", function (req, res) {
 			  INNER JOIN order_paymentmethod ON order_paymentmethod.id = orders.order_paymentid
 			  INNER JOIN order_shippingmethod ON order_shippingmethod.id = orders.order_shippingid
 			  INNER JOIN users ON users.id = orders.order_tailorid
+			  INNER JOIN ward ON ward.id = orders.order_wardid
+			  INNER JOIN district ON district.id = ward.ward_districtid
+			  INNER JOIN province ON province.id = ward.ward_provinceid
 			  WHERE order_details.od_orderid = '${id}'`,
     (error, response) => {
       if (error) {
@@ -1451,5 +1467,61 @@ router.get("/admin/order/delete.:id", function (req, res) {
   //   }
   // });
 });
+
+router.get(`/getProvince`, function (req, res) {
+  pool.query(`SELECT * FROM province`,
+  (error, response) => {
+    if(error){
+      console.log(error);
+    } else {
+      res.send(response.rows)
+    }
+  })
+})
+
+router.get(`/getDistrict.:id`, function (req, res) {
+  const {id} = req.params;
+  console.log(id)
+  pool.query(`SELECT * FROM district WHERE district_provinceid = '${id}'`,
+  (error, response) => {
+    if(error){
+      console.log(error);
+    } else {
+      res.send(response.rows);
+    }
+  });
+})
+
+router.get(`/getWard.:provinceid&:districtid`, function (req, res) {
+  const {provinceid, districtid} = req.params;
+  pool.query(
+    `SELECT * FROM ward WHERE ward_provinceid = '${provinceid}' AND ward_districtid = '${districtid}'`,
+    (error, response) => {
+      if (error) {
+        console.log(error);
+      } else {
+        res.send(response.rows);
+      }
+    }
+  );
+})
+
+router.get(`/getAddress.:id`, function (req, res) {
+  const {id} = req.params;
+  pool.query(
+    `SELECT ward.*, district.district_prefix, district.district_name, province.province_name FROM ward
+INNER JOIN district ON district.id = ward.ward_districtid
+INNER JOIN province ON province.id = ward.ward_provinceid
+WHERE ward.id = '${id}'`,
+    (error, response) => {
+      if (error) {
+        console.log(error);
+      } else {
+        res.send(response.rows);
+      }
+    }
+  );
+})
+
 
 module.exports = router;

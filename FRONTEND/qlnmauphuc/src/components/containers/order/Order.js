@@ -46,6 +46,8 @@ import { format } from "date-fns";
 import { useSnackbar } from "notistack";
 import { FRONTEND_URL, LOCAL_PATH } from "../../../constants/Constants";
 import clsx from "clsx";
+import axios from "axios";
+import { MyFormControl, MyTextField } from "../../utility/Utility";
 
 const Accordion = styled((props) => (
   <MuiAccordion disableGutters elevation={0} square {...props} />
@@ -379,6 +381,28 @@ export default function Order(props) {
       formData.append("order_startdate", format(today, "yyyy-MM-dd HH:mm:ss"));
       formData.append("order_enddate", format(enddate, "yyyy-MM-dd HH:mm:ss"));
     }
+    if (!province) {
+      enqueueSnackbar("Vui lòng chọn Tỉnh/Thành", {
+        variant: "error",
+        autoHideDuration: 2000,
+      });
+      return false;
+    }
+    if (!district) {
+      enqueueSnackbar("Vui lòng chọn Quận/Huyện", {
+        variant: "error",
+        autoHideDuration: 2000,
+      });
+      return false;
+    }
+    if (!ward) {
+      enqueueSnackbar("Vui lòng chọn Xã/Phường", {
+        variant: "error",
+        autoHideDuration: 2000,
+      });
+      return false;
+    }
+    formData.append("order_wardid", ward);
     // Blazer, tuxedo, suit
     if (
       productData.product_typeid === "BFM" ||
@@ -1413,7 +1437,7 @@ export default function Order(props) {
       return (
         <>
           <Grid item xs={6}>
-            <TextField
+            <MyTextField
               id="neckline"
               label="Vòng cổ"
               placeholder="Đo vòng quanh chân cổ"
@@ -1428,7 +1452,7 @@ export default function Order(props) {
             />
           </Grid>
           <Grid item xs={6}>
-            <TextField
+            <MyTextField
               id="bust"
               label="Vòng ngực"
               placeholder="Đo vòng quanh ngực, chỗ nở nhất"
@@ -1443,7 +1467,7 @@ export default function Order(props) {
             />
           </Grid>
           <Grid item xs={6}>
-            <TextField
+            <MyTextField
               id="waist"
               label="Vòng eo"
               placeholder="Đo vòng quanh eo"
@@ -1458,7 +1482,7 @@ export default function Order(props) {
             />
           </Grid>
           <Grid item xs={6}>
-            <TextField
+            <MyTextField
               id="buttock"
               label="Vòng mông"
               placeholder="Đo vòng quanh mông, chỗ nở nhất"
@@ -1473,7 +1497,7 @@ export default function Order(props) {
             />
           </Grid>
           <Grid item xs={6}>
-            <TextField
+            <MyTextField
               id="shoulderwidth"
               label="Rộng vai"
               placeholder="Từ đầu vai trái sang đầu vai phải"
@@ -1488,7 +1512,7 @@ export default function Order(props) {
             />
           </Grid>
           <Grid item xs={6}>
-            <TextField
+            <MyTextField
               id="wristaround"
               label="Cửa tay"
               placeholder="Đo vòng quanh nắm tay"
@@ -1503,7 +1527,7 @@ export default function Order(props) {
             />
           </Grid>
           <Grid item xs={6}>
-            <TextField
+            <MyTextField
               id="sleevelength"
               label="Dài tay"
               placeholder="Từ đầu vai đến qua khỏi mắt cá tay"
@@ -1518,7 +1542,7 @@ export default function Order(props) {
             />
           </Grid>
           <Grid item xs={6}>
-            <TextField
+            <MyTextField
               id="shirtlength"
               label="Dài áo"
               placeholder="Từ đốt xương cổ thứ 7 đến ngang mông"
@@ -1539,7 +1563,7 @@ export default function Order(props) {
       return (
         <>
           <Grid item xs={6}>
-            <TextField
+            <MyTextField
               id="neckline"
               label="Vòng cổ"
               placeholder="Đo vòng quanh chân cổ"
@@ -1554,7 +1578,7 @@ export default function Order(props) {
             />
           </Grid>
           <Grid item xs={6}>
-            <TextField
+            <MyTextField
               id="bust"
               label="Vòng ngực"
               placeholder="Đo vòng quanh ngực, chỗ nở nhất"
@@ -1569,7 +1593,7 @@ export default function Order(props) {
             />
           </Grid>
           <Grid item xs={6}>
-            <TextField
+            <MyTextField
               id="waist"
               label="Vòng eo"
               placeholder="Đo vòng quanh eo"
@@ -1584,7 +1608,7 @@ export default function Order(props) {
             />
           </Grid>
           <Grid item xs={6}>
-            <TextField
+            <MyTextField
               id="buttock"
               label="Vòng mông"
               placeholder="Đo vòng quanh mông, chỗ nở nhất"
@@ -1599,7 +1623,7 @@ export default function Order(props) {
             />
           </Grid>
           <Grid item xs={6}>
-            <TextField
+            <MyTextField
               id="shoulderwidth"
               label="Rộng vai"
               placeholder="Từ đầu vai trái sang đầu vai phải"
@@ -1614,7 +1638,7 @@ export default function Order(props) {
             />
           </Grid>
           <Grid item xs={6}>
-            <TextField
+            <MyTextField
               id="wristaround"
               label="Cửa tay"
               placeholder="Đo vòng quanh nắm tay"
@@ -1629,7 +1653,7 @@ export default function Order(props) {
             />
           </Grid>
           <Grid item xs={6}>
-            <TextField
+            <MyTextField
               id="sleevelength"
               label="Dài tay"
               placeholder="Từ đầu vai đến qua khỏi mắt cá tay"
@@ -1644,7 +1668,7 @@ export default function Order(props) {
             />
           </Grid>
           <Grid item xs={6}>
-            <TextField
+            <MyTextField
               id="shirtlength"
               label="Dài áo"
               placeholder="Từ đốt xương cổ thứ 7 đến ngang mông"
@@ -1659,7 +1683,7 @@ export default function Order(props) {
             />
           </Grid>
           <Grid item xs={6}>
-            <TextField
+            <MyTextField
               id="thighcircumference"
               label="Vòng đùi"
               placeholder="Đo vòng quang đùi chỗ nở nhất"
@@ -1674,7 +1698,7 @@ export default function Order(props) {
             />
           </Grid>
           <Grid item xs={6}>
-            <TextField
+            <MyTextField
               id="crotchlength"
               label="Vòng đáy"
               placeholder="Từ eo trướng vòng qua eo sau"
@@ -1689,7 +1713,7 @@ export default function Order(props) {
             />
           </Grid>
           <Grid item xs={6}>
-            <TextField
+            <MyTextField
               id="pantslength"
               label="Dài quần"
               placeholder="Đo từ eo đến chấm gót chân"
@@ -1710,7 +1734,7 @@ export default function Order(props) {
       return (
         <>
           <Grid item xs={6}>
-            <TextField
+            <MyTextField
               id="neckline"
               label="Vòng cổ"
               placeholder="Đo vòng quanh chân cổ"
@@ -1725,7 +1749,7 @@ export default function Order(props) {
             />
           </Grid>
           <Grid item xs={6}>
-            <TextField
+            <MyTextField
               id="bust"
               label="Vòng ngực"
               placeholder="Đo vòng quanh ngực, chỗ nở nhất"
@@ -1740,7 +1764,7 @@ export default function Order(props) {
             />
           </Grid>
           <Grid item xs={6}>
-            <TextField
+            <MyTextField
               id="waist"
               label="Vòng eo"
               placeholder="Đo vòng quanh eo"
@@ -1755,7 +1779,7 @@ export default function Order(props) {
             />
           </Grid>
           <Grid item xs={6}>
-            <TextField
+            <MyTextField
               id="buttock"
               label="Vòng mông"
               placeholder="Đo vòng quanh mông, chỗ nở nhất"
@@ -1770,7 +1794,7 @@ export default function Order(props) {
             />
           </Grid>
           <Grid item xs={6}>
-            <TextField
+            <MyTextField
               id="shoulderwidth"
               label="Rộng vai"
               placeholder="Từ đầu vai trái sang đầu vai phải"
@@ -1785,7 +1809,7 @@ export default function Order(props) {
             />
           </Grid>
           <Grid item xs={6}>
-            <TextField
+            <MyTextField
               id="shirtlength"
               label="Dài áo"
               placeholder="Từ đốt xương cổ thứ 7 đến ngang mông"
@@ -1806,7 +1830,7 @@ export default function Order(props) {
       return (
         <>
           <Grid item xs={6}>
-            <TextField
+            <MyTextField
               id="neckline"
               label="Vòng cổ"
               placeholder="Đo vòng quanh chân cổ"
@@ -1821,7 +1845,7 @@ export default function Order(props) {
             />
           </Grid>
           <Grid item xs={6}>
-            <TextField
+            <MyTextField
               id="bust"
               label="Vòng ngực"
               placeholder="Đo vòng quanh ngực, chỗ nở nhất"
@@ -1836,7 +1860,7 @@ export default function Order(props) {
             />
           </Grid>
           <Grid item xs={6}>
-            <TextField
+            <MyTextField
               id="waist"
               label="Vòng eo"
               placeholder="Đo vòng quanh eo"
@@ -1851,7 +1875,7 @@ export default function Order(props) {
             />
           </Grid>
           <Grid item xs={6}>
-            <TextField
+            <MyTextField
               id="buttock"
               label="Vòng mông"
               placeholder="Đo vòng quanh mông, chỗ nở nhất"
@@ -1866,7 +1890,7 @@ export default function Order(props) {
             />
           </Grid>
           <Grid item xs={6}>
-            <TextField
+            <MyTextField
               id="shoulderwidth"
               label="Rộng vai"
               placeholder="Từ đầu vai trái sang đầu vai phải"
@@ -1881,7 +1905,7 @@ export default function Order(props) {
             />
           </Grid>
           <Grid item xs={6}>
-            <TextField
+            <MyTextField
               id="shirtlength"
               label="Dài áo"
               placeholder="Từ đốt xương cổ thứ 7 đến ngang mông"
@@ -1896,7 +1920,7 @@ export default function Order(props) {
             />
           </Grid>
           <Grid item xs={6}>
-            <TextField
+            <MyTextField
               id="armpitcircumference"
               label="Vòng nách"
               placeholder="Chống tay lên hông, đo sát vòng nách"
@@ -1911,7 +1935,7 @@ export default function Order(props) {
             />
           </Grid>
           <Grid item xs={6}>
-            <TextField
+            <MyTextField
               id="dresslength"
               label="Dài váy"
               placeholder="Đo từ eo đến gối"
@@ -1932,7 +1956,7 @@ export default function Order(props) {
       return (
         <>
           <Grid item xs={6}>
-            <TextField
+            <MyTextField
               id="neckline"
               label="Vòng cổ"
               placeholder="Đo vòng quanh chân cổ"
@@ -1947,7 +1971,7 @@ export default function Order(props) {
             />
           </Grid>
           <Grid item xs={6}>
-            <TextField
+            <MyTextField
               id="bust"
               label="Vòng ngực"
               placeholder="Đo vòng quanh ngực, chỗ nở nhất"
@@ -1962,7 +1986,7 @@ export default function Order(props) {
             />
           </Grid>
           <Grid item xs={6}>
-            <TextField
+            <MyTextField
               id="waist"
               label="Vòng eo"
               placeholder="Đo vòng quanh eo"
@@ -1977,7 +2001,7 @@ export default function Order(props) {
             />
           </Grid>
           <Grid item xs={6}>
-            <TextField
+            <MyTextField
               id="buttock"
               label="Vòng mông"
               placeholder="Đo vòng quanh mông, chỗ nở nhất"
@@ -1992,7 +2016,7 @@ export default function Order(props) {
             />
           </Grid>
           <Grid item xs={6}>
-            <TextField
+            <MyTextField
               id="shoulderwidth"
               label="Rộng vai"
               placeholder="Từ đầu vai trái sang đầu vai phải"
@@ -2007,7 +2031,7 @@ export default function Order(props) {
             />
           </Grid>
           <Grid item xs={6}>
-            <TextField
+            <MyTextField
               id="wristaround"
               label="Cửa tay"
               placeholder="Đo vòng quanh nắm tay"
@@ -2022,7 +2046,7 @@ export default function Order(props) {
             />
           </Grid>
           <Grid item xs={6}>
-            <TextField
+            <MyTextField
               id="sleevelength"
               label="Dài tay"
               placeholder="Từ đầu vai đến qua khỏi mắt cá tay"
@@ -2037,7 +2061,7 @@ export default function Order(props) {
             />
           </Grid>
           <Grid item xs={6}>
-            <TextField
+            <MyTextField
               id="shirtlength"
               label="Dài áo"
               placeholder="Từ đốt xương cổ thứ 7 đến ngang mông"
@@ -2052,7 +2076,7 @@ export default function Order(props) {
             />
           </Grid>
           <Grid item xs={6}>
-            <TextField
+            <MyTextField
               id="armpitcircumference"
               label="Vòng nách"
               placeholder="Chống tay lên hông, đo sát vòng nách"
@@ -2067,7 +2091,7 @@ export default function Order(props) {
             />
           </Grid>
           <Grid item xs={6}>
-            <TextField
+            <MyTextField
               id="biceps"
               label="Bắp tay"
               placeholder="Đo vòng sát bắp tay"
@@ -2088,7 +2112,7 @@ export default function Order(props) {
       return (
         <>
           <Grid item xs={6}>
-            <TextField
+            <MyTextField
               id="neckline"
               label="Vòng cổ"
               placeholder="Đo vòng quanh chân cổ"
@@ -2103,7 +2127,7 @@ export default function Order(props) {
             />
           </Grid>
           <Grid item xs={6}>
-            <TextField
+            <MyTextField
               id="bust"
               label="Vòng ngực"
               placeholder="Đo vòng quanh ngực, chỗ nở nhất"
@@ -2118,7 +2142,7 @@ export default function Order(props) {
             />
           </Grid>
           <Grid item xs={6}>
-            <TextField
+            <MyTextField
               id="waist"
               label="Vòng eo"
               placeholder="Đo vòng quanh eo"
@@ -2133,7 +2157,7 @@ export default function Order(props) {
             />
           </Grid>
           <Grid item xs={6}>
-            <TextField
+            <MyTextField
               id="buttock"
               label="Vòng mông"
               placeholder="Đo vòng quanh mông, chỗ nở nhất"
@@ -2148,7 +2172,7 @@ export default function Order(props) {
             />
           </Grid>
           <Grid item xs={6}>
-            <TextField
+            <MyTextField
               id="shoulderwidth"
               label="Rộng vai"
               placeholder="Từ đầu vai trái sang đầu vai phải"
@@ -2163,7 +2187,7 @@ export default function Order(props) {
             />
           </Grid>
           <Grid item xs={6}>
-            <TextField
+            <MyTextField
               id="wristaround"
               label="Cửa tay"
               placeholder="Đo vòng quanh nắm tay"
@@ -2178,7 +2202,7 @@ export default function Order(props) {
             />
           </Grid>
           <Grid item xs={6}>
-            <TextField
+            <MyTextField
               id="sleevelength"
               label="Dài tay"
               placeholder="Từ đầu vai đến qua khỏi mắt cá tay"
@@ -2193,7 +2217,7 @@ export default function Order(props) {
             />
           </Grid>
           <Grid item xs={6}>
-            <TextField
+            <MyTextField
               id="shirtlength"
               label="Dài áo"
               placeholder="Từ đốt xương cổ thứ 7 đến ngang mông"
@@ -2208,7 +2232,7 @@ export default function Order(props) {
             />
           </Grid>
           <Grid item xs={6}>
-            <TextField
+            <MyTextField
               id="armpitcircumference"
               label="Vòng nách"
               placeholder="Chống tay lên hông, đo sát vòng nách"
@@ -2223,7 +2247,7 @@ export default function Order(props) {
             />
           </Grid>
           <Grid item xs={6}>
-            <TextField
+            <MyTextField
               id="biceps"
               label="Bắp tay"
               placeholder="Đo vòng sát bắp tay"
@@ -2238,7 +2262,7 @@ export default function Order(props) {
             />
           </Grid>
           <Grid item xs={6}>
-            <TextField
+            <MyTextField
               id="thighcircumference"
               label="Vòng đùi"
               placeholder="Đo vòng quang đùi chỗ nở nhất"
@@ -2253,7 +2277,7 @@ export default function Order(props) {
             />
           </Grid>
           <Grid item xs={6}>
-            <TextField
+            <MyTextField
               id="dresslength"
               label="Dài váy"
               placeholder="Đo từ eo đến gối"
@@ -2268,7 +2292,7 @@ export default function Order(props) {
             />
           </Grid>
           <Grid item xs={6}>
-            <TextField
+            <MyTextField
               id="pantslength"
               label="Dài quần"
               placeholder="Đo từ eo đến chấm gót chân"
@@ -2286,8 +2310,32 @@ export default function Order(props) {
       );
     }
   };
+  const [province, setProvince] = useState();
+  const [district, setDistrict] = useState();
+  const [ward, setWard] = useState();
+  const [provinceData, setProvinceData] = useState([]);
+  const [districtData, setDistrictData] = useState([]);
+  const [wardData, setWardData] = useState([]);
+
   useEffect(() => {
-    function setState() {
+    async function getProvinceData() {
+      const { data } = await axios.get(`/getProvince`);
+      setProvinceData(data);
+    }
+    async function setState() {
+      if (userInfo.user_wardid !== null) {
+        const data01 = await axios.get(`/getAddress.${userInfo.user_wardid}`);
+        const data02 = await axios.get(
+          `/getDistrict.${data01.data[0].ward_provinceid}`
+        );
+        const data03 = await axios.get(
+          `/getWard.${data01.data[0].ward_provinceid}&${data01.data[0].ward_districtid}`
+        );
+        setDistrict(data01.data[0].ward_districtid);
+        setProvince(data01.data[0].ward_provinceid);
+        setDistrictData(data02.data);
+        setWardData(data03.data);
+      }
       dispatch(getMeasurementsData(userInfo.id));
       dispatch(getClothData());
       dispatch(getMyClothData(data2));
@@ -2297,8 +2345,10 @@ export default function Order(props) {
       setAddress(userInfo.user_address);
       setTel(userInfo.user_tel);
       setPrice(parseInt(productData.product_price));
+      setWard(userInfo.user_wardid);
       setLoading(false);
     }
+    getProvinceData();
     setState();
   }, []);
 
@@ -2488,7 +2538,7 @@ export default function Order(props) {
               ></ImageMagnify>
             </Grid>
             <Grid item xs={8}>
-              <FormControl fullWidth>
+              <MyFormControl fullWidth>
                 <InputLabel id={`demo-simple-select-label0`}>
                   Loại vải 1
                 </InputLabel>
@@ -2501,7 +2551,7 @@ export default function Order(props) {
                 >
                   {renderCloth()}
                 </Select>
-              </FormControl>
+              </MyFormControl>
             </Grid>
           </Grid>
         );
@@ -2514,7 +2564,7 @@ export default function Order(props) {
             ></ImageMagnify>
           </Grid>
           <Grid item xs={8}>
-            <FormControl fullWidth>
+            <MyFormControl fullWidth>
               <InputLabel id={`demo-simple-select-label${key}`}>
                 Loại vải {key + 1}
               </InputLabel>
@@ -2527,7 +2577,7 @@ export default function Order(props) {
               >
                 {renderCloth()}
               </Select>
-            </FormControl>
+            </MyFormControl>
           </Grid>
           <Grid item xs={12} sx={{m:0.5}}>
             <Divider />
@@ -2600,6 +2650,85 @@ export default function Order(props) {
     }
   }
 
+  const handleChangeProvince = async (e) => {
+    setProvince(e.target.value);
+    const { data } = await axios.get(`/getDistrict.${e.target.value}`);
+    setDistrictData(data);
+    setWardData([]);
+    setDistrict();
+    setWard();
+  };
+  const handleChangeDistrict = async (e) => {
+    setDistrict(e.target.value);
+    const { data } = await axios.get(`/getWard.${province}&${e.target.value}`);
+    setWardData(data);
+    setWard();
+  };
+  const handleChangeWard = (e) => {
+    setWard(e.target.value);
+  };
+
+  const renderAddressForm = () => {
+    return (
+      <>
+        <Grid item xs={4} sx={{ marginTop: "10px" }}>
+          <MyFormControl fullWidth>
+            <InputLabel id="province-select-label">Tỉnh/Thành</InputLabel>
+            <Select
+              labelId="province-select-label"
+              id="province-simple-select"
+              defaultValue={province}
+              label="Tỉnh/Thành"
+              onChange={handleChangeProvince}
+            >
+              {provinceData.map((value, key) => (
+                <MenuItem value={value.id} key={key}>
+                  {value.province_name}
+                </MenuItem>
+              ))}
+            </Select>
+          </MyFormControl>
+        </Grid>
+        <Grid item xs={4} sx={{ marginTop: "10px" }}>
+          <MyFormControl fullWidth>
+            <InputLabel id="district-select-label">Quận/Huyện</InputLabel>
+            <Select
+              labelId="district-select-label"
+              id="district-simple-select"
+              defaultValue={district}
+              label="Quận/Huyện"
+              onChange={handleChangeDistrict}
+            >
+              {districtData.map((value, key) => (
+                <MenuItem value={value.id} key={key}>
+                  {value.district_prefix} {value.district_name}
+                </MenuItem>
+              ))}
+            </Select>
+          </MyFormControl>
+        </Grid>
+        <Grid item xs={4} sx={{marginTop: '10px'}}>
+          <MyFormControl fullWidth>
+            <InputLabel id="ward-select-label">Xã/Phường</InputLabel>
+            <Select
+              labelId="ward-select-label"
+              id="ward-simple-select"
+              defaultValue={ward}
+              label="Xã/Phường"
+              onChange={handleChangeWard}
+            >
+              {wardData.map((value, key) => (
+                <MenuItem value={value.id} key={key}>
+                  {value.ward_prefix} {value.ward_name}
+                </MenuItem>
+              ))}
+            </Select>
+          </MyFormControl>
+        </Grid>
+      </>
+    );
+  };
+
   return (
     <Dialog
       onClose={onClose}
@@ -2626,10 +2755,10 @@ export default function Order(props) {
                 <AccordionDetails>
                   <Grid container spacing={1}>
                     <Grid item xs={6}>
-                      <TextField
+                      <MyTextField
                         id="lastname"
                         label="Họ"
-                        placeholder="Placeholder"
+                        placeholder="Nhập họ"
                         margin="normal"
                         defaultValue={lastName}
                         fullWidth
@@ -2641,10 +2770,10 @@ export default function Order(props) {
                       />
                     </Grid>
                     <Grid item xs={6}>
-                      <TextField
+                      <MyTextField
                         id="firstname"
                         label="Tên"
-                        placeholder="Placeholder"
+                        placeholder="Nhập tên"
                         margin="normal"
                         defaultValue={firstName}
                         fullWidth
@@ -2656,10 +2785,10 @@ export default function Order(props) {
                       />
                     </Grid>
                     <Grid item xs={6}>
-                      <TextField
+                      <MyTextField
                         id="tel"
                         label="Số điện thoại"
-                        placeholder="Placeholder"
+                        placeholder="Nhập số điện thoại"
                         margin="normal"
                         defaultValue={tel}
                         fullWidth
@@ -2671,10 +2800,10 @@ export default function Order(props) {
                       />
                     </Grid>
                     <Grid item xs={6}>
-                      <TextField
+                      <MyTextField
                         id="email"
                         label="Email"
-                        placeholder="Placeholder"
+                        placeholder="Nhập email"
                         margin="normal"
                         defaultValue={email}
                         fullWidth
@@ -2686,10 +2815,10 @@ export default function Order(props) {
                       />
                     </Grid>
                     <Grid item xs={12}>
-                      <TextField
+                      <MyTextField
                         id="address"
                         label="Địa chỉ liên lạc"
-                        placeholder="Placeholder"
+                        placeholder="Nhập số nhà, tên đường"
                         margin="normal"
                         defaultValue={address}
                         fullWidth
@@ -2700,6 +2829,7 @@ export default function Order(props) {
                         }}
                       />
                     </Grid>
+                    {renderAddressForm()}
                   </Grid>
                 </AccordionDetails>
               </Accordion>
@@ -2729,8 +2859,8 @@ export default function Order(props) {
                         </Box>
                         <TabPanel value="1">
                           <Grid container spacing={1}>
-                            <Grid item xs={12}>
-                              <FormControl fullWidth>
+                            <Grid item xs={12} sx={{marginBottom: '10px'}}> 
+                              <MyFormControl fullWidth>
                                 <InputLabel id="measurment-select-label">
                                   Mã số đo
                                 </InputLabel>
@@ -2744,7 +2874,7 @@ export default function Order(props) {
                                 >
                                   {renderMenuMeasurement()}
                                 </Select>
-                              </FormControl>
+                              </MyFormControl>
                             </Grid>
 
                             {loadingMeasurement ? (

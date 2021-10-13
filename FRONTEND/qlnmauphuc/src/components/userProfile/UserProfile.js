@@ -5,9 +5,13 @@ import {
   ButtonGroup,
   CardActionArea,
   Divider,
+  FormControl,
   Grid,
   IconButton,
+  InputLabel,
+  MenuItem,
   Paper,
+  Select,
   TextField,
   Typography,
 } from "@mui/material";
@@ -21,6 +25,9 @@ import { useDispatch } from "react-redux";
 import { editUserInfo } from "../../redux/Action";
 import { FRONTEND_ADM_URL, FRONTEND_URL, LOCAL_PATH } from "../../constants/Constants";
 import { useSnackbar } from "notistack";
+import axios from "axios";
+import { styled } from "@mui/material/styles";
+import { MyFormControl, MyTextField } from "../utility/Utility";
 
 const useStyles = makeStyles((theme) => ({
   btngroup: {
@@ -96,18 +103,43 @@ export default function UserProfile() {
       console.log("Error: ", error);
     };
   };
+  const [province, setProvince] = useState();
+  const [district, setDistrict] = useState();
+  const [ward, setWard] = useState();
+  const [provinceData, setProvinceData] = useState([]);
+  const [districtData, setDistrictData] = useState([]);
+  const [wardData, setWardData] = useState([]);
   const [loading, setLoading] = useState(true);
   const { userInfo } = JSON.parse(localStorage.getItem("userInfo"));
   useEffect(() => {
+    async function getProvinceData() {
+      const { data } = await axios.get(`/getProvince`);
+      setProvinceData(data);
+    }
     async function setState() {
+      if(userInfo.user_wardid !== null){
+        const data01 = await axios.get(`/getAddress.${userInfo.user_wardid}`);
+        const data02 = await axios.get(
+          `/getDistrict.${data01.data[0].ward_provinceid}`
+        );
+        const data03 = await axios.get(
+          `/getWard.${data01.data[0].ward_provinceid}&${data01.data[0].ward_districtid}`
+        );
+        setDistrict(data01.data[0].ward_districtid);
+        setProvince(data01.data[0].ward_provinceid);
+        setDistrictData(data02.data);
+        setWardData(data03.data);
+      }
       setFirstName(userInfo.user_firstname);
       setLastName(userInfo.user_lastname);
       setTel(userInfo.user_tel);
       setAddress(userInfo.user_address);
       setEmail(userInfo.user_email);
-      setImgUpload(LOCAL_PATH + userInfo.user_avatar.substring(2));
-      setLoading(false);
-    }
+      setWard(userInfo.user_wardid);
+      setImgUpload(LOCAL_PATH + userInfo.user_avatar.substring(2)); 
+       setLoading(false);
+    } 
+    getProvinceData();
     setState();
   }, []);
 
@@ -126,6 +158,35 @@ export default function UserProfile() {
     formData.append("user_avatar", userInfo.user_avatar);
     formData.append("token", userInfo.token);
     formData.append("FRONTEND_URL", FRONTEND_URL);
+    if(!firstName || !lastName || !address || !email || !tel){
+      enqueueSnackbar("Vui lòng điền đầy đủ thông tin cá nhân", {
+        variant: "error",
+        autoHideDuration: 2000,
+      });
+      return false;
+    }
+    if(!province){
+      enqueueSnackbar("Vui lòng chọn Tỉnh/Thành", {
+        variant: "error",
+        autoHideDuration: 2000,
+      });
+      return false;
+    } 
+    if(!district){
+      enqueueSnackbar("Vui lòng chọn Quận/Huyện", {
+        variant: "error",
+        autoHideDuration: 2000,
+      });
+      return false;
+    }
+    if(!ward){
+      enqueueSnackbar("Vui lòng chọn Xã/Phường", {
+        variant: "error",
+        autoHideDuration: 2000,
+      });
+      return false;
+    }
+    formData.append("user_wardid", ward);
     if (file) {
       formData.append("file", file);
       formData.append("fileName", fileName);
@@ -144,6 +205,85 @@ export default function UserProfile() {
       });
     }
   };
+  
+  const handleChangeProvince = async (e) => {
+    setProvince(e.target.value);
+    const { data } = await axios.get(`/getDistrict.${e.target.value}`);
+    setDistrictData(data);
+    setWardData([]);
+    setDistrict();
+    setWard();
+  }
+  const handleChangeDistrict = async (e) => {
+    setDistrict(e.target.value);
+    const { data } = await axios.get(`/getWard.${province}&${e.target.value}`);
+    setWardData(data);
+    setWard();
+  }
+  const handleChangeWard = (e) => {
+    setWard(e.target.value);
+  }
+  
+  const renderAddressForm = () => {
+    return (
+      <>
+        <Grid item xs={4} sx={{ marginTop: "10px" }}>
+          <MyFormControl fullWidth>
+            <InputLabel id="province-select-label">Tỉnh/Thành</InputLabel>
+            <Select
+              labelId="province-select-label"
+              id="province-simple-select"
+              defaultValue={province}
+              label="Tỉnh/Thành"
+              onChange={handleChangeProvince}
+            >
+              {provinceData.map((value, key) => (
+                <MenuItem value={value.id} key={key}>
+                  {value.province_name}
+                </MenuItem>
+              ))}
+            </Select>
+          </MyFormControl>
+        </Grid>
+        <Grid item xs={4} sx={{ marginTop: "10px" }}>
+          <MyFormControl fullWidth>
+            <InputLabel id="district-select-label">Quận/Huyện</InputLabel>
+            <Select
+              labelId="district-select-label"
+              id="district-simple-select"
+              defaultValue={district}
+              label="Quận/Huyện"
+              onChange={handleChangeDistrict}
+            >
+              {districtData.map((value, key) => (
+                <MenuItem value={value.id} key={key}>
+                  {value.district_prefix} {value.district_name}
+                </MenuItem>
+              ))}
+            </Select>
+          </MyFormControl>
+        </Grid>
+        <Grid item xs={4} sx={{ marginTop: "10px" }}>
+          <MyFormControl fullWidth>
+            <InputLabel id="ward-select-label">Xã/Phường</InputLabel>
+            <Select
+              labelId="ward-select-label"
+              id="ward-simple-select"
+              defaultValue={ward}
+              label="Xã/Phường"
+              onChange={handleChangeWard}
+            >
+              {wardData.map((value, key) => (
+                <MenuItem value={value.id} key={key}>
+                  {value.ward_prefix} {value.ward_name}
+                </MenuItem>
+              ))}
+            </Select>
+          </MyFormControl>
+        </Grid>
+      </>
+    );
+  }
 
   return (
     <>
@@ -173,9 +313,7 @@ export default function UserProfile() {
               >
                 <Avatar
                   alt="Travis Howard"
-                  src={
-                    imgUpload
-                  }
+                  src={imgUpload}
                   className={classes.avatar}
                 />
               </Badge>
@@ -183,7 +321,7 @@ export default function UserProfile() {
             <Grid item xs={9}>
               <Grid container spacing={1}>
                 <Grid item xs={6}>
-                  <TextField
+                  <MyTextField
                     id="lastname"
                     label="Họ"
                     placeholder="Placeholder"
@@ -198,7 +336,7 @@ export default function UserProfile() {
                   />
                 </Grid>
                 <Grid item xs={6}>
-                  <TextField
+                  <MyTextField
                     id="firstname"
                     label="Tên"
                     placeholder="Placeholder"
@@ -213,7 +351,7 @@ export default function UserProfile() {
                   />
                 </Grid>
                 <Grid item xs={6}>
-                  <TextField
+                  <MyTextField
                     id="tel"
                     label="Số điện thoại"
                     placeholder="Placeholder"
@@ -229,7 +367,7 @@ export default function UserProfile() {
                 </Grid>
                 <Grid item xs={6}></Grid>
                 <Grid item xs={12}>
-                  <TextField
+                  <MyTextField
                     id="address"
                     label="Địa chỉ liên lạc"
                     placeholder="Placeholder"
@@ -244,7 +382,7 @@ export default function UserProfile() {
                   />
                 </Grid>
                 <Grid item xs={12}>
-                  <TextField
+                  <MyTextField
                     id="email"
                     label="Email"
                     placeholder="Placeholder"
@@ -258,14 +396,15 @@ export default function UserProfile() {
                     }}
                   />
                 </Grid>
+                {renderAddressForm()}
               </Grid>
-              <Divider />
+              <Divider sx={{ marginTop: "10px" }} />
               <Button
                 variant="outlined"
                 color="primary"
                 className={classes.btngroup}
                 onClick={handleSubmit}
-                sx={{margin: '5px 0px 0px 0px'}}
+                sx={{ margin: "5px 0px 0px 0px" }}
               >
                 Lưu thay đổi
               </Button>

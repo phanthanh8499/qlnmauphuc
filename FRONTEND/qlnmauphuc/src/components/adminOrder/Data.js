@@ -20,9 +20,12 @@ import {
   Grid,
   IconButton,
   InputBase,
+  InputLabel,
   Menu,
   MenuItem,
   Paper,
+  Select,
+  TextField,
 } from "@mui/material";
 import { getOrderData, getProductData } from "../../redux/Action";
 import { createTheme } from "@mui/material/styles";
@@ -44,11 +47,22 @@ import BlockIcon from "@mui/icons-material/Block";
 import CloseIcon from "@mui/icons-material/Close";
 import CancelIcon from "@mui/icons-material/Cancel";
 import { cancelOrder, deleteOrder } from "../../redux/Action";
-import { Search, SearchIconWrapper, StyledInputBase, StyledMenu } from "../utility/Utility";
+import {
+  DateTextField,
+  MyFormControl,
+  MyTextField,
+  Search,
+  SearchIconWrapper,
+  StyledInputBase,
+  StyledMenu,
+} from "../utility/Utility";
 import CancelForm from "./cancelForm/cancelForm";
 import XLSX from "xlsx";
 import SaveAltIcon from "@mui/icons-material/SaveAlt";
-
+import axios from "axios";
+import DesktopDatePicker from "@mui/lab/DesktopDatePicker";
+import LocalizationProvider from "@mui/lab/LocalizationProvider";
+import AdapterDateFns from "@mui/lab/AdapterDateFns";
 
 function CustomToolbar() {
   return (
@@ -295,13 +309,27 @@ export default function Data(props) {
   const [dataExport, setDataExport] = useState([]);
   const [loading, setLoading] = useState(true);
 
+  const [province, setProvince] = useState(0);
+  const [district, setDistrict] = useState(0);
+  const [ward, setWard] = useState(0);
+  const [provinceData, setProvinceData] = useState([]);
+  const [districtData, setDistrictData] = useState([]);
+  const [wardData, setWardData] = useState([]);
+
+  useEffect(() => {
+    async function getProvinceData() {
+      const { data } = await axios.get(`/getProvince`);
+      setProvinceData(data);
+    }
+    getProvinceData();
+  }, []);
   useEffect(() => {
     setDataRender(data);
     setDataExport(data);
     setLoading(false);
   }, [data]);
 
-  console.log(dataRender)
+  console.log(dataRender);
   const removeAccents = (str) => {
     return str
       .normalize("NFD")
@@ -324,7 +352,6 @@ export default function Data(props) {
 
   const [anchorEl, setAnchorEl] = useState(null);
   const openMenu = Boolean(anchorEl);
-  
 
   const liveSearch = (event) => {
     let string = event.target.value;
@@ -355,7 +382,7 @@ export default function Data(props) {
   const rows = dataRender;
   const [orderId, setOrderId] = useState("");
   const [orderIdList, setOrderIdList] = useState([]);
-const { enqueueSnackbar } = useSnackbar();
+  const { enqueueSnackbar } = useSnackbar();
   const [addForm, setAddForm] = useState(false);
   const [detailForm, setDetailForm] = useState(false);
   const [deleteForm, setDeleteForm] = useState(false);
@@ -398,7 +425,6 @@ const { enqueueSnackbar } = useSnackbar();
   const handleClickEdit = () => {
     setAnchorEl(null);
     console.log(orderIdList);
-    
   };
   const handleClickCancel = () => {
     setAnchorEl(null);
@@ -570,6 +596,102 @@ const { enqueueSnackbar } = useSnackbar();
     XLSX.writeFile(wb, "DSDonHang.xlsx");
   };
 
+  const handleChangeProvince = async (e) => {
+    setProvince(e.target.value);
+    const { data } = await axios.get(`/getDistrict.${e.target.value}`);
+    setDistrictData(data);
+    setWardData([]);
+    setDistrict();
+    setWard();
+  };
+  const handleChangeDistrict = async (e) => {
+    setDistrict(e.target.value);
+    const { data } = await axios.get(`/getWard.${province}&${e.target.value}`);
+    setWardData(data);
+    setWard();
+  };
+  const handleChangeWard = (e) => {
+    setWard(e.target.value);
+  };
+
+  
+
+  const renderAddressForm = () => {
+    return (
+      <>
+        <Grid item xs={2} sx={{ml:0.5}}>
+          <MyFormControl fullWidth>
+            <InputLabel id="province-select-label">Tỉnh/Thành</InputLabel>
+            <Select
+              labelId="province-select-label"
+              id="province-simple-select"
+              defaultValue={province}
+              label="Tỉnh/Thành"
+              onChange={handleChangeProvince}
+            >
+              <MenuItem value={0}>Tất cả</MenuItem>
+              {provinceData.map((value, key) => (
+                <MenuItem value={value.id} key={key}>
+                  {value.province_name}
+                </MenuItem>
+              ))}
+            </Select>
+          </MyFormControl>
+        </Grid>
+        <Grid item xs={2}>
+          <MyFormControl fullWidth>
+            <InputLabel id="district-select-label">Quận/Huyện</InputLabel>
+            <Select
+              labelId="district-select-label"
+              id="district-simple-select"
+              defaultValue={district}
+              label="Quận/Huyện"
+              onChange={handleChangeDistrict}
+            >
+              <MenuItem value={0}>Tất cả</MenuItem>
+              {districtData.map((value, key) => (
+                <MenuItem value={value.id} key={key}>
+                  {value.district_prefix} {value.district_name}
+                </MenuItem>
+              ))}
+            </Select>
+          </MyFormControl>
+        </Grid>
+        <Grid item xs={2}>
+          <MyFormControl fullWidth>
+            <InputLabel id="ward-select-label">Xã/Phường</InputLabel>
+            <Select
+              labelId="ward-select-label"
+              id="ward-simple-select"
+              defaultValue={ward}
+              label="Xã/Phường"
+              onChange={handleChangeWard}
+            >
+              <MenuItem value={0}>Tất cả</MenuItem>
+              {wardData.map((value, key) => (
+                <MenuItem value={value.id} key={key}>
+                  {value.ward_prefix} {value.ward_name}
+                </MenuItem>
+              ))}
+            </Select>
+          </MyFormControl>
+        </Grid>
+      </>
+    );
+  };
+
+  const [startDate, setStartDate] = useState(new Date());
+
+  const handleChangeStartDate = (newValue) => {
+    setStartDate(newValue);
+  };
+
+  const [endDate, setEndDate] = useState(new Date());
+
+  const handleChangeEndDate = (newValue) => {
+    setEndDate(newValue);
+  };
+
   return (
     <Grid container>
       {loading ? (
@@ -591,6 +713,50 @@ const { enqueueSnackbar } = useSnackbar();
         <>
           <Grid item xs={12} sx={{ marginBottom: "5px" }}>
             <Grid container>
+              <Grid item xs={12}>
+                <Grid container>
+                  <Grid item xs={10}>
+                    <Grid container spacing={1}>
+                      {renderAddressForm()}
+
+                      <LocalizationProvider dateAdapter={AdapterDateFns}>
+                        <Grid item xs={2}>
+                          <DesktopDatePicker
+                            label="Từ ngày"
+                            inputFormat="dd/MM/yyyy"
+                            value={startDate}
+                            onChange={handleChangeStartDate}
+                            renderInput={(params) => (
+                              <TextField size="small" {...params} />
+                            )}
+                          />
+                        </Grid>
+                        <Grid item xs={2}>
+                          <DesktopDatePicker
+                            label="Đến ngày"
+                            inputFormat="dd/MM/yyyy"
+                            value={endDate}
+                            onChange={handleChangeEndDate}
+                            renderInput={(params) => (
+                              <TextField size="small" {...params} />
+                            )}
+                          />
+                        </Grid>
+                      </LocalizationProvider>
+
+                    </Grid>
+                  </Grid>
+                  <Grid item xs={2}>
+                    <Grid container>
+                      <Grid item xs={4}></Grid>
+                      <Grid item xs={8}>
+                        <Button variant="outlined" color="primary">Tìm kiếm</Button>
+                      </Grid>
+                    </Grid>
+                  </Grid>
+                </Grid>
+                <Divider sx={{ mt: 0.5, mb: 0.5 }} />
+              </Grid>
               <Grid item xs={6}>
                 <Button
                   variant="outlined"

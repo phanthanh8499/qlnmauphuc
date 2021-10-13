@@ -223,7 +223,7 @@ function DetailForm(props) {
               <MySpan>Người nhận:</MySpan> {detailData[0].order_customername}
             </Typography>
           </MyTitle>
-          <MyTitle>
+          <MyTitle sx={{ flexFlow: "nowrap" }}>
             <HomeIcon />
             <Typography className={classes.title}>
               <MySpan>Địa chỉ:</MySpan> {detailData[0].order_customeraddress}
@@ -232,7 +232,8 @@ function DetailForm(props) {
           <MyTitle>
             <PhoneIcon />
             <Typography className={classes.title}>
-              <MySpan>Số điện thoại:</MySpan> {detailData[0].order_customerphone}
+              <MySpan>Số điện thoại:</MySpan>{" "}
+              {detailData[0].order_customerphone}
             </Typography>
           </MyTitle>
         </Grid>

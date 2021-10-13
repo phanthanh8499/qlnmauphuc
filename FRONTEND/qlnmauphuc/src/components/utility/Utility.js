@@ -1,4 +1,4 @@
-import { Button, InputBase, Menu, Switch } from "@mui/material";
+import { Button, InputBase, Menu, Switch, FormControl, TextField } from "@mui/material";
 import { styled, alpha } from "@mui/material/styles";
 
 export const Search = styled("div")(({ theme }) => ({
@@ -137,4 +137,24 @@ export const IOSSwitch = styled((props) => (
       duration: 500,
     }),
   },
+}));
+
+export const MyFormControl = styled(FormControl)(({ theme }) => ({
+  "& .MuiInputLabel-root": {
+    top: "-6px",
+    // webkitTransform: 'translate(14px, 16px) scale(1)',
+    transform: 'translate(16px, 0px) scale(0.75)',
+  },
+  "& .MuiSelect-outlined": {
+    padding: "8px 14px",
+  },
+}));
+
+export const MyTextField = styled(TextField)(({ theme }) => ({
+  marginTop: 5,
+  marginBottom: 5,
+}));
+
+export const DateTextField = styled(TextField)(({ theme }) => ({
+  padding: 10
 }));
