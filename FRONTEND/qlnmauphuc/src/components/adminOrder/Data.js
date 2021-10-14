@@ -353,31 +353,7 @@ export default function Data(props) {
   const [anchorEl, setAnchorEl] = useState(null);
   const openMenu = Boolean(anchorEl);
 
-  const liveSearch = (event) => {
-    let string = event.target.value;
-    event.preventDefault();
-    if (string) {
-      let filtered = data.filter((data) => {
-        return (
-          data.od_orderid.includes(string.toLowerCase()) ||
-          removeAccents(data.order_customername)
-            .toLowerCase()
-            .includes(removeAccents(string).toLowerCase()) ||
-          removeAccents(data.product_name)
-            .toLowerCase()
-            .includes(removeAccents(string).toLowerCase()) ||
-          removeAccents(data.os_name)
-            .toLowerCase()
-            .includes(removeAccents(string).toLowerCase()) ||
-          formatDate(data.order_startdate).includes(string) ||
-          data.order_total.toString().includes(string)
-        );
-      });
-      setDataRender(filtered);
-    } else {
-      setDataRender(data);
-    }
-  };
+  
 
   const rows = dataRender;
   const [orderId, setOrderId] = useState("");
@@ -542,6 +518,7 @@ export default function Data(props) {
       },
     },
     { field: "order_customername", headerName: "Tên khách hàng", width: 200 },
+    { field: "order_customeraddress", headerName: "Địa chỉ", width: 450 },
     { field: "product_name", headerName: "Tên sản phẩm", width: 300 },
     {
       field: "order_total",
@@ -601,14 +578,14 @@ export default function Data(props) {
     const { data } = await axios.get(`/getDistrict.${e.target.value}`);
     setDistrictData(data);
     setWardData([]);
-    setDistrict();
-    setWard();
+    setDistrict(0);
+    setWard(0);
   };
   const handleChangeDistrict = async (e) => {
     setDistrict(e.target.value);
     const { data } = await axios.get(`/getWard.${province}&${e.target.value}`);
     setWardData(data);
-    setWard();
+    setWard(0);
   };
   const handleChangeWard = (e) => {
     setWard(e.target.value);
@@ -680,16 +657,84 @@ export default function Data(props) {
     );
   };
 
-  const [startDate, setStartDate] = useState(new Date());
+  const [startDate, setStartDate] = useState(
+    new Date(new Date().setHours(0, 0, 0, 0))
+  );
 
   const handleChangeStartDate = (newValue) => {
     setStartDate(newValue);
   };
 
-  const [endDate, setEndDate] = useState(new Date());
+  const [endDate, setEndDate] = useState(
+    new Date(new Date().setHours(0, 0, 0, 0))
+  );
 
   const handleChangeEndDate = (newValue) => {
     setEndDate(newValue);
+  };
+
+  const [dataBackup, setDataBackup] = useState();
+  const handleClickSearch = () => {
+    let temp = [...data]
+    console.log(temp)
+    if(province !== 0 ){
+      temp = temp.filter((data) => data.order_provinceid === province);
+    }
+    if (district !== 0) {
+      temp = temp.filter((data) => data.order_districtid === district);
+    }
+    if (ward !== 0) {
+      temp = temp.filter((data) => data.order_wardid === ward);
+    }
+    if (Date.parse(endDate) > Date.parse(new Date(new Date().setHours(0, 0, 0, 0)))) {
+      enqueueSnackbar("Không được chọn ngày lớn hơn ngày hiện tại", {
+        variant: "error",
+        autoHideDuration: 2000,
+      });
+      return false;
+    } 
+    if(Date.parse(startDate) > Date.parse(endDate)){
+      enqueueSnackbar("Ngày bắt đầu không được lớn hơn ngày kết thúc", {
+        variant: "error",
+        autoHideDuration: 2000,
+      });
+      return false
+    } else {
+      temp = temp.filter(
+        (data) =>
+          Date.parse(data.order_startdate) >= Date.parse(startDate) &&
+          Date.parse(data.order_startdate) <= Date.parse(endDate)
+      );
+      console.log("ok ")
+    }
+    setDataRender(temp)
+    setDataBackup(temp)
+  }
+
+  const liveSearch = (event) => {
+    let string = event.target.value;
+    event.preventDefault();
+    if (string) {
+      let filtered = dataBackup.filter((data) => {
+        return (
+          data.od_orderid.includes(string.toLowerCase()) ||
+          removeAccents(data.order_customername)
+            .toLowerCase()
+            .includes(removeAccents(string).toLowerCase()) ||
+          removeAccents(data.product_name)
+            .toLowerCase()
+            .includes(removeAccents(string).toLowerCase()) ||
+          removeAccents(data.os_name)
+            .toLowerCase()
+            .includes(removeAccents(string).toLowerCase()) ||
+          formatDate(data.order_startdate).includes(string) ||
+          data.order_total.toString().includes(string)
+        );
+      });
+      setDataRender(filtered);
+    } else {
+      setDataRender(dataBackup);
+    }
   };
 
   return (
@@ -750,7 +795,7 @@ export default function Data(props) {
                     <Grid container>
                       <Grid item xs={4}></Grid>
                       <Grid item xs={8}>
-                        <Button variant="outlined" color="primary">Tìm kiếm</Button>
+                        <Button variant="outlined" color="primary" onClick={handleClickSearch}>Tìm kiếm</Button>
                       </Grid>
                     </Grid>
                   </Grid>

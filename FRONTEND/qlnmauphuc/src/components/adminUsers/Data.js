@@ -42,6 +42,8 @@ import SearchIcon from "@mui/icons-material/Search";
 import ChangeForm from "./changeForm/changeForm";
 import XLSX from "xlsx";
 import SaveAltIcon from "@mui/icons-material/SaveAlt";
+import PermissionForm from "./permissionForm/PermissionForm";
+import SettingsIcon from "@mui/icons-material/Settings";
 
 const MyBadge = styled(Badge)`
   .MuiBadge-badge {
@@ -303,6 +305,7 @@ export default function Data(props) {
   const [detailForm, setDetailForm] = useState(false);
   const [deleteForm, setDeleteForm] = useState(false);
   const [changeForm, setChangeForm] = useState(false);
+  const [permissionForm, setPermissionForm] = useState(false);
   const [userIdList, setUserIdList] = useState([]);
   const openAddForm = () => {
     setAddForm(true);
@@ -331,6 +334,13 @@ export default function Data(props) {
   };
   const closeChangeForm = () => {
     setChangeForm(false);
+  };
+
+  const openPermissionForm = () => {
+    setPermissionForm(true);
+  };
+  const closePermissionForm = () => {
+    setPermissionForm(false);
   };
 
   const handleClickMenu = (event) => {
@@ -463,6 +473,16 @@ export default function Data(props) {
         ></ChangeForm>
       );
     }
+    if (permissionForm) {
+      return (
+        <PermissionForm
+          open={permissionForm}
+          onClose={closePermissionForm}
+          id={parseInt(userId)}
+          listId={userIdList}
+        ></PermissionForm>
+      );
+    }
   };
 
   const columns = [
@@ -540,7 +560,7 @@ export default function Data(props) {
       field: "id",
       headerName: "Hành động",
       sortable: false,
-      width: 110,
+      width: isNv ? 160 : 110,
       disableClickEventBubbling: true,
       renderCell: (params) => {
         const handleClickEdit = () => {
@@ -553,11 +573,22 @@ export default function Data(props) {
           setUserId(params.value);
         };
 
+        const handleClickPermission = () => {
+          openPermissionForm();
+          setUserId(params.value);
+        };
+
         return (
           <ButtonGroup>
             <IconButton onClick={handleClickEdit} size="large">
               <VisibilityIcon />
             </IconButton>
+            {isNv ? (
+              <IconButton onClick={handleClickPermission} size="large">
+                <SettingsIcon color="secondary" />
+              </IconButton>
+            ) : null}
+
             <IconButton onClick={handleClickDelete} size="large">
               <DeleteOutlineIcon color="error" />
             </IconButton>

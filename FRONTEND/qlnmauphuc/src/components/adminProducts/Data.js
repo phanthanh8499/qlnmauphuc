@@ -13,10 +13,14 @@ import {
   ButtonGroup,
   CircularProgress,
   Divider,
+  FormControl,
   Grid,
   IconButton,
+  InputLabel,
   MenuItem,
+  OutlinedInput,
   Paper,
+  Select,
   Tab,
 } from "@mui/material";
 import { getProductData } from "../../redux/Action";
@@ -24,7 +28,7 @@ import { createTheme } from "@mui/material/styles";
 import { createStyles, makeStyles } from "@mui/styles";
 import { LOCAL_PATH } from "../../constants/Constants";
 import { styled } from "@mui/material/styles";
-import { Search, SearchIconWrapper, StyledInputBase, StyledMenu } from "../utility/Utility";
+import { MyFormControl, Search, SearchIconWrapper, StyledInputBase, StyledMenu } from "../utility/Utility";
 import SearchIcon from "@mui/icons-material/Search";
 import { Box } from "@mui/system";
 import TabList from "@mui/lab/TabList";
@@ -37,6 +41,27 @@ import CancelIcon from "@mui/icons-material/Cancel";
 import EditIcon from "@mui/icons-material/Edit";
 import XLSX from "xlsx";
 import SaveAltIcon from "@mui/icons-material/SaveAlt";
+import { useTheme } from "@mui/material/styles";
+
+const ITEM_HEIGHT = 48;
+const ITEM_PADDING_TOP = 8;
+const MenuProps = {
+  PaperProps: {
+    style: {
+      maxHeight: ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
+      width: 250,
+    },
+  },
+};
+
+function getStyles(name, personName, theme) {
+  return {
+    fontWeight:
+      personName.indexOf(name) === -1
+        ? theme.typography.fontWeightRegular
+        : theme.typography.fontWeightMedium,
+  };
+}
 
 const MyBadge = styled(Badge)(({ theme }) => ({
   "& .MuiBadge-badge": {
@@ -52,7 +77,7 @@ const MyTab = styled(Tab)(({ theme }) => ({
 const useStyles = makeStyles((theme) => ({
   topBar: {
     padding: 5,
-    margin: "0px 0px 5px 0px !important",
+    margin: "0px 0px -5px 0px !important",
   },
   img: {
     height: 100,
@@ -378,45 +403,7 @@ export default function Data(props) {
     return new Date(dateString).toLocaleDateString(undefined, options);
   };
 
-  const liveSearch = (event) => {
-    let string = event.target.value;
-    event.preventDefault();
-    if (string) {
-      let filtered = data.filter((data) => {
-        return (
-          data.id === parseInt(string) ||
-          data.product_code.toLowerCase().includes(string.toLowerCase()) ||
-          removeAccents(data.product_name)
-            .toLowerCase()
-            .includes(removeAccents(string).toLowerCase()) ||
-          removeAccents(data.product_material)
-            .toLowerCase()
-            .includes(removeAccents(string).toLowerCase()) ||
-          removeAccents(data.product_lining)
-            .toLowerCase()
-            .includes(removeAccents(string).toLowerCase()) ||
-          removeAccents(data.product_thickness)
-            .toLowerCase()
-            .includes(removeAccents(string).toLowerCase()) ||
-          removeAccents(data.product_softness)
-            .toLowerCase()
-            .includes(removeAccents(string).toLowerCase()) ||
-          removeAccents(data.product_color)
-            .toLowerCase()
-            .includes(removeAccents(string).toLowerCase()) ||
-          removeAccents(data.product_elasticity)
-            .toLowerCase()
-            .includes(removeAccents(string).toLowerCase()) ||
-          
-          data.product_price.toString().includes(string) 
-          // data.product_old_price.toString().includes(string)
-        );
-      });
-      setDataRender(filtered);
-    } else {
-      setDataRender(data);
-    }
-  };
+  
 
   const renderForm = () => {
     if (addForm) {
@@ -529,8 +516,223 @@ export default function Data(props) {
     XLSX.writeFile(wb, "DSSanPham.xlsx");
   };
 
+
+  const theme = useTheme();
+  const [colorSelected, setColorSelected] = React.useState([]);
+
+  const names = [
+    "Trắng",
+    "Đen",
+    "Xám",
+    "Xanh",
+    "Xanh thanh",
+    "Vàng",
+    "Vàng nâu",
+    "Đỏ",
+    "Đỏ rượu",
+    "Đỏ nâu",
+  ];
+
+  const handleChangeColor = (event) => {
+    const {
+      target: { value },
+    } = event;
+    setColorSelected(
+      // On autofill we get a the stringified value.
+      typeof value === "string" ? value.split(",") : value
+    );
+  };
+
+  const [dataBackup, setDataBackup] = useState([])
+  const handleClickSearch = () => {
+    let temp = [...data];
+    if (colorSelected.length >= 1){
+      for(let i = 0; i<colorSelected.length; i++){
+        temp = temp.filter((data) => {
+          return removeAccents(data.product_color)
+            .toLowerCase()
+            .includes(removeAccents(colorSelected[i]).toLowerCase());
+        } 
+        );
+      }
+    }
+    if(thicknessSelected){
+      temp = temp.filter(
+        (data) => data.product_thickness === thicknessSelected
+      );
+    }
+    if(softnessSelected){
+      temp = temp.filter(
+        (data) => data.product_softness === softnessSelected
+      );
+    }
+    if(elasticitySelected){
+      temp = temp.filter(
+        (data) => data.product_elasticity === elasticitySelected
+      );
+    }
+    setDataRender(temp); 
+    setDataBackup(temp); 
+  }
+
+  const liveSearch = (event) => {
+    let string = event.target.value;
+    event.preventDefault();
+    if (string) {
+      let filtered = dataRender.filter((data) => {
+        return (
+          data.id === parseInt(string) ||
+          data.product_code.toLowerCase().includes(string.toLowerCase()) ||
+          removeAccents(data.product_name)
+            .toLowerCase()
+            .includes(removeAccents(string).toLowerCase()) ||
+          removeAccents(data.product_material)
+            .toLowerCase()
+            .includes(removeAccents(string).toLowerCase()) ||
+          removeAccents(data.product_lining)
+            .toLowerCase()
+            .includes(removeAccents(string).toLowerCase()) ||
+          removeAccents(data.product_thickness)
+            .toLowerCase()
+            .includes(removeAccents(string).toLowerCase()) ||
+          removeAccents(data.product_softness)
+            .toLowerCase()
+            .includes(removeAccents(string).toLowerCase()) ||
+          removeAccents(data.product_color)
+            .toLowerCase()
+            .includes(removeAccents(string).toLowerCase()) ||
+          removeAccents(data.product_elasticity)
+            .toLowerCase()
+            .includes(removeAccents(string).toLowerCase()) ||
+          
+          data.product_price.toString().includes(string) 
+          // data.product_old_price.toString().includes(string)
+        );
+      });
+      setDataRender(filtered);
+    } else {
+      setDataRender(dataBackup);
+    }
+  };
+
+  const [thicknessSelected, setThicknessSelected] = useState('');
+  const [softnessSelected, setSoftnessSelected] = useState("");
+  const [elasticitySelected, setElasticitySelected] = useState("");
+  const renderSearchForm = () => {
+    return (
+      <Grid container spacing={1}>
+        <Grid item xs={3}>
+          <MyFormControl sx={{ ml: 0.5, width: "100%" }}>
+            <InputLabel id="select-color-label">Màu sắc</InputLabel>
+            <Select
+              multiple
+              displayEmpty
+              value={colorSelected}
+              onChange={handleChangeColor}
+              input={<OutlinedInput />}
+              renderValue={(selected) => {
+                if (selected.length === 0) {
+                  return <em>Tất cả</em>;
+                }
+                return selected.join(", ");
+              }}
+              MenuProps={MenuProps}
+              inputProps={{ "aria-label": "Without label" }}
+            >
+              <MenuItem disabled value="">
+                <em>Tất cả</em>
+              </MenuItem>
+              {names.map((name) => (
+                <MenuItem
+                  key={name}
+                  value={name}
+                  style={getStyles(name, colorSelected, theme)}
+                >
+                  {name}
+                </MenuItem>
+              ))}
+            </Select>
+          </MyFormControl>
+        </Grid>
+        <Grid item xs={1}>
+          <MyFormControl fullWidth>
+            <InputLabel id="thickess-select-label">Độ dày</InputLabel>
+            <Select
+              labelId="thickess-select-label"
+              id="thickess-select"
+              value={thicknessSelected}
+              displayEmpty
+              label="Độ dày"
+              onChange={(e) => setThicknessSelected(e.target.value)}
+              inputProps={{ "aria-label": "Without label" }}
+            >
+              <MenuItem value="">
+                <em>Tất cả</em>
+              </MenuItem>
+              <MenuItem value="Mỏng">Mỏng</MenuItem>
+              <MenuItem value="Vừa">Vừa</MenuItem>
+              <MenuItem value="Dày">Dày</MenuItem>
+            </Select>
+          </MyFormControl>
+        </Grid>
+        <Grid item xs={1}>
+          <MyFormControl fullWidth>
+            <InputLabel id="softness-select-label">Độ dày</InputLabel>
+            <Select
+              labelId="softness-select-label"
+              id="softness-select"
+              value={softnessSelected}
+              displayEmpty
+              label="Độ dày"
+              onChange={(e) => setSoftnessSelected(e.target.value)}
+              inputProps={{ "aria-label": "Without label" }}
+            >
+              <MenuItem value="">
+                <em>Tất cả</em>
+              </MenuItem>
+              <MenuItem value="Mềm">Mềm</MenuItem>
+              <MenuItem value="Vừa">Vừa</MenuItem>
+              <MenuItem value="Cứng">Cứng</MenuItem>
+            </Select>
+          </MyFormControl>
+        </Grid>
+        <Grid item xs={1}>
+          <MyFormControl fullWidth>
+            <InputLabel id="elasticity-select-label">Độ co giãn</InputLabel>
+            <Select
+              labelId="elasticity-select-label"
+              id="elasticity-select"
+              value={elasticitySelected}
+              displayEmpty
+              label="Độ co giãn"
+              onChange={(e) => setElasticitySelected(e.target.value)}
+              inputProps={{ "aria-label": "Without label" }}
+            >
+              <MenuItem value="">
+                <em>Tất cả</em>
+              </MenuItem>
+              <MenuItem value="Không">Không</MenuItem>
+              <MenuItem value="Vừa">Vừa</MenuItem>
+              <MenuItem value="Có">Có</MenuItem>
+            </Select>
+          </MyFormControl>
+        </Grid>
+        <Grid item xs={4}></Grid>
+        <Grid item xs={2}>
+          <Button
+            variant="outlined"
+            color="primary"
+            onClick={handleClickSearch}
+            sx={{ float: "right", mr:0.5 }}
+          >
+            Tìm kiếm
+          </Button>
+        </Grid>
+      </Grid>
+    );
+  }
   return (
-    <Grid container component={Paper} component={Paper}>
+    <Grid container>
       {loading ? (
         <Grid
           item
@@ -550,13 +752,18 @@ export default function Data(props) {
         <div>error</div>
       ) : (
         <>
-          <Grid item xs={12} className={classes.topBar}>
+          <Grid item xs={12}>
             <Grid container>
+              <Grid item xs={12}>
+                {renderSearchForm()}
+                <Divider sx={{ mt: 0.5, mb: 0.5 }} />
+              </Grid>
               <Grid item xs={9}>
                 <Button
                   variant="outlined"
                   color="primary"
                   onClick={openAddForm}
+                  sx={{ ml: 0.5 }}
                 >
                   Thêm sản phẩm
                 </Button>
