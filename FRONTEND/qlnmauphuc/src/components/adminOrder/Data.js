@@ -323,6 +323,7 @@ export default function Data(props) {
     }
     getProvinceData();
   }, []);
+  
   useEffect(() => {
     setDataRender(data);
     setDataExport(data);
@@ -676,7 +677,6 @@ export default function Data(props) {
   const [dataBackup, setDataBackup] = useState();
   const handleClickSearch = () => {
     let temp = [...data]
-    console.log(temp)
     if(province !== 0 ){
       temp = temp.filter((data) => data.order_provinceid === province);
     }

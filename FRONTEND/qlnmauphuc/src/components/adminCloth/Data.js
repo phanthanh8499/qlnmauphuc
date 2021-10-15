@@ -12,10 +12,14 @@ import {
   Button,
   ButtonGroup,
   CircularProgress,
+  Divider,
   Grid,
   IconButton,
+  InputLabel,
   MenuItem,
+  OutlinedInput,
   Paper,
+  Select,
 } from "@mui/material";
 import { getClothData, getProductData } from "../../redux/Action";
 import { XOA_HINH_ANH } from "../../constants/Constants";
@@ -27,6 +31,7 @@ import TabContext from "@mui/lab/TabContext";
 import TabList from "@mui/lab/TabList";
 import TabPanel from "@mui/lab/TabPanel";
 import {
+  MyFormControl,
   Search,
   SearchIconWrapper,
   StyledInputBase,
@@ -40,6 +45,27 @@ import EditIcon from "@mui/icons-material/Edit";
 import SearchIcon from "@mui/icons-material/Search";
 import XLSX from "xlsx";
 import SaveAltIcon from "@mui/icons-material/SaveAlt";
+import { useTheme } from "@mui/material/styles";
+
+const ITEM_HEIGHT = 48;
+const ITEM_PADDING_TOP = 8;
+const MenuProps = {
+  PaperProps: {
+    style: {
+      maxHeight: ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
+      width: 250,
+    },
+  },
+};
+
+function getStyles(name, personName, theme) {
+  return {
+    fontWeight:
+      personName.indexOf(name) === -1
+        ? theme.typography.fontWeightRegular
+        : theme.typography.fontWeightMedium,
+  };
+}
 
 const MyBadge = styled(Badge)`
   .MuiBadge-badge {
@@ -286,12 +312,13 @@ export default function Data(props) {
   const dispatch = useDispatch();
   const [dataRender, setDataRender] = useState();
   const [dataExport, setDataExport] = useState();
-  const { data } = props;
+  const { data, isKH } = props;
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     setDataRender(data);
     setDataExport(data);
+    setDataBackup(data);
     setLoading(false);
   }, [data]);
 
@@ -367,42 +394,6 @@ export default function Data(props) {
       second: "2-digit",
     };
     return new Date(dateString).toLocaleDateString(undefined, options);
-  };
-
-  const liveSearch = (event) => {
-    let string = event.target.value;
-    event.preventDefault();
-    if (string) {
-      let filtered = data.filter((data) => {
-        return (
-          removeAccents(data.cloth_material)
-            .toLowerCase()
-            .includes(removeAccents(string).toLowerCase()) ||
-          removeAccents(data.cloth_name)
-            .toLowerCase()
-            .includes(removeAccents(string).toLowerCase()) ||
-          removeAccents(data.user_username)
-            .toLowerCase()
-            .includes(removeAccents(string).toLowerCase()) ||
-          removeAccents(data.ct_name)
-            .toLowerCase()
-            .includes(removeAccents(string).toLowerCase()) ||
-          removeAccents(data.user_firstname)
-            .toLowerCase()
-            .includes(removeAccents(string).toLowerCase()) ||
-          removeAccents(data.user_lastname)
-            .toLowerCase()
-            .includes(removeAccents(string).toLowerCase()) ||
-          removeAccents(data.user_lastname + " " + data.user_firstname)
-            .toLowerCase()
-            .includes(removeAccents(string).toLowerCase()) ||
-          data.cloth_quantity.toString().includes(string)
-        );
-      });
-      setDataRender(filtered);
-    } else {
-      setDataRender(data);
-    }
   };
 
   const renderForm = () => {
@@ -505,6 +496,61 @@ export default function Data(props) {
     },
   ];
 
+  const columns2 = [
+    { field: "cloth_material", headerName: "Thành phần", width: 300 },
+    { field: "cloth_name", headerName: "Tên vải", width: 300 },
+    {
+      field: "user_username",
+      headerName: "Chủ sở hữu",
+      width: 150,
+      renderCell: (params) => {
+        if (params.value === "admin") {
+          return (
+            <MyButton variant="outlined" color="primary" fullWidth>
+              {params.value}
+            </MyButton>
+          );
+        } else {
+          return (
+            <MyButton variant="outlined" color="success" fullWidth>
+              {params.value}
+            </MyButton>
+          );
+        }
+      },
+    },
+    { field: "ct_name", headerName: "Loại vải", width: 200 },
+    {
+      field: "id",
+      headerName: "Hành động",
+      sortable: false,
+      width: 110,
+      disableClickEventBubbling: true,
+      renderCell: (params) => {
+        const handleClickEdit = () => {
+          openDetailForm();
+          setClothId(params.value);
+        };
+
+        const handleClickDelete = () => {
+          openDeleteForm();
+          setClothId(params.value);
+        };
+
+        return (
+          <ButtonGroup>
+            <IconButton onClick={handleClickEdit} size="large">
+              <VisibilityIcon />
+            </IconButton>
+            <IconButton onClick={handleClickDelete} size="large">
+              <DeleteOutlineIcon color="error" />
+            </IconButton>
+          </ButtonGroup>
+        );
+      },
+    },
+  ];
+
   const exportFile = () => {
     const ws = XLSX.utils.json_to_sheet(
       dataExport.map((item) => {
@@ -518,6 +564,169 @@ export default function Data(props) {
     XLSX.writeFile(wb, "DSVai.xlsx");
   };
 
+  const handleClickSearch = () => {
+    let temp = [...data]
+    if(materialSelected.length >= 1){
+      for(let i=0; i<materialSelected.length; i++){
+        temp = temp.filter((data) => {
+          return removeAccents(data.cloth_material)
+            .toLowerCase()
+            .includes(removeAccents(materialSelected[i]).toLowerCase());
+        })
+      }
+    }
+    if(colorSelected){
+      temp = temp.filter((data) => {
+        return removeAccents(data.cloth_name).toLowerCase().includes(removeAccents(colorSelected).toLowerCase())
+      })
+    }
+    setDataRender(temp);
+    setDataBackup(temp);
+  };
+
+  const theme = useTheme();
+  const [materialSelected, setMaterialSelected] = useState([]);
+  const [colorSelected, setColorSelected] = useState("");
+  const [dataBackup, setDataBackup] = useState([]);
+
+  const materialNames = [
+    "Polyester",
+    "Viscose",
+    "Spandex",
+    "Cotton",
+  ];
+
+  const colorNames = [
+    "Trắng",
+    "Đen",
+    "Xám",
+    "Xanh",
+    "Xanh thanh",
+    "Vàng",
+    "Vàng nâu",
+    "Đỏ",
+    "Đỏ rượu",
+    "Đỏ nâu",
+  ];
+
+  const handleChangeMaterial = (event) => {
+    const {
+      target: { value },
+    } = event;
+    setMaterialSelected(
+      // On autofill we get a the stringified value.
+      typeof value === "string" ? value.split(",") : value
+    );
+  };
+
+  const liveSearch = (event) => {
+    let string = event.target.value;
+    event.preventDefault();
+    if (string) {
+      let filtered = dataRender.filter((data) => {
+        return (
+          removeAccents(data.cloth_material)
+            .toLowerCase()
+            .includes(removeAccents(string).toLowerCase()) ||
+          removeAccents(data.cloth_name)
+            .toLowerCase()
+            .includes(removeAccents(string).toLowerCase()) ||
+          removeAccents(data.user_username)
+            .toLowerCase()
+            .includes(removeAccents(string).toLowerCase()) ||
+          removeAccents(data.ct_name)
+            .toLowerCase()
+            .includes(removeAccents(string).toLowerCase()) ||
+          removeAccents(data.user_firstname)
+            .toLowerCase()
+            .includes(removeAccents(string).toLowerCase()) ||
+          removeAccents(data.user_lastname)
+            .toLowerCase()
+            .includes(removeAccents(string).toLowerCase()) ||
+          removeAccents(data.user_lastname + " " + data.user_firstname)
+            .toLowerCase()
+            .includes(removeAccents(string).toLowerCase()) ||
+          data.cloth_quantity.toString().includes(string)
+        );
+      });
+      setDataRender(filtered);
+    } else {
+      setDataRender(dataBackup);
+    }
+  };
+
+  const renderSearchForm = () => {
+    return (
+      <>
+        <Grid item xs={3}>
+          <MyFormControl sx={{ ml: 0.5, width: "100%" }}>
+            <InputLabel id="select-material-label">Thành phần</InputLabel>
+            <Select
+              multiple
+              displayEmpty
+              value={materialSelected}
+              onChange={handleChangeMaterial}
+              input={<OutlinedInput />}
+              renderValue={(selected) => {
+                if (selected.length === 0) {
+                  return <em>Tất cả</em>;
+                }
+                return selected.join(", ");
+              }}
+              MenuProps={MenuProps}
+              inputProps={{ "aria-label": "Without label" }}
+            >
+              <MenuItem disabled value="">
+                <em>Tất cả</em>
+              </MenuItem>
+              {materialNames.map((name) => (
+                <MenuItem
+                  key={name}
+                  value={name}
+                  style={getStyles(name, materialSelected, theme)}
+                >
+                  {name}
+                </MenuItem>
+              ))}
+            </Select>
+          </MyFormControl>
+        </Grid>
+        <Grid item xs={1}>
+          <MyFormControl sx={{ width: "100%" }}>
+            <InputLabel id="cloth-color-select-label">Màu sắc</InputLabel>
+            <Select
+              labelId="cloth-color-select-label"
+              id="cloth-color-select"
+              value={colorSelected}
+              displayEmpty
+              label="màu sắc"
+              onChange={(e) => setColorSelected(e.target.value)}
+              inputProps={{ "aria-label": "Without label" }}
+            >
+              <MenuItem value="">
+                <em>Tất cả</em>
+              </MenuItem>
+              {colorNames.map((name) => (
+                <MenuItem key={name} value={name}>
+                  {name}
+                </MenuItem>
+              ))}
+            </Select>
+          </MyFormControl>
+        </Grid>
+        <Grid item xs={7}></Grid>
+        <Grid item xs={1}>
+          <Button
+            variant="outlined"
+            color="primary"
+            onClick={handleClickSearch}
+          >
+            Tìm kiếm
+          </Button>
+        </Grid>
+      </>
+    );
+  };
   return (
     <Grid container>
       {loading ? (
@@ -539,6 +748,12 @@ export default function Data(props) {
         <>
           <Grid item xs={12} sx={{ marginBottom: "5px" }}>
             <Grid container>
+              <Grid item xs={12}>
+                <Grid container spacing={1}>
+                  {renderSearchForm()}
+                </Grid>
+                <Divider sx={{ mt: 0.5, mb: 0.5 }} />
+              </Grid>
               <Grid item xs={6}>
                 <Button
                   variant="outlined"
@@ -608,15 +823,15 @@ export default function Data(props) {
             item
             xs={12}
             style={{
-              height: 456,
+              height: 405,
               width: "100%",
               "background-color": "#ffffff",
             }}
           >
             <DataGrid
               rows={rows}
-              columns={columns}
-              pageSize={6}
+              columns={isKH ? columns2 : columns}
+              pageSize={5}
               className={antDesignClasses.root}
               checkboxSelection
               disableSelectionOnClick

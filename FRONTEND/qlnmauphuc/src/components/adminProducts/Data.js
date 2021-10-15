@@ -752,7 +752,7 @@ export default function Data(props) {
         <div>error</div>
       ) : (
         <>
-          <Grid item xs={12}>
+          <Grid item xs={12} sx={{mb:0.5}}>
             <Grid container>
               <Grid item xs={12}>
                 {renderSearchForm()}

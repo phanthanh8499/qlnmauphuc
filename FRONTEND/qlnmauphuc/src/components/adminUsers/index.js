@@ -33,7 +33,7 @@ const MyTab = styled(Tab)(({ theme }) => ({
 const useStyles = makeStyles((theme) => ({
   topBar: {
     padding: 5,
-    margin: '0px 0px 5px 0px !important',
+    margin: '0px 0px -5px 0px !important',
   },
 }));
 

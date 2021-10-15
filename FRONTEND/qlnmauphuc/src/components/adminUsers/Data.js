@@ -13,10 +13,14 @@ import {
   Button,
   ButtonGroup,
   CircularProgress,
+  Divider,
   Grid,
   IconButton,
+  InputLabel,
   MenuItem,
   Paper,
+  Select,
+  TextField,
 } from "@mui/material";
 import { getClothData, getProductData } from "../../redux/Action";
 import { LOCAL_PATH, XOA_HINH_ANH } from "../../constants/Constants";
@@ -28,6 +32,7 @@ import TabContext from "@mui/lab/TabContext";
 import TabList from "@mui/lab/TabList";
 import TabPanel from "@mui/lab/TabPanel";
 import {
+  MyFormControl,
   Search,
   SearchIconWrapper,
   StyledInputBase,
@@ -44,6 +49,10 @@ import XLSX from "xlsx";
 import SaveAltIcon from "@mui/icons-material/SaveAlt";
 import PermissionForm from "./permissionForm/PermissionForm";
 import SettingsIcon from "@mui/icons-material/Settings";
+import axios from "axios";
+import DesktopDatePicker from "@mui/lab/DesktopDatePicker";
+import LocalizationProvider from "@mui/lab/LocalizationProvider";
+import AdapterDateFns from "@mui/lab/AdapterDateFns";
 
 const MyBadge = styled(Badge)`
   .MuiBadge-badge {
@@ -293,6 +302,21 @@ export default function Data(props) {
   const { data, isNv } = props;
   const [loading, setLoading] = useState(true);
 
+  const [province, setProvince] = useState(0);
+  const [district, setDistrict] = useState(0);
+  const [ward, setWard] = useState(0);
+  const [provinceData, setProvinceData] = useState([]);
+  const [districtData, setDistrictData] = useState([]);
+  const [wardData, setWardData] = useState([]);
+
+  useEffect(() => {
+    async function getProvinceData() {
+      const { data } = await axios.get(`/getProvince`);
+      setProvinceData(data);
+    }
+    getProvinceData();
+  }, []);
+
   useEffect(() => {
     setDataRender(data);
     setDataExport(data);
@@ -402,29 +426,7 @@ export default function Data(props) {
       return new Date(dateString).toLocaleDateString(undefined, options);
   };
 
-  const liveSearch = (event) => {
-    let string = event.target.value;
-    event.preventDefault();
-    if (string) {
-      let filtered = data.filter((data) => {
-      
-        return (
-          removeAccents(data.user_typeid).includes(removeAccents(string)) ||
-          removeAccents(data.user_username).includes(removeAccents(string)) ||
-          // removeAccents(data.user_lastname).includes(removeAccents(string)) ||
-          // removeAccents(data.user_firstname) .includes(removeAccents(string)) ||
-          // removeAccents(data.user_lastname + " " + data.user_firstname).includes(removeAccents(string)) ||
-          // removeAccents(data.user_address).includes(removeAccents(string)) ||
-          removeAccents(data.user_status).includes(removeAccents(string)) ||
-          formatDate(data.user_date).toString().includes(string) 
-          // data.user_tel.toString().includes(string)
-        );
-      });
-      setDataRender(filtered);
-    } else {
-      setDataRender(data);
-    }
-  };
+  
 
   const renderForm = () => {
     if (addForm) {
@@ -611,6 +613,189 @@ export default function Data(props) {
     XLSX.writeFile(wb, "DSNguoiDung.xlsx");
   };
 
+
+  const handleChangeProvince = async (e) => {
+    setProvince(e.target.value);
+    const { data } = await axios.get(`/getDistrict.${e.target.value}`);
+    setDistrictData(data);
+    setWardData([]);
+    setDistrict(0);
+    setWard(0);
+  };
+  const handleChangeDistrict = async (e) => {
+    setDistrict(e.target.value);
+    const { data } = await axios.get(`/getWard.${province}&${e.target.value}`);
+    setWardData(data);
+    setWard(0);
+  };
+  const handleChangeWard = (e) => {
+    setWard(e.target.value);
+  };
+
+  const renderAddressForm = () => {
+    return (
+      <>
+        <Grid item xs={2} sx={{ ml: 0.5 }}>
+          <MyFormControl fullWidth>
+            <InputLabel id="province-select-label">Tỉnh/Thành</InputLabel>
+            <Select
+              labelId="province-select-label"
+              id="province-simple-select"
+              defaultValue={province}
+              label="Tỉnh/Thành"
+              onChange={handleChangeProvince}
+            >
+              <MenuItem value={0}>Tất cả</MenuItem>
+              {provinceData.map((value, key) => (
+                <MenuItem value={value.id} key={key}>
+                  {value.province_name}
+                </MenuItem>
+              ))}
+            </Select>
+          </MyFormControl>
+        </Grid>
+        <Grid item xs={2}>
+          <MyFormControl fullWidth>
+            <InputLabel id="district-select-label">Quận/Huyện</InputLabel>
+            <Select
+              labelId="district-select-label"
+              id="district-simple-select"
+              defaultValue={district}
+              label="Quận/Huyện"
+              onChange={handleChangeDistrict}
+            >
+              <MenuItem value={0}>Tất cả</MenuItem>
+              {districtData.map((value, key) => (
+                <MenuItem value={value.id} key={key}>
+                  {value.district_prefix} {value.district_name}
+                </MenuItem>
+              ))}
+            </Select>
+          </MyFormControl>
+        </Grid>
+        <Grid item xs={2}>
+          <MyFormControl fullWidth>
+            <InputLabel id="ward-select-label">Xã/Phường</InputLabel>
+            <Select
+              labelId="ward-select-label"
+              id="ward-simple-select"
+              defaultValue={ward}
+              label="Xã/Phường"
+              onChange={handleChangeWard}
+            >
+              <MenuItem value={0}>Tất cả</MenuItem>
+              {wardData.map((value, key) => (
+                <MenuItem value={value.id} key={key}>
+                  {value.ward_prefix} {value.ward_name}
+                </MenuItem>
+              ))}
+            </Select>
+          </MyFormControl>
+        </Grid>
+        <LocalizationProvider dateAdapter={AdapterDateFns}>
+          <Grid item xs={2}>
+            <DesktopDatePicker
+              label="Từ ngày"
+              inputFormat="dd/MM/yyyy"
+              value={startDate}
+              onChange={handleChangeStartDate}
+              renderInput={(params) => <TextField size="small" {...params} />}
+            />
+          </Grid>
+          <Grid item xs={2}>
+            <DesktopDatePicker
+              label="Đến ngày"
+              inputFormat="dd/MM/yyyy"
+              value={endDate}
+              onChange={handleChangeEndDate}
+              renderInput={(params) => <TextField size="small" {...params} />}
+            />
+          </Grid>
+        </LocalizationProvider>
+        
+      </>
+    );
+  };
+
+  const [startDate, setStartDate] = useState(
+    new Date(new Date().setHours(0, 0, 0, 0))
+  );
+
+  const handleChangeStartDate = (newValue) => {
+    setStartDate(newValue);
+  };
+
+  const [endDate, setEndDate] = useState(
+    new Date(new Date().setHours(0, 0, 0, 0))
+  );
+
+  const handleChangeEndDate = (newValue) => {
+    setEndDate(newValue);
+  };
+
+  const [dataBackup, setDataBackup] = useState();
+  const handleClickSearch = () => {
+    let temp = [...data];
+    if (province !== 0) {
+      temp = temp.filter((data) => data.ward_provinceid === province);
+    }
+    if (district !== 0) {
+      temp = temp.filter((data) => data.ward_districtid === district);
+    }
+    if (ward !== 0) {
+      temp = temp.filter((data) => data.user_wardid === ward);
+    }
+    if (
+      Date.parse(endDate) >
+      Date.parse(new Date(new Date().setHours(0, 0, 0, 0)))
+    ) {
+      enqueueSnackbar("Không được chọn ngày lớn hơn ngày hiện tại", {
+        variant: "error",
+        autoHideDuration: 2000,
+      });
+      return false;
+    }
+    if (Date.parse(startDate) > Date.parse(endDate)) {
+      enqueueSnackbar("Ngày bắt đầu không được lớn hơn ngày kết thúc", {
+        variant: "error",
+        autoHideDuration: 2000,
+      });
+      return false;
+    } else {
+      temp = temp.filter(
+        (data) =>
+          Date.parse(data.user_date) >= Date.parse(startDate) &&
+          Date.parse(data.user_date) <= Date.parse(endDate)
+      );
+      console.log("ok ");
+    }
+    setDataRender(temp);
+    setDataBackup(temp);
+  };
+
+  const liveSearch = (event) => {
+    let string = event.target.value;
+    event.preventDefault();
+    if (string) {
+      let filtered = dataRender.filter((data) => {
+        return (
+          removeAccents(data.user_typeid).includes(removeAccents(string)) ||
+          removeAccents(data.user_username).includes(removeAccents(string)) ||
+          // removeAccents(data.user_lastname).includes(removeAccents(string)) ||
+          // removeAccents(data.user_firstname) .includes(removeAccents(string)) ||
+          // removeAccents(data.user_lastname + " " + data.user_firstname).includes(removeAccents(string)) ||
+          // removeAccents(data.user_address).includes(removeAccents(string)) ||
+          removeAccents(data.user_status).includes(removeAccents(string)) ||
+          formatDate(data.user_date).toString().includes(string)
+          // data.user_tel.toString().includes(string)
+        );
+      });
+      setDataRender(filtered);
+    } else {
+      setDataRender(dataBackup);
+    }
+  };
+  
   return (
     <Grid container>
       {loading ? (
@@ -632,6 +817,27 @@ export default function Data(props) {
         <>
           <Grid item xs={12} sx={{ marginBottom: "5px" }}>
             <Grid container>
+              <Grid item xs={12}>
+                <Grid container>
+                  <Grid item xs={10}>
+                    <Grid container spacing={1}>
+                      {renderAddressForm()}
+                    </Grid>
+                  </Grid>
+                  <Grid item xs={2}>
+                    <Grid item xs={12} sx={{ float: "right", mr:0.5 }}>
+                      <Button
+                        variant="outlined"
+                        color="primary"
+                        onClick={handleClickSearch}
+                      >
+                        Tìm kiếm
+                      </Button>
+                    </Grid>
+                  </Grid>
+                </Grid>
+                <Divider sx={{ mt: 0.5, mb: 0.5 }} />
+              </Grid>
               <Grid item xs={6}>
                 {isNv ? (
                   <Button
@@ -703,7 +909,7 @@ export default function Data(props) {
             item
             xs={12}
             style={{
-              height: 456,
+              height: 405,
               width: "100%",
               "background-color": "#ffffff",
             }}
@@ -711,7 +917,7 @@ export default function Data(props) {
             <DataGrid
               rows={rows}
               columns={columns}
-              pageSize={6}
+              pageSize={5}
               className={antDesignClasses.root}
               checkboxSelection
               disableSelectionOnClick

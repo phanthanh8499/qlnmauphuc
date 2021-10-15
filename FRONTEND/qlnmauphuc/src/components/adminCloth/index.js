@@ -33,7 +33,7 @@ const MyTab = styled(Tab)(({ theme }) => ({
 const useStyles = makeStyles((theme) => ({
   topBar: {
     padding: 5,
-    margin: '0px 0px 5px 0px !important',
+    margin: '0px 0px -5px 0px !important',
   },
 }));
 
@@ -386,7 +386,7 @@ export default function AdminCloth() {
                 <Data data={vpol} />
               </TabPanel>
               <TabPanel value="6" sx={{ padding: 0 }}>
-                <Data data={vckh} />
+                <Data data={vckh} isKH/>
               </TabPanel>
             </Grid>
           </TabContext>
