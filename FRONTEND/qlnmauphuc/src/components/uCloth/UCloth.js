@@ -5,6 +5,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { LOCAL_PATH } from "../../constants/Constants";
 import { getMyClothData } from "../../redux/Action";
 import ImageMagnify from "./ImageMagnify";
+import DoNotTouchIcon from "@mui/icons-material/DoNotTouch";
 
 const center = {
   display: "flex",
@@ -69,49 +70,58 @@ export default function UCloth() {
   }, [myClothData]);
 
   const renderCloth = () => {
-    return (
-      rowsPerPage > 0
-        ? myClothData.slice(
-            page * rowsPerPage,
-            page * rowsPerPage + rowsPerPage
-          )
-        : myClothData
-    ).map((value, key) => (
-      <Grid item xs={6}>
-        <Grid container className={classes.root}>
-          <Grid item xs={4} sx={center}>
-            {/* <img
-              src= {LOCAL_PATH + value.cloth_image.substring(2)}
-              alt={value.cloth_name}
-              className={classes.img}
-            /> */}
-            <ImageMagnify
-              image={LOCAL_PATH + value.cloth_image.substring(2)}
-              name={value.cloth_name}
-            ></ImageMagnify>
-          </Grid>
-          <Grid item xs={8} sx={{ padding: "0px 5px" }}>
-            <Grid container>
-              <Grid item xs={12}>
-                <Typography className={classes.title}>
-                  {value.cloth_name}
-                </Typography>
-              </Grid>
-              <Grid item xs={12}>
-                <Typography className={classes.subTitle}>
-                  Thành phần: {value.cloth_material}
-                </Typography>
-              </Grid>
-              <Grid item xs={12}>
+    if (myClothData.length >=1 ){
+return (
+        rowsPerPage > 0
+          ? myClothData.slice(
+              page * rowsPerPage,
+              page * rowsPerPage + rowsPerPage
+            )
+          : myClothData
+      ).map((value, key) => (
+        <Grid item xs={6}>
+          <Grid container className={classes.root}>
+            <Grid item xs={4} sx={center}>
+              <ImageMagnify
+                image={LOCAL_PATH + value.cloth_image.substring(2)}
+                name={value.cloth_name}
+              ></ImageMagnify>
+            </Grid>
+            <Grid item xs={8} sx={{ padding: "0px 5px" }}>
+              <Grid container>
+                <Grid item xs={12}>
+                  <Typography className={classes.title}>
+                    {value.cloth_name}
+                  </Typography>
+                </Grid>
+                <Grid item xs={12}>
+                  <Typography className={classes.subTitle}>
+                    Thành phần: {value.cloth_material}
+                  </Typography>
+                </Grid>
+                {/* <Grid item xs={12}>
                 <Typography className={classes.subTitle}>
                   Còn lại: {value.cloth_quantity} (mét)
                 </Typography>
+              </Grid> */}
               </Grid>
             </Grid>
           </Grid>
         </Grid>
+      ));
+    } else return (
+      <Grid item xs={12} sx={{ height: 256 }} className={classes.root}>
+        <Grid container>
+          <Grid item xs={12} sx={center}>
+            <DoNotTouchIcon sx={{ fontSize: 200 }} />
+          </Grid>
+          <Grid item xs={12} sx={center}>
+            <Typography variant="h6">Không có vải gửi may</Typography>
+          </Grid>
+        </Grid>
       </Grid>
-    ));
+    );
+      
   }
   const loading = true;
   return (

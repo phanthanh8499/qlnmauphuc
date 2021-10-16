@@ -14,6 +14,7 @@ import {
   Select,
   TextField,
   Typography,
+  CircularProgress ,
 } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import PhotoCamera from "@mui/icons-material/PhotoCamera";
@@ -286,132 +287,132 @@ export default function UserProfile() {
   }
 
   return (
-    <>
+    <Grid container className={classes.content}>
       {loading ? (
-        <div>loading....</div>
+        <Grid item xs={12} sx={{width: '100%', height: 256, display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
+          <CircularProgress />
+        </Grid>
       ) : (
         <>
-          <Grid container className={classes.content}>
-            <Grid item xs={3} className={classes.avatarItem}>
-              <Badge
-                overlap="circular"
-                anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
-                badgeContent={
-                  <>
-                    <input
-                      accept="image/*"
-                      className={classes.input}
-                      id="icon-button-file"
-                      type="file"
-                      onChange={saveFile}
-                    />
-                    <label htmlFor="icon-button-file">
-                      <CameraAltIcon sx={{ cursor: "pointer" }}></CameraAltIcon>
-                    </label>
-                  </>
-                }
-              >
-                <Avatar
-                  alt="Travis Howard"
-                  src={imgUpload}
-                  className={classes.avatar}
+          <Grid item xs={3} className={classes.avatarItem}>
+            <Badge
+              overlap="circular"
+              anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+              badgeContent={
+                <>
+                  <input
+                    accept="image/*"
+                    className={classes.input}
+                    id="icon-button-file"
+                    type="file"
+                    onChange={saveFile}
+                  />
+                  <label htmlFor="icon-button-file">
+                    <CameraAltIcon sx={{ cursor: "pointer" }}></CameraAltIcon>
+                  </label>
+                </>
+              }
+            >
+              <Avatar
+                alt="Travis Howard"
+                src={imgUpload}
+                className={classes.avatar}
+              />
+            </Badge>
+          </Grid>
+          <Grid item xs={9}>
+            <Grid container spacing={1}>
+              <Grid item xs={6}>
+                <MyTextField
+                  id="lastname"
+                  label="Họ"
+                  placeholder="Nhập họ"
+                  margin="normal"
+                  defaultValue={lastName}
+                  fullWidth
+                  onChange={getParamLastName}
+                  size="small"
+                  InputLabelProps={{
+                    shrink: true,
+                  }}
                 />
-              </Badge>
-            </Grid>
-            <Grid item xs={9}>
-              <Grid container spacing={1}>
-                <Grid item xs={6}>
-                  <MyTextField
-                    id="lastname"
-                    label="Họ"
-                    placeholder="Placeholder"
-                    margin="normal"
-                    defaultValue={lastName}
-                    fullWidth
-                    onChange={getParamLastName}
-                    size="small"
-                    InputLabelProps={{
-                      shrink: true,
-                    }}
-                  />
-                </Grid>
-                <Grid item xs={6}>
-                  <MyTextField
-                    id="firstname"
-                    label="Tên"
-                    placeholder="Placeholder"
-                    margin="normal"
-                    defaultValue={firstName}
-                    fullWidth
-                    onChange={getParamFirstName}
-                    size="small"
-                    InputLabelProps={{
-                      shrink: true,
-                    }}
-                  />
-                </Grid>
-                <Grid item xs={6}>
-                  <MyTextField
-                    id="tel"
-                    label="Số điện thoại"
-                    placeholder="Placeholder"
-                    margin="normal"
-                    defaultValue={tel}
-                    fullWidth
-                    onChange={getParamTel}
-                    size="small"
-                    InputLabelProps={{
-                      shrink: true,
-                    }}
-                  />
-                </Grid>
-                <Grid item xs={6}></Grid>
-                <Grid item xs={12}>
-                  <MyTextField
-                    id="address"
-                    label="Địa chỉ liên lạc"
-                    placeholder="Placeholder"
-                    margin="normal"
-                    defaultValue={address}
-                    fullWidth
-                    onChange={getParamAddress}
-                    size="small"
-                    InputLabelProps={{
-                      shrink: true,
-                    }}
-                  />
-                </Grid>
-                <Grid item xs={12}>
-                  <MyTextField
-                    id="email"
-                    label="Email"
-                    placeholder="Placeholder"
-                    margin="normal"
-                    defaultValue={email}
-                    fullWidth
-                    onChange={getParamEmail}
-                    size="small"
-                    InputLabelProps={{
-                      shrink: true,
-                    }}
-                  />
-                </Grid>
-                {renderAddressForm()}
               </Grid>
-              <Divider sx={{ marginTop: "10px" }} />
-              <Button
-                variant="outlined"
-                color="primary"
-                className={classes.btngroup}
-                onClick={handleSubmit}
-                sx={{ margin: "5px 0px 0px 0px" }}
-              >
-                Lưu thay đổi
-              </Button>
+              <Grid item xs={6}>
+                <MyTextField
+                  id="firstname"
+                  label="Tên"
+                  placeholder="Nhập tên"
+                  margin="normal"
+                  defaultValue={firstName}
+                  fullWidth
+                  onChange={getParamFirstName}
+                  size="small"
+                  InputLabelProps={{
+                    shrink: true,
+                  }}
+                />
+              </Grid>
+              <Grid item xs={6}>
+                <MyTextField
+                  id="tel"
+                  label="Số điện thoại"
+                  placeholder="Nhập số điện thoại"
+                  margin="normal"
+                  defaultValue={tel}
+                  fullWidth
+                  onChange={getParamTel}
+                  size="small"
+                  InputLabelProps={{
+                    shrink: true,
+                  }}
+                />
+              </Grid>
+              <Grid item xs={6}></Grid>
+              <Grid item xs={12}>
+                <MyTextField
+                  id="email"
+                  label="Email"
+                  placeholder="Nhập email"
+                  margin="normal"
+                  defaultValue={email}
+                  fullWidth
+                  onChange={getParamEmail}
+                  size="small"
+                  InputLabelProps={{
+                    shrink: true,
+                  }}
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <MyTextField
+                  id="address"
+                  label="Địa chỉ liên lạc"
+                  placeholder="Nhập đỉa chỉ liên lạc (số nhà/ tên đường)"
+                  margin="normal"
+                  defaultValue={address}
+                  fullWidth
+                  onChange={getParamAddress}
+                  size="small"
+                  InputLabelProps={{
+                    shrink: true,
+                  }}
+                />
+              </Grid>
+              {renderAddressForm()}
             </Grid>
+            <Divider sx={{ marginTop: "10px" }} />
+            <Button
+              variant="outlined"
+              color="primary"
+              className={classes.btngroup}
+              onClick={handleSubmit}
+              sx={{ margin: "5px 0px 0px 0px" }}
+            >
+              Lưu thay đổi
+            </Button>
           </Grid>
         </>
       )}
-    </>
+    </Grid>
   );
 }

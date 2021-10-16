@@ -32,6 +32,7 @@ import TabList from "@mui/lab/TabList";
 import TabPanel from "@mui/lab/TabPanel";
 import {
   MyFormControl,
+  MyTextField,
   Search,
   SearchIconWrapper,
   StyledInputBase,
@@ -714,12 +715,30 @@ export default function Data(props) {
             </Select>
           </MyFormControl>
         </Grid>
-        <Grid item xs={7}></Grid>
         <Grid item xs={1}>
+          {/* <MyTextField
+            id="minQuantity"
+            label="Min"
+            margin="normal"
+            fullWidth
+            // type="number"
+            // onChange={getParamLastName}
+            size="small"
+            InputLabelProps={{
+              shrink: true,
+            }}
+            type="number"
+            sx={{ top: "-5px" }}
+          /> */}
+        </Grid>
+        <Grid item xs={1}></Grid>
+        <Grid item xs={4}></Grid>
+        <Grid item xs={2}>
           <Button
             variant="outlined"
             color="primary"
             onClick={handleClickSearch}
+            sx={{ float: "right", mr: 0.5 }}
           >
             Tìm kiếm
           </Button>

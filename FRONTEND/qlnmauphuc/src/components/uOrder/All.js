@@ -13,6 +13,7 @@ import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import { LOCAL_PATH } from "../../constants/Constants";
 import DeleteForm from "./deleteForm/DeteleForm";
 import DetailForm from "./detailForm/DetailForm";
+import RemoveShoppingCartIcon from "@mui/icons-material/RemoveShoppingCart";
 
 const center = {
   display: "flex",
@@ -133,82 +134,94 @@ export default function All(props) {
   };
 
   const renderData = () => {
-    return (
-      rowsPerPage > 0
-        ? dataRender.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-        : dataRender
-    ).map((value, key) => (
-      <Grid container className={classes.root} key={key}>
-        <Grid item xs={1} sx={center}>
-          <img
-            className={classes.img}
-            src={LOCAL_PATH + value.product_image1.substring(2)}
-            alt={value.product_name}
-          ></img>
-        </Grid>
-        <Grid item xs={9}>
-          <Grid container>
-            <Grid item xs={8} sx={{ padding: "0px 10px" }}>
-              <Typography className={classes.title}>
-                {value.product_name}
-              </Typography>
-              <Typography className={classes.subTitle}>
-                Trạng thái: {value.os_name}
-              </Typography>
-              <Typography className={classes.subTitle}>
-                Loại vải: {value.cloth_name}
-              </Typography>
-              <Typography className={classes.subTitle}>
-                Tổng tiền:{" "}
-                {value.order_total.toLocaleString("it-IT", {
-                  style: "currency",
-                  currency: "VND",
-                })}
-              </Typography>
-            </Grid>
-            <Grid item xs={4}>
-              <Typography className={classes.title}>Ngày đặt may:</Typography>
-              <Typography className={classes.subTitle}>
-                {formatDate(value.order_startdate)}
-              </Typography>
-              <Typography className={classes.title}>
-                Ngày hoàn tất (dự định):
-              </Typography>
-              <Typography className={classes.subTitle}>
-                {formatDate(value.order_enddate)}
-              </Typography>
+    if(dataRender.length >=1){
+      return (
+        rowsPerPage > 0
+          ? dataRender.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+          : dataRender
+      ).map((value, key) => (
+        <Grid container className={classes.root} key={key}>
+          <Grid item xs={1} sx={center}>
+            <img
+              className={classes.img}
+              src={LOCAL_PATH + value.product_image1.substring(2)}
+              alt={value.product_name}
+            ></img>
+          </Grid>
+          <Grid item xs={9}>
+            <Grid container>
+              <Grid item xs={8} sx={{ padding: "0px 10px" }}>
+                <Typography className={classes.title}>
+                  {value.product_name}
+                </Typography>
+                <Typography className={classes.subTitle}>
+                  Trạng thái: {value.os_name}
+                </Typography>
+                <Typography className={classes.subTitle}>
+                  Loại vải: {value.cloth_name}
+                </Typography>
+                <Typography className={classes.subTitle}>
+                  Tổng tiền:{" "}
+                  {value.order_total.toLocaleString("it-IT", {
+                    style: "currency",
+                    currency: "VND",
+                  })}
+                </Typography>
+              </Grid>
+              <Grid item xs={4}>
+                <Typography className={classes.title}>Ngày đặt may:</Typography>
+                <Typography className={classes.subTitle}>
+                  {formatDate(value.order_startdate)}
+                </Typography>
+                <Typography className={classes.title}>
+                  Ngày hoàn tất (dự định):
+                </Typography>
+                <Typography className={classes.subTitle}>
+                  {formatDate(value.order_enddate)}
+                </Typography>
+              </Grid>
             </Grid>
           </Grid>
-        </Grid>
-        {value.order_statusid === 0 ? (
-          <Grid item xs={2} sx={center}>
-            <ButtonGroup>
+          {value.order_statusid === 0 ? (
+            <Grid item xs={2} sx={center}>
+              <ButtonGroup>
+                <IconButton
+                  onClick={() => handleClickDetail(value.od_orderid)}
+                  size="large"
+                >
+                  <VisibilityIcon color="primary" />
+                </IconButton>
+              </ButtonGroup>
+              <IconButton
+                onClick={() => handleClickDelete(value.od_orderid)}
+                size="large"
+              >
+                <DeleteOutlineIcon color="error" />
+              </IconButton>
+            </Grid>
+          ) : (
+            <Grid item xs={2} sx={center}>
               <IconButton
                 onClick={() => handleClickDetail(value.od_orderid)}
                 size="large"
               >
                 <VisibilityIcon color="primary" />
               </IconButton>
-            </ButtonGroup>
-            <IconButton
-              onClick={() => handleClickDelete(value.od_orderid)}
-              size="large"
-            >
-              <DeleteOutlineIcon color="error" />
-            </IconButton>
-          </Grid>
-        ) : (
-          <Grid item xs={2} sx={center}>
-            <IconButton
-              onClick={() => handleClickDetail(value.od_orderid)}
-              size="large"
-            >
-              <VisibilityIcon color="primary" />
-            </IconButton>
-          </Grid>
-        )}
+            </Grid>
+          )}
+        </Grid>
+      ));
+    }
+    else return (
+      <Grid container className={classes.root} sx={{height: 256}}>
+        <Grid item xs={12} sx={center}>
+          <RemoveShoppingCartIcon sx={{fontSize: 200}}/>
+        </Grid>
+        <Grid item xs={12} sx={center}>
+          <Typography variant="h5">Không có đơn hàng</Typography>
+        </Grid>
       </Grid>
-    ));
+    )
   };
   return (
     <>

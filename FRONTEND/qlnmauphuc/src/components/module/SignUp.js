@@ -54,8 +54,14 @@ function SignUp(props) {
   const [password, setPassword] = useState("");
   const [rePassword, setRePassword] = useState("");
   const [email, setEmail] = useState("");
+  const [check1, setCheck1] = useState([]);
+  const [check2, setCheck2] = useState([]);
+ 
   const getUsernameParams = (event) => {
     setUsername(event.target.value);
+    setCheck1(userData.filter(
+      (userData) => userData.user_username === event.target.value
+    ));
   };
   const getPasswordParams = (event) => {
     setPassword(event.target.value);
@@ -65,29 +71,32 @@ function SignUp(props) {
   };
   const getEmailParams = (event) => {
     setEmail(event.target.value);
+    setCheck2(
+      userData.filter((userData) => userData.user_tel === event.target.value.toString())
+    );
   };
   const users = useSelector((state) => state.users);
   const { userData } = users;
   useEffect(() => {
     dispatch(getUserData());
   }, [dispatch]);
-  var check1 = false;
-  var check2 = false;
-  check1 = userData.filter((userData) => userData.user_username === username);
-  check2 = userData.filter((userData) => userData.user_email === email);
+  
+  
+  
+  console.log(check2)
   const handleSubmit = () => {
     if (!username || !password || !rePassword || !email) {
       enqueueSnackbar("Vui lòng nhập đầy đủ thông tin", {
         variant: "warning",
         autoHideDuration: 2000,
       });
-    } else if (check1.length === 1) {
+    } else if (check1.length >= 1) {
       enqueueSnackbar("Tài khoản đã tồn tại", {
         variant: "warning",
         autoHideDuration: 2000,
       });
-    } else if (check2.length === 1) {
-      enqueueSnackbar("Email đã tồn tại", {
+    } else if (check2.length >= 1) {
+      enqueueSnackbar("Số điện thoại đã tồn tại", {
         variant: "warning",
         autoHideDuration: 2000,
       });
@@ -133,9 +142,9 @@ function SignUp(props) {
                 margin="normal"
                 required
                 fullWidth
-                name="email"
-                label="Email"
-                id="email"
+                name="tel"
+                label="Số điện thoại"
+                id="tel"
                 autoComplete="current-password"
                 onChange={getEmailParams}
               />

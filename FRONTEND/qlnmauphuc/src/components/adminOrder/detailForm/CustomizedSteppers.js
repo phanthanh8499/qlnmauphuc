@@ -140,7 +140,19 @@ console.log("data-001", data);
     const today = new Date();
     
     if(data.order_statusid === 2){
-      if (data.product_typeid === "SFF" || data.product_typeid === "SFM"){
+      if(data.cloth_typeid === "VCKH"){
+        setActiveStep((prevActiveStep) => prevActiveStep + 1);
+        dispatch(
+          processingOrder({
+            order_statusid: activeStep + 1,
+            od_orderid: id,
+            date: format(today, "yyyy-MM-dd HH:mm:ss"),
+            cloth_quantity: data.cloth_quantity,
+            cloth_typeid: data.cloth_typeid,
+            od_clothid: data.od_clothid,
+          })
+        );
+      } else if (data.product_typeid === "SFF" || data.product_typeid === "SFM"){
         if (data.cloth_quantity >= 6) {
           dispatch(
             processingOrder({
@@ -148,6 +160,8 @@ console.log("data-001", data);
               od_orderid: id,
               date: format(today, "yyyy-MM-dd HH:mm:ss"),
               cloth_quantity: data.cloth_quantity - 6,
+              cloth_typeid: data.cloth_typeid,
+              od_clothid: data.od_clothid,
             })
           );
           setActiveStep((prevActiveStep) => prevActiveStep + 1);
@@ -166,6 +180,8 @@ console.log("data-001", data);
               od_orderid: id,
               date: format(today, "yyyy-MM-dd HH:mm:ss"),
               cloth_quantity: data.cloth_quantity - 2,
+              cloth_typeid: data.cloth_typeid,
+              od_clothid: data.od_clothid,
             })
           );
           setActiveStep((prevActiveStep) => prevActiveStep + 1);
@@ -176,8 +192,7 @@ console.log("data-001", data);
           });
           return false;
         }
-      }
-        
+      }    
     } else {
       setActiveStep((prevActiveStep) => prevActiveStep + 1);
       dispatch(

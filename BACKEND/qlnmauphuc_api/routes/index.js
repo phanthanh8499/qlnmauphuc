@@ -29,7 +29,7 @@ router.post("/signin", function (req, res, next) {
   const password = req.body.password;
   console.log(username, password);
   pool.query(
-    `SELECT * FROM users WHERE user_username = '${username}' OR user_email = '${username}'`,
+    `SELECT * FROM users WHERE user_username = '${username}' OR user_tel = '${username}'`,
     (error, response) => {
       if (error) {
         console.log(error);
@@ -77,7 +77,7 @@ router.post("/signup", async function (req, res, next) {
     console.log("Thieu thong tin");
   } else {
     pool.query(
-      "INSERT INTO users (user_username, user_password, user_typeid, user_status, user_date, user_avatar, user_email) VALUES ($1, $2, 'KH', 'active', NOW()::TIMESTAMP, './images/avatar/user-image.jpg', $3)",
+      "INSERT INTO users (user_username, user_password, user_typeid, user_status, user_date, user_avatar, user_tel) VALUES ($1, $2, 'KH', 'active', NOW()::TIMESTAMP, './images/avatar/user-image.jpg', $3)",
       [username, newpassword, email],
       (error, response) => {
         if (error) {
@@ -1299,7 +1299,7 @@ router.post("/admin/order/add", function (req, res) {
 router.get("/getDetailOrder.:id", function (req, res) {
   const { id } = req.params;
   pool.query(
-    `SELECT order_details.*, order_customername, order_wardid, CONCAT(order_customeraddress, ', ', ward.ward_prefix, ' ', ward.ward_name, ', ', district.district_prefix, ' ', district.district_name, ', ', province.province_name) AS order_customeraddress, order_customerphone, order_customeremail, order_startdate, order_processingtime1, order_processingtime2, order_processingtime3, order_processingtime4, order_shippingtime, order_enddate, order_subtotal, order_discount, order_total, order_paymentid, opm_name, order_shippingid, order_tailorid, user_firstname as tailor_firstname, user_lastname as tailor_lastname, user_address as tailor_address, user_tel as tailor_tel, osm_name, order_statusid, order_userid, products.product_name, products.product_typeid, products.product_image1, cloth.cloth_name, cloth.cloth_image, cloth.cloth_quantity, cloth.cloth_material, os_name FROM order_details 
+    `SELECT order_details.*, order_customername, order_wardid, CONCAT(order_customeraddress, ', ', ward.ward_prefix, ' ', ward.ward_name, ', ', district.district_prefix, ' ', district.district_name, ', ', province.province_name) AS order_customeraddress, order_customerphone, order_customeremail, order_startdate, order_processingtime1, order_processingtime2, order_processingtime3, order_processingtime4, order_shippingtime, order_enddate, order_subtotal, order_discount, order_total, order_paymentid, opm_name, order_shippingid, order_tailorid, user_firstname as tailor_firstname, user_lastname as tailor_lastname, user_address as tailor_address, user_tel as tailor_tel, osm_name, order_statusid, order_userid, products.product_name, products.product_typeid, products.product_image1, cloth.cloth_name, cloth.cloth_image, cloth.cloth_quantity, cloth.cloth_material, cloth.cloth_typeid, os_name FROM order_details 
               INNER JOIN orders ON orders.id = order_details.od_orderid 
               INNER JOIN products ON products.id = order_details.od_productid
 			  INNER JOIN cloth ON cloth.id = order_details.od_clothid
@@ -1336,7 +1336,15 @@ router.post("/admin/order/edit", function (req, res) {
 });
 
 router.post("/admin/order/processing", function (req, res) {
-  const { order_statusid, order_tailorid, date, od_orderid } = req.body;
+  const {
+    order_statusid,
+    order_tailorid,
+    date,
+    od_orderid,
+    cloth_typeid,
+    cloth_quantity,
+    od_clothid,
+  } = req.body;
   if (order_statusid === 1) {
     console.log("đợi thợ may");
     console.log(order_statusid, order_tailorid, date, od_orderid);
@@ -1373,7 +1381,15 @@ router.post("/admin/order/processing", function (req, res) {
     );
   } else if (order_statusid === 3) {
     console.log("đang may");
-    console.log(order_statusid, order_tailorid, date, od_orderid);
+    console.log(
+      order_statusid,
+      order_tailorid,
+      date,
+      od_orderid,
+      cloth_typeid,
+      cloth_quantity,
+      od_clothid
+    );
     pool.query(
       `UPDATE orders
 	SET order_statusid='${order_statusid}', order_processingtime3='${date}'
@@ -1384,7 +1400,24 @@ router.post("/admin/order/processing", function (req, res) {
           res.send("ERROR");
         } else {
           console.log("OK");
-          res.send("OK");
+          if(cloth_typeid !== "VCKH"){
+            console.log("Khong phai VCKH");
+            pool.query(
+              `UPDATE cloth
+              SET cloth_quantity='${cloth_quantity}'
+              WHERE id='${od_clothid}';`,
+              (error, response) => {
+                if (error) {
+                  console.log(error);
+                  res.send("ERROR2");
+                } else {
+                  res.send("OK");
+                }
+              }
+            );
+          } else { 
+            console.log("VCKH")
+          }
         }
       }
     );

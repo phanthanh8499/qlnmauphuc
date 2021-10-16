@@ -151,14 +151,14 @@ export default function Order(props) {
   const dispatch = useDispatch();
   const { open, onClose } = props;
   const { enqueueSnackbar } = useSnackbar();
-  const [value, setValue] = React.useState("1");
-  const [progress, setProgress] = React.useState(10);
+  const [value, setValue] = useState("1");
+  const [progress, setProgress] = useState(10);
 
   const handleChangeTab = (event, newValue) => {
     setValue(newValue);
   };
 
-  const [expanded, setExpanded] = React.useState("panel1");
+  const [expanded, setExpanded] = useState("panel1");
 
   const handleChange = (panel) => (event, newExpanded) => {
     setExpanded(newExpanded ? panel : false);
@@ -248,9 +248,6 @@ export default function Order(props) {
   const [loading, setLoading] = useState(true);
   const measurements = useSelector((state) => state.measurements);
   const { measurementsData } = measurements;
-
-  // console.log("???", detailData);
-  console.log(measurementsData);
 
   const [loadingMeasurement, setLoadingMeasurement] = useState(false);
   const handleChangeMeasurement = (event, value) => {
@@ -1392,8 +1389,7 @@ export default function Order(props) {
             }
           }
         }
-      }
-        
+      }    
     }
 
     enqueueSnackbar("Đặt may thành công", {
@@ -2310,6 +2306,7 @@ export default function Order(props) {
       );
     }
   };
+
   const [province, setProvince] = useState();
   const [district, setDistrict] = useState();
   const [ward, setWard] = useState();
@@ -2352,27 +2349,12 @@ export default function Order(props) {
     setState();
   }, []);
 
-  const imgUploadRD = (index) => {
-    let temp = "imgUpload" + index;
-    return temp;
-  }
-
-  const [file1, setFile1] = useState();
-  const [fileName1, setFileName1] = useState("");
-  const [imgUpload1, setImgUpload1] = useState(
-    LOCAL_PATH + "./images/upload-icon2.png"
-  );
-
   const [fileList, setFileList] = useState([{value : ""}]);
   const [imageList, setImageList] = useState([
     { value: LOCAL_PATH + "images/upload-icon2.png" },
   ]);
 
-  
-
   const saveFile = (e, index) => {
-    // setFile1(e.target.files[0]);
-    // setFileName1(e.target.files[0].name);
     const list = [...fileList];
     list[index] = e.target.files[0];
     const imgList = [...imageList];
@@ -2381,7 +2363,6 @@ export default function Order(props) {
     var fileInput = e.target.files[0];
     reader.readAsDataURL(fileInput);
     reader.onload = () => {
-      // setImgUpload1(reader.result);
       imgList[index].value = reader.result;
       setImageList(imgList)
     };
@@ -2390,13 +2371,6 @@ export default function Order(props) {
     };
   };
 
-  
-  // const handleChaneInput = (e, index) => {
-  //   const {value} = e.target;
-  //   const list = [...inputList];
-  //   list[index].value = value;
-  //   setInputList(list) 
-  // }
   let currentClothData = {};
   const renderCloth = () => {
     if (owner === "nm") {
@@ -2450,7 +2424,7 @@ export default function Order(props) {
       imageList.push({ value: LOCAL_PATH + "images/upload-icon2.png" });
     }
     
-    owner === "kh" ? setDiscount(temp * 0.3) : setDiscount(0);
+    // owner === "kh" ? setDiscount(temp * 0.3) : setDiscount(0);
   };
 
   const decrement = () => {
@@ -2462,7 +2436,7 @@ export default function Order(props) {
     qty > 1
       ? (temp = price - productData.product_price)
       : (temp = productData.product_price);
-    owner === "kh" ? setDiscount(temp * 0.3) : setDiscount(0);
+    // owner === "kh" ? setDiscount(temp * 0.3) : setDiscount(0);
     
     if(qty > 1){
       if(owner === "nm"){
@@ -2488,7 +2462,7 @@ export default function Order(props) {
     setClothSelected("");
     setImgUpload(LOCAL_PATH + "images/loading.gif");
     setClothQuantity(0);
-    event.target.value === "kh" ? setDiscount(price * 0.3) : setDiscount(0);
+    // event.target.value === "kh" ? setDiscount(price * 0.3) : setDiscount(0);
     for(let i=0; i<qty; i++){
       if (event.target.value === "nm") {
         clothIdList.push({ value: "" });
@@ -3064,11 +3038,12 @@ export default function Order(props) {
                       onChange={(e) => {
                         setQty(parseInt(e.target.value));
                         setPrice(e.target.value * productData.product_price);
-                        owner === "kh"
-                          ? setDiscount(
-                              e.target.value * productData.product_price * 0.3
-                            )
-                          : setDiscount(0);
+                        
+                        // owner === "kh"
+                        //   ? setDiscount(
+                        //       e.target.value * productData.product_price * 0.3
+                        //     )
+                        //   : setDiscount(0);
                 
                         for (let i = 1; i <= e.target.value; i++) {
                           clothIdList.push({ value: "" });
