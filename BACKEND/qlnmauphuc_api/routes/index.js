@@ -33,33 +33,40 @@ router.post("/signin", function (req, res, next) {
     (error, response) => {
       if (error) {
         console.log(error);
+        res.send("ERROR");
       } else {
-        var check = bcrypt.compareSync(
-          password,
-          response.rows[0].user_password
-        );
-        if (!check) {
-          return;
+        console.log(response.rows.length);
+        if (response.rows.length === 0) {
+          res.send("ERROR");
         } else {
-          const token = jwt.sign({ username, password }, "MYSECRET", {
-            expiresIn: "3d",
-          });
-          res.send({
-            id: response.rows[0].id,
-            user_username: response.rows[0].user_username,
-            user_address: response.rows[0].user_address,
-            user_tel: response.rows[0].user_tel,
-            user_firstname: response.rows[0].user_firstname,
-            user_lastname: response.rows[0].user_lastname,
-            user_status: response.rows[0].user_status,
-            user_typeid: response.rows[0].user_typeid,
-            user_date: response.rows[0].user_date,
-            user_avatar: response.rows[0].user_avatar,
-            user_email: response.rows[0].user_email,
-            user_wardid: response.rows[0].user_wardid,
-            // Copy het tat ca cac phan tu trong mang
-            token,
-          });
+          var check = bcrypt.compareSync(
+            password,
+            response.rows[0].user_password
+          );
+          if (!check) {
+            res.send("ERROR");
+            return false;
+          } else {
+            const token = jwt.sign({ username, password }, "MYSECRET", {
+              expiresIn: "3d",
+            });
+            res.send({
+              id: response.rows[0].id,
+              user_username: response.rows[0].user_username,
+              user_address: response.rows[0].user_address,
+              user_tel: response.rows[0].user_tel,
+              user_firstname: response.rows[0].user_firstname,
+              user_lastname: response.rows[0].user_lastname,
+              user_status: response.rows[0].user_status,
+              user_typeid: response.rows[0].user_typeid,
+              user_date: response.rows[0].user_date,
+              user_avatar: response.rows[0].user_avatar,
+              user_email: response.rows[0].user_email,
+              user_wardid: response.rows[0].user_wardid,
+              // Copy het tat ca cac phan tu trong mang
+              token,
+            });
+          }
         }
       }
     }
@@ -88,6 +95,19 @@ router.post("/signup", async function (req, res, next) {
       }
     );
   }
+});
+
+router.get("/getUserData", function (req, res) {
+  pool.query(
+    `SELECT id, user_username, user_tel, user_status FROM users`,
+    (error, response) => {
+      if (error) {
+        console.log(error);
+      } else {
+        res.send(response.rows);
+      }
+    }
+  );
 });
 
 router.get("/admin/users", function (req, res) {
@@ -818,8 +838,8 @@ router.post("/admin/users/edit", function (req, res) {
     const filename = Date.now() + "-" + id + "-" + file.name;
     var newpath = "";
     var image_path = "./images";
-    newpath = FRONTEND_URL + "/images/avatar/User" + id +"/";
-    image_path = image_path + "/avatar/User" + id +"/" + filename;
+    newpath = FRONTEND_URL + "/images/avatar/User" + id + "/";
+    image_path = image_path + "/avatar/User" + id + "/" + filename;
     console.log("co file");
     console.log(newpath, image_path);
     pool.query(
@@ -1400,7 +1420,7 @@ router.post("/admin/order/processing", function (req, res) {
           res.send("ERROR");
         } else {
           console.log("OK");
-          if(cloth_typeid !== "VCKH"){
+          if (cloth_typeid !== "VCKH") {
             console.log("Khong phai VCKH");
             pool.query(
               `UPDATE cloth
@@ -1415,8 +1435,8 @@ router.post("/admin/order/processing", function (req, res) {
                 }
               }
             );
-          } else { 
-            console.log("VCKH")
+          } else {
+            console.log("VCKH");
           }
         }
       }
@@ -1505,31 +1525,32 @@ router.get("/admin/order/delete.:id", function (req, res) {
 });
 
 router.get(`/getProvince`, function (req, res) {
-  pool.query(`SELECT * FROM province`,
-  (error, response) => {
-    if(error){
-      console.log(error);
-    } else {
-      res.send(response.rows)
-    }
-  })
-})
-
-router.get(`/getDistrict.:id`, function (req, res) {
-  const {id} = req.params;
-  console.log(id)
-  pool.query(`SELECT * FROM district WHERE district_provinceid = '${id}'`,
-  (error, response) => {
-    if(error){
+  pool.query(`SELECT * FROM province`, (error, response) => {
+    if (error) {
       console.log(error);
     } else {
       res.send(response.rows);
     }
   });
-})
+});
+
+router.get(`/getDistrict.:id`, function (req, res) {
+  const { id } = req.params;
+  console.log(id);
+  pool.query(
+    `SELECT * FROM district WHERE district_provinceid = '${id}'`,
+    (error, response) => {
+      if (error) {
+        console.log(error);
+      } else {
+        res.send(response.rows);
+      }
+    }
+  );
+});
 
 router.get(`/getWard.:provinceid&:districtid`, function (req, res) {
-  const {provinceid, districtid} = req.params;
+  const { provinceid, districtid } = req.params;
   pool.query(
     `SELECT * FROM ward WHERE ward_provinceid = '${provinceid}' AND ward_districtid = '${districtid}'`,
     (error, response) => {
@@ -1540,10 +1561,10 @@ router.get(`/getWard.:provinceid&:districtid`, function (req, res) {
       }
     }
   );
-})
+});
 
 router.get(`/getAddress.:id`, function (req, res) {
-  const {id} = req.params;
+  const { id } = req.params;
   pool.query(
     `SELECT ward.*, district.district_prefix, district.district_name, province.province_name FROM ward
 INNER JOIN district ON district.id = ward.ward_districtid
@@ -1557,7 +1578,6 @@ WHERE ward.id = '${id}'`,
       }
     }
   );
-})
-
+});
 
 module.exports = router;

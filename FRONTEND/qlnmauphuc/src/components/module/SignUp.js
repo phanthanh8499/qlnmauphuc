@@ -10,6 +10,7 @@ import {
   TextField,
   Typography,
   Link,
+  CircularProgress,
 } from "@mui/material";
 import { useSnackbar } from "notistack";
 import { useDispatch, useSelector } from "react-redux";
@@ -45,15 +46,15 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
+
 function SignUp(props) {
   const classes = useStyles();
   const { open, onClose } = props;
   const { enqueueSnackbar } = useSnackbar();
-  const dispatch = useDispatch();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [rePassword, setRePassword] = useState("");
-  const [email, setEmail] = useState("");
+  const [tel, setTel] = useState("");
   const [check1, setCheck1] = useState([]);
   const [check2, setCheck2] = useState([]);
  
@@ -69,23 +70,28 @@ function SignUp(props) {
   const getRePasswordParams = (event) => {
     setRePassword(event.target.value);
   };
-  const getEmailParams = (event) => {
-    setEmail(event.target.value);
+  const getTelParams = (event) => {
+    setTel(event.target.value);
     setCheck2(
-      userData.filter((userData) => userData.user_tel === event.target.value.toString())
+      userData.filter(
+        (userData) => userData.user_tel === event.target.value
+      )
     );
   };
-  const users = useSelector((state) => state.users);
-  const { userData } = users;
+  const [userData, setUserData] = useState([]);
+  const [loading, setLoading] = useState(true);
   useEffect(() => {
-    dispatch(getUserData());
-  }, [dispatch]);
+    async function getUserData () {
+      const { data } = await axios.get(`/getUserData`);
+      setUserData(data);
+      setLoading(false);
+    }
+    getUserData()
+  }, []);
   
-  
-  
-  console.log(check2)
+
   const handleSubmit = () => {
-    if (!username || !password || !rePassword || !email) {
+    if (!username || !password || !rePassword || !tel) {
       enqueueSnackbar("Vui lòng nhập đầy đủ thông tin", {
         variant: "warning",
         autoHideDuration: 2000,
@@ -110,8 +116,7 @@ function SignUp(props) {
         variant: "success",
         autoHideDuration: 2000,
       });
-      axios.post(`/signup`, { username, password, email });
-      console.log(username, password, email);
+      axios.post(`/signup`, { username, password, tel });
       onClose();
     }
   };
@@ -120,6 +125,12 @@ function SignUp(props) {
       <Dialog open={open} onClose={onClose} aria-labelledby="form-dialog-title">
         <Container component="main" maxWidth="xs" className={classes.mainform}>
           <CssBaseline />
+          {loading ? (
+            <Box sx={{height: '500px', display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
+              <CircularProgress/>
+            </Box>
+          ):(
+          <>
           <div className={classes.paper}>
             <Typography component="h1" variant="h5" className={classes.title}>
               Đăng ký
@@ -146,7 +157,7 @@ function SignUp(props) {
                 label="Số điện thoại"
                 id="tel"
                 autoComplete="current-password"
-                onChange={getEmailParams}
+                onChange={getTelParams}
               />
               <TextField
                 variant="outlined"
@@ -193,6 +204,8 @@ function SignUp(props) {
             </form>
           </div>
           <Box mt={8}></Box>
+          </>
+          )}
         </Container>
       </Dialog>
   );

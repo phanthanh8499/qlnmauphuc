@@ -18,7 +18,10 @@ import ExitToAppIcon from "@mui/icons-material/ExitToApp";
 import {
   Avatar,
   Badge,
+  Button,
   IconButton,
+  Menu,
+  MenuItem,
   Toolbar,
   Typography,
 } from "@mui/material";
@@ -29,20 +32,8 @@ import MuiDrawer from "@mui/material/Drawer";
 import { useSelector } from "react-redux";
 import { useLocation } from "react-router";
 import AppsIcon from "@mui/icons-material/Apps";
+import { Box } from "@mui/system";
 
-const MyListItem = styled(ListItem)(({ theme }) => ({
-  color: "#000000",
-  "&.Mui-selected": {
-    color: "#ffffff !important",
-    backgroundColor: "#000000",
-    "& .MuiListItemIcon-root": {
-      color: "#ffffff",
-    },
-    ":hover": {
-      backgroundColor: "#000000",
-    },
-  },
-}));
 
 function Copyright(props) {
   return (
@@ -68,7 +59,8 @@ const AppBar = styled(MuiAppBar, {
   shouldForwardProp: (prop) => prop !== "open",
 })(({ theme, open }) => ({
   zIndex: theme.zIndex.drawer + 1,
-  backgroundColor: '#000000 !important',
+  color: "#000000",
+  backgroundColor: '#ffffff !important',
   transition: theme.transitions.create(["width", "margin"], {
     easing: theme.transitions.easing.sharp,
     duration: theme.transitions.duration.leavingScreen,
@@ -108,6 +100,21 @@ const Drawer = styled(MuiDrawer, {
     }),
   },
 }));
+
+const MyListItem = styled(ListItem)(({ theme }) => ({
+  color: "#000000",
+  "&.Mui-selected": {
+    color: "#ffffff !important",
+    backgroundColor: "#000000",
+    "& .MuiListItemIcon-root": {
+      color: "#ffffff",
+    },
+    ":hover": {
+      backgroundColor: "#000000",
+    },
+  },
+}));
+
 
 const useStyles = makeStyles((theme) => ({
   content: {
@@ -240,6 +247,17 @@ export default function AAppBar(props) {
     );
   };
 
+  
+  const [anchorEl, setAnchorEl] = useState(null);
+  const openMenu = Boolean(anchorEl);
+  
+  const handleClickMenu = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+  const handleCloseMenu = () => {
+    setAnchorEl(false);
+  };
+
   return (
     <>
       <AppBar position="absolute" open={open}>
@@ -265,19 +283,45 @@ export default function AAppBar(props) {
             variant="h6"
             color="inherit"
             noWrap
-            sx={{ flexGrow: 1 }}
+            sx={{ flexGrow: 1, color: "#000000" }}
           >
             {abc}
           </Typography>
-       
-          <IconButton color="inherit" size="large">
-            <Badge badgeContent={4} color="secondary">
-              <NotificationsIcon />
-            </Badge>
-          </IconButton>
-          <IconButton color="inherit" size="large">
-            <ExitToAppIcon></ExitToAppIcon>
-          </IconButton>
+
+          <Box
+            sx={{
+              display: "flex",
+              border: "1px solid #f1f3fa",
+              padding: "9px",
+              backgroundColor: "#fafbfd",
+              cursor: 'pointer'
+            }}
+            onClick={handleClickMenu}
+          >
+            <Avatar
+              alt="Remy Sharp"
+              src="./images/avatar/user-image.jpg"
+              className={classes.lagre}
+              sx={{mr: 0.5}}
+            />
+            <Box sx={{ color: "#98a6ad" }}>
+              <Typography>Nguyễn Văn A</Typography>
+              <Typography sx={{ fontSize: 14 }}>Administrator</Typography>
+            </Box>
+          </Box>
+            <Menu
+              id="basic-menu"
+              anchorEl={anchorEl}
+              open={openMenu}
+              onClose={handleCloseMenu}
+              MenuListProps={{
+                "aria-labelledby": "basic-button",
+              }}
+            >
+              <MenuItem onClick={handleCloseMenu}>Profile</MenuItem>
+              <MenuItem onClick={handleCloseMenu}>My account</MenuItem>
+              <MenuItem onClick={handleCloseMenu}>Logout</MenuItem>
+            </Menu>
         </Toolbar>
       </AppBar>
       <Drawer variant="permanent" open={open}>
@@ -293,27 +337,8 @@ export default function AAppBar(props) {
             <ChevronLeftIcon />
           </IconButton>
         </Toolbar>
-        <Divider />
-        <div className={classes.center}>
-          <Avatar
-            alt="Remy Sharp"
-            src="./images/avatar/user-image.jpg"
-            className={classes.lagre}
-          />
-          <Typography
-            className={clsx(classes.avatarTitle, !open && classes.avatarClose)}
-          >
-            Nguyễn Văn A
-          </Typography>
-          <Typography
-            className={clsx(
-              classes.avatarSubTitle,
-              !open && classes.avatarClose
-            )}
-          >
-            Administrator
-          </Typography>
-        </div>
+      
+        
         <Divider />
         {renderListModule()}
         <Divider />
