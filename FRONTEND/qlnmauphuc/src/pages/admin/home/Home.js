@@ -29,6 +29,10 @@ export default function Home () {
             path="/admin/dashboard"
             component={lazy(() => import("../../../components/adminDashboard"))}
           ></Route>
+          <Route
+            path="/admin/statistic"
+            component={lazy(() => import("../../../components/adminProject"))}
+          ></Route>
         </Switch>
       </AdminLayout>
     );
