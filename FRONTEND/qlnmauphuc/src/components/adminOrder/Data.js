@@ -667,7 +667,7 @@ export default function Data(props) {
   };
 
   const [endDate, setEndDate] = useState(
-    new Date(new Date().setHours(0, 0, 0, 0))
+    new Date(new Date().setHours(23, 59, 59, 0))
   );
 
   const handleChangeEndDate = (newValue) => {
@@ -686,7 +686,7 @@ export default function Data(props) {
     if (ward !== 0) {
       temp = temp.filter((data) => data.order_wardid === ward);
     }
-    if (Date.parse(endDate) > Date.parse(new Date(new Date().setHours(0, 0, 0, 0)))) {
+    if (Date.parse(endDate) > Date.parse(new Date(new Date().setHours(23, 59, 59, 0)))) {
       enqueueSnackbar("Không được chọn ngày lớn hơn ngày hiện tại", {
         variant: "error",
         autoHideDuration: 2000,

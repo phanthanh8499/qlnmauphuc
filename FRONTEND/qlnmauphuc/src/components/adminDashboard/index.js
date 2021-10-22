@@ -1,14 +1,23 @@
-import { Button, Divider, Grid, Paper, Typography } from '@mui/material'
-import React from 'react'
+import {
+  Button,
+  CircularProgress,
+  Divider,
+  Grid,
+  Paper,
+  Typography,
+} from "@mui/material";
+import React, { useEffect, useState } from "react";
 import { styled } from "@mui/material/styles";
 import LocalMallIcon from "@mui/icons-material/LocalMall";
 import NavigateNextIcon from "@mui/icons-material/NavigateNext";
 import PersonAddIcon from "@mui/icons-material/PersonAdd";
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 import MonetizationOnIcon from "@mui/icons-material/MonetizationOn";
-import DataCount from './DataCount';
-import OrderChart from './OrderChart';
-import PPieChart from './PPieChart';
+import DataCount from "./DataCount";
+import OrderChart from "./OrderChart";
+import PPieChart from "./PPieChart";
+import { format } from "date-fns";
+import axios from "axios";
 
 const Item = styled(Paper)(({ theme }) => ({
   ...theme.typography.body2,
@@ -19,29 +28,34 @@ const Item = styled(Paper)(({ theme }) => ({
 export default function AdminDashboard() {
   return (
     <Grid container>
-      <Grid item xs={12}>
-        <DataCount />
-      </Grid>
-      <Grid item xs={12} sx={{ mt: 1 }}>
-        <Grid container spacing={1}>
-          <Grid item xs={8}>
-            <Item sx={{ height: 420 }}>
-              <Typography sx={{ fontWeight: 600 }}>
-                Doanh thu trong tuần
-              </Typography>
-              <Divider />
-              <OrderChart />
-            </Item>
+  
+      
+          <Grid item xs={12}>
+            <DataCount />
           </Grid>
-          <Grid item xs={4}>
-            <Item sx={{ height: 420 }}>
-              <Typography sx={{ fontWeight: 600 }}>Hoá đơn hoàn thành</Typography>
-              <Divider />
-              <PPieChart />
-            </Item>
+          <Grid item xs={12} sx={{ mt: 1 }}>
+            <Grid container spacing={1}>
+              <Grid item xs={8}>
+                <Item sx={{ height: 420 }}>
+                  <Typography sx={{ fontWeight: 600 }}>
+                    Doanh thu trong tuần
+                  </Typography>
+                  <Divider />
+                  <OrderChart />
+                </Item>
+              </Grid>
+              <Grid item xs={4}>
+                <Item sx={{ height: 420 }}>
+                  <Typography sx={{ fontWeight: 600 }}>
+                    Hoá đơn hoàn thành
+                  </Typography>
+                  <Divider />
+                  <PPieChart />
+                </Item>
+              </Grid>
+            </Grid>
           </Grid>
-        </Grid>
-      </Grid>
+     
     </Grid>
   );
 }

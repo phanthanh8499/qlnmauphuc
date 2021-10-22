@@ -10,6 +10,7 @@ import QueryStatsOutlinedIcon from "@mui/icons-material/QueryStatsOutlined";
 import DataCount from "./DataCount";
 import PStackChart from "./PStackChart";
 import PPipeChart from "./PPipeChart";
+import { format } from "date-fns";
 
 const Item = styled(Paper)(({ theme }) => ({
   ...theme.typography.body2,
@@ -33,6 +34,27 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
+function startAndEndOfWeek(date) {
+  // If no date object supplied, use current date
+  // Copy date so don't modify supplied date
+  var now = new Date()
+
+  // set time to some convenient value
+  now.setHours(0, 0, 0, 0);
+
+  // Get the previous Monday
+  var monday = new Date(now);
+  monday.setDate(monday.getDate() - monday.getDay() + 1);
+
+  // Get next Sunday
+  var sunday = new Date(now);
+  sunday.setDate(sunday.getDate() - sunday.getDay() + 7);
+  sunday.setHours(23,59,59,0)
+  console.log(format(monday, "yyyy-MM-dd"), format(sunday, "yyyy-MM-dd"));
+  // Return array of date objects
+  return [monday, sunday];
+}
+
 export default function AdminProject() {
   const classes = useStyles();
   return (
@@ -45,6 +67,7 @@ export default function AdminProject() {
           <Grid item xs={5}>
             <Item sx={{ height: 400 }}>
               <Typography>abc</Typography>
+              <Button onClick={startAndEndOfWeek}>abc</Button>
               <Divider sx={{ mt: 0.5, mb: 0.5 }} />
               <PPipeChart />
             </Item>

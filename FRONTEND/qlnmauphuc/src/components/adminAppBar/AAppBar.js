@@ -174,6 +174,7 @@ export default function AAppBar(props) {
     setSelected(index);
   };
   useEffect(() => {
+    console.log("nhan dc", abc);
     abc === "DASHBOARD"
       ? setSelected(0)
       : abc === "USERS"
@@ -187,7 +188,8 @@ export default function AAppBar(props) {
       : abc === ""
       ? setSelected(0)
       : setSelected(5);
-  }, [])
+  }, [abc]);
+
   const renderListModule = () => {
     return (
       <List>

@@ -1580,4 +1580,114 @@ WHERE ward.id = '${id}'`,
   );
 });
 
+router.post(`/admin/getDataCount`, function (req, res) {
+  const {
+    startDate, 
+    endDate,
+  } = req.body;
+  console.log(startDate, endDate);
+  pool.query(
+    `SELECT  (
+        SELECT COUNT(*)
+        FROM   users WHERE user_typeid = 'KH'
+        ) AS count_user,
+        (
+        SELECT COUNT(*)
+        FROM   orders WHERE order_statusid = '0' AND order_startdate BETWEEN '${startDate}' AND '${endDate}'
+        ) AS count_order,
+		(
+		SELECT COUNT(*)
+		FROM products 
+		) AS count_product,
+		(
+		SELECT CAST(SUM(order_total) AS FLOAT)/1000000 
+		FROM orders WHERE order_statusid = '6' AND order_enddate BETWEEN '${startDate}' AND '${endDate}'
+		) AS order_total`,
+    (error, response) => {
+      if (error) {
+        console.log(error);
+      } else {
+        res.send(response.rows);
+      }
+    }
+  );
+})
+
+router.post(`/admin/getRevenue`, function (req, res) {
+  const { startDate, endDate } = req.body;
+  pool.query(
+    `SELECT to_char(order_enddate, 'MM/dd/yyyy') as revenue_date, CAST(SUM(order_total) AS FLOAT)/1000000 AS revenue 
+  FROM orders WHERE order_statusid='6' AND order_enddate BETWEEN '${startDate}' AND '${endDate}'
+  GROUP BY revenue_date ORDER BY revenue_date ASC`,
+    (error, response) => {
+      if (error) {
+        console.log(error);
+      } else {
+        res.send(response.rows);
+        console.log(response.rows);
+      }
+    }
+  );
+})
+
+router.post(`/admin/getCountOrder`, function (req, res) {
+  const { startDate, endDate } = req.body;
+  pool.query(
+    `SELECT 
+(
+	SELECT COUNT(*)
+	FROM orders WHERE order_statusid = '0' AND order_startdate BETWEEN '${startDate}' AND '${endDate}'
+) AS processing_count,
+(
+	SELECT COUNT(*)
+	FROM orders 
+	WHERE order_statusid = '1' 
+	OR order_statusid = '2'
+	OR order_statusid = '3'
+	OR order_statusid = '4'
+	OR order_statusid = '5'
+	AND order_startdate BETWEEN '${startDate}' AND '${endDate}'
+) AS sewing_count,
+(
+	SELECT COUNT(*)
+	FROM orders WHERE order_statusid = '5' AND order_startdate BETWEEN '${startDate}' AND '${endDate}'
+) AS shipping_count,
+(
+	SELECT COUNT(*)
+	FROM orders WHERE order_statusid = '6' AND order_enddate BETWEEN '${startDate}' AND '${endDate}'
+) AS complete_count,
+(
+	SELECT COUNT(*)
+	FROM orders WHERE order_statusid = '10' AND order_startdate BETWEEN '${startDate}' AND '${endDate}'
+) AS cancel_count`,
+    (error, response) => {
+      if (error) {
+        console.log(error);
+      } else {
+        res.send(response.rows);
+      }
+    }
+  );
+})
+
+router.post(`/admin/getTailorOrder`, function (req, res) {
+  const { startDate, endDate } = req.body;
+  pool.query(
+    `SELECT CONCAT(users.user_lastname, ' ', users.user_firstname) AS name, COUNT(orders.id) AS value 
+FROM orders 
+INNER JOIN users ON users.id = orders.order_tailorid
+WHERE orders.order_tailorid > 1
+AND orders.order_statusid = '6' 
+AND order_enddate BETWEEN '${startDate}' AND '${endDate}'
+GROUP BY name ORDER BY name ASC`,
+    (error, response) => {
+      if (error) {
+        console.log(error);
+      } else {
+        res.send(response.rows);
+      }
+    }
+  );
+})
+
 module.exports = router;

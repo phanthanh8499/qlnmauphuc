@@ -1,4 +1,8 @@
-import React, { PureComponent } from "react";
+import { CircularProgress } from "@mui/material";
+import { Box } from "@mui/system";
+import axios from "axios";
+import { format } from "date-fns";
+import React, { PureComponent, useEffect, useState } from "react";
 import {
   ComposedChart,
   Line,
@@ -17,7 +21,6 @@ const data = [
     name: "Page A",
     uv: 590,
     pv: 800,
-    amt: 1400,
   },
   {
     name: "Page B",
@@ -51,30 +54,66 @@ const data = [
   },
 ];
 
-export default function OrderChart () {
+export default function OrderChart() {
+  const [dataRender, setDataRender] = useState([]);
+  const [loading, setLoading] = useState(true);
+  useEffect(() => {
+    var now = new Date();
+    now.setHours(0, 0, 0, 0);
+    var startDate = new Date(now);
+    startDate.setDate(startDate.getDate() - startDate.getDay() + 1);
+    var endDate = new Date(now);
+    endDate.setDate(endDate.getDate() - endDate.getDay() + 7);
+    endDate.setHours(23, 59, 59, 0);
+    const dataSend = {
+      startDate: format(startDate, "yyyy-MM-dd"),
+      endDate: format(endDate, "yyyy-MM-dd HH:mm:ss"),
+    };
+    function getDayName(dateStr) {
+      let date = new Date(dateStr)
+      return date.toLocaleDateString("en-us", { weekday: "long" });
+    }
+    async function getRevenueData() {
+      const { data } = await axios.post(`/admin/getRevenue`, dataSend);
+      for (let i=0; i<data.length; i++){
+        data[i].revenue_date = getDayName(data[i].revenue_date);
+      }
+      setDataRender(data);
+      setLoading(false);
+    }
+    getRevenueData();
+    setLoading(false);
+  }, []);
   
-    return (
-      <ResponsiveContainer width="100%" height="100%">
-        <ComposedChart
-          width={500}
-          height={400}
-          data={data}
-          margin={{
-            top: 20,
-            right: 20,
-            bottom: 25,
-            left: 20,
-          }}
-        >
-          <CartesianGrid stroke="#f5f5f5" />
-          <XAxis dataKey="name" scale="band" />
-          <YAxis />
-          <Tooltip />
-          <Legend />
-          <Bar dataKey="uv" barSize={20} fill="#3688fc" />
-          <Line type="monotone" dataKey="uv" stroke="#ff7300" />
-        </ComposedChart>
-      </ResponsiveContainer>
-    );
-
+  return (
+    <>
+      {loading ? (
+        <Box sx={{ width: "100%", height: "100%" }}>
+          <CircularProgress />
+        </Box>
+      ) : (
+        <ResponsiveContainer width="100%" height="100%">
+          <ComposedChart
+            width={500}
+            height={400}
+            data={dataRender}
+            margin={{
+              top: 20,
+              right: 20,
+              bottom: 25,
+              left: 20,
+            }}
+          >
+            <CartesianGrid stroke="#f5f5f5" />
+            <XAxis dataKey="revenue_date" scale="band" />
+            <YAxis />
+            <Tooltip />
+            <Legend />
+            <Bar dataKey="revenue" barSize={20} fill="#3688fc" />
+            <Line type="monotone" dataKey="revenue" stroke="#ff7300" />
+          </ComposedChart>
+        </ResponsiveContainer>
+      )}
+    </>
+  );
 }
