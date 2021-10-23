@@ -1601,7 +1601,7 @@ router.post(`/admin/getDataCount`, function (req, res) {
 		) AS count_product,
 		(
 		SELECT CAST(SUM(order_total) AS FLOAT)/1000000 
-		FROM orders WHERE order_statusid = '6' AND order_enddate BETWEEN '${startDate}' AND '${endDate}'
+		FROM orders WHERE order_statusid = '6' AND order_startdate BETWEEN '${startDate}' AND '${endDate}'
 		) AS order_total`,
     (error, response) => {
       if (error) {
@@ -1616,8 +1616,8 @@ router.post(`/admin/getDataCount`, function (req, res) {
 router.post(`/admin/getRevenue`, function (req, res) {
   const { startDate, endDate } = req.body;
   pool.query(
-    `SELECT to_char(order_enddate, 'MM/dd/yyyy') as revenue_date, CAST(SUM(order_total) AS FLOAT)/1000000 AS revenue 
-  FROM orders WHERE order_statusid='6' AND order_enddate BETWEEN '${startDate}' AND '${endDate}'
+    `SELECT to_char(order_startdate, 'MM/dd/yyyy') as revenue_date, CAST(SUM(order_total) AS FLOAT)/1000000 AS revenue 
+  FROM orders WHERE order_statusid='6' AND order_startdate BETWEEN '${startDate}' AND '${endDate}'
   GROUP BY revenue_date ORDER BY revenue_date ASC`,
     (error, response) => {
       if (error) {
@@ -1641,12 +1641,9 @@ router.post(`/admin/getCountOrder`, function (req, res) {
 (
 	SELECT COUNT(*)
 	FROM orders 
-	WHERE order_statusid = '1' 
-	OR order_statusid = '2'
-	OR order_statusid = '3'
-	OR order_statusid = '4'
-	OR order_statusid = '5'
-	AND order_startdate BETWEEN '${startDate}' AND '${endDate}'
+ WHERE 
+order_statusid >= 1 AND order_statusid <5
+AND order_startdate BETWEEN '${startDate}' AND '${endDate}'
 ) AS sewing_count,
 (
 	SELECT COUNT(*)
@@ -1654,7 +1651,7 @@ router.post(`/admin/getCountOrder`, function (req, res) {
 ) AS shipping_count,
 (
 	SELECT COUNT(*)
-	FROM orders WHERE order_statusid = '6' AND order_enddate BETWEEN '${startDate}' AND '${endDate}'
+	FROM orders WHERE order_statusid = '6' AND order_startdate BETWEEN '${startDate}' AND '${endDate}'
 ) AS complete_count,
 (
 	SELECT COUNT(*)
@@ -1678,8 +1675,42 @@ FROM orders
 INNER JOIN users ON users.id = orders.order_tailorid
 WHERE orders.order_tailorid > 1
 AND orders.order_statusid = '6' 
-AND order_enddate BETWEEN '${startDate}' AND '${endDate}'
+AND order_startdate BETWEEN '${startDate}' AND '${endDate}'
 GROUP BY name ORDER BY name ASC`,
+    (error, response) => {
+      if (error) {
+        console.log(error);
+      } else {
+        res.send(response.rows);
+      }
+    }
+  );
+})
+
+router.post(`/admin/getOrderCount`, function (req, res) {
+  const { startDate, endDate, startDateLW, endDateLW } = req.body;
+  console.log(startDate, endDate, startDateLW, endDateLW);
+  pool.query(
+    `SELECT  (
+        SELECT COUNT(*)
+        FROM   users WHERE user_typeid = 'NV'
+        ) AS count_tailor,
+        (
+        SELECT COUNT(*)
+        FROM orders WHERE order_startdate BETWEEN '${startDate}' AND '${endDate}'
+        ) AS count_order,
+		(
+        SELECT COUNT(*)
+        FROM orders WHERE order_statusid = '6' AND order_startdate BETWEEN '${startDate}' AND '${endDate}'
+        ) AS count_completeorder,
+		(
+		SELECT CAST(SUM(order_total) AS FLOAT)/1000000 
+		FROM orders WHERE order_statusid = '6' AND order_startdate BETWEEN '${startDate}' AND '${endDate}'
+		) AS order_total,
+		(
+		SELECT CAST(SUM(order_total) AS FLOAT)/1000000 
+		FROM orders WHERE order_statusid = '6' AND order_startdate BETWEEN '${startDateLW}' AND '${endDateLW}'
+		) AS order_pretotal`,
     (error, response) => {
       if (error) {
         console.log(error);

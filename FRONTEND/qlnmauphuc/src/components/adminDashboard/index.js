@@ -28,34 +28,31 @@ const Item = styled(Paper)(({ theme }) => ({
 export default function AdminDashboard() {
   return (
     <Grid container>
-  
-      
-          <Grid item xs={12}>
-            <DataCount />
+      <Grid item xs={12}>
+        <DataCount />
+      </Grid>
+      <Grid item xs={12} sx={{ mt: 1 }}>
+        <Grid container spacing={1}>
+          <Grid item xs={8}>
+            <Item sx={{ height: 420 }}>
+              <Typography sx={{ fontWeight: 600 }}>
+                Doanh thu trong tuần
+              </Typography>
+              <Divider />
+              <OrderChart />
+            </Item>
           </Grid>
-          <Grid item xs={12} sx={{ mt: 1 }}>
-            <Grid container spacing={1}>
-              <Grid item xs={8}>
-                <Item sx={{ height: 420 }}>
-                  <Typography sx={{ fontWeight: 600 }}>
-                    Doanh thu trong tuần
-                  </Typography>
-                  <Divider />
-                  <OrderChart />
-                </Item>
-              </Grid>
-              <Grid item xs={4}>
-                <Item sx={{ height: 420 }}>
-                  <Typography sx={{ fontWeight: 600 }}>
-                    Hoá đơn hoàn thành
-                  </Typography>
-                  <Divider />
-                  <PPieChart />
-                </Item>
-              </Grid>
-            </Grid>
+          <Grid item xs={4}>
+            <Item sx={{ height: 420 }}>
+              <Typography sx={{ fontWeight: 600 }}>
+                Trạng thái hoá đơn
+              </Typography>
+              <Divider />
+              <PPieChart />
+            </Item>
           </Grid>
-     
+        </Grid>
+      </Grid>
     </Grid>
   );
 }

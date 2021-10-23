@@ -1,9 +1,10 @@
-import { CircularProgress } from "@mui/material";
+import { CircularProgress, Grid, Typography, Divider } from "@mui/material";
 import { Box } from "@mui/system";
 import axios from "axios";
 import { format } from "date-fns";
 import React, { PureComponent, useEffect, useState } from "react";
 import { PieChart, Pie, Sector, Cell, ResponsiveContainer } from "recharts";
+import { makeStyles } from "@mui/styles";
 
 const COLORS = ["#FFBB28", "#00C49F", "#FF8042", "#0088FE", "#f00"];
 
@@ -80,14 +81,33 @@ const renderActiveShape = (props) => {
   );
 };
 
+const useStyles = makeStyles((theme) => ({
+  square: {
+    height: 10,
+    width: 10,
+    backgroundColor: "#fff000",
+    display: "inline-block",
+    marginRight: 5,
+  },
+  percent: {
+    float: "right",
+  },
+}));
+
+const center = {
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "center",
+};
+
 export default function PPieChart() {
+  const classes = useStyles();
   const [activeIndex, setActiveIndex] = useState(0);
-  
-  const [data, setData] = useState([])
+
+  const [data, setData] = useState([]);
   const onPieEnter = (_, index) => {
     setActiveIndex(index);
   };
-  const [dataRender, setDataRender] = useState([]);
   const [loading, setLoading] = useState(true);
   useEffect(() => {
     var now = new Date();
@@ -110,7 +130,6 @@ export default function PPieChart() {
         { name: "Hoàn tất", value: parseInt(data[0].complete_count) },
         { name: "Huỷ bỏ", value: parseInt(data[0].cancel_count) },
       ]);
-      setDataRender(data);
       setLoading(false);
     }
     getRevenueData();
@@ -123,30 +142,60 @@ export default function PPieChart() {
           <CircularProgress />
         </Box>
       ) : (
-        <PieChart width={357} height={400}>
-          <Pie
-            data={data}
-            // cx={120}
-            // cy={200}
-            cx="50%"
-            cy="50%"
-            innerRadius={60}
-            outerRadius={80}
-            fill="#8884d8"
-            paddingAngle={5}
-            dataKey="value"
-            activeIndex={activeIndex}
-            activeShape={renderActiveShape}
-            onMouseEnter={onPieEnter}
-          >
-            {data.map((entry, index) => (
-              <Cell
-                key={`cell-${index}`}
-                fill={COLORS[index % COLORS.length]}
-              />
+        <>
+          <PieChart width={357} height={250}>
+            <Pie
+              data={data}
+              // cx={120}
+              // cy={200}
+              cx="50%"
+              cy="50%"
+              innerRadius={60}
+              outerRadius={80}
+              fill="#8884d8"
+              paddingAngle={5}
+              dataKey="value"
+              activeIndex={activeIndex}
+              activeShape={renderActiveShape}
+              onMouseEnter={onPieEnter}
+            >
+              {data.map((entry, index) => (
+                <Cell
+                  key={`cell-${index}`}
+                  fill={COLORS[index % COLORS.length]}
+                />
+              ))}
+            </Pie>
+          </PieChart>
+          <Grid container>
+            {data.map((value, key) => (
+              <Grid item xs={12} sx={{ pr: 8, pl: 8 }}>
+                <Typography>
+                  <Box
+                    className={classes.square}
+                    sx={{
+                      backgroundColor: COLORS[key],
+                    }}
+                  ></Box>
+                  {value.name}
+                  <span className={classes.percent}>
+                    {(
+                      (data[key].value /
+                        (data[0].value +
+                          data[1].value +
+                          data[2].value +
+                          data[3].value +
+                          data[4].value)) *
+                      100
+                    ).toFixed(2)}
+                    %
+                  </span>
+                </Typography>
+                <Divider />
+              </Grid>
             ))}
-          </Pie>
-        </PieChart>
+          </Grid>
+        </>
       )}
     </>
   );

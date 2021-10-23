@@ -50,34 +50,42 @@ export default function PStackChart () {
  }, []);
     return (
       <>
-        {loading ? (
-          <Box sx={{width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
+        <Box
+          sx={{
+            width: "100%",
+            height: "100%",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
+          {loading ? (
             <CircularProgress />
-          </Box>
-        ) : (
-          <ResponsiveContainer width="100%" height="100%">
-            <BarChart
-              width={500}
-              height={150}
-              data={data}
-              margin={{
-                top: 20,
-                right: 30,
-                left: 20,
-                bottom: 10,
-              }}
-            >
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="name" />
-              <YAxis />
-              <Tooltip />
-              <Legend />
-              <Bar dataKey="pv" stackId="a" fill="#727cf5" />
-              
-              <Bar dataKey="uv" stackId="a" fill="#e3eaef" />
-            </BarChart>
-          </ResponsiveContainer>
-        )}
+          ) : (
+            <ResponsiveContainer width={data.length <= 5 ? "50%" : "100%"} height="100%">
+              <BarChart
+                // width={500}
+                height={100}
+                data={data}
+                margin={{
+                  top: 20,
+                  right: 30,
+                  left: 20,
+                  bottom: 10,
+                }}
+              >
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="name" />
+                <YAxis />
+                <Tooltip />
+                <Legend />
+                <Bar dataKey="pv" stackId="a" fill="#727cf5" />
+
+                <Bar dataKey="uv" stackId="a" fill="#e3eaef" />
+              </BarChart>
+            </ResponsiveContainer>
+          )}
+        </Box>
       </>
     );
 

@@ -32,28 +32,10 @@ const useStyles = makeStyles((theme) => ({
   iconSize: {
     fontSize: "45px !important",
   },
+  title: {
+    fontWeight: '600 !important',
+  }
 }));
-
-function startAndEndOfWeek(date) {
-  // If no date object supplied, use current date
-  // Copy date so don't modify supplied date
-  var now = new Date()
-
-  // set time to some convenient value
-  now.setHours(0, 0, 0, 0);
-
-  // Get the previous Monday
-  var monday = new Date(now);
-  monday.setDate(monday.getDate() - monday.getDay() + 1);
-
-  // Get next Sunday
-  var sunday = new Date(now);
-  sunday.setDate(sunday.getDate() - sunday.getDay() + 7);
-  sunday.setHours(23,59,59,0)
-  console.log(format(monday, "yyyy-MM-dd"), format(sunday, "yyyy-MM-dd"));
-  // Return array of date objects
-  return [monday, sunday];
-}
 
 export default function AdminProject() {
   const classes = useStyles();
@@ -66,15 +48,14 @@ export default function AdminProject() {
         <Grid container spacing={1}>
           <Grid item xs={5}>
             <Item sx={{ height: 400 }}>
-              <Typography>abc</Typography>
-              <Button onClick={startAndEndOfWeek}>abc</Button>
+              <Typography className={classes.title}>Trạng thái hoá đơn</Typography>
               <Divider sx={{ mt: 0.5, mb: 0.5 }} />
               <PPipeChart />
             </Item>
           </Grid>
           <Grid item xs={7}>
             <Item sx={{ height: 400 }}>
-              <Typography>abc</Typography>
+              <Typography className={classes.title}>Tiến trình may của nhân viên</Typography>
               <Divider sx={{ mt: 0.5, mb: 0.5 }} />
               <PStackChart />
             </Item>
