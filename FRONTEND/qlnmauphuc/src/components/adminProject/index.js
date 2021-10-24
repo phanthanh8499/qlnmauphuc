@@ -37,7 +37,7 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
-export default function AdminProject() {
+export default function AdminOrderReport() {
   const classes = useStyles();
   return (
     <Grid container>

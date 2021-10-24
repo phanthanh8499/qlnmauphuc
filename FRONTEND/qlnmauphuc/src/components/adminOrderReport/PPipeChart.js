@@ -14,6 +14,8 @@ import { makeStyles } from "@mui/styles";
 import { format } from "date-fns";
 import axios from "axios";
 import { Box } from "@mui/system";
+import { useDispatch, useSelector } from "react-redux";
+import { getOrderReportPieChart } from "../../redux/Action";
 
 const COLORS = ["#FFBB28", "#00C49F", "#FF8042", "#0088FE"];
 
@@ -31,36 +33,50 @@ const useStyles = makeStyles((theme) => ({
 }));
 export default function PPipeChart() {
   const classes = useStyles();
-  const [data, setData] = useState([]);
-  const [loading, setLoading] = useState(true);
+  // const [data, setData] = useState([]);
+  // const [loading, setLoading] = useState(true);
+  const dispatch = useDispatch();
+  const orderReport = useSelector(state => state.orderReport)
+  const {loadingPC, dataPieChart} = orderReport
   useEffect(() => {
     var now = new Date();
     now.setHours(0, 0, 0, 0);
     var startDate = new Date(now);
-    startDate.setDate(startDate.getDate() - startDate.getDay() + 1);
     var endDate = new Date(now);
-    endDate.setDate(endDate.getDate() - endDate.getDay() + 7);
-    endDate.setHours(23, 59, 59, 0);
+    if (now.toLocaleDateString("en-us", { weekday: "long" }) === "Sunday") {
+      startDate.setDate(startDate.getDate() - startDate.getDay() - 6);
+      endDate.setDate(endDate.getDate() - endDate.getDay());
+      endDate.setHours(23, 59, 59, 0);
+    } else {
+      startDate.setDate(startDate.getDate() - startDate.getDay() + 1);
+      endDate.setDate(endDate.getDate() - endDate.getDay() + 7);
+      endDate.setHours(23, 59, 59, 0);
+    }
+    var date = new Date('2021-1-16');
+    var firstDay = new Date(date.getFullYear(), date.getMonth(), 1);
+    var lastDay = new Date(date.getFullYear(), date.getMonth() + 1, 0);
+    console.log(date, firstDay, lastDay)
     const dataSend = {
       startDate: format(startDate, "yyyy-MM-dd"),
       endDate: format(endDate, "yyyy-MM-dd HH:mm:ss"),
     };
-    async function getRevenueData() {
-      const { data } = await axios.post(`/admin/getCountOrder`, dataSend);
-      setData([
-        { name: "Đợi xử lý", value: parseInt(data[0].processing_count) },
-        { name: "Đang may", value: parseInt(data[0].sewing_count) },
-        { name: "Đang vận chuyển", value: parseInt(data[0].shipping_count) },
-        { name: "Hoàn tất", value: parseInt(data[0].complete_count) },
-        // { name: "Huỷ bỏ", value: parseInt(data[0].cancel_count) },
-      ]);
-      setLoading(false);
-    }
-    getRevenueData();
+    dispatch(getOrderReportPieChart(dataSend));
+    // async function getRevenueData() {
+    //   const { data } = await axios.post(`/admin/getCountOrder`, dataSend);
+    //   setData([
+    //     { name: "Đợi xử lý", value: parseInt(data[0].processing_count) },
+    //     { name: "Đang may", value: parseInt(data[0].sewing_count) },
+    //     { name: "Đang vận chuyển", value: parseInt(data[0].shipping_count) },
+    //     { name: "Hoàn tất", value: parseInt(data[0].complete_count) },
+    //     // { name: "Huỷ bỏ", value: parseInt(data[0].cancel_count) },
+    //   ]);
+    //   setLoading(false);
+    // }
+    // getRevenueData();
   }, []);
   return (
     <>
-      {loading ? (
+      {loadingPC ? (
         <Box
           sx={{
             width: "100%",
@@ -79,7 +95,7 @@ export default function PPipeChart() {
               <PieChart width={400} height={350}>
                 <Pie
                   isAnimationActive={false}
-                  data={data}
+                  data={dataPieChart}
                   cx="50%"
                   cy="50%"
                   fill="#8884d8"
@@ -89,7 +105,7 @@ export default function PPipeChart() {
                   paddingAngle={5}
                   dataKey="value"
                 >
-                  {data.map((entry, index) => (
+                  {dataPieChart.map((entry, index) => (
                     <Cell
                       key={`cell-${index}`}
                       fill={COLORS[index % COLORS.length]}
@@ -110,11 +126,11 @@ export default function PPipeChart() {
                   <Grid item xs={12} sx={center}>
                     <Typography variant="h5">
                       {(
-                        (data[0].value /
-                          (data[0].value +
-                            data[1].value +
-                            data[2].value +
-                            data[3].value)) *
+                        (dataPieChart[0].value /
+                          (dataPieChart[0].value +
+                            dataPieChart[1].value +
+                            dataPieChart[2].value +
+                            dataPieChart[3].value)) *
                         100
                       ).toFixed(2)}
                       %
@@ -135,11 +151,11 @@ export default function PPipeChart() {
                   <Grid item xs={12} sx={center}>
                     <Typography variant="h5">
                       {(
-                        (data[1].value /
-                          (data[0].value +
-                            data[1].value +
-                            data[2].value +
-                            data[3].value)) *
+                        (dataPieChart[1].value /
+                          (dataPieChart[0].value +
+                            dataPieChart[1].value +
+                            dataPieChart[2].value +
+                            dataPieChart[3].value)) *
                         100
                       ).toFixed(2)}
                       %
@@ -160,11 +176,11 @@ export default function PPipeChart() {
                   <Grid item xs={12} sx={center}>
                     <Typography variant="h5">
                       {(
-                        (data[2].value /
-                          (data[0].value +
-                            data[1].value +
-                            data[2].value +
-                            data[3].value)) *
+                        (dataPieChart[2].value /
+                          (dataPieChart[0].value +
+                            dataPieChart[1].value +
+                            dataPieChart[2].value +
+                            dataPieChart[3].value)) *
                         100
                       ).toFixed(2)}
                       %
@@ -185,11 +201,11 @@ export default function PPipeChart() {
                   <Grid item xs={12} sx={center}>
                     <Typography variant="h5">
                       {(
-                        (data[3].value /
-                          (data[0].value +
-                            data[1].value +
-                            data[2].value +
-                            data[3].value)) *
+                        (dataPieChart[3].value /
+                          (dataPieChart[0].value +
+                            dataPieChart[1].value +
+                            dataPieChart[2].value +
+                            dataPieChart[3].value)) *
                         100
                       ).toFixed(2)}
                       %

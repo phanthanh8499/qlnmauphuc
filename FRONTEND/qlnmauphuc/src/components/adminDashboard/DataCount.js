@@ -33,10 +33,16 @@ export default function DataCount() {
     var now = new Date();
     now.setHours(0, 0, 0, 0);
     var startDate = new Date(now);
-    startDate.setDate(startDate.getDate() - startDate.getDay() + 1);
     var endDate = new Date(now);
-    endDate.setDate(endDate.getDate() - endDate.getDay() + 7);
-    endDate.setHours(23, 59, 59, 0);
+    if (now.toLocaleDateString("en-us", { weekday: "long" }) === "Sunday") {
+      startDate.setDate(startDate.getDate() - startDate.getDay() - 6);
+      endDate.setDate(endDate.getDate() - endDate.getDay());
+      endDate.setHours(23, 59, 59, 0);
+    } else {
+      startDate.setDate(startDate.getDate() - startDate.getDay() + 1);
+      endDate.setDate(endDate.getDate() - endDate.getDay() + 7);
+      endDate.setHours(23, 59, 59, 0);
+    }
     const dataSend = {
       startDate: format(startDate, "yyyy-MM-dd"),
       endDate: format(endDate, "yyyy-MM-dd HH:mm:ss"),

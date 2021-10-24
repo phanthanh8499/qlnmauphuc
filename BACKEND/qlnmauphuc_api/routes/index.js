@@ -1704,12 +1704,12 @@ router.post(`/admin/getOrderCount`, function (req, res) {
         FROM orders WHERE order_statusid = '6' AND order_startdate BETWEEN '${startDate}' AND '${endDate}'
         ) AS count_completeorder,
 		(
-		SELECT CAST(SUM(order_total) AS FLOAT)/1000000 
-		FROM orders WHERE order_statusid = '6' AND order_startdate BETWEEN '${startDate}' AND '${endDate}'
+		SELECT COUNT(*)
+		FROM orders WHERE order_startdate BETWEEN '${startDate}' AND '${endDate}'
 		) AS order_total,
 		(
-		SELECT CAST(SUM(order_total) AS FLOAT)/1000000 
-		FROM orders WHERE order_statusid = '6' AND order_startdate BETWEEN '${startDateLW}' AND '${endDateLW}'
+		SELECT COUNT(*)
+		FROM orders WHERE order_startdate BETWEEN '${startDateLW}' AND '${endDateLW}'
 		) AS order_pretotal`,
     (error, response) => {
       if (error) {

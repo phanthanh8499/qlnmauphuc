@@ -69,3 +69,8 @@ export const XOA_DON_HANG = "XOA_DON_HANG";
 export const HUY_DON_HANG = "HUY_DON_HANG";
 export const XEM_DON_HANG = "XEM_DON_HANG";
 export const XU_LY_DON_HANG = "XU_LY_DON_HANG";
+
+//======================== BAO CAO DON HANG =====================================
+export const BAO_CAO_HOA_DON = "BAO_CAO_HOA_DON";
+export const BAO_CAO_TRANG_THAI_HOA_DON = "BAO_CAO_TRANG_THAI_HOA_DON";
+export const BAO_CAO_TIEN_DO_HOA_DON = "BAO_CAO_TIEN_DO_HOA_DON";

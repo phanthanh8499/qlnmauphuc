@@ -7,8 +7,12 @@ import GroupsOutlinedIcon from "@mui/icons-material/GroupsOutlined";
 import ListAltOutlinedIcon from "@mui/icons-material/ListAltOutlined";
 import AssignmentTurnedInOutlinedIcon from "@mui/icons-material/AssignmentTurnedInOutlined";
 import QueryStatsOutlinedIcon from "@mui/icons-material/QueryStatsOutlined";
+import TrendingUpIcon from "@mui/icons-material/TrendingUp";
+import TrendingDownIcon from "@mui/icons-material/TrendingDown";
 import { format } from "date-fns";
 import axios from "axios";
+import { useDispatch, useSelector } from "react-redux";
+import { getOrderReportCountData } from "../../redux/Action";
 
 const Item = styled(Paper)(({ theme }) => ({
   ...theme.typography.body2,
@@ -34,37 +38,42 @@ const useStyles = makeStyles((theme) => ({
 
 export default function DataCount() {
   const classes = useStyles();
-  const [data, setData] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const dispatch = useDispatch();
+  const orderReport = useSelector((state) => state.orderReport);
+  const {loadingDC, dataCount} = orderReport
   useEffect(() => {
     var now = new Date();
     now.setHours(0, 0, 0, 0);
     var startDate = new Date(now);
-    startDate.setDate(startDate.getDate() - startDate.getDay() + 1);
     var endDate = new Date(now);
-    endDate.setDate(endDate.getDate() - endDate.getDay() + 7);
-    endDate.setHours(23, 59, 59, 0);
     var startDateLW = new Date(now);
-    startDateLW.setDate(startDateLW.getDate() - startDateLW.getDay() - 6);
     var endDateLW = new Date(now);
-    endDateLW.setDate(endDateLW.getDate() - endDateLW.getDay());
-    endDateLW.setHours(23, 59, 59, 0);
+    if (now.toLocaleDateString("en-us", { weekday: "long" }) === "Sunday") {
+      startDate.setDate(startDate.getDate() - startDate.getDay() - 6);
+      endDate.setDate(endDate.getDate() - endDate.getDay());
+      endDate.setHours(23, 59, 59, 0);
+      startDateLW.setDate(startDateLW.getDate() - startDateLW.getDay() - 13);
+      endDateLW.setDate(endDateLW.getDate() - endDateLW.getDay() - 7);
+      endDateLW.setHours(23, 59, 59, 0);
+    } else {
+      startDate.setDate(startDate.getDate() - startDate.getDay() + 1);
+      endDate.setDate(endDate.getDate() - endDate.getDay() + 7);
+      endDate.setHours(23, 59, 59, 0);
+      startDateLW.setDate(startDateLW.getDate() - startDateLW.getDay() - 6);
+      endDateLW.setDate(endDateLW.getDate() - endDateLW.getDay());
+      endDateLW.setHours(23, 59, 59, 0);
+    }
     const dataSend = {
       startDate: format(startDate, "yyyy-MM-dd"),
       endDate: format(endDate, "yyyy-MM-dd HH:mm:ss"),
       startDateLW: format(startDateLW, "yyyy-MM-dd"),
       endDateLW: format(endDateLW, "yyyy-MM-dd HH:mm:ss"),
     };
-    async function getRevenueData() {
-      const { data } = await axios.post(`/admin/getOrderCount`, dataSend);
-      setData(data[0]);
-      setLoading(false);
-    }
-    getRevenueData();
+    dispatch(getOrderReportCountData(dataSend));
   }, []);
   return (
     <Grid container>
-      {loading ? (
+      {loadingDC ? (
         <>
           <Grid item xs={3}>
             <Item
@@ -124,7 +133,7 @@ export default function DataCount() {
                   <ListAltOutlinedIcon className={classes.iconSize} />
                 </Grid>
                 <Grid item xs={12} sx={center}>
-                  <Typography variant="h5">{data.count_order}</Typography>
+                  <Typography variant="h5">{dataCount.count_order}</Typography>
                 </Grid>
                 <Grid item xs={12} sx={center}>
                   <Typography className={classes.subTitle}>
@@ -144,7 +153,7 @@ export default function DataCount() {
                 </Grid>
                 <Grid item xs={12} sx={center}>
                   <Typography variant="h5">
-                    {data.count_completeorder}
+                    {dataCount.count_completeorder}
                   </Typography>
                 </Grid>
                 <Grid item xs={12} sx={center}>
@@ -162,7 +171,7 @@ export default function DataCount() {
                   <GroupsOutlinedIcon className={classes.iconSize} />
                 </Grid>
                 <Grid item xs={12} sx={center}>
-                  <Typography variant="h5">{data.count_tailor}</Typography>
+                  <Typography variant="h5">{dataCount.count_tailor}</Typography>
                 </Grid>
                 <Grid item xs={12} sx={center}>
                   <Typography className={classes.subTitle}>
@@ -179,14 +188,31 @@ export default function DataCount() {
                   <QueryStatsOutlinedIcon className={classes.iconSize} />
                 </Grid>
                 <Grid item xs={12} sx={center}>
-                  <Typography variant="h5">
-                    {(
-                      ((data.order_total - data.order_pretotal) /
-                        data.order_pretotal) *
-                      100
-                    ).toFixed(2)}
-                    %
-                  </Typography>
+                  {dataCount.order_total - dataCount.order_pretotal < 0 ? (
+                    <>
+                      <TrendingDownIcon sx={{ color: "#fa5c80", mr: 1 }} />
+                      <Typography variant="h5" sx={{ color: "#fa5c80" }}>
+                        {(
+                          (Math.abs(dataCount.order_total - dataCount.order_pretotal) /
+                            dataCount.order_pretotal) *
+                          100
+                        ).toFixed(2)}
+                        %
+                      </Typography>
+                    </>
+                  ) : (
+                    <>
+                      <TrendingUpIcon sx={{ color: "#0bcf97", mr: 1 }} />
+                      <Typography variant="h5" sx={{ color: "#0bcf97" }}>
+                        {(
+                          ((dataCount.order_total - dataCount.order_pretotal) /
+                            dataCount.order_pretotal) *
+                          100
+                        ).toFixed(2)}
+                        %
+                      </Typography>
+                    </>
+                  )}
                 </Grid>
                 <Grid item xs={12} sx={center}>
                   <Typography className={classes.subTitle}>

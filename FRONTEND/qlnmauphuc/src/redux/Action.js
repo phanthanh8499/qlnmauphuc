@@ -46,6 +46,9 @@ import {
   THEM_USER,
   SUA_USER,
   THAY_DOI_TRANG_THAI_USER,
+  BAO_CAO_HOA_DON,
+  BAO_CAO_TRANG_THAI_HOA_DON,
+  BAO_CAO_TIEN_DO_HOA_DON,
 } from "../constants/Constants";
 
 export const dangNhapKhangHang = (username, password) => async (dispatch) => {
@@ -252,3 +255,33 @@ export const getDetailOrder = (dataReq) => async (dispatch) => {
   const { data } = await Axios.get(`/getDetailOrder.${dataReq}`);
   dispatch({ type: XEM_DON_HANG, payload: data });
 };
+
+// ================== BAO CAO HOA DON ============================
+export const getOrderReportCountData = (dataReq) => async (dispatch) => {
+  const { data } = await Axios.post(`/admin/getOrderCount`, dataReq);
+  dispatch({ type: BAO_CAO_HOA_DON, payload: data[0] });
+};
+export const getOrderReportPieChart = (dataReq) => async (dispatch) => {
+  const { data } = await Axios.post(`/admin/getCountOrder`, dataReq);
+  const temp = ([
+    { name: "Đợi xử lý", value: parseInt(data[0].processing_count) },
+    { name: "Đang may", value: parseInt(data[0].sewing_count) },
+    { name: "Đang vận chuyển", value: parseInt(data[0].shipping_count) },
+    { name: "Hoàn tất", value: parseInt(data[0].complete_count) },
+    // { name: "Huỷ bỏ", value: parseInt(data[0].cancel_count) },
+  ]);
+  dispatch({ type: BAO_CAO_TRANG_THAI_HOA_DON, payload: temp });
+};
+export const getOrderReportStackChart =
+  (dataReq, defaultValue) => async (dispatch) => {
+    const { data } = await Axios.post(`/admin/getTailorOrder`, dataReq);
+    let temp = [];
+    for (let i = 0; i < data.length; i++) {
+      temp.push({
+        name: data[i].name,
+        uv: defaultValue - data[i].value < 0 ? 0 : defaultValue - data[i].value,
+        pv: data[i].value,
+      });
+    }
+    dispatch({ type: BAO_CAO_TIEN_DO_HOA_DON, payload: temp });
+  };
