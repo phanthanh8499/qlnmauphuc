@@ -3,6 +3,7 @@ import { Box } from "@mui/system";
 import axios from "axios";
 import { format } from "date-fns";
 import React, { PureComponent, useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import {
   ComposedChart,
   Line,
@@ -15,6 +16,7 @@ import {
   Legend,
   ResponsiveContainer,
 } from "recharts";
+import { getEcommerceReportStackChart } from "../../redux/Action";
 
 const data = [
   {
@@ -57,6 +59,9 @@ const data = [
 export default function OrderChart() {
   const [dataRender, setDataRender] = useState([]);
   const [loading, setLoading] = useState(true);
+  const dispatch = useDispatch();
+  const ecommerceReport = useSelector((state) => state.ecommerceReport)
+  const {loadingSC, dataStackChart} = ecommerceReport;
   useEffect(() => {
     var now = new Date();
     now.setHours(0, 0, 0, 0);
@@ -71,39 +76,16 @@ export default function OrderChart() {
       endDate.setDate(endDate.getDate() - endDate.getDay() + 7);
       endDate.setHours(23, 59, 59, 0);
     }
-    
-    var startDateT = new Date(now);  
-    startDateT.setDate(startDateT.getDate() - startDateT.getDay() - 6);
-    var endDateT = new Date(now);
-    endDateT.setDate(endDateT.getDate() - endDateT.getDay());
-    endDateT.setHours(23, 59, 59, 0);
-
-    console.log(now, startDateT, endDateT);
-    
-    console.log(now.toLocaleDateString("en-us", { weekday: "long" }));
     const dataSend = {
       startDate: format(startDate, "yyyy-MM-dd"),
       endDate: format(endDate, "yyyy-MM-dd HH:mm:ss"),
     };
-    function getDayName(dateStr) {
-      let date = new Date(dateStr)
-      return date.toLocaleDateString("en-us", { weekday: "long" });
-    }
-    async function getRevenueData() {
-      const { data } = await axios.post(`/admin/getRevenue`, dataSend);
-      for (let i=0; i<data.length; i++){
-        data[i].revenue_date = getDayName(data[i].revenue_date);
-      }
-      setDataRender(data);
-      setLoading(false);
-    }
-    getRevenueData();
-    setLoading(false);
+    dispatch(getEcommerceReportStackChart(dataSend));
   }, []);
   
   return (
     <>
-      {loading ? (
+      {loadingSC ? (
         <Box sx={{ width: "100%", height: "100%" }}>
           <CircularProgress />
         </Box>
@@ -112,7 +94,7 @@ export default function OrderChart() {
           <ComposedChart
             width={500}
             height={400}
-            data={dataRender}
+            data={dataStackChart}
             margin={{
               top: 20,
               right: 20,

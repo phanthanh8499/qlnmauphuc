@@ -1,7 +1,10 @@
 import {
+  BAO_CAO_DOANH_THU_THUONG_MAI,
   BAO_CAO_HOA_DON,
+  BAO_CAO_THUONG_MAI,
   BAO_CAO_TIEN_DO_HOA_DON,
   BAO_CAO_TRANG_THAI_HOA_DON,
+  BAO_CAO_TRANG_THAI_THUONG_MAI,
   CAP_NHAT_HINH_ANH,
   CHINH_SUA_THONG_TIN_DON_HANG,
   CHINH_SUA_THONG_TIN_SAN_PHAM,
@@ -493,6 +496,34 @@ export const orderReportReducer = (
     case BAO_CAO_TRANG_THAI_HOA_DON:
       return { ...state, loadingPC: false, dataPieChart: action.payload };
     case BAO_CAO_TIEN_DO_HOA_DON:
+      return { ...state, loadingSC: false, dataStackChart: action.payload };
+    case LIET_KE_VAI:
+      const data = action.payload.sort(function (a, b) {
+        return a.id - b.id;
+      });
+      return { ...state, loadingDC: false, clothData: data };
+    default:
+      return state;
+  }
+};
+
+export const ecommerceReportReducer = (
+  state = {
+    loadingDC: true,
+    loadingPC: true,
+    loadingSC: true,
+    dataCount: [],
+    dataStackChart: [],
+    dataPieChart: [],
+  },
+  action
+) => {
+  switch (action.type) {
+    case BAO_CAO_THUONG_MAI:
+      return { ...state, loadingDC: false, dataCount: action.payload };
+    case BAO_CAO_TRANG_THAI_THUONG_MAI:
+      return { ...state, loadingPC: false, dataPieChart: action.payload };
+    case BAO_CAO_DOANH_THU_THUONG_MAI:
       return { ...state, loadingSC: false, dataStackChart: action.payload };
     case LIET_KE_VAI:
       const data = action.payload.sort(function (a, b) {

@@ -104,10 +104,10 @@ export default function PPieChart() {
   const classes = useStyles();
   const [activeIndex, setActiveIndex] = useState(0);
 
-  const [data, setData] = useState([]);
   const onPieEnter = (_, index) => {
     setActiveIndex(index);
   };
+  const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
   useEffect(() => {
     var now = new Date();

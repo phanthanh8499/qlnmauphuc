@@ -16,6 +16,8 @@ import MonetizationOnIcon from "@mui/icons-material/MonetizationOn";
 import { format } from "date-fns";
 import axios from "axios";
 import { Link } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { getEcommerceReportCountData } from "../../redux/Action";
 
 const Item = styled(Paper)(({ theme }) => ({
   ...theme.typography.body2,
@@ -29,11 +31,16 @@ height: 127, display: 'flex', alignItems: 'center', justifyContent: 'center'
 export default function DataCount() {
   const [dataRender, setDataRender] = useState([])
   const [loading, setLoading] = useState(true);
+  const [abc, setAbc] = useState([]);
+  const dispatch = useDispatch();
+  const ecommerceReport = useSelector((state) => state.ecommerceReport);
+  const {loadingDC, dataCount} = ecommerceReport;
   useEffect(() => {
     var now = new Date();
     now.setHours(0, 0, 0, 0);
     var startDate = new Date(now);
     var endDate = new Date(now);
+    
     if (now.toLocaleDateString("en-us", { weekday: "long" }) === "Sunday") {
       startDate.setDate(startDate.getDate() - startDate.getDay() - 6);
       endDate.setDate(endDate.getDate() - endDate.getDay());
@@ -47,17 +54,18 @@ export default function DataCount() {
       startDate: format(startDate, "yyyy-MM-dd"),
       endDate: format(endDate, "yyyy-MM-dd HH:mm:ss"),
     };
-    async function getDataCount() {
-      const { data } = await axios.post(`/admin/getDataCount`, dataSend);
-      setDataRender(data[0]);
-      setLoading(false)
-    }
-    getDataCount();
-    setLoading(false);
+    dispatch(getEcommerceReportCountData(dataSend));
+    // async function getDataCount() {
+    //   const { data } = await axios.post(`/admin/getDataCount`, dataSend);
+    //   setDataRender(data[0]);
+    //   setLoading(false)
+    // }
+    // getDataCount();
+    // setLoading(false);
   }, [])
   return (
     <Grid container spacing={1}>
-      {loading ? (
+      {loadingDC ? (
         <>
           <Grid item xs={3}>
             <Item sx={center}>
@@ -86,7 +94,7 @@ export default function DataCount() {
             <Item>
               <Grid container>
                 <Grid item xs={8}>
-                  <Typography variant="h4">{dataRender.count_order}</Typography>
+                  <Typography variant="h4">{dataCount.count_order}</Typography>
                   <Typography>Đơn hàng mới</Typography>
                 </Grid>
                 <Grid item xs={4}>
@@ -110,7 +118,7 @@ export default function DataCount() {
               <Grid container>
                 <Grid item xs={8}>
                   <Typography variant="h4">
-                    {dataRender.count_product}
+                    {dataCount.count_product}
                   </Typography>
                   <Typography>Sản phẩm</Typography>
                 </Grid>
@@ -134,7 +142,7 @@ export default function DataCount() {
             <Item>
               <Grid container>
                 <Grid item xs={8}>
-                  <Typography variant="h4">{dataRender.count_user}</Typography>
+                  <Typography variant="h4">{dataCount.count_user}</Typography>
                   <Typography>Khách hàng</Typography>
                 </Grid>
                 <Grid item xs={4}>
@@ -157,7 +165,7 @@ export default function DataCount() {
             <Item>
               <Grid container>
                 <Grid item xs={8}>
-                  <Typography variant="h4">{dataRender.order_total}</Typography>
+                  <Typography variant="h4">{dataCount.order_total}</Typography>
                   <Typography>Doanh thu mỗi tuần</Typography>
                 </Grid>
                 <Grid item xs={4}>

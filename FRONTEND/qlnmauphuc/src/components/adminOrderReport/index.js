@@ -6,6 +6,8 @@ import DataCount from "./DataCount";
 import PStackChart from "./PStackChart";
 import PPipeChart from "./PPipeChart";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
+import WeeklyForm from "./weeklyForm/WeeklyForm";
+import MonthlyForm from "./monthlyForm/monthlyForm";
 
 const options = [
   "Báo cáo mỗi tuần",
@@ -36,6 +38,14 @@ export default function AdminProject() {
   const classes = useStyles();
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
+  const [weeklyForm, setWeeklyForm] = useState(false);
+  const [monthlyForm, setMonthlyForm] = useState(false);
+  const closeWeeklyForm = () => {
+    setWeeklyForm(false);
+  }
+  const closeMonthlyForm = () => {
+    setMonthlyForm(false);
+  }
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
   };
@@ -44,7 +54,23 @@ export default function AdminProject() {
   };
   const handleSelect = (e, index) => {
     console.log(index)
+    if(index === 0 ){
+      setWeeklyForm(true);
+    }
+    if(index === 1){
+      setMonthlyForm(true);
+    }
     handleClose()
+  }
+  const renderForm = () => {
+    if(weeklyForm){
+      return (<WeeklyForm open={weeklyForm} onClose={closeWeeklyForm}></WeeklyForm>)
+    }
+    if(monthlyForm){
+      return (
+        <MonthlyForm open={monthlyForm} onClose={closeMonthlyForm}></MonthlyForm>
+      );
+    }
   }
   return (
     <Grid container>
@@ -102,11 +128,13 @@ export default function AdminProject() {
                   }}
                 >
                   {options.map((option, index) => (
-                    <MenuItem key={option} onClick={(e) => handleSelect(e, index)}>
+                    <MenuItem
+                      key={option}
+                      onClick={(e) => handleSelect(e, index)}
+                    >
                       {option}
                     </MenuItem>
                   ))}
-                  
                 </Menu>
               </div>
             </Item>
@@ -140,6 +168,7 @@ export default function AdminProject() {
           </Grid>
         </Grid>
       </Grid>
+      {renderForm()}
     </Grid>
   );
 }

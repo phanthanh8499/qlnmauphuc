@@ -49,6 +49,9 @@ import {
   BAO_CAO_HOA_DON,
   BAO_CAO_TRANG_THAI_HOA_DON,
   BAO_CAO_TIEN_DO_HOA_DON,
+  BAO_CAO_THUONG_MAI,
+  BAO_CAO_TRANG_THAI_THUONG_MAI,
+  BAO_CAO_DOANH_THU_THUONG_MAI,
 } from "../constants/Constants";
 
 export const dangNhapKhangHang = (username, password) => async (dispatch) => {
@@ -268,7 +271,7 @@ export const getOrderReportPieChart = (dataReq) => async (dispatch) => {
     { name: "Đang may", value: parseInt(data[0].sewing_count) },
     { name: "Đang vận chuyển", value: parseInt(data[0].shipping_count) },
     { name: "Hoàn tất", value: parseInt(data[0].complete_count) },
-    // { name: "Huỷ bỏ", value: parseInt(data[0].cancel_count) },
+    { name: "Huỷ bỏ", value: parseInt(data[0].cancel_count) },
   ]);
   dispatch({ type: BAO_CAO_TRANG_THAI_HOA_DON, payload: temp });
 };
@@ -284,4 +287,33 @@ export const getOrderReportStackChart =
       });
     }
     dispatch({ type: BAO_CAO_TIEN_DO_HOA_DON, payload: temp });
+  };
+
+// ================== BAO CAO THUONG MAI ============================
+export const getEcommerceReportCountData = (dataReq) => async (dispatch) => {
+  const { data } = await Axios.post(`/admin/getDataCount`, dataReq);
+  dispatch({ type: BAO_CAO_THUONG_MAI, payload: data[0] });
+};
+export const getEcommerceReportPieChart = (dataReq) => async (dispatch) => {
+  const { data } = await Axios.post(`/admin/getCountOrder`, dataReq);
+  const temp = ([
+    { name: "Đợi xử lý", value: parseInt(data[0].processing_count) },
+    { name: "Đang may", value: parseInt(data[0].sewing_count) },
+    { name: "Đang vận chuyển", value: parseInt(data[0].shipping_count) },
+    { name: "Hoàn tất", value: parseInt(data[0].complete_count) },
+    // { name: "Huỷ bỏ", value: parseInt(data[0].cancel_count) },
+  ]);
+  dispatch({ type: BAO_CAO_TRANG_THAI_THUONG_MAI, payload: temp });
+};
+export const getEcommerceReportStackChart =
+  (dataReq) => async (dispatch) => {
+    function getDayName(dateStr) {
+      let date = new Date(dateStr)
+      return date.toLocaleDateString("en-us", { weekday: "long" });
+    }
+      const { data } = await Axios.post(`/admin/getRevenue`, dataReq);
+      for (let i=0; i<data.length; i++){
+        data[i].revenue_date = getDayName(data[i].revenue_date);
+      }
+    dispatch({ type: BAO_CAO_DOANH_THU_THUONG_MAI, payload: data });
   };

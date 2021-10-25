@@ -62,7 +62,7 @@ const center = {
   justifyContent: "center",
 };
 
-function WeeklyForm(props) {
+function MonthyForm(props) {
   const classes = useStyle();
   const { enqueueSnackbar } = useSnackbar();
   const dispatch = useDispatch();
@@ -77,14 +77,14 @@ function WeeklyForm(props) {
       };
       dispatch(getOrderReportCountData(dataSend));
       dispatch(getOrderReportPieChart(dataSend));
-      dispatch(getOrderReportStackChart(dataSend, 5));
-      enqueueSnackbar("Báo cáo theo tuần thành công", {
+      dispatch(getOrderReportStackChart(dataSend, 15));
+      enqueueSnackbar("Báo cáo theo tháng thành công", {
         variant: "success",
         autoHideDuration: 2000,
       });
       onClose();
     } else {
-      enqueueSnackbar("Vui lòng chọn tuần để báo cáo", {
+      enqueueSnackbar("Vui lòng chọn tháng để báo cáo", {
         variant: "error",
         autoHideDuration: 2000,
       });
@@ -99,82 +99,29 @@ function WeeklyForm(props) {
   const [loading, setLoading] = useState(true);
   const [selected, setSelected] = useState();
   useEffect(() => {
-    function weekCount(year, month_number, startDayOfWeek) {
-      var firstDayOfWeek = startDayOfWeek === 0 ? 1 : startDayOfWeek || 0;
-
-      var firstOfMonth = new Date(year, month_number - 1, 1);
-      var lastOfMonth = new Date(year, month_number, 0);
-      var numberOfDaysInMonth = lastOfMonth.getDate();
-      console.log("firstweekday", firstOfMonth.getDay());
-      var firstWeekDay = (firstOfMonth.getDay() - firstDayOfWeek + 7) % 7;
-      console.log(firstOfMonth.getDay() - firstDayOfWeek + 7);
-      console.log(6 % 7);
-      var used = firstWeekDay + numberOfDaysInMonth;
-      console.log("firstDayOfWeek", firstDayOfWeek);
-      console.log("firstOfMonth", firstOfMonth);
-      console.log("lastOfMonth", lastOfMonth);
-      console.log("numberOfDaysInMonth", numberOfDaysInMonth);
-      console.log("firstWeekDay", firstWeekDay);
-      console.log("used", used);
-      var startDate = new Date(firstOfMonth);
-      var endDate = new Date(firstOfMonth);
+    function monthCount(year) {
       var temp = [];
-
-      for (let i = 0; i < Math.ceil(used / 7); i++) {
-        var temp2 = new Date();
-        var temp3 = new Date();
-        var startDateLW = new Date();
-        var endDateLW = new Date();
-        if (
-          startDate.toLocaleDateString("en-us", { weekday: "long" }) ===
-          "Sunday"
-        ) {
-          startDate.setDate(startDate.getDate() - startDate.getDay() - 6);
-          endDate.setDate(endDate.getDate() - endDate.getDay());
-          endDate.setHours(23, 59, 59, 0);
-          temp2 = new Date(endDate);
-          temp3 = new Date(endDate);
-          temp3.setDate(endDate.getDate() - endDate.getDay() - 6);
-          temp3.setHours(0, 0, 0, 0);
-          startDateLW = new Date(temp3);
-          endDateLW = new Date(temp3);
-          startDateLW.setDate(startDateLW.getDate() - 7);
-          endDateLW.setDate(endDateLW.getDate() - 1);
-          endDateLW.setHours(23, 59, 59, 0);
-        } else {
-          startDate.setDate(startDate.getDate() - startDate.getDay() + 1);
-          endDate.setDate(endDate.getDate() - endDate.getDay() + 7);
-          endDate.setHours(23, 59, 59, 0);
-          temp2 = new Date(endDate);
-          temp3 = new Date(endDate);
-          temp3.setDate(endDate.getDate() - endDate.getDay() - 6);
-          temp3.setHours(0, 0, 0, 0);
-          startDateLW = new Date(temp3);
-          endDateLW = new Date(temp3);
-          startDateLW.setDate(startDateLW.getDate() - 7);
-          endDateLW.setDate(endDateLW.getDate() - 1);
-          endDateLW.setHours(23, 59, 59, 0);
-        }
+      for (let i = 1; i <= 12; i++) {
+        var startDateLW = new Date(year, i - 2, 1);
+        var endDateLW = new Date(year, i - 1, 0);
+        var startDate = new Date(year, i - 1, 1);
+        var endDate = new Date(year, i, 0);
+        endDate.setHours(23, 59, 59, 0);
+        endDateLW.setHours(23, 59, 59, 0);
         temp.push({
-          startDate: temp3,
-          endDate: temp2,
+          startDate: startDate,
+          endDate: endDate,
           startDateLW: startDateLW,
           endDateLW: endDateLW,
         });
-        console.log("abc", startDateLW, endDateLW);
-        console.log(temp3, temp2);
       }
       setData(temp);
       setLoading(false);
     }
     var now = new Date();
     now.setDate(1);
-    console.log(now);
-    var month = now.getMonth() + 1;
-    var day = now.getDay();
     var year = now.getFullYear();
-    console.log(day, month, year);
-    weekCount(year, month, day);
+    monthCount(year);
   }, []);
   const now = new Date();
   return (
@@ -185,25 +132,33 @@ function WeeklyForm(props) {
       maxWidth="xs"
     >
       {loading ? (
-        <Box sx={{width: '350px', height: '143px', display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
+        <Box
+          sx={{
+            width: "350px",
+            height: "143px",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
           <CircularProgress />
         </Box>
       ) : (
-        <Grid container className={classes.root} sx={{width: 350}}>
+        <Grid container className={classes.root} sx={{ width: 350 }}>
           <Grid item xs={12} sx={center}>
             <Typography className={classes.title}>
-              Chọn tuần cần báo cáo
+              Chọn tháng cần báo cáo
             </Typography>
           </Grid>
           <Grid item xs={12}>
             <Divider sx={{ mt: 0.5, mb: 0.5 }} />
             <MyFormControl sx={{ width: "100%" }}>
-              <InputLabel id="week-select-label">Tuần</InputLabel>
+              <InputLabel id="month-select-label">Tháng</InputLabel>
               <Select
-                labelId="week-select-label"
-                id="week-simple-select"
+                labelId="month-select-label"
+                id="month-simple-select"
                 // defaultValue={province}
-                label="Tuần"
+                label="Tháng"
                 onChange={handleChangeProvince}
               >
                 {data.map((value, key) => (
@@ -216,8 +171,8 @@ function WeeklyForm(props) {
                         : false
                     }
                   >
-                    Tuần {key + 1} : từ {format(value.startDate, "dd-MM-yyyy")}{" "}
-                    đến {format(value.endDate, "dd-MM-yyyy")}
+                    Tháng {key + 1} : từ {format(value.startDate, "dd/MM/yyyy")}{" "}
+                    đến {format(value.endDate, "dd/MM/yyyy")}
                   </MenuItem>
                 ))}
               </Select>
@@ -240,4 +195,4 @@ function WeeklyForm(props) {
   );
 }
 
-export default WeeklyForm;
+export default MonthyForm;

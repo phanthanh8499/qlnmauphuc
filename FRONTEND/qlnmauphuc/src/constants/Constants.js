@@ -74,3 +74,8 @@ export const XU_LY_DON_HANG = "XU_LY_DON_HANG";
 export const BAO_CAO_HOA_DON = "BAO_CAO_HOA_DON";
 export const BAO_CAO_TRANG_THAI_HOA_DON = "BAO_CAO_TRANG_THAI_HOA_DON";
 export const BAO_CAO_TIEN_DO_HOA_DON = "BAO_CAO_TIEN_DO_HOA_DON";
+
+//======================== BAO CAO THUONG MAI =====================================
+export const BAO_CAO_THUONG_MAI = "BAO_CAO_THUONG_MAI";
+export const BAO_CAO_DOANH_THU_THUONG_MAI = "BAO_CAO_DOANH_THU_THUONG_MAI";
+export const BAO_CAO_TRANG_THAI_THUONG_MAI = "BAO_CAO_TRANG_THAI_THUONG_MAI";
