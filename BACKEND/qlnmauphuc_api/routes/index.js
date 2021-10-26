@@ -1614,11 +1614,49 @@ router.post(`/admin/getDataCount`, function (req, res) {
 })
 
 router.post(`/admin/getRevenue`, function (req, res) {
-  const { startDate, endDate } = req.body;
+  const { startDate, endDate, startDateLW, endDateLW } = req.body;
   pool.query(
-    `SELECT to_char(order_startdate, 'MM/dd/yyyy') as revenue_date, CAST(SUM(order_total) AS FLOAT)/1000000 AS revenue 
+    `WITH table1 AS (
+SELECT to_char(order_startdate, 'Day') as revenue_date, CAST(SUM(order_total) AS FLOAT)/1000000 AS revenue 
   FROM orders WHERE order_statusid='6' AND order_startdate BETWEEN '${startDate}' AND '${endDate}'
-  GROUP BY revenue_date ORDER BY revenue_date ASC`,
+  GROUP BY revenue_date ORDER BY revenue_date ASC),
+table2 AS (
+SELECT to_char(order_startdate, 'Day') as revenue_date, CAST(SUM(order_total) AS FLOAT)/1000000 AS revenue 
+  FROM orders WHERE order_statusid='6' AND order_startdate BETWEEN '${startDateLW}' AND '${endDateLW}'
+  GROUP BY revenue_date ORDER BY revenue_date ASC),
+table3 AS (
+SELECT to_char(GENERATE_SERIES('2021-10-18', '2021-10-24 23:59:59', '1 day'::INTERVAL), 'Day') AS revenue_date
+)
+SELECT table3.revenue_date, COALESCE(table1.revenue, 0) AS Current_Week, COALESCE(table2.revenue,0) AS Previous_Week FROM table3
+LEFT JOIN table2 ON table2.revenue_date = table3.revenue_date
+LEFT JOIN table1 ON table1.revenue_date = table3.revenue_date
+`,
+    (error, response) => {
+      if (error) {
+        console.log(error);
+      } else {
+        res.send(response.rows);
+        console.log(response.rows);
+      }
+    }
+  );
+})
+
+router.post(`/admin/getCountProductSold`, function (req, res) {
+  const { startDate, endDate} = req.body;
+  pool.query(
+    `WITH table1 AS (
+SELECT pt_name as name, COUNT(*) AS value FROM orders
+INNER JOIN order_details ON order_details.od_orderid = orders.id
+INNER JOIN products ON products.id = order_details.od_productid
+INNER JOIN producttypes ON products.product_typeid = producttypes.id
+WHERE order_startdate BETWEEN '${startDate}' AND '${endDate}'
+GROUP BY name),
+table2 AS (
+SELECT id, pt_name as name FROM producttypes)
+SELECT table2.name, COALESCE(value,0) as value FROM table2
+LEFT JOIN table1 ON table2.name = table1.name
+ORDER BY name ASC`,
     (error, response) => {
       if (error) {
         console.log(error);

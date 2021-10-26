@@ -18,6 +18,7 @@ import OrderChart from "./OrderChart";
 import PPieChart from "./PPieChart";
 import { format } from "date-fns";
 import axios from "axios";
+import Ex from "./Ex";
 
 const Item = styled(Paper)(({ theme }) => ({
   ...theme.typography.body2,
@@ -34,18 +35,19 @@ export default function AdminDashboard() {
       <Grid item xs={12} sx={{ mt: 1 }}>
         <Grid container spacing={1}>
           <Grid item xs={8}>
-            <Item sx={{ height: 420 }}>
+            <Item sx={{ height: 438 }}>
               <Typography sx={{ fontWeight: 600 }}>
-                Doanh thu trong tuần
+                Doanh thu
               </Typography>
               <Divider />
-              <OrderChart />
+              {/* <OrderChart /> */}
+              <Ex/>
             </Item>
           </Grid>
           <Grid item xs={4}>
-            <Item sx={{ height: 420 }}>
+            <Item sx={{ height: 438 }}>
               <Typography sx={{ fontWeight: 600 }}>
-                Trạng thái hoá đơn
+                Sản phẩm được đặt may
               </Typography>
               <Divider />
               <PPieChart />

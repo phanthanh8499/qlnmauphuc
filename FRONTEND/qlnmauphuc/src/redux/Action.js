@@ -311,9 +311,9 @@ export const getEcommerceReportStackChart =
       let date = new Date(dateStr)
       return date.toLocaleDateString("en-us", { weekday: "long" });
     }
-      const { data } = await Axios.post(`/admin/getRevenue`, dataReq);
-      for (let i=0; i<data.length; i++){
-        data[i].revenue_date = getDayName(data[i].revenue_date);
-      }
+    const { data } = await Axios.post(`/admin/getRevenue`, dataReq);
+    // for (let i=0; i<data.length; i++){
+    //   data[i].revenue_date = getDayName(data[i].revenue_date);
+    // }
     dispatch({ type: BAO_CAO_DOANH_THU_THUONG_MAI, payload: data });
   };
