@@ -5,6 +5,8 @@ import { format } from "date-fns";
 import React, { PureComponent, useEffect, useState } from "react";
 import { PieChart, Pie, Sector, Cell, ResponsiveContainer } from "recharts";
 import { makeStyles } from "@mui/styles";
+import { getEcommerceReportPieChart } from "../../redux/Action";
+import { useDispatch, useSelector } from "react-redux";
 
 const COLORS = ["#FFBB28", "#00C49F", "#FF8042", "#0088FE", "#f00", "#8884d8"];
 
@@ -107,9 +109,12 @@ export default function PPieChart() {
   const onPieEnter = (_, index) => {
     setActiveIndex(index);
   };
-  const [data, setData] = useState([]);
-  const [loading, setLoading] = useState(true);
+ 
   const [sum, setSum] = useState(0)
+  const dispatch = useDispatch();
+  const ecommerceReport = useSelector((state) => state.ecommerceReport);
+  const {loadingPC, dataPieChart} = ecommerceReport;
+
   useEffect(() => {
     var now = new Date();
     now.setHours(0, 0, 0, 0);
@@ -127,24 +132,20 @@ export default function PPieChart() {
     const dataSend = {
       startDate: format(startDate, "yyyy-MM-dd"),
       endDate: format(endDate, "yyyy-MM-dd HH:mm:ss"),
-    };
-    var temp = 0;
-    async function getRevenueData() {
-      const { data } = await axios.post(`/admin/getCountProductSold`, dataSend);
-      for(let i=0; i<data.length; i++){
-        data[i].value = parseInt(data[i].value)
-        temp = parseInt(data[i].value) + temp
-      }
-      setData(data);
-      setSum(temp)
-      setLoading(false);
-    }
-    getRevenueData();
+    }; 
+    dispatch(getEcommerceReportPieChart(dataSend));
   }, []);
-  useEffect(() => {}, [])
+
+  useEffect(() => {
+    var temp = 0;
+    for (let i = 0; i < dataPieChart.length; i++) {
+      temp = parseInt(dataPieChart[i].value) + temp;
+    }
+    setSum(temp);
+  }, [dataPieChart]);
   return (
     <>
-      {loading ? (
+      {loadingPC ? (
         <Box sx={{ width: "100%", height: "100%" }}>
           <CircularProgress />
         </Box>
@@ -152,7 +153,7 @@ export default function PPieChart() {
         <>
           <PieChart width={357} height={240}>
             <Pie
-              data={data}
+              data={dataPieChart}
               // cx={120}
               // cy={200}
               cx="50%"
@@ -166,7 +167,7 @@ export default function PPieChart() {
               activeShape={renderActiveShape}
               onMouseEnter={onPieEnter}
             >
-              {data.map((entry, index) => (
+              {dataPieChart.map((entry, index) => (
                 <Cell
                   key={`cell-${index}`}
                   fill={COLORS[index % COLORS.length]}
@@ -175,7 +176,7 @@ export default function PPieChart() {
             </Pie>
           </PieChart>
           <Grid container>
-            {data.map((value, key) => (
+            {dataPieChart.map((value, key) => (
               <Grid item xs={12} sx={{ pr: 8, pl: 8 }}>
                 <Typography>
                   <Box
@@ -186,7 +187,7 @@ export default function PPieChart() {
                   ></Box>
                   {value.name}
                   <span className={classes.percent}>
-                    {((data[key].value / sum) * 100).toFixed(2)}%
+                    {((dataPieChart[key].value / sum) * 100).toFixed(2)}%
                   </span>
                 </Typography>
                 <Divider />

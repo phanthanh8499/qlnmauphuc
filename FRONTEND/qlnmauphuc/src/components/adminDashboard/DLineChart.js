@@ -17,7 +17,7 @@ import axios from "axios";
 import { format } from "date-fns";
 import React, { PureComponent, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { getEcommerceReportStackChart } from "../../redux/Action";
+import { getEcommerceReportLineChart } from "../../redux/Action";
 import { makeStyles } from "@mui/styles";
 
 const data = [
@@ -85,13 +85,13 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function Ex() {
+export default function DLineChart() {
   const classes = useStyles();
   const [dataRender, setDataRender] = useState([]);
   const [loading, setLoading] = useState(true);
   const dispatch = useDispatch();
   const ecommerceReport = useSelector((state) => state.ecommerceReport);
-  const { loadingSC, dataStackChart } = ecommerceReport;
+  const { loadinLC, dataLineChart } = ecommerceReport;
   useEffect(() => {
     var now = new Date();
     now.setHours(0, 0, 0, 0);
@@ -120,26 +120,26 @@ export default function Ex() {
       startDateLW: format(startDateLW, "yyyy-MM-dd"),
       endDateLW: format(endDateLW, "yyyy-MM-dd HH:mm:ss"),
     };
-    dispatch(getEcommerceReportStackChart(dataSend));
+    dispatch(getEcommerceReportLineChart(dataSend));
   }, []);
   const [currentWeekRevenue, setCurrentWeekRevenue] = useState(0)
   const [previousWeekRevenue, setPreviousWeekRevenue] = useState(0)
   useEffect(() => {
     var temp1 = 0;
     var temp2 = 0;
-    for(let i=0; i<dataStackChart.length; i++){
-      temp1 = temp1 + dataStackChart[i].current_week;
+    for(let i=0; i<dataLineChart.length; i++){
+      temp1 = temp1 + dataLineChart[i].current_week;
       temp2 =
         temp2 +
-        dataStackChart[i].previous_week;
+        dataLineChart[i].previous_week;
       console.log(temp2)
     }
     setCurrentWeekRevenue((temp1 * 1000000).toFixed(0));
     setPreviousWeekRevenue((temp2 * 1000000).toFixed(0));
-  }, [dataStackChart]);
+  }, [dataLineChart]);
   return (
     <>
-      {loadingSC ? (
+      {loadinLC ? (
         <Box
           sx={{
             width: "100%",
@@ -199,7 +199,7 @@ export default function Ex() {
           </Grid>
           <Grid item xs={12} sx={{ height: 250, width: "100%" }}>
             <ResponsiveContainer width="100%" height="100%">
-              <LineChart width={500} height={250} data={dataStackChart}>
+              <LineChart width={500} height={250} data={dataLineChart}>
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis dataKey="revenue_date" />
                 <YAxis unit=" triệu" />

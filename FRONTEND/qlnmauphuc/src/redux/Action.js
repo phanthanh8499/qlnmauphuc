@@ -50,8 +50,10 @@ import {
   BAO_CAO_TRANG_THAI_HOA_DON,
   BAO_CAO_TIEN_DO_HOA_DON,
   BAO_CAO_THUONG_MAI,
-  BAO_CAO_TRANG_THAI_THUONG_MAI,
+  BAO_CAO_SAN_PHAM_THUONG_MAI,
   BAO_CAO_DOANH_THU_THUONG_MAI,
+  LIET_KE_KHACH_HANG,
+  LIET_KE_NHAN_VIEN,
 } from "../constants/Constants";
 
 export const dangNhapKhangHang = (username, password) => async (dispatch) => {
@@ -75,6 +77,14 @@ export const getUserData = () => async (dispatch) => {
   } catch (error) {
     dispatch({ type: LIET_KE_USERS_THAT_BAI, payload: error.message });
   }
+};
+export const getCustomerData = () => async (dispatch) => {
+    const { data } = await Axios.get("/admin/users/getCustomer");
+    dispatch({ type: LIET_KE_KHACH_HANG, payload: data });  
+};
+export const getStaffData = () => async (dispatch) => {
+    const { data } = await Axios.get("/admin/users/getStaff");
+    dispatch({ type: LIET_KE_NHAN_VIEN, payload: data });  
 };
 
 export const addUser = (dataReq) => async (dispatch) => {
@@ -295,22 +305,18 @@ export const getEcommerceReportCountData = (dataReq) => async (dispatch) => {
   dispatch({ type: BAO_CAO_THUONG_MAI, payload: data[0] });
 };
 export const getEcommerceReportPieChart = (dataReq) => async (dispatch) => {
-  const { data } = await Axios.post(`/admin/getCountOrder`, dataReq);
-  const temp = ([
-    { name: "Đợi xử lý", value: parseInt(data[0].processing_count) },
-    { name: "Đang may", value: parseInt(data[0].sewing_count) },
-    { name: "Đang vận chuyển", value: parseInt(data[0].shipping_count) },
-    { name: "Hoàn tất", value: parseInt(data[0].complete_count) },
-    // { name: "Huỷ bỏ", value: parseInt(data[0].cancel_count) },
-  ]);
-  dispatch({ type: BAO_CAO_TRANG_THAI_THUONG_MAI, payload: temp });
+  const { data } = await Axios.post(`/admin/getCountProductSold`, dataReq);
+  for (let i = 0; i < data.length; i++) {
+    data[i].value = parseInt(data[i].value);
+  }
+  dispatch({ type: BAO_CAO_SAN_PHAM_THUONG_MAI, payload: data });
 };
-export const getEcommerceReportStackChart =
+export const getEcommerceReportLineChart =
   (dataReq) => async (dispatch) => {
-    function getDayName(dateStr) {
-      let date = new Date(dateStr)
-      return date.toLocaleDateString("en-us", { weekday: "long" });
-    }
+    // function getDayName(dateStr) {
+    //   let date = new Date(dateStr)
+    //   return date.toLocaleDateString("en-us", { weekday: "long" });
+    // }
     const { data } = await Axios.post(`/admin/getRevenue`, dataReq);
     // for (let i=0; i<data.length; i++){
     //   data[i].revenue_date = getDayName(data[i].revenue_date);

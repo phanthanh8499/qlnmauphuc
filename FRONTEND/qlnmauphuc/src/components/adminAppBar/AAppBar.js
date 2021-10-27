@@ -19,6 +19,7 @@ import {
   Avatar,
   Badge,
   Button,
+  Collapse,
   IconButton,
   Menu,
   MenuItem,
@@ -33,7 +34,9 @@ import { useSelector } from "react-redux";
 import { useLocation } from "react-router";
 import AppsIcon from "@mui/icons-material/Apps";
 import { Box } from "@mui/system";
-
+import ExpandLess from "@mui/icons-material/ExpandLess";
+import ExpandMore from "@mui/icons-material/ExpandMore";
+import StarBorder from "@mui/icons-material/StarBorder";
 
 function Copyright(props) {
   return (
@@ -115,6 +118,20 @@ const MyListItem = styled(ListItem)(({ theme }) => ({
   },
 }));
 
+const MyListSubItem = styled(ListItem)(({ theme }) => ({
+  color: "#000000",
+  "&.Mui-selected": {
+    color: "#ffffff !important",
+    backgroundColor: "#b7b3b3",
+    "& .MuiListItemIcon-root": {
+      color: "#ffffff",
+    },
+    ":hover": {
+      backgroundColor: "#b7b3b3",
+    },
+  },
+}));
+
 
 const useStyles = makeStyles((theme) => ({
   content: {
@@ -162,6 +179,18 @@ export default function AAppBar(props) {
   const [open, setOpen] = React.useState(true);
   const toggleDrawer = () => {
     setOpen(!open);
+    const temp = [...openSubMenu];
+    if(open === true){
+      for (let i = 0; i < temp.length; i++) {
+        temp[i] = false;
+      }
+      setOpenSubMenu(temp);
+    } else {
+      for (let i = 0; i < temp.length; i++) {
+        temp[i] = openSubMenuBK[i];
+      }
+      setOpenSubMenu(temp);
+    }
   };
   const [title, setTitle] = useState("Dashboard");
   console.log(abc)
@@ -172,43 +201,139 @@ export default function AAppBar(props) {
   const [selected, setSelected] = useState(0)
   const changeTitle = (event, index) => {
     setSelected(index);
+    setSelectedSubMenu();
+  };
+  const [selectedSubMenu, setSelectedSubMenu] = useState()
+  const changeTitleMenu = (event, index, indexSub) => {
+    setSelected(index);
+    setSelectedSubMenu(indexSub);
   };
   useEffect(() => {
-    console.log("nhan dc", abc);
     abc === "DASHBOARD"
-      ? setSelected(0)
+      ? setSelected(0) || setSelectedSubMenu("0a")
       : abc === "USERS"
-      ? setSelected(1)
+      ? setSelected(1) || setSelectedSubMenu("1a")
       : abc === "PRODUCTS"
       ? setSelected(2)
       : abc === "CLOTH"
       ? setSelected(3)
+      : abc === "STAFF"
+      ? setSelected(1) || setSelectedSubMenu("1b")
       : abc === "ORDERS"
       ? setSelected(4)
       : abc === ""
       ? setSelected(0)
-      : setSelected(5);
+      : setSelected(0) || setSelectedSubMenu("0b");
   }, [abc]);
+
+  const [openSubMenu, setOpenSubMenu] = useState([true, true]);
+  const [openSubMenuBK, setOpenSubMenuBK] = useState([true, true]);
+
+  const handleClick = (e, index) => {
+    const temp = [...openSubMenu];
+    temp[index] = !temp[index];
+    setOpenSubMenu(temp);
+    setOpenSubMenuBK(temp);
+  };
 
   const renderListModule = () => {
     return (
       <List>
-        <Link to="/admin/dashboard" onClick={(e) => changeTitle(e, 0)}>
-          <MyListItem button selected={selected === 0}>
-            <ListItemIcon>
-              <DashboardIcon />
-            </ListItemIcon>
-            <ListItemText primary="Dashboard" />
-          </MyListItem>
-        </Link>
-        <Link to="/admin/users" onClick={(e) => changeTitle(e, 1)}>
-          <MyListItem button selected={selected === 1}>
+        <MyListItem
+          button
+          selected={selected === 0}
+          onClick={(e) => handleClick(e, 0)}
+        >
+          <ListItemIcon>
+            <DashboardIcon />
+          </ListItemIcon>
+          <ListItemText primary="Dashboard" />
+          {openSubMenu[0] ? <ExpandLess /> : <ExpandMore />}
+        </MyListItem>
+        <Collapse in={openSubMenu[0]} timeout="auto" unmountOnExit>
+          <List component="div" disablePadding>
+            <Link
+              to="/admin/dashboard"
+              onClick={(e) => changeTitleMenu(e, 0, "0a")}
+            >
+              <MyListSubItem
+                button
+                sx={{ pl: 4 }}
+                selected={selectedSubMenu === "0a"}
+              >
+                <ListItemIcon>
+                  <StarBorder />
+                </ListItemIcon>
+                <ListItemText primary="Ecommerce" />
+              </MyListSubItem>
+            </Link>
+            <Link
+              to="/admin/statistic"
+              onClick={(e) => changeTitleMenu(e, 0, "0b")}
+            >
+              <MyListSubItem
+                button
+                sx={{ pl: 4 }}
+                selected={selectedSubMenu === "0b"}
+              >
+                <ListItemIcon>
+                  <TrendingUpIcon />
+                </ListItemIcon>
+                <ListItemText primary="Statistic" />
+              </MyListSubItem>
+            </Link>
+          </List>
+        </Collapse>
+
+     
+          <MyListItem
+            button
+            selected={selected === 1}
+            onClick={(e) => handleClick(e, 1)}
+          >
             <ListItemIcon>
               <PeopleIcon />
             </ListItemIcon>
-            <ListItemText primary="Users" />
+            <ListItemText primary="Account" />
+            {openSubMenu[1] ? <ExpandLess /> : <ExpandMore />}
           </MyListItem>
-        </Link>
+          <Collapse in={openSubMenu[1]} timeout="auto" unmountOnExit>
+            <List component="div" disablePadding>
+              <Link
+                Link
+                to="/admin/users"
+                onClick={(e) => changeTitleMenu(e, 1, "1a")}
+              >
+                <MyListSubItem
+                  button
+                  sx={{ pl: 4 }}
+                  selected={selectedSubMenu === "1a"}
+                >
+                  <ListItemIcon>
+                    <PeopleIcon />
+                  </ListItemIcon>
+                  <ListItemText primary="Customers" />
+                </MyListSubItem>
+              </Link>
+              <Link
+                to="/admin/staff"
+                onClick={(e) => changeTitleMenu(e, 1, "1b")}
+              >
+                <MyListSubItem
+                  button
+                  sx={{ pl: 4 }}
+                  selected={selectedSubMenu === "1b"}
+                >
+                  <ListItemIcon>
+                    <TrendingUpIcon />
+                  </ListItemIcon>
+                  <ListItemText primary="Staff" />
+                </MyListSubItem>
+              </Link>
+            </List>
+          </Collapse>
+
+
         <Link to="/admin/products">
           <MyListItem
             button
@@ -237,14 +362,14 @@ export default function AAppBar(props) {
             <ListItemText primary="Orders" />
           </MyListItem>
         </Link>
-        <Link to="/admin/statistic" onClick={(e) => changeTitle(e, 5)}>
+        {/* <Link to="/admin/statistic" onClick={(e) => changeTitle(e, 5)}>
           <MyListItem button selected={selected === 5}>
             <ListItemIcon>
               <TrendingUpIcon />
             </ListItemIcon>
             <ListItemText primary="Statistic" />
           </MyListItem>
-        </Link>
+        </Link> */}
       </List>
     );
   };

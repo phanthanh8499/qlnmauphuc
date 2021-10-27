@@ -299,7 +299,7 @@ export default function Data(props) {
   const dispatch = useDispatch();
   const [dataRender, setDataRender] = useState();
   const [dataExport, setDataExport] = useState();
-  const { data, isCcn } = props;
+  const { data, isNv } = props;
   const [loading, setLoading] = useState(true);
 
   const [province, setProvince] = useState(0);
@@ -426,6 +426,8 @@ export default function Data(props) {
     };
       return new Date(dateString).toLocaleDateString(undefined, options);
   };
+
+  
 
   const renderForm = () => {
     if (addForm) {
@@ -561,7 +563,7 @@ export default function Data(props) {
       field: "id",
       headerName: "Hành động",
       sortable: false,
-      width: 110,
+      width: isNv ? 160 : 110,
       disableClickEventBubbling: true,
       renderCell: (params) => {
         const handleClickEdit = () => {
@@ -574,112 +576,8 @@ export default function Data(props) {
           setUserId(params.value);
         };
 
-        return (
-          <ButtonGroup>
-            <IconButton onClick={handleClickEdit} size="large">
-              <VisibilityIcon />
-            </IconButton>
-            
-
-            <IconButton onClick={handleClickDelete} size="large">
-              <DeleteOutlineIcon color="error" />
-            </IconButton>
-          </ButtonGroup>
-        );
-      },
-    },
-  ];
-
-  const columns2 = [
-    {
-      field: "user_avatar",
-      headerName: "Avatar",
-      width: 100,
-      renderCell: (params) => {
-        return <Avatar src={LOCAL_PATH + params.value.substring(2)} />;
-      },
-    },
-    { field: "user_username", headerName: "UserName", width: 100 },
-    {
-      field: "user_tel",
-      headerName: "Số điện thoại",
-      width: 140,
-      renderCell: (params) => {
-        const formatTel = (text) => {
-          return text.replace(/(\d{3})(\d{3})(\d{4})/, "$1-$2-$3");
-        };
-        return formatTel(params.value);
-      },
-    },
-    {
-      field: "user_status",
-      headerName: "Trạng thái",
-      width: 150,
-      renderCell: (params) => {
-        if (params.value === "active") {
-          return (
-            <MyButton variant="outlined" color="primary" fullWidth>
-              Hoạt động
-            </MyButton>
-          );
-        } else {
-          return (
-            <MyButton variant="outlined" color="error" fullWidth>
-              Bi khoá
-            </MyButton>
-          );
-        }
-      },
-    },
-    {
-      field: "user_typeid",
-      headerName: "Loại người dùng",
-      width: 150,
-      renderCell: (params) => {
-        if (params.value === "AD") {
-          return (
-            <MyButton variant="outlined" color="primary" fullWidth>
-              Admin
-            </MyButton>
-          );
-        }
-        if (params.value === "NV") {
-          return (
-            <MyButton variant="outlined" color="secondary" fullWidth>
-              Nhân viên
-            </MyButton>
-          );
-        } else {
-          return (
-            <MyButton variant="outlined" color="success" fullWidth>
-              Khách hàng
-            </MyButton>
-          );
-        }
-      },
-    },
-    {
-      field: "user_date",
-      headerName: "Ngày tạo",
-      width: 180,
-      renderCell: (params) => {
-        return formatDate(params.value);
-      },
-    },
-    {
-      field: "id",
-      headerName: "Hành động",
-      sortable: false,
-      width: 110,
-      disableClickEventBubbling: true,
-      renderCell: (params) => {
-        const handleClickEdit = () => {
-          openDetailForm();
-          setUserId(params.value);
-        };
-
-        const handleClickDelete = () => {
-          openDeleteForm();
+        const handleClickPermission = () => {
+          openPermissionForm();
           setUserId(params.value);
         };
 
@@ -688,6 +586,11 @@ export default function Data(props) {
             <IconButton onClick={handleClickEdit} size="large">
               <VisibilityIcon />
             </IconButton>
+            {isNv ? (
+              <IconButton onClick={handleClickPermission} size="large">
+                <SettingsIcon color="secondary" />
+              </IconButton>
+            ) : null}
 
             <IconButton onClick={handleClickDelete} size="large">
               <DeleteOutlineIcon color="error" />
@@ -716,7 +619,7 @@ export default function Data(props) {
     );
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, "data");
-    XLSX.writeFile(wb, "DSNguoiDung.xlsx");
+    XLSX.writeFile(wb, "DSNhanVien.xlsx");
   };
 
 
@@ -741,70 +644,65 @@ export default function Data(props) {
   const renderAddressForm = () => {
     return (
       <>
-        {isCcn ? null : (
-          <>
-            <Grid item xs={2} sx={{ ml: 0.5 }}>
-              <MyFormControl fullWidth>
-                <InputLabel id="province-select-label">Tỉnh/Thành</InputLabel>
-                <Select
-                  labelId="province-select-label"
-                  id="province-simple-select"
-                  defaultValue={province}
-                  label="Tỉnh/Thành"
-                  onChange={handleChangeProvince}
-                >
-                  <MenuItem value={0}>Tất cả</MenuItem>
-                  {provinceData.map((value, key) => (
-                    <MenuItem value={value.id} key={key}>
-                      {value.province_name}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </MyFormControl>
-            </Grid>
-            <Grid item xs={2}>
-              <MyFormControl fullWidth>
-                <InputLabel id="district-select-label">Quận/Huyện</InputLabel>
-                <Select
-                  labelId="district-select-label"
-                  id="district-simple-select"
-                  defaultValue={district}
-                  label="Quận/Huyện"
-                  onChange={handleChangeDistrict}
-                >
-                  <MenuItem value={0}>Tất cả</MenuItem>
-                  {districtData.map((value, key) => (
-                    <MenuItem value={value.id} key={key}>
-                      {value.district_prefix} {value.district_name}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </MyFormControl>
-            </Grid>
-            <Grid item xs={2}>
-              <MyFormControl fullWidth>
-                <InputLabel id="ward-select-label">Xã/Phường</InputLabel>
-                <Select
-                  labelId="ward-select-label"
-                  id="ward-simple-select"
-                  defaultValue={ward}
-                  label="Xã/Phường"
-                  onChange={handleChangeWard}
-                >
-                  <MenuItem value={0}>Tất cả</MenuItem>
-                  {wardData.map((value, key) => (
-                    <MenuItem value={value.id} key={key}>
-                      {value.ward_prefix} {value.ward_name}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </MyFormControl>
-            </Grid>
-          </>
-        )}
-
+        <Grid item xs={2} sx={{ ml: 0.5 }}>
+          <MyFormControl fullWidth>
+            <InputLabel id="province-select-label">Tỉnh/Thành</InputLabel>
+            <Select
+              labelId="province-select-label"
+              id="province-simple-select"
+              defaultValue={province}
+              label="Tỉnh/Thành"
+              onChange={handleChangeProvince}
+            >
+              <MenuItem value={0}>Tất cả</MenuItem>
+              {provinceData.map((value, key) => (
+                <MenuItem value={value.id} key={key}>
+                  {value.province_name}
+                </MenuItem>
+              ))}
+            </Select>
+          </MyFormControl>
+        </Grid>
+        <Grid item xs={2}>
+          <MyFormControl fullWidth>
+            <InputLabel id="district-select-label">Quận/Huyện</InputLabel>
+            <Select
+              labelId="district-select-label"
+              id="district-simple-select"
+              defaultValue={district}
+              label="Quận/Huyện"
+              onChange={handleChangeDistrict}
+            >
+              <MenuItem value={0}>Tất cả</MenuItem>
+              {districtData.map((value, key) => (
+                <MenuItem value={value.id} key={key}>
+                  {value.district_prefix} {value.district_name}
+                </MenuItem>
+              ))}
+            </Select>
+          </MyFormControl>
+        </Grid>
+        <Grid item xs={2}>
+          <MyFormControl fullWidth>
+            <InputLabel id="ward-select-label">Xã/Phường</InputLabel>
+            <Select
+              labelId="ward-select-label"
+              id="ward-simple-select"
+              defaultValue={ward}
+              label="Xã/Phường"
+              onChange={handleChangeWard}
+            >
+              <MenuItem value={0}>Tất cả</MenuItem>
+              {wardData.map((value, key) => (
+                <MenuItem value={value.id} key={key}>
+                  {value.ward_prefix} {value.ward_name}
+                </MenuItem>
+              ))}
+            </Select>
+          </MyFormControl>
+        </Grid>
         <LocalizationProvider dateAdapter={AdapterDateFns}>
-          <Grid item xs={2} sx={isCcn ? { ml: 0.5 } : null}>
+          <Grid item xs={2}>
             <DesktopDatePicker
               label="Từ ngày"
               inputFormat="dd/MM/yyyy"
@@ -823,6 +721,7 @@ export default function Data(props) {
             />
           </Grid>
         </LocalizationProvider>
+        
       </>
     );
   };
@@ -894,7 +793,9 @@ export default function Data(props) {
           removeAccents(data.user_username).includes(removeAccents(string)) ||
           removeAccents(data.user_lastname).includes(removeAccents(string)) ||
           removeAccents(data.user_firstname).includes(removeAccents(string)) ||
-          removeAccents(data.user_lastname + " " + data.user_firstname).includes(removeAccents(string)) ||
+          removeAccents(
+            data.user_lastname + " " + data.user_firstname
+          ).includes(removeAccents(string)) ||
           removeAccents(data.user_address).includes(removeAccents(string)) ||
           removeAccents(data.user_status).includes(removeAccents(string)) ||
           formatDate(data.user_date).toString().includes(string) ||
@@ -904,30 +805,7 @@ export default function Data(props) {
       setDataRender(filtered);
       setDataExport(filtered);
     } else {
-      setDataRender(dataBackup);
       setDataExport(dataBackup);
-    }
-  };
-
-  const liveSearch2 = (event) => {
-    let string = event.target.value;
-    event.preventDefault();
-    if (string) {
-      let filtered = dataBackup.filter((data) => {
-        return (
-          removeAccents(data.user_typeid).includes(removeAccents(string)) ||
-          removeAccents(data.user_username).includes(removeAccents(string)) ||
-          // removeAccents(data.user_lastname).includes(removeAccents(string)) ||
-          // removeAccents(data.user_firstname) .includes(removeAccents(string)) ||
-          // removeAccents(data.user_lastname + " " + data.user_firstname).includes(removeAccents(string)) ||
-          // removeAccents(data.user_address).includes(removeAccents(string)) ||
-          removeAccents(data.user_status).includes(removeAccents(string)) ||
-          formatDate(data.user_date).toString().includes(string) ||
-          data.user_tel.toString().includes(string)
-        );
-      });
-      setDataRender(filtered);
-    } else {
       setDataRender(dataBackup);
     }
   };
@@ -961,7 +839,7 @@ export default function Data(props) {
                     </Grid>
                   </Grid>
                   <Grid item xs={2}>
-                    <Grid item xs={12} sx={{ float: "right", mr: 0.5 }}>
+                    <Grid item xs={12} sx={{ float: "right", mr:0.5 }}>
                       <Button
                         variant="outlined"
                         color="primary"
@@ -975,7 +853,7 @@ export default function Data(props) {
                 <Divider sx={{ mt: 0.5, mb: 0.5 }} />
               </Grid>
               <Grid item xs={6}>
-                {isCcn ? (
+                {isNv ? (
                   <Button
                     variant="outlined"
                     color="primary"
@@ -1035,7 +913,7 @@ export default function Data(props) {
                   <StyledInputBase
                     placeholder="Search…"
                     inputProps={{ "aria-label": "search" }}
-                    onChange={isCcn ? liveSearch2 : liveSearch}
+                    onChange={liveSearch}
                   />
                 </Search>
               </Grid>
@@ -1052,7 +930,7 @@ export default function Data(props) {
           >
             <DataGrid
               rows={rows}
-              columns={isCcn ? columns2 : columns}
+              columns={columns}
               pageSize={5}
               className={antDesignClasses.root}
               checkboxSelection

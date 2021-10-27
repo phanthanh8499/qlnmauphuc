@@ -16,7 +16,7 @@ import {
   Legend,
   ResponsiveContainer,
 } from "recharts";
-import { getEcommerceReportStackChart } from "../../redux/Action";
+import { getEcommerceReportLineChart } from "../../redux/Action";
 
 const data = [
   {
@@ -61,7 +61,7 @@ export default function OrderChart() {
   const [loading, setLoading] = useState(true);
   const dispatch = useDispatch();
   const ecommerceReport = useSelector((state) => state.ecommerceReport)
-  const {loadingSC, dataStackChart} = ecommerceReport;
+  const {loadingLC, dataLineChart} = ecommerceReport;
   useEffect(() => {
     var now = new Date();
     now.setHours(0, 0, 0, 0);
@@ -80,12 +80,12 @@ export default function OrderChart() {
       startDate: format(startDate, "yyyy-MM-dd"),
       endDate: format(endDate, "yyyy-MM-dd HH:mm:ss"),
     };
-    dispatch(getEcommerceReportStackChart(dataSend));
+    dispatch(getEcommerceReportLineChart(dataSend));
   }, []);
   
   return (
     <>
-      {loadingSC ? (
+      {loadingLC ? (
         <Box sx={{ width: "100%", height: "100%" }}>
           <CircularProgress />
         </Box>
@@ -94,7 +94,7 @@ export default function OrderChart() {
           <ComposedChart
             width={500}
             height={400}
-            data={dataStackChart}
+            data={dataLineChart}
             margin={{
               top: 20,
               right: 20,

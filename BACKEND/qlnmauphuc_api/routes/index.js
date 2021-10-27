@@ -84,13 +84,15 @@ router.post("/signup", async function (req, res, next) {
     console.log("Thieu thong tin");
   } else {
     pool.query(
-      "INSERT INTO users (user_username, user_password, user_typeid, user_status, user_date, user_avatar, user_tel) VALUES ($1, $2, 'KH', 'active', NOW()::TIMESTAMP, './images/avatar/user-image.jpg', $3)",
+      "INSERT INTO users (user_username, user_password, user_typeid, user_status, user_date, user_avatar, user_tel) VALUES ($1, $2, 'KH', 'active', NOW()::TIMESTAMP, './images/avatar/user-image.jpg', $3) RETURNING id",
       [username, newpassword, email],
       (error, response) => {
         if (error) {
           console.log(error);
         } else {
           res.send("Đã insert thành công! user: " + username);
+          console.log(response)
+          console.log(response.rows)
         }
       }
     );
@@ -116,6 +118,38 @@ router.get("/admin/users", function (req, res) {
 INNER JOIN ward ON ward.id = users.user_wardid
 INNER JOIN district ON district.id = ward.ward_districtid
 INNER JOIN province ON province.id = ward.ward_provinceid`,
+    (error, response) => {
+      if (error) {
+        console.log(error);
+      } else {
+        res.send(response.rows);
+      }
+    }
+  );
+});
+router.get("/admin/users/getCustomer", function (req, res) {
+  pool.query(
+    `SELECT users.*, ward.ward_prefix, ward.ward_name, ward.ward_districtid, district.district_prefix, district.district_name, ward.ward_provinceid, province.province_name FROM users
+LEFT JOIN ward ON ward.id = users.user_wardid
+LEFT JOIN district ON district.id = ward.ward_districtid
+LEFT JOIN province ON province.id = ward.ward_provinceid
+WHERE users.user_typeid = 'KH'`,
+    (error, response) => {
+      if (error) {
+        console.log(error);
+      } else {
+        res.send(response.rows);
+      }
+    }
+  );
+});
+router.get("/admin/users/getStaff", function (req, res) {
+  pool.query(
+    `SELECT users.*, ward.ward_prefix, ward.ward_name, ward.ward_districtid, district.district_prefix, district.district_name, ward.ward_provinceid, province.province_name FROM users
+INNER JOIN ward ON ward.id = users.user_wardid
+INNER JOIN district ON district.id = ward.ward_districtid
+INNER JOIN province ON province.id = ward.ward_provinceid
+WHERE users.user_typeid != 'KH'`,
     (error, response) => {
       if (error) {
         console.log(error);

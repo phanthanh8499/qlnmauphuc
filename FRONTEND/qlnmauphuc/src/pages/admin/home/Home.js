@@ -26,6 +26,10 @@ export default function Home () {
             component={lazy(() => import("../../../components/adminUsers"))}
           ></Route>
           <Route
+            path="/admin/staff"
+            component={lazy(() => import("../../../components/adminStaff"))}
+          ></Route>
+          <Route
             path="/admin/dashboard"
             component={lazy(() => import("../../../components/adminDashboard"))}
           ></Route>

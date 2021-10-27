@@ -3,22 +3,20 @@ import {
   CircularProgress,
   Divider,
   Grid,
+  IconButton,
+  Menu,
+  MenuItem,
   Paper,
   Typography,
 } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import { styled } from "@mui/material/styles";
-import LocalMallIcon from "@mui/icons-material/LocalMall";
-import NavigateNextIcon from "@mui/icons-material/NavigateNext";
-import PersonAddIcon from "@mui/icons-material/PersonAdd";
-import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
-import MonetizationOnIcon from "@mui/icons-material/MonetizationOn";
 import DataCount from "./DataCount";
-import OrderChart from "./OrderChart";
 import PPieChart from "./PPieChart";
 import { format } from "date-fns";
-import axios from "axios";
-import Ex from "./Ex";
+import DLineChart from "./DLineChart";
+import WeeklyForm from "./weeklyForm/WeeklyForm";
+import MoreVertIcon from "@mui/icons-material/MoreVert";
 
 const Item = styled(Paper)(({ theme }) => ({
   ...theme.typography.body2,
@@ -26,7 +24,76 @@ const Item = styled(Paper)(({ theme }) => ({
   color: theme.palette.text.secondary,
 }));
 
+const options = ["Báo cáo mỗi tuần"];
+
 export default function AdminDashboard() {
+  const [anchorEl, setAnchorEl] = useState(null);
+  const open = Boolean(anchorEl);
+  const [weeklyForm, setWeeklyForm] = useState(false);
+  const [monthlyForm, setMonthlyForm] = useState(false);
+  const closeWeeklyForm = () => {
+    setWeeklyForm(false);
+  };
+  const closeMonthlyForm = () => {
+    setMonthlyForm(false);
+  };
+  const handleClick = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+  const handleSelect = (e, index) => {
+    console.log(index);
+    if (index === 0) {
+      setWeeklyForm(true);
+    }
+    if (index === 1) {
+      setMonthlyForm(true);
+    }
+    handleClose();
+  };
+  const renderForm = () => {
+    if (weeklyForm) {
+      return (
+        <WeeklyForm open={weeklyForm} onClose={closeWeeklyForm}></WeeklyForm>
+      );
+    }
+  };
+  const renderMenu = () => {
+    return (
+      <div>
+        <Menu
+          id="stack-chart-menu"
+          MenuListProps={{
+            "aria-labelledby": "long-button",
+          }}
+          anchorEl={anchorEl}
+          open={open}
+          onClose={handleClose}
+          PaperProps={{
+            style: {
+              width: "20ch",
+            },
+          }}
+          anchorOrigin={{
+            vertical: "bottom",
+            horizontal: "right",
+          }}
+          transformOrigin={{
+            vertical: "top",
+            horizontal: "right",
+          }}
+        >
+          {options.map((option, index) => (
+            <MenuItem key={option} onClick={(e) => handleSelect(e, index)}>
+              {option}
+            </MenuItem>
+          ))}
+        </Menu>
+      </div>
+    );
+  };
   return (
     <Grid container>
       <Grid item xs={12}>
@@ -35,26 +102,60 @@ export default function AdminDashboard() {
       <Grid item xs={12} sx={{ mt: 1 }}>
         <Grid container spacing={1}>
           <Grid item xs={8}>
-            <Item sx={{ height: 438 }}>
-              <Typography sx={{ fontWeight: 600 }}>
-                Doanh thu
-              </Typography>
+            <Item sx={{ height: 435 }}>
+              <Grid container>
+                <Grid item xs={8}>
+                  <Typography sx={{ fontWeight: 600 }}>Doanh thu</Typography>
+                </Grid>
+                <Grid item xs={4}>
+                  <IconButton
+                    aria-label="more"
+                    id="long-button"
+                    aria-controls="long-menu"
+                    aria-expanded={open ? "true" : undefined}
+                    aria-haspopup="true"
+                    onClick={handleClick}
+                    sx={{ float: "right", padding: 0 }}
+                  >
+                    <MoreVertIcon />
+                  </IconButton>
+                </Grid>
+              </Grid>
               <Divider />
               {/* <OrderChart /> */}
-              <Ex/>
+              <DLineChart />
             </Item>
           </Grid>
           <Grid item xs={4}>
-            <Item sx={{ height: 438 }}>
-              <Typography sx={{ fontWeight: 600 }}>
-                Sản phẩm được đặt may
-              </Typography>
+            <Item sx={{ height: 435 }}>
+              <Grid container>
+                <Grid item xs={8}>
+                  <Typography sx={{ fontWeight: 600 }}>
+                    Sản phẩm được đặt may
+                  </Typography>
+                </Grid>
+                <Grid item xs={4}>
+                  <IconButton
+                    aria-label="more"
+                    id="long-button"
+                    aria-controls="long-menu"
+                    aria-expanded={open ? "true" : undefined}
+                    aria-haspopup="true"
+                    onClick={handleClick}
+                    sx={{ float: "right", padding: 0 }}
+                  >
+                    <MoreVertIcon />
+                  </IconButton>
+                </Grid>
+              </Grid>
               <Divider />
               <PPieChart />
             </Item>
           </Grid>
         </Grid>
       </Grid>
+      {renderMenu()}
+      {renderForm()}
     </Grid>
   );
 }

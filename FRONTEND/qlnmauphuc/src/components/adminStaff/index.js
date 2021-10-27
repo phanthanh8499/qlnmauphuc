@@ -8,7 +8,7 @@ import AddForm from "./addForm/AddForm";
 import DetailForm from "./detailForm/DetailForm";
 import DeleteForm from "./deleteForm/DeteleForm";
 import { Badge, Button, ButtonGroup, CircularProgress, Divider, Grid, IconButton, Paper } from "@mui/material";
-import { getClothData, getCustomerData, getProductData, getUserData } from "../../redux/Action";
+import { getClothData, getProductData, getStaffData, getUserData } from "../../redux/Action";
 import { XOA_HINH_ANH } from "../../constants/Constants";
 import { createTheme, styled } from "@mui/material/styles";
 import { createStyles, makeStyles } from "@mui/styles";
@@ -247,31 +247,29 @@ function CustomNoRowsOverlay() {
   );
 }
 
-export default function AdminCloth() {
+export default function AdminStaff() {
   const classes = useStyles();
   const { enqueueSnackbar } = useSnackbar();
   const antDesignClasses = useStylesAntDesign();
   const users = useSelector((state) => state.users);
-  
-  const { loadingCustomer, customerData} = users;
+  const { loadingStaff, staffData} = users;
   const [loadingState, setLoadingState] = useState(true)
-
   const dispatch = useDispatch()
 
   useEffect(() => {
-    dispatch(getCustomerData());
+    dispatch(getStaffData());
   }, []);
 
-
-  const [dcn, setDcn] = useState([]);
-  const [ccn, setCcn] = useState([]);
-  
+  const [nv, setNv] = useState([]);
+  const [qt, setQt] = useState([]);
 
   useEffect(() => {
-    setDcn(customerData.filter((item) => item.user_firstname !== null));
-    setCcn(customerData.filter((item) => item.user_firstname === null));
+   
+    setNv(staffData.filter((item) => item.user_typeid === "NV"));
+  
+    setQt(staffData.filter((item) => item.user_typeid === "AD"));
     setLoadingState(false);
-  }, [customerData]);
+  }, [staffData]);
   const [value, setValue] = useState("1");
 
   const handleChange = (event, newValue) => {
@@ -280,7 +278,7 @@ export default function AdminCloth() {
 
   return (
     <Grid container component={Paper}>
-      {loadingCustomer || loadingState ? (
+      {loadingStaff || loadingState ? (
         <Grid
           item
           xs={12}
@@ -306,24 +304,23 @@ export default function AdminCloth() {
                       onChange={handleChange}
                       aria-label="lab API tabs example"
                     >
-                      
                       <MyTab
                         label={
-                          <MyBadge badgeContent={dcn.length} color="primary">
-                            Đã cập nhật
+                          <MyBadge badgeContent={nv.length} color="primary">
+                            Nhân viên
                           </MyBadge>
                         }
                         value="1"
                       />
+
                       <MyTab
                         label={
-                          <MyBadge badgeContent={ccn.length} color="primary">
-                            Chưa cập nhật
+                          <MyBadge badgeContent={qt.length} color="primary">
+                            Quản trị
                           </MyBadge>
                         }
                         value="2"
                       />
-                     
                     </TabList>
                   </Box>
                 </Grid>
@@ -334,14 +331,12 @@ export default function AdminCloth() {
               <Divider sx={{ margin: "0px 0px 5px 0px" }} />
             </Grid>
             <Grid item xs={12}>
-              
               <TabPanel value="1" sx={{ padding: 0 }}>
-                <Data data={dcn} />
+                <Data data={nv} isNv />
               </TabPanel>
               <TabPanel value="2" sx={{ padding: 0 }}>
-                <Data data={ccn} isCcn/>
+                <Data data={qt} />
               </TabPanel>
-              
             </Grid>
           </TabContext>
         </>

@@ -4,7 +4,7 @@ import {
   BAO_CAO_THUONG_MAI,
   BAO_CAO_TIEN_DO_HOA_DON,
   BAO_CAO_TRANG_THAI_HOA_DON,
-  BAO_CAO_TRANG_THAI_THUONG_MAI,
+  BAO_CAO_SAN_PHAM_THUONG_MAI,
   CAP_NHAT_HINH_ANH,
   CHINH_SUA_THONG_TIN_DON_HANG,
   CHINH_SUA_THONG_TIN_SAN_PHAM,
@@ -56,6 +56,8 @@ import {
   YEU_CAU_LIET_KE_SP,
   YEU_CAU_LIET_KE_USERS,
   YEU_CAU_LIET_KE_VAI,
+  LIET_KE_NHAN_VIEN,
+  LIET_KE_KHACH_HANG,
 } from "../constants/Constants";
 
 export const dangNhapReducer = (state = { loading: true }, action) => {
@@ -141,7 +143,11 @@ export const productReducer = (
 export const userReducer = (
   state = {
     loading: true,
+    loadingCustomer: true,
+    loadingStaff: true,
     userData: [],
+    customerData: [],
+    staffData: [],
     userData1: [],
     userData2: [],
     userInfo: [],
@@ -156,6 +162,16 @@ export const userReducer = (
         return a.id - b.id;
       });
       return { ...state, loading: false, userData: data };
+    case LIET_KE_KHACH_HANG:
+      const data2 = action.payload.sort(function (a, b) {
+        return a.id - b.id;
+      });
+      return { ...state, loadingCustomer: false, customerData: data2 };
+    case LIET_KE_NHAN_VIEN:
+      const data3 = action.payload.sort(function (a, b) {
+        return a.id - b.id;
+      });
+      return { ...state, loadingStaff: false, staffData: data3 };
     case LIET_KE_USERS_DA_CAP_NHAT:
       return {
         ...state,
@@ -511,9 +527,9 @@ export const ecommerceReportReducer = (
   state = {
     loadingDC: true,
     loadingPC: true,
-    loadingSC: true,
+    loadingLC: true,
     dataCount: [],
-    dataStackChart: [],
+    dataLineChart: [],
     dataPieChart: [],
   },
   action
@@ -521,10 +537,10 @@ export const ecommerceReportReducer = (
   switch (action.type) {
     case BAO_CAO_THUONG_MAI:
       return { ...state, loadingDC: false, dataCount: action.payload };
-    case BAO_CAO_TRANG_THAI_THUONG_MAI:
+    case BAO_CAO_SAN_PHAM_THUONG_MAI:
       return { ...state, loadingPC: false, dataPieChart: action.payload };
     case BAO_CAO_DOANH_THU_THUONG_MAI:
-      return { ...state, loadingSC: false, dataStackChart: action.payload };
+      return { ...state, loadingLC: false, dataLineChart: action.payload };
     case LIET_KE_VAI:
       const data = action.payload.sort(function (a, b) {
         return a.id - b.id;
