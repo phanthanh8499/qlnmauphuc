@@ -35,7 +35,7 @@ export default function UOder() {
   };
 
   useEffect(() => {
-    dispatch(getOrderData(userInfo.id));
+    dispatch(getOrderData({ id: userInfo.id }));
   }, []);
 
   useEffect(() => {

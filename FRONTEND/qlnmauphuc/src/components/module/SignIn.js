@@ -87,7 +87,7 @@ function SignIn(props) {
       setLoading(false);
     }
     getUserData();
-  }, []);
+  }, [open]);
 
   const handleSubmit = async (event) => {
     event.preventDefault();

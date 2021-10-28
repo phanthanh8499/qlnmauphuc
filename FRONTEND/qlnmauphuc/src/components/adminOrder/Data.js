@@ -63,6 +63,7 @@ import axios from "axios";
 import DesktopDatePicker from "@mui/lab/DesktopDatePicker";
 import LocalizationProvider from "@mui/lab/LocalizationProvider";
 import AdapterDateFns from "@mui/lab/AdapterDateFns";
+import { format } from "date-fns";
 
 function CustomToolbar() {
   return (
@@ -306,7 +307,6 @@ export default function Data(props) {
   const { data } = props;
   const dispatch = useDispatch();
   const [dataRender, setDataRender] = useState([]);
-  const [dataExport, setDataExport] = useState([]);
   const [loading, setLoading] = useState(true);
 
   const [province, setProvince] = useState(0);
@@ -326,7 +326,7 @@ export default function Data(props) {
   
   useEffect(() => {
     setDataRender(data);
-    setDataExport(data);
+    setDataBackup(data);
     setLoading(false);
   }, [data]);
 
@@ -353,8 +353,6 @@ export default function Data(props) {
 
   const [anchorEl, setAnchorEl] = useState(null);
   const openMenu = Boolean(anchorEl);
-
-  
 
   const rows = dataRender;
   const [orderId, setOrderId] = useState("");
@@ -563,15 +561,32 @@ export default function Data(props) {
     },
   ];
 
-  const CustomToolbar = () => {
-    return <GridToolbarContainer></GridToolbarContainer>;
-  };
-
   const exportFile = () => {
-    const ws = XLSX.utils.json_to_sheet(dataExport);
+    var list = JSON.parse(JSON.stringify(dataRender));
+    list.map((item) => {
+        delete item.id;
+        delete item.od_productid;
+        delete item.od_clothid;
+        delete item.order_wardid;
+        delete item.order_districtid;
+        delete item.order_provinceid;
+        delete item.order_paymentid;
+        delete item.order_shippingid;
+        delete item.order_tailorid;
+        delete item.order_statusid;
+        delete item.order_userid;
+        delete item.product_typeid;
+        delete item.product_image1;
+        return item;
+      })
+    const ws = XLSX.utils.json_to_sheet(
+      list
+    );
+    var now = new Date();
+    now = format(now, "yyyy-MM-dd HH:mm:ss");
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, "data");
-    XLSX.writeFile(wb, "DSDonHang.xlsx");
+    XLSX.writeFile(wb, "DSDonHang " + now +".xlsx");
   };
 
   const handleChangeProvince = async (e) => {
@@ -591,8 +606,6 @@ export default function Data(props) {
   const handleChangeWard = (e) => {
     setWard(e.target.value);
   };
-
-  
 
   const renderAddressForm = () => {
     return (
@@ -677,15 +690,15 @@ export default function Data(props) {
   const [dataBackup, setDataBackup] = useState();
   const handleClickSearch = () => {
     let temp = [...data]
-    if(province !== 0 ){
-      temp = temp.filter((data) => data.order_provinceid === province);
-    }
-    if (district !== 0) {
-      temp = temp.filter((data) => data.order_districtid === district);
-    }
-    if (ward !== 0) {
-      temp = temp.filter((data) => data.order_wardid === ward);
-    }
+    // if(province !== 0 ){
+    //   temp = temp.filter((data) => data.order_provinceid === province);
+    // }
+    // if (district !== 0) {
+    //   temp = temp.filter((data) => data.order_districtid === district);
+    // }
+    // if (ward !== 0) {
+    //   temp = temp.filter((data) => data.order_wardid === ward);
+    // }
     if (Date.parse(endDate) > Date.parse(new Date(new Date().setHours(23, 59, 59, 0)))) {
       enqueueSnackbar("Không được chọn ngày lớn hơn ngày hiện tại", {
         variant: "error",
@@ -706,9 +719,21 @@ export default function Data(props) {
           Date.parse(data.order_startdate) <= Date.parse(endDate)
       );
       console.log("ok ")
+      const dataSend = {
+        id: 0,
+        provinceId: province,
+        districtId: district,
+        wardId: ward,
+        startDate: format(startDate, "yyyy-MM-dd"),
+        endDate: format(endDate, "yyyy-MM-dd HH:mm:ss"),
+      };
+      dispatch(getOrderData(dataSend));
     }
-    setDataRender(temp)
-    setDataBackup(temp)
+    
+    
+
+    // setDataRender(temp)
+    // setDataBackup(temp)
   }
 
   const liveSearch = (event) => {
@@ -862,6 +887,7 @@ export default function Data(props) {
               </Grid>
             </Grid>
           </Grid>
+
           <Grid
             item
             xs={12}

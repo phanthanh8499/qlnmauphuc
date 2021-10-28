@@ -87,7 +87,7 @@ function SignUp(props) {
       setLoading(false);
     }
     getUserData()
-  }, []);
+  }, [open]);
   
 
   const handleSubmit = () => {

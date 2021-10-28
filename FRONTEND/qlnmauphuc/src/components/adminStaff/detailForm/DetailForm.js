@@ -29,7 +29,7 @@ import { editCloth, editProduct, editUser } from "../../../redux/Action";
 import ImageMagnify from "./ImageMagnify";
 import { FRONTEND_URL, LOCAL_PATH } from "../../../constants/Constants";
 import CameraAltIcon from "@mui/icons-material/CameraAlt";
-import { IOSSwitch } from "../../utility/Utility";
+import { IOSSwitch, MyFormControl } from "../../utility/Utility";
 
 const useStyle = makeStyles((theme) => ({
   root: {
@@ -88,9 +88,33 @@ function DetailForm(props) {
     ));
   };
 
+  const [province, setProvince] = useState();
+  const [district, setDistrict] = useState();
+  const [ward, setWard] = useState();
+  const [provinceData, setProvinceData] = useState([]);
+  const [districtData, setDistrictData] = useState([]);
+  const [wardData, setWardData] = useState([]);
+
   useEffect(() => {
+    async function getProvinceData() {
+      const { data } = await axios.get(`/getProvince`);
+      setProvinceData(data);
+    }
     async function getDetailUser() {
       const { data } = await axios.get(`/getDetailUser.${id}`);
+      if (data[0].user_wardid !== null) {
+        const data01 = await axios.get(`/getAddress.${data[0].user_wardid}`);
+        const data02 = await axios.get(
+          `/getDistrict.${data01.data[0].ward_provinceid}`
+        );
+        const data03 = await axios.get(
+          `/getWard.${data01.data[0].ward_provinceid}&${data01.data[0].ward_districtid}`
+        );
+        setDistrict(data01.data[0].ward_districtid);
+        setProvince(data01.data[0].ward_provinceid);
+        setDistrictData(data02.data);
+        setWardData(data03.data);
+      }
       setUsername(`${data[0].user_username}`);
       setPassword(`${data[0].user_password}`);
       setEmail(`${data[0].user_email}`);
@@ -104,8 +128,10 @@ function DetailForm(props) {
       setImgUpload(LOCAL_PATH + `${data[0].user_avatar.substring(2)}`);
       setAvatar(`${data[0].user_avatar}`);
       setCity(`${data[0].user_city}`);
+      setWard(`${data[0].user_wardid}`);
       setLoading(false);
     }
+    getProvinceData();
     getDetailUser();
   }, []);
 
@@ -130,6 +156,85 @@ function DetailForm(props) {
       setStatus("active");
     }
   }
+
+  const handleChangeProvince = async (e) => {
+    setProvince(e.target.value);
+    const { data } = await axios.get(`/getDistrict.${e.target.value}`);
+    setDistrictData(data);
+    setWardData([]);
+    setDistrict();
+    setWard();
+  };
+  const handleChangeDistrict = async (e) => {
+    setDistrict(e.target.value);
+    const { data } = await axios.get(`/getWard.${province}&${e.target.value}`);
+    setWardData(data);
+    setWard();
+  };
+  const handleChangeWard = (e) => {
+    setWard(e.target.value);
+  };
+
+  const renderAddressForm = () => {
+     return (
+       <>
+         <Grid item xs={4} sx={{ marginTop: "10px" }}>
+           <MyFormControl fullWidth>
+             <InputLabel id="province-select-label">Tỉnh/Thành</InputLabel>
+             <Select
+               labelId="province-select-label"
+               id="province-simple-select"
+               defaultValue={province}
+               label="Tỉnh/Thành"
+               onChange={handleChangeProvince}
+             >
+               {provinceData.map((value, key) => (
+                 <MenuItem value={value.id} key={key}>
+                   {value.province_name}
+                 </MenuItem>
+               ))}
+             </Select>
+           </MyFormControl>
+         </Grid>
+         <Grid item xs={4} sx={{ marginTop: "10px" }}>
+           <MyFormControl fullWidth>
+             <InputLabel id="district-select-label">Quận/Huyện</InputLabel>
+             <Select
+               labelId="district-select-label"
+               id="district-simple-select"
+               defaultValue={district}
+               label="Quận/Huyện"
+               onChange={handleChangeDistrict}
+             >
+               {districtData.map((value, key) => (
+                 <MenuItem value={value.id} key={key}>
+                   {value.district_prefix} {value.district_name}
+                 </MenuItem>
+               ))}
+             </Select>
+           </MyFormControl>
+         </Grid>
+         <Grid item xs={4} sx={{ marginTop: "10px" }}>
+           <MyFormControl fullWidth>
+             <InputLabel id="ward-select-label">Xã/Phường</InputLabel>
+             <Select
+               labelId="ward-select-label"
+               id="ward-simple-select"
+               defaultValue={ward}
+               label="Xã/Phường"
+               onChange={handleChangeWard}
+             >
+               {wardData.map((value, key) => (
+                 <MenuItem value={value.id} key={key}>
+                   {value.ward_prefix} {value.ward_name}
+                 </MenuItem>
+               ))}
+             </Select>
+           </MyFormControl>
+         </Grid>
+       </>
+     );
+   };
 
   const handleSubmit = () => {
     const formData = new FormData();
@@ -311,7 +416,9 @@ function DetailForm(props) {
                     }}
                   />
                 </Grid>
+                {renderAddressForm()}
               </Grid>
+
               <Grid item xs={12}>
                 <FormControlLabel
                   control={

@@ -22,8 +22,8 @@ export default function Home () {
             component={lazy(() => import("../../../components/adminProducts"))}
           ></Route>
           <Route
-            path="/admin/users"
-            component={lazy(() => import("../../../components/adminUsers"))}
+            path="/admin/customer"
+            component={lazy(() => import("../../../components/adminCustomer"))}
           ></Route>
           <Route
             path="/admin/staff"

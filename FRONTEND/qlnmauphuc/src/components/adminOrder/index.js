@@ -29,6 +29,7 @@ import TabContext from "@mui/lab/TabContext";
 import TabList from "@mui/lab/TabList";
 import TabPanel from "@mui/lab/TabPanel";
 import Data from "./Data";
+import { format } from "date-fns";
 
 const MyBadge = styled(Badge)`
   .MuiBadge-badge {
@@ -66,9 +67,35 @@ export default function AdminOrder() {
   const order = useSelector((state) => state.order);
   const { orderData, error } = order;
   const dispatch = useDispatch();
+
   useEffect(() => {
-    dispatch(getOrderData(0));
+    var now = new Date();
+    now.setHours(0, 0, 0, 0);
+    var startDate = new Date(now);
+    var endDate = new Date(now);
+    if (now.toLocaleDateString("en-us", { weekday: "long" }) === "Sunday") {
+      startDate.setDate(startDate.getDate() - startDate.getDay() - 6);
+      endDate.setDate(endDate.getDate() - endDate.getDay());
+      endDate.setHours(23, 59, 59, 0); 
+    } else {
+      startDate.setDate(startDate.getDate() - startDate.getDay() + 1);
+      endDate.setDate(endDate.getDate() - endDate.getDay() + 7);
+      endDate.setHours(23, 59, 59, 0);  
+    }
+    var sd = new Date('2021-9-1')
+    var ed = new Date('2021-10-24')
+    ed.setHours(23, 59, 59, 0); 
+    const dataSend = {
+      id: 0,
+      provinceId: 0,
+      districtId: 0,
+      wardId: 0,
+      startDate: format(sd, "yyyy-MM-dd"),
+      endDate: format(ed, "yyyy-MM-dd HH:mm:ss"),
+    };
+    dispatch(getOrderData(dataSend));
   }, [dispatch]);
+
   const [loading, setLoading] = useState(true);
   const [processing, setProcessing] = useState();
   const [sewing, setSewing] = useState();

@@ -42,6 +42,7 @@ import EditIcon from "@mui/icons-material/Edit";
 import XLSX from "xlsx";
 import SaveAltIcon from "@mui/icons-material/SaveAlt";
 import { useTheme } from "@mui/material/styles";
+import { format } from "date-fns";
 
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
@@ -312,16 +313,14 @@ export default function Data(props) {
   const classes = useStyles();
   const antDesignClasses = useStylesAntDesign();
   const { enqueueSnackbar } = useSnackbar();
-  const products = useSelector((state) => state.products);
-  const { loading, productData, error } = products;
   const {data} = props;
   const [dataRender, setDataRender] = useState([]);
-  const [dataExport, setDataExport] = useState([]);
+  const [loading, setLoading] = useState(true);
   const dispatch = useDispatch();
   useEffect(() => {
     setDataRender(data)
-    setDataExport(data)
-    // dispatch(getProductData());
+    setDataBackup(data)
+    setLoading(false)
   }, [data]);
 
   const rows = dataRender;
@@ -499,21 +498,25 @@ export default function Data(props) {
   ];
 
   const exportFile = () => {
+    var list = JSON.parse(JSON.stringify(dataRender));
+    list.map((item) => {
+      delete item.product_image2;
+      delete item.product_image3;
+      delete item.product_introduction1;
+      delete item.product_introduction2;
+      delete item.product_introduction3;
+      delete item.product_introduction4;
+      delete item.product_introduction5;
+      return item;
+    });
+    var now = new Date();
+    now = format(now, "yyyy-MM-dd HH:mm:ss");
     const ws = XLSX.utils.json_to_sheet(
-      dataExport.map((item) => {
-        delete item.product_image2;
-        delete item.product_image3;
-        delete item.product_introduction1;
-        delete item.product_introduction2;
-        delete item.product_introduction3;
-        delete item.product_introduction4;
-        delete item.product_introduction5;
-        return item;
-      })
+      list
     );
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, "data");
-    XLSX.writeFile(wb, "DSSanPham.xlsx");
+    XLSX.writeFile(wb, "DSSanPham " + now + ".xlsx");
   };
 
 
@@ -579,7 +582,7 @@ export default function Data(props) {
     let string = event.target.value;
     event.preventDefault();
     if (string) {
-      let filtered = dataRender.filter((data) => {
+      let filtered = dataBackup.filter((data) => {
         return (
           data.id === parseInt(string) ||
           data.product_code.toLowerCase().includes(string.toLowerCase()) ||
@@ -604,8 +607,7 @@ export default function Data(props) {
           removeAccents(data.product_elasticity)
             .toLowerCase()
             .includes(removeAccents(string).toLowerCase()) ||
-          
-          data.product_price.toString().includes(string) 
+          data.product_price.toString().includes(string)
           // data.product_old_price.toString().includes(string)
         );
       });
@@ -748,8 +750,6 @@ export default function Data(props) {
         >
           <CircularProgress />
         </Grid>
-      ) : error ? (
-        <div>error</div>
       ) : (
         <>
           <Grid item xs={12} sx={{mb:0.5}}>

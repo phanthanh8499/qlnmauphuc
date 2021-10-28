@@ -229,7 +229,7 @@ export const editUserInfo = (dataReq) => async (dispatch) => {
 export const getOrderData = (id) => async (dispatch) => {
   dispatch({ type: YEU_CAU_LIET_KE_DON_HANG });
   try {
-    const { data } = await Axios.get(`/getOrderData.${id}`);
+    const { data } = await Axios.post(`/getOrderData`, id);
     dispatch({ type: LIET_KE_DON_HANG, payload: data });
   } catch (error) {
     dispatch({ type: LIET_KE_DON_HANG_THAT_BAI, payload: error.message });

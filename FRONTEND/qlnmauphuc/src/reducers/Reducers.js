@@ -191,7 +191,16 @@ export const userReducer = (
     case SUA_USER:
       return {
         ...state,
-        userData: state.userData.map((item) => {
+        customerData: state.customerData.map((item) => {
+          if (item.id === parseInt(action.payload.id)) {
+            item = action.payload;
+            item.id = parseInt(action.payload.id);
+            return item;
+          } else {
+            return item;
+          }
+        }),
+        staffData: state.staffData.map((item) => {
           if (item.id === parseInt(action.payload.id)) {
             item = action.payload;
             item.id = parseInt(action.payload.id);
@@ -204,7 +213,16 @@ export const userReducer = (
     case THAY_DOI_TRANG_THAI_USER:
       return {
         ...state,
-        userData: state.userData.map((item) => {
+        customerData: state.customerData.map((item) => {
+          if (item.id === parseInt(action.payload.id)) {
+            item.user_status = action.payload.status;
+            item.id = parseInt(action.payload.id);
+            return item;
+          } else {
+            return item;
+          }
+        }),
+        staffData: state.staffData.map((item) => {
           if (item.id === parseInt(action.payload.id)) {
             item.user_status = action.payload.status;
             item.id = parseInt(action.payload.id);
@@ -217,11 +235,11 @@ export const userReducer = (
     case XOA_USER:
       return {
         ...state,
-        userData: state.userData.filter(
-          (userData) => userData.id !== action.payload
+        customerData: state.customerData.filter(
+          (customerData) => customerData.id !== action.payload
         ),
-        userData1: state.userData1.filter(
-          (userData) => userData.id !== action.deleteid
+        staffData: state.staffData.filter(
+          (staffData) => staffData.id !== action.payload
         ),
         userData2: state.userData2.filter(
           (userData) => userData.id !== action.deleteid

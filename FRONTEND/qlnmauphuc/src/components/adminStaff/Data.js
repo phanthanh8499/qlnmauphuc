@@ -53,6 +53,7 @@ import axios from "axios";
 import DesktopDatePicker from "@mui/lab/DesktopDatePicker";
 import LocalizationProvider from "@mui/lab/LocalizationProvider";
 import AdapterDateFns from "@mui/lab/AdapterDateFns";
+import { format } from "date-fns";
 
 const MyBadge = styled(Badge)`
   .MuiBadge-badge {
@@ -298,7 +299,6 @@ export default function Data(props) {
   const antDesignClasses = useStylesAntDesign();
   const dispatch = useDispatch();
   const [dataRender, setDataRender] = useState();
-  const [dataExport, setDataExport] = useState();
   const { data, isNv } = props;
   const [loading, setLoading] = useState(true);
 
@@ -319,7 +319,6 @@ export default function Data(props) {
 
   useEffect(() => {
     setDataRender(data);
-    setDataExport(data);
     setDataBackup(data);
     setLoading(false);
   }, [data]);
@@ -602,24 +601,26 @@ export default function Data(props) {
   ];
 
   const exportFile = () => {
-    const ws = XLSX.utils.json_to_sheet(
-      dataExport.map((item) => {
-        delete item.user_password;
-        delete item.user_city;
-        delete item.user_wardid;
-        delete item.ward_prefix;
-        delete item.ward_name;
-        delete item.ward_districtid;
-        delete item.district_prefix;
-        delete item.district_name;
-        delete item.ward_provinceid;
-        delete item.province_name;
-        return item;
-      })
-    );
+    var list = JSON.parse(JSON.stringify(dataRender));
+    list.map((item) => {
+      delete item.user_password;
+      delete item.user_city;
+      delete item.user_wardid;
+      delete item.ward_prefix;
+      delete item.ward_name;
+      delete item.ward_districtid;
+      delete item.district_prefix;
+      delete item.district_name;
+      delete item.ward_provinceid;
+      delete item.province_name;
+      return item;
+    });
+    var now = new Date();
+    now = format(now, "yyyy-MM-dd HH:mm:ss");
+    const ws = XLSX.utils.json_to_sheet(list);
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, "data");
-    XLSX.writeFile(wb, "DSNhanVien.xlsx");
+    XLSX.writeFile(wb, "DSNhanVien " + now + ".xlsx");
   };
 
 
@@ -780,7 +781,6 @@ export default function Data(props) {
     }
     setDataRender(temp);
     setDataBackup(temp);
-    setDataExport(temp);
   };
 
   const liveSearch = (event) => {
@@ -803,9 +803,7 @@ export default function Data(props) {
         );
       });
       setDataRender(filtered);
-      setDataExport(filtered);
     } else {
-      setDataExport(dataBackup);
       setDataRender(dataBackup);
     }
   };

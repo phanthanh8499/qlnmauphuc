@@ -129,7 +129,7 @@ INNER JOIN province ON province.id = ward.ward_provinceid`,
 });
 router.get("/admin/users/getCustomer", function (req, res) {
   pool.query(
-    `SELECT users.*, ward.ward_prefix, ward.ward_name, ward.ward_districtid, district.district_prefix, district.district_name, ward.ward_provinceid, province.province_name FROM users
+    `SELECT users.id, users.user_typeid, users.user_username, users.user_password, users.user_firstname, users.user_lastname, CONCAT(user_address, ', ', ward.ward_prefix, ' ', ward.ward_name, ', ', district.district_prefix, ' ', district.district_name, ', ', province.province_name) AS user_address, users.user_tel, users.user_status, users.user_date, users.user_avatar, users.user_email, ward.ward_prefix, ward.ward_name, ward.ward_districtid, district.district_prefix, district.district_name, ward.ward_provinceid, province.province_name FROM users
 LEFT JOIN ward ON ward.id = users.user_wardid
 LEFT JOIN district ON district.id = ward.ward_districtid
 LEFT JOIN province ON province.id = ward.ward_provinceid
@@ -145,10 +145,10 @@ WHERE users.user_typeid = 'KH'`,
 });
 router.get("/admin/users/getStaff", function (req, res) {
   pool.query(
-    `SELECT users.*, ward.ward_prefix, ward.ward_name, ward.ward_districtid, district.district_prefix, district.district_name, ward.ward_provinceid, province.province_name FROM users
-INNER JOIN ward ON ward.id = users.user_wardid
-INNER JOIN district ON district.id = ward.ward_districtid
-INNER JOIN province ON province.id = ward.ward_provinceid
+    `SELECT users.id, users.user_typeid, users.user_username, users.user_password, users.user_firstname, users.user_lastname, CONCAT(user_address, ', ', ward.ward_prefix, ' ', ward.ward_name, ', ', district.district_prefix, ' ', district.district_name, ', ', province.province_name) AS user_address, users.user_tel, users.user_status, users.user_date, users.user_avatar, users.user_email, ward.ward_prefix, ward.ward_name, ward.ward_districtid, district.district_prefix, district.district_name, ward.ward_provinceid, province.province_name FROM users
+LEFT JOIN ward ON ward.id = users.user_wardid
+LEFT JOIN district ON district.id = ward.ward_districtid
+LEFT JOIN province ON province.id = ward.ward_provinceid
 WHERE users.user_typeid != 'KH'`,
     (error, response) => {
       if (error) {
@@ -850,6 +850,7 @@ router.post("/admin/users/edit", function (req, res) {
     user_email,
     fileRecv,
     user_city,
+    user_wardid,
     FRONTEND_URL,
   } = req.body;
   console.log(
@@ -865,6 +866,7 @@ router.post("/admin/users/edit", function (req, res) {
     user_avatar,
     user_email,
     fileRecv,
+    user_wardid,
     FRONTEND_URL
   );
   if (parseInt(fileRecv) === 1) {
@@ -878,7 +880,7 @@ router.post("/admin/users/edit", function (req, res) {
     console.log(newpath, image_path);
     pool.query(
       `UPDATE users
-	SET user_typeid='${user_typeid}', user_username='${user_username}', user_firstname='${user_firstname}', user_lastname='${user_lastname}', user_address='${user_address}', user_tel='${user_tel}', user_status='${user_status}', user_avatar='${image_path}', user_email='${user_email}'
+	SET user_typeid='${user_typeid}', user_username='${user_username}', user_firstname='${user_firstname}', user_lastname='${user_lastname}', user_address='${user_address}', user_tel='${user_tel}', user_status='${user_status}', user_avatar='${image_path}', user_email='${user_email}', user_wardid='${user_wardid}'
 	WHERE id='${id}'`,
       (error, response) => {
         if (error) {
@@ -893,47 +895,77 @@ router.post("/admin/users/edit", function (req, res) {
               console.log(err);
             }
           });
-          res.send({
-            id: parseInt(id),
-            user_username: user_username,
-            user_address: user_address,
-            user_tel: user_tel,
-            user_city: user_city,
-            user_firstname: user_firstname,
-            user_lastname: user_lastname,
-            user_status: user_status,
-            user_typeid: user_typeid,
-            user_date: user_date,
-            user_avatar: image_path,
-            user_email: user_email,
-          });
+          pool.query(
+            `SELECT users.id, users.user_typeid, users.user_username, users.user_password, users.user_firstname, users.user_lastname, CONCAT(user_address, ', ', ward.ward_prefix, ' ', ward.ward_name, ', ', district.district_prefix, ' ', district.district_name, ', ', province.province_name) AS user_address, users.user_tel, users.user_status, users.user_date, users.user_avatar, users.user_email, ward.ward_prefix, ward.ward_name, ward.ward_districtid, district.district_prefix, district.district_name, ward.ward_provinceid, province.province_name FROM users
+LEFT JOIN ward ON ward.id = users.user_wardid
+LEFT JOIN district ON district.id = ward.ward_districtid
+LEFT JOIN province ON province.id = ward.ward_provinceid
+WHERE users.user_typeid = 'KH' AND users.id = '${id}'`,
+            (error, response) => {
+              if (error) {
+                console.log(error);
+              } else {
+                res.send(response.rows[0]);
+              }
+            }
+          );
+          // res.send({
+          //   id: parseInt(id),
+          //   user_username: user_username,
+          //   user_address: user_address,
+          //   user_tel: user_tel,
+          //   user_city: user_city,
+          //   user_firstname: user_firstname,
+          //   user_lastname: user_lastname,
+          //   user_status: user_status,
+          //   user_typeid: user_typeid,
+          //   user_date: user_date,
+          //   user_avatar: image_path,
+          //   user_email: user_email,
+          //   user_wardid: parseInt(user_wardid),
+          // });
         }
       }
     );
   } else {
     pool.query(
       `UPDATE users
-	SET  user_typeid='${user_typeid}', user_username='${user_username}', user_firstname='${user_firstname}', user_lastname='${user_lastname}', user_address='${user_address}', user_tel='${user_tel}', user_status='${user_status}', user_avatar='${user_avatar}', user_email='${user_email}'
+	SET  user_typeid='${user_typeid}', user_username='${user_username}', user_firstname='${user_firstname}', user_lastname='${user_lastname}', user_address='${user_address}', user_tel='${user_tel}', user_status='${user_status}', user_avatar='${user_avatar}', user_email='${user_email}', user_wardid='${user_wardid}'
 	WHERE id='${id}'`,
       (error, response) => {
         if (error) {
           console.log(error);
           res.send({ msg: "ERROR" });
         } else {
-          res.send({
-            id: parseInt(id),
-            user_username: user_username,
-            user_address: user_address,
-            user_tel: user_tel,
-            user_city: user_city,
-            user_firstname: user_firstname,
-            user_lastname: user_lastname,
-            user_status: user_status,
-            user_typeid: user_typeid,
-            user_date: user_date,
-            user_avatar: user_avatar,
-            user_email: user_email,
-          });
+          pool.query(
+            `SELECT users.id, users.user_typeid, users.user_username, users.user_password, users.user_firstname, users.user_lastname, CONCAT(user_address, ', ', ward.ward_prefix, ' ', ward.ward_name, ', ', district.district_prefix, ' ', district.district_name, ', ', province.province_name) AS user_address, users.user_tel, users.user_status, users.user_date, users.user_avatar, users.user_email, ward.ward_prefix, ward.ward_name, ward.ward_districtid, district.district_prefix, district.district_name, ward.ward_provinceid, province.province_name FROM users
+LEFT JOIN ward ON ward.id = users.user_wardid
+LEFT JOIN district ON district.id = ward.ward_districtid
+LEFT JOIN province ON province.id = ward.ward_provinceid
+WHERE users.user_typeid = 'KH' AND users.id = '${id}'`,
+            (error, response) => {
+              if (error) {
+                console.log(error);
+              } else {
+                res.send(response.rows[0])
+              }
+            }
+          );
+          // res.send({
+          //   id: parseInt(id),
+          //   user_username: user_username,
+          //   user_address: user_address,
+          //   user_tel: user_tel,
+          //   user_city: user_city,
+          //   user_firstname: user_firstname,
+          //   user_lastname: user_lastname,
+          //   user_status: user_status,
+          //   user_typeid: user_typeid,
+          //   user_date: user_date,
+          //   user_avatar: user_avatar,
+          //   user_email: user_email,
+          //   user_wardid: parseInt(user_wardid),
+          // });
         }
       }
     );
@@ -1050,11 +1082,13 @@ router.post("/admin/users/editUserInfo", function (req, res) {
   }
 });
 
-router.get("/getOrderData.:id", function (req, res) {
-  const { id } = req.params;
+router.post("/getOrderData", function (req, res) {
+  const { id, provinceId, districtId, wardId, startDate, endDate } = req.body;
+  console.log(id, provinceId, districtId, wardId, startDate, endDate);
   if (parseInt(id) === 0) {
-    pool.query(
-      `SELECT order_details.id, order_details.od_orderid, order_details.od_productid, order_details.od_clothid, order_customername, order_wardid, district.id AS order_districtid, province.id AS order_provinceid, CONCAT(order_customeraddress, ', ', ward.ward_prefix, ' ', ward.ward_name, ', ', district.district_prefix, ' ', district.district_name, ', ', province.province_name) AS order_customeraddress, order_customerphone, order_customeremail, order_startdate, order_total, order_paymentid, opm_name, order_shippingid, osm_name, order_tailorid, CONCAT(user_lastname, ' ', user_firstname) AS tailor_name, user_tel as tailor_tel, order_statusid, order_userid, products.product_name, products.product_typeid, products.product_image1, os_name FROM order_details 
+    if(wardId !== 0){
+      pool.query(
+        `SELECT order_details.id, order_details.od_orderid, order_details.od_productid, order_details.od_clothid, order_customername, order_wardid, district.id AS order_districtid, province.id AS order_provinceid, CONCAT(order_customeraddress, ', ', ward.ward_prefix, ' ', ward.ward_name, ', ', district.district_prefix, ' ', district.district_name, ', ', province.province_name) AS order_customeraddress, order_customerphone, order_customeremail, order_startdate, order_total, order_paymentid, opm_name, order_shippingid, osm_name, order_tailorid, CONCAT(user_lastname, ' ', user_firstname) AS tailor_name, user_tel as tailor_tel, order_statusid, order_userid, products.product_name, products.product_typeid, products.product_image1, os_name FROM order_details 
               INNER JOIN orders ON orders.id = order_details.od_orderid 
               INNER JOIN products ON products.id = order_details.od_productid
 			  INNER JOIN order_status ON order_status.id = orders.order_statusid
@@ -1063,15 +1097,88 @@ router.get("/getOrderData.:id", function (req, res) {
 			  INNER JOIN users ON users.id = orders.order_tailorid
 			  INNER JOIN ward ON ward.id = orders.order_wardid
 			  INNER JOIN district ON district.id = ward.ward_districtid
-			  INNER JOIN province ON province.id = ward.ward_provinceid `,
-      (error, response) => {
-        if (error) {
-          console.log(error);
-        } else {
-          res.send(response.rows);
+			  INNER JOIN province ON province.id = ward.ward_provinceid 
+        WHERE province.id = '${provinceId}' AND district.id = '${districtId}' AND ward.id = '${wardId}'
+				      AND orders.order_startdate BETWEEN '${startDate}' AND '${endDate}'`,
+        (error, response) => {
+          if (error) {
+            console.log(error);
+          } else {
+            res.send(response.rows);
+          }
         }
-      }
-    );
+      );
+      return true;
+    }
+    if(districtId !== 0){
+      pool.query(
+        `SELECT order_details.id, order_details.od_orderid, order_details.od_productid, order_details.od_clothid, order_customername, order_wardid, district.id AS order_districtid, province.id AS order_provinceid, CONCAT(order_customeraddress, ', ', ward.ward_prefix, ' ', ward.ward_name, ', ', district.district_prefix, ' ', district.district_name, ', ', province.province_name) AS order_customeraddress, order_customerphone, order_customeremail, order_startdate, order_total, order_paymentid, opm_name, order_shippingid, osm_name, order_tailorid, CONCAT(user_lastname, ' ', user_firstname) AS tailor_name, user_tel as tailor_tel, order_statusid, order_userid, products.product_name, products.product_typeid, products.product_image1, os_name FROM order_details 
+              INNER JOIN orders ON orders.id = order_details.od_orderid 
+              INNER JOIN products ON products.id = order_details.od_productid
+			  INNER JOIN order_status ON order_status.id = orders.order_statusid
+			  INNER JOIN order_paymentmethod ON order_paymentmethod.id = orders.order_paymentid
+			  INNER JOIN order_shippingmethod ON order_shippingmethod.id = orders.order_shippingid
+			  INNER JOIN users ON users.id = orders.order_tailorid
+			  INNER JOIN ward ON ward.id = orders.order_wardid
+			  INNER JOIN district ON district.id = ward.ward_districtid
+			  INNER JOIN province ON province.id = ward.ward_provinceid
+        WHERE province.id = '${provinceId}' AND district.id = '${districtId}'
+				      AND orders.order_startdate BETWEEN '${startDate}' AND '${endDate}' `,
+        (error, response) => {
+          if (error) {
+            console.log(error);
+          } else {
+            res.send(response.rows);
+          }
+        }
+      );
+      return true;
+    }
+    if(provinceId !== 0){
+      pool.query(
+        `SELECT order_details.id, order_details.od_orderid, order_details.od_productid, order_details.od_clothid, order_customername, order_wardid, district.id AS order_districtid, province.id AS order_provinceid, CONCAT(order_customeraddress, ', ', ward.ward_prefix, ' ', ward.ward_name, ', ', district.district_prefix, ' ', district.district_name, ', ', province.province_name) AS order_customeraddress, order_customerphone, order_customeremail, order_startdate, order_total, order_paymentid, opm_name, order_shippingid, osm_name, order_tailorid, CONCAT(user_lastname, ' ', user_firstname) AS tailor_name, user_tel as tailor_tel, order_statusid, order_userid, products.product_name, products.product_typeid, products.product_image1, os_name FROM order_details 
+              INNER JOIN orders ON orders.id = order_details.od_orderid 
+              INNER JOIN products ON products.id = order_details.od_productid
+			  INNER JOIN order_status ON order_status.id = orders.order_statusid
+			  INNER JOIN order_paymentmethod ON order_paymentmethod.id = orders.order_paymentid
+			  INNER JOIN order_shippingmethod ON order_shippingmethod.id = orders.order_shippingid
+			  INNER JOIN users ON users.id = orders.order_tailorid
+			  INNER JOIN ward ON ward.id = orders.order_wardid
+			  INNER JOIN district ON district.id = ward.ward_districtid
+			  INNER JOIN province ON province.id = ward.ward_provinceid
+        WHERE province.id = '${provinceId}'
+				      AND orders.order_startdate BETWEEN '${startDate}' AND '${endDate}' `,
+        (error, response) => {
+          if (error) {
+            console.log(error);
+          } else {
+            res.send(response.rows);
+          }
+        }
+      );
+      return true;
+    } else {
+      pool.query(
+        `SELECT order_details.id, order_details.od_orderid, order_details.od_productid, order_details.od_clothid, order_customername, order_wardid, district.id AS order_districtid, province.id AS order_provinceid, CONCAT(order_customeraddress, ', ', ward.ward_prefix, ' ', ward.ward_name, ', ', district.district_prefix, ' ', district.district_name, ', ', province.province_name) AS order_customeraddress, order_customerphone, order_customeremail, order_startdate, order_total, order_paymentid, opm_name, order_shippingid, osm_name, order_tailorid, CONCAT(user_lastname, ' ', user_firstname) AS tailor_name, user_tel as tailor_tel, order_statusid, order_userid, products.product_name, products.product_typeid, products.product_image1, os_name FROM order_details 
+                    INNER JOIN orders ON orders.id = order_details.od_orderid 
+                    INNER JOIN products ON products.id = order_details.od_productid
+              INNER JOIN order_status ON order_status.id = orders.order_statusid
+              INNER JOIN order_paymentmethod ON order_paymentmethod.id = orders.order_paymentid
+              INNER JOIN order_shippingmethod ON order_shippingmethod.id = orders.order_shippingid
+              INNER JOIN users ON users.id = orders.order_tailorid
+              INNER JOIN ward ON ward.id = orders.order_wardid
+              INNER JOIN district ON district.id = ward.ward_districtid
+              INNER JOIN province ON province.id = ward.ward_provinceid
+				      AND orders.order_startdate BETWEEN '${startDate}' AND '${endDate}'`,
+        (error, response) => {
+          if (error) {
+            console.log(error);
+          } else {
+            res.send(response.rows);
+          }
+        }
+      );
+    }   
   } else {
     pool.query(
       `SELECT order_details.*, order_customername, order_customeraddress, order_customerphone, order_customeremail, order_startdate, order_enddate, order_subtotal, order_discount, order_total, order_paymentid, opm_name, order_shippingid, osm_name, order_statusid, order_userid, products.product_name, products.product_typeid, products.product_image1, cloth.cloth_name, cloth.cloth_image, cloth.cloth_quantity, cloth.cloth_material, os_name FROM order_details 

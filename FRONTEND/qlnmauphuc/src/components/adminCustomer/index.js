@@ -247,7 +247,7 @@ function CustomNoRowsOverlay() {
   );
 }
 
-export default function AdminCloth() {
+export default function AdminCustomer() {
   const classes = useStyles();
   const { enqueueSnackbar } = useSnackbar();
   const antDesignClasses = useStylesAntDesign();

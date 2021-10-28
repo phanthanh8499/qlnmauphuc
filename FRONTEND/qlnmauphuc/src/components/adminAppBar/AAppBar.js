@@ -211,7 +211,7 @@ export default function AAppBar(props) {
   useEffect(() => {
     abc === "DASHBOARD"
       ? setSelected(0) || setSelectedSubMenu("0a")
-      : abc === "USERS"
+      : abc === "CUSTOMER"
       ? setSelected(1) || setSelectedSubMenu("1a")
       : abc === "PRODUCTS"
       ? setSelected(2)
@@ -301,7 +301,7 @@ export default function AAppBar(props) {
             <List component="div" disablePadding>
               <Link
                 Link
-                to="/admin/users"
+                to="/admin/customer"
                 onClick={(e) => changeTitleMenu(e, 1, "1a")}
               >
                 <MyListSubItem

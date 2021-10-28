@@ -47,6 +47,7 @@ import SearchIcon from "@mui/icons-material/Search";
 import XLSX from "xlsx";
 import SaveAltIcon from "@mui/icons-material/SaveAlt";
 import { useTheme } from "@mui/material/styles";
+import { format } from "date-fns";
 
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
@@ -312,13 +313,11 @@ export default function Data(props) {
   const antDesignClasses = useStylesAntDesign();
   const dispatch = useDispatch();
   const [dataRender, setDataRender] = useState();
-  const [dataExport, setDataExport] = useState();
   const { data, isKH } = props;
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     setDataRender(data);
-    setDataExport(data);
     setDataBackup(data);
     setLoading(false);
   }, [data]);
@@ -553,16 +552,18 @@ export default function Data(props) {
   ];
 
   const exportFile = () => {
-    const ws = XLSX.utils.json_to_sheet(
-      dataExport.map((item) => {
-        delete item.user_firstname;
-        delete item.user_lastname;
-        return item;
-      })
-    );
+    var list = JSON.parse(JSON.stringify(dataRender));
+    list.map((item) => {
+      delete item.user_firstname;
+      delete item.user_lastname;
+      return item;
+    });
+    var now = new Date();
+    now = format(now, "yyyy-MM-dd HH:mm:ss");
+    const ws = XLSX.utils.json_to_sheet(list);
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, "data");
-    XLSX.writeFile(wb, "DSVai.xlsx");
+    XLSX.writeFile(wb, "DSVai " + now + ".xlsx");
   };
 
   const handleClickSearch = () => {
@@ -624,7 +625,7 @@ export default function Data(props) {
     let string = event.target.value;
     event.preventDefault();
     if (string) {
-      let filtered = dataRender.filter((data) => {
+      let filtered = dataBackup.filter((data) => {
         return (
           removeAccents(data.cloth_material)
             .toLowerCase()
