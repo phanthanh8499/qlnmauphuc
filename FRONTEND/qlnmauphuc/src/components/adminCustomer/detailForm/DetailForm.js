@@ -29,7 +29,7 @@ import { editCloth, editProduct, editUser } from "../../../redux/Action";
 import ImageMagnify from "./ImageMagnify";
 import { FRONTEND_URL, LOCAL_PATH } from "../../../constants/Constants";
 import CameraAltIcon from "@mui/icons-material/CameraAlt";
-import { IOSSwitch, MyFormControl } from "../../utility/Utility";
+import { IOSSwitch, MyFormControl, MyTextField } from "../../utility/Utility";
 
 const useStyle = makeStyles((theme) => ({
   root: {
@@ -347,7 +347,7 @@ function DetailForm(props) {
             <Grid item xs={9} className={classes.detailBox}>
               <Grid spacing={1} container>
                 <Grid item xs={6}>
-                  <TextField
+                  <MyTextField
                     id="username"
                     label="Tên đăng nhập"
                     placeholder="Nhập tên đăng nhập"
@@ -364,7 +364,7 @@ function DetailForm(props) {
                 </Grid>
                 <Grid item xs={6}></Grid>
                 <Grid item xs={6}>
-                  <TextField
+                  <MyTextField
                     id="lastname"
                     label="Họ"
                     placeholder="Nhập họ"
@@ -379,7 +379,7 @@ function DetailForm(props) {
                   />
                 </Grid>
                 <Grid item xs={6}>
-                  <TextField
+                  <MyTextField
                     id="firstname"
                     label="Tên"
                     placeholder="Nhập tên"
@@ -394,7 +394,7 @@ function DetailForm(props) {
                   />
                 </Grid>
                 <Grid item xs={6}>
-                  <TextField
+                  <MyTextField
                     id="tel"
                     label="Số điện thoại"
                     placeholder="Nhập số điện thoại"
@@ -409,7 +409,7 @@ function DetailForm(props) {
                   />
                 </Grid>
                 <Grid item xs={6}>
-                  <TextField
+                  <MyTextField
                     id="email"
                     label="Email"
                     placeholder="Nhập email"
@@ -424,7 +424,7 @@ function DetailForm(props) {
                   />
                 </Grid>
                 <Grid item xs={12}>
-                  <TextField
+                  <MyTextField
                     id="address"
                     label="Địa chỉ"
                     placeholder="Nhập địa chỉ"

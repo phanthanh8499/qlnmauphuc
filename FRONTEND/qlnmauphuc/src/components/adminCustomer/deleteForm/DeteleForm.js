@@ -48,7 +48,7 @@ function DeleteForm(props) {
     } else {
       dispatch(deleteUser(parseInt(id)));
     }
-    enqueueSnackbar("Xoá sản phẩm thành công", {
+    enqueueSnackbar("Xoá người dùng thành công", {
       variant: "success",
       autoHideDuration: 2000,
     });

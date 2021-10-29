@@ -103,8 +103,8 @@ export const editUser = (dataReq) => async (dispatch) => {
   // console.log(data);
 };
 
-export const deleteUser = (data) => async (dispatch) => {
-  // const {data} = await Axios.get("/admin/users/delete");
+export const deleteUser = (dataReq) => async (dispatch) => {
+  const { data } = await Axios.get(`/admin/users/delete.${dataReq}`);
   dispatch({type: XOA_USER, payload: data})
 }
 
@@ -143,9 +143,9 @@ export const editProduct = (data) =>  (dispatch) => {
   dispatch({ type: CHINH_SUA_THONG_TIN_SAN_PHAM, payload: abc});
 }
 
-export const deleteProduct = (data) => async (dispatch) => {
+export const deleteProduct = (dataReq) => async (dispatch) => {
+  const {data} = await Axios.get(`/admin/products/delete.${dataReq}`);
   dispatch({ type: XOA_SAN_PHAM, payload: data});
-  // await Axios.get(`/admin/products/delete.${data}`);
 }
 
 export const getClothData = (dataReq) => async (dispatch) => {
@@ -178,9 +178,9 @@ export const editCloth = (data) => (dispatch) => {
   dispatch({ type: CHINH_SUA_THONG_TIN_VAI, payload: abc });
 };
 
-export const deleteCloth = (data) => async (dispatch) => {
+export const deleteCloth = (dataReq) => async (dispatch) => {
+  const {data} = await Axios.get(`/admin/cloth/delete.${dataReq}`);
   dispatch({ type: XOA_VAI, payload: data });
-  // await Axios.get(`/admin/cloth/delete.${data}`);
 };
 
 export const getMeasurementsData = (id) => async (dispatch) => {
@@ -248,7 +248,6 @@ export const editOrder = (dataReq) => async (dispatch) => {
 };
 
 export const deleteOrder = (data) => async (dispatch) => {
-  console.log("delete", data)
   dispatch({ type: XOA_DON_HANG, payload: data });
   // await Axios.get(`/admin/Order/delete.${data}`);
 };

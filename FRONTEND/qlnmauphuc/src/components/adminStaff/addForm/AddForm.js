@@ -5,6 +5,9 @@ import {
   ButtonGroup,
   Dialog,
   Grid,
+  InputLabel,
+  MenuItem,
+  Select,
   Tab,
   Tabs,
   TextField,
@@ -22,6 +25,8 @@ import { FRONTEND_URL, XOA_HINH_ANH } from "../../../constants/Constants";
 import CameraAltIcon from "@mui/icons-material/CameraAlt";
 import { addUser, getUserData } from "../../../redux/Action";
 import { format } from "date-fns";
+import { MyFormControl, MyTextField } from "../../utility/Utility";
+import axios from "axios";
 
 const useStyle = makeStyles((theme) => ({
   root: {
@@ -92,6 +97,22 @@ function AddForm(props) {
   const [file, setFile] = useState();
   const [fileName, setFileName] = useState("");
   const [imgUpload, setImgUpload] = useState();
+
+  const [province, setProvince] = useState();
+  const [district, setDistrict] = useState();
+  const [ward, setWard] = useState();
+  const [provinceData, setProvinceData] = useState([]);
+  const [districtData, setDistrictData] = useState([]);
+  const [wardData, setWardData] = useState([]);
+
+  useEffect(() => {
+    async function getProvinceData() {
+      const { data } = await axios.get(`/getProvince`);
+      setProvinceData(data);
+    }
+    getProvinceData()
+  }, [])
+
   const handleChange = (event, newValue) => {
     setValue(newValue);
     dispatch({ type: XOA_HINH_ANH });
@@ -109,6 +130,86 @@ function AddForm(props) {
       console.log("Error: ", error);
     };
   };
+
+  const handleChangeProvince = async (e) => {
+    setProvince(e.target.value);
+    const { data } = await axios.get(`/getDistrict.${e.target.value}`);
+    setDistrictData(data);
+    setWardData([]);
+    setDistrict();
+    setWard();
+  };
+  const handleChangeDistrict = async (e) => {
+    setDistrict(e.target.value);
+    const { data } = await axios.get(`/getWard.${province}&${e.target.value}`);
+    setWardData(data);
+    setWard();
+  };
+  const handleChangeWard = (e) => {
+    setWard(e.target.value);
+  };
+
+  const renderAddressForm = () => {
+    return (
+      <>
+        <Grid item xs={4} sx={{ marginTop: "0px" }}>
+          <MyFormControl fullWidth>
+            <InputLabel id="province-select-label">Tỉnh/Thành</InputLabel>
+            <Select
+              labelId="province-select-label"
+              id="province-simple-select"
+              defaultValue={province}
+              label="Tỉnh/Thành"
+              onChange={handleChangeProvince}
+            >
+              {provinceData.map((value, key) => (
+                <MenuItem value={value.id} key={key}>
+                  {value.province_name}
+                </MenuItem>
+              ))}
+            </Select>
+          </MyFormControl>
+        </Grid>
+        <Grid item xs={4} sx={{ marginTop: "0px" }}>
+          <MyFormControl fullWidth>
+            <InputLabel id="district-select-label">Quận/Huyện</InputLabel>
+            <Select
+              labelId="district-select-label"
+              id="district-simple-select"
+              defaultValue={district}
+              label="Quận/Huyện"
+              onChange={handleChangeDistrict}
+            >
+              {districtData.map((value, key) => (
+                <MenuItem value={value.id} key={key}>
+                  {value.district_prefix} {value.district_name}
+                </MenuItem>
+              ))}
+            </Select>
+          </MyFormControl>
+        </Grid>
+        <Grid item xs={4} sx={{ marginTop: "0px" }}>
+          <MyFormControl fullWidth>
+            <InputLabel id="ward-select-label">Xã/Phường</InputLabel>
+            <Select
+              labelId="ward-select-label"
+              id="ward-simple-select"
+              defaultValue={ward}
+              label="Xã/Phường"
+              onChange={handleChangeWard}
+            >
+              {wardData.map((value, key) => (
+                <MenuItem value={value.id} key={key}>
+                  {value.ward_prefix} {value.ward_name}
+                </MenuItem>
+              ))}
+            </Select>
+          </MyFormControl>
+        </Grid>
+      </>
+    );
+  };
+
   const handleSubmit = () => {
     const formData = new FormData();
     const today = new Date();
@@ -140,6 +241,29 @@ function AddForm(props) {
       });
       return false;
     }
+    if (!province) {
+      enqueueSnackbar("Vui lòng chọn Tỉnh/Thành", {
+        variant: "error",
+        autoHideDuration: 2000,
+      });
+      return false;
+    }
+    if (!district) {
+      enqueueSnackbar("Vui lòng chọn Quận/Huyện", {
+        variant: "error",
+        autoHideDuration: 2000,
+      });
+      return false;
+    }
+    if (!ward) {
+      enqueueSnackbar("Vui lòng chọn Xã/Phường", {
+        variant: "error",
+        autoHideDuration: 2000,
+      });
+      return false;
+    }
+    formData.append("user_wardid", ward);
+    formData.append("user_isdeleted", 'false');
     if (file) {
       formData.append("file", file);
       formData.append("fileName", fileName);
@@ -202,7 +326,7 @@ function AddForm(props) {
         <Grid item xs={9} className={classes.detailBox}>
           <Grid spacing={1} container>
             <Grid item xs={6}>
-              <TextField
+              <MyTextField
                 id="username"
                 label="Tên đăng nhập"
                 placeholder="Nhập tên đăng nhập"
@@ -216,7 +340,7 @@ function AddForm(props) {
               />
             </Grid>
             <Grid item xs={6}>
-              <TextField
+              <MyTextField
                 id="password"
                 label="Mật khẩu"
                 placeholder="Nhập mật khẩu"
@@ -231,7 +355,7 @@ function AddForm(props) {
               />
             </Grid>
             <Grid item xs={6}>
-              <TextField
+              <MyTextField
                 id="lastname"
                 label="Họ"
                 placeholder="Nhập họ"
@@ -245,7 +369,7 @@ function AddForm(props) {
               />
             </Grid>
             <Grid item xs={6}>
-              <TextField
+              <MyTextField
                 id="firstname"
                 label="Tên"
                 placeholder="Nhập tên"
@@ -259,7 +383,7 @@ function AddForm(props) {
               />
             </Grid>
             <Grid item xs={6}>
-              <TextField
+              <MyTextField
                 id="tel"
                 label="Số điện thoại"
                 placeholder="Nhập số điện thoại"
@@ -273,7 +397,7 @@ function AddForm(props) {
               />
             </Grid>
             <Grid item xs={6}>
-              <TextField
+              <MyTextField
                 id="email"
                 label="Email"
                 placeholder="Nhập email"
@@ -287,10 +411,10 @@ function AddForm(props) {
               />
             </Grid>
             <Grid item xs={12}>
-              <TextField
+              <MyTextField
                 id="address"
-                label="address"
-                placeholder="Nhập địa chỉ"
+                label="Địa chỉ"
+                placeholder="Nhập số nhà/ tên đường"
                 margin="normal"
                 fullWidth
                 onChange={(e) => setAddress(e.target.value)}
@@ -300,10 +424,10 @@ function AddForm(props) {
                 }}
               />
             </Grid>
-
+            {renderAddressForm()}
           </Grid>
         </Grid>
-        <Grid item xs={12}>
+        <Grid item xs={12} sx={{mt: 1}}>
           <ButtonGroup className={classes.btngroup}>
             <Button variant="outlined" color="primary" onClick={handleSubmit}>
               Xác nhận thêm

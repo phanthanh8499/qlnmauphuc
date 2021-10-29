@@ -29,7 +29,7 @@ import { editCloth, editProduct, editUser } from "../../../redux/Action";
 import ImageMagnify from "./ImageMagnify";
 import { FRONTEND_URL, LOCAL_PATH } from "../../../constants/Constants";
 import CameraAltIcon from "@mui/icons-material/CameraAlt";
-import { IOSSwitch, MyFormControl } from "../../utility/Utility";
+import { IOSSwitch, MyFormControl, MyTextField } from "../../utility/Utility";
 
 const useStyle = makeStyles((theme) => ({
   root: {
@@ -251,6 +251,28 @@ function DetailForm(props) {
     formData.append("user_avatar", avatar.trim());
     formData.append("user_city", city.trim());
     formData.append("FRONTEND_URL", FRONTEND_URL);
+    if (!province) {
+      enqueueSnackbar("Vui lòng chọn Tỉnh/Thành", {
+        variant: "error",
+        autoHideDuration: 2000,
+      });
+      return false;
+    }
+    if (!district) {
+      enqueueSnackbar("Vui lòng chọn Quận/Huyện", {
+        variant: "error",
+        autoHideDuration: 2000,
+      });
+      return false;
+    }
+    if (!ward) {
+      enqueueSnackbar("Vui lòng chọn Xã/Phường", {
+        variant: "error",
+        autoHideDuration: 2000,
+      });
+      return false;
+    }
+    formData.append("user_wardid", parseInt(ward));
     if (file) {
       formData.append("file", file);
       formData.append("fileName", fileName);
@@ -325,7 +347,7 @@ function DetailForm(props) {
             <Grid item xs={9} className={classes.detailBox}>
               <Grid spacing={1} container>
                 <Grid item xs={6}>
-                  <TextField
+                  <MyTextField
                     id="username"
                     label="Tên đăng nhập"
                     placeholder="Nhập tên đăng nhập"
@@ -342,7 +364,7 @@ function DetailForm(props) {
                 </Grid>
                 <Grid item xs={6}></Grid>
                 <Grid item xs={6}>
-                  <TextField
+                  <MyTextField
                     id="lastname"
                     label="Họ"
                     placeholder="Nhập họ"
@@ -357,7 +379,7 @@ function DetailForm(props) {
                   />
                 </Grid>
                 <Grid item xs={6}>
-                  <TextField
+                  <MyTextField
                     id="firstname"
                     label="Tên"
                     placeholder="Nhập tên"
@@ -372,7 +394,7 @@ function DetailForm(props) {
                   />
                 </Grid>
                 <Grid item xs={6}>
-                  <TextField
+                  <MyTextField
                     id="tel"
                     label="Số điện thoại"
                     placeholder="Nhập số điện thoại"
@@ -387,7 +409,7 @@ function DetailForm(props) {
                   />
                 </Grid>
                 <Grid item xs={6}>
-                  <TextField
+                  <MyTextField
                     id="email"
                     label="Email"
                     placeholder="Nhập email"
@@ -402,7 +424,7 @@ function DetailForm(props) {
                   />
                 </Grid>
                 <Grid item xs={12}>
-                  <TextField
+                  <MyTextField
                     id="address"
                     label="Địa chỉ"
                     placeholder="Nhập địa chỉ"

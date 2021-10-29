@@ -892,7 +892,7 @@ export default function Data(props) {
             item
             xs={12}
             style={{
-              height: 460,
+              height: 450,
               width: "100%",
               "background-color": "#ffffff",
             }}

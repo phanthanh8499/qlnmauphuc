@@ -975,7 +975,7 @@ export default function Data(props) {
                 <Divider sx={{ mt: 0.5, mb: 0.5 }} />
               </Grid>
               <Grid item xs={6}>
-                {isCcn ? (
+                
                   <Button
                     variant="outlined"
                     color="primary"
@@ -984,7 +984,7 @@ export default function Data(props) {
                   >
                     Thêm người dùng
                   </Button>
-                ) : null}
+                
                 <Button
                   variant="outlined"
                   color="success"

@@ -247,10 +247,17 @@ export const userReducer = (
       };
     case THEM_USER:
       const user = action.payload;
-      return {
-        ...state,
-        userData: [...state.userData, user],
-      };
+      if (user.user_typeid === "KH") {
+        return {
+          ...state,
+          customerData: [...state.customerData, user],
+        };
+      } else {
+        return {
+          ...state,
+          staffData: [...state.staffData, user],
+        };
+      }
     case XOA_USER_THAT_BAI:
       return { loading: false, deleteError: action.message };
     case SUA_THONG_TIN_USER:

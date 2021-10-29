@@ -29,7 +29,7 @@ router.post("/signin", function (req, res, next) {
   const password = req.body.password;
   console.log(username, password);
   pool.query(
-    `SELECT * FROM users WHERE user_username = '${username}' OR user_tel = '${username}'`,
+    `SELECT * FROM users WHERE user_isdeleted = 'false' AND (user_username = '${username}' OR user_tel = '${username}')`,
     (error, response) => {
       if (error) {
         console.log(error);
@@ -76,7 +76,7 @@ router.post("/signin", function (req, res, next) {
 router.post("/signup", async function (req, res, next) {
   var username = req.body.username,
     password = req.body.password,
-    email = req.body.email;
+    tel = req.body.tel;
   const salt = await bcrypt.genSalt(10);
   const hashPass = await bcrypt.hash(password, salt);
   var newpassword = hashPass;
@@ -84,8 +84,9 @@ router.post("/signup", async function (req, res, next) {
     console.log("Thieu thong tin");
   } else {
     pool.query(
-      "INSERT INTO users (user_username, user_password, user_typeid, user_status, user_date, user_avatar, user_tel) VALUES ($1, $2, 'KH', 'active', NOW()::TIMESTAMP, './images/avatar/user-image.jpg', $3) RETURNING id",
-      [username, newpassword, email],
+      `INSERT INTO users (user_username, user_password, user_typeid, user_status, user_date, user_avatar, user_tel, user_isdeleted) 
+      VALUES ($1, $2, 'KH', 'active', NOW()::TIMESTAMP, './images/avatar/user-image.jpg', $3, 'false') RETURNING id`,
+      [username, newpassword, tel],
       (error, response) => {
         if (error) {
           console.log(error);
@@ -101,7 +102,7 @@ router.post("/signup", async function (req, res, next) {
 
 router.get("/getUserData", function (req, res) {
   pool.query(
-    `SELECT id, user_username, user_tel, user_status FROM users`,
+    `SELECT id, user_username, user_tel, user_status, user_isdeleted FROM users`,
     (error, response) => {
       if (error) {
         console.log(error);
@@ -133,7 +134,7 @@ router.get("/admin/users/getCustomer", function (req, res) {
 LEFT JOIN ward ON ward.id = users.user_wardid
 LEFT JOIN district ON district.id = ward.ward_districtid
 LEFT JOIN province ON province.id = ward.ward_provinceid
-WHERE users.user_typeid = 'KH'`,
+WHERE users.user_typeid = 'KH' AND user_isdeleted = 'false'`,
     (error, response) => {
       if (error) {
         console.log(error);
@@ -143,18 +144,35 @@ WHERE users.user_typeid = 'KH'`,
     }
   );
 });
+
 router.get("/admin/users/getStaff", function (req, res) {
   pool.query(
     `SELECT users.id, users.user_typeid, users.user_username, users.user_password, users.user_firstname, users.user_lastname, CONCAT(user_address, ', ', ward.ward_prefix, ' ', ward.ward_name, ', ', district.district_prefix, ' ', district.district_name, ', ', province.province_name) AS user_address, users.user_tel, users.user_status, users.user_date, users.user_avatar, users.user_email, ward.ward_prefix, ward.ward_name, ward.ward_districtid, district.district_prefix, district.district_name, ward.ward_provinceid, province.province_name FROM users
 LEFT JOIN ward ON ward.id = users.user_wardid
 LEFT JOIN district ON district.id = ward.ward_districtid
 LEFT JOIN province ON province.id = ward.ward_provinceid
-WHERE users.user_typeid != 'KH'`,
+WHERE users.user_typeid != 'KH' AND user_isdeleted = 'false'`,
     (error, response) => {
       if (error) {
         console.log(error);
       } else {
         res.send(response.rows);
+      }
+    }
+  );
+});
+
+router.get("/admin/users/delete.:id", function (req, res) {
+  const {id} = req.params;
+  pool.query(
+    `UPDATE users
+	SET user_isdeleted='true'
+	WHERE id='${id}'`,
+    (error, response) => {
+      if (error) {
+        console.log(error);
+      } else {
+        res.send(id);
       }
     }
   );
@@ -181,7 +199,7 @@ router.get("/getClothTypeData", function (req, res) {
 });
 
 router.get("/getProductData", function (req, res) {
-  pool.query(`SELECT * FROM products`, (error, response) => {
+  pool.query(`SELECT * FROM products WHERE product_isdeleted = 'false'`, (error, response) => {
     if (error) {
       console.log(error);
     } else {
@@ -284,8 +302,8 @@ router.post("/admin/products/add", function (req, res) {
   );
   pool.query(
     `INSERT INTO products(
-	product_code, product_typeid, product_name, product_price, product_color, product_material, product_lining, product_size, product_thickness, product_softness, product_elasticity, product_introduction1, product_introduction2, product_introduction3, product_introduction4, product_introduction5, product_sizeimage, product_image1, product_image2, product_image3)
-	VALUES ('${product_code}', '${product_typeid}', '${product_name}', '${product_price}', '${product_color}', '${product_material}', '${product_lining}', '${product_size}', '${product_thickness}', '${product_softness}', '${product_elasticity}', '${product_introduction1}', '${product_introduction2}', '${product_introduction3}', '${product_introduction4}', '${product_introduction5}', '${product_image4}', '${product_image1}', '${product_image2}', '${product_image3}')`,
+	product_code, product_typeid, product_name, product_price, product_color, product_material, product_lining, product_size, product_thickness, product_softness, product_elasticity, product_introduction1, product_introduction2, product_introduction3, product_introduction4, product_introduction5, product_sizeimage, product_image1, product_image2, product_image3, product_isdeleted)
+	VALUES ('${product_code}', '${product_typeid}', '${product_name}', '${product_price}', '${product_color}', '${product_material}', '${product_lining}', '${product_size}', '${product_thickness}', '${product_softness}', '${product_elasticity}', '${product_introduction1}', '${product_introduction2}', '${product_introduction3}', '${product_introduction4}', '${product_introduction5}', '${product_image4}', '${product_image1}', '${product_image2}', '${product_image3}', 'false')`,
     (error, response) => {
       if (error) {
         console.log(error);
@@ -373,11 +391,11 @@ router.post("/admin/products/edit", function (req, res) {
 router.get("/admin/products/delete.:id", function (req, res) {
   const { id } = req.params;
   console.log(id);
-  pool.query(`DELETE FROM products WHERE id='${id}'`, (error, response) => {
+  pool.query(`UPDATE products SET product_isdeleted = 'true' WHERE id='${id}'`, (error, response) => {
     if (error) {
       console.log(error);
     } else {
-      console.log("Xoá thành công sản phẩm có id là: ", id);
+      res.send(id)
     }
   });
 });
@@ -390,7 +408,7 @@ router.post("/getClothData", function (req, res) {
 FROM cloth
 INNER JOIN clothtypes ON clothtypes.id = cloth.cloth_typeid
 INNER JOIN users ON users.id = cloth.cloth_userid
-WHERE cloth.cloth_material = '${cloth_material}'`,
+WHERE cloth.cloth_material = '${cloth_material}' AND cloth.cloth_isdeleted = 'false'`,
       (error, response) => {
         if (error) {
           console.log(error);
@@ -404,7 +422,8 @@ WHERE cloth.cloth_material = '${cloth_material}'`,
       `SELECT DISTINCT cloth.id, cloth.cloth_material, cloth.cloth_name, cloth.cloth_quantity, cloth.cloth_userid, cloth.cloth_typeid, cloth.cloth_image, clothtypes.ct_name, user_username, user_firstname, user_lastname
 FROM cloth
 INNER JOIN clothtypes ON clothtypes.id = cloth.cloth_typeid
-INNER JOIN users ON users.id = cloth.cloth_userid`,
+INNER JOIN users ON users.id = cloth.cloth_userid 
+WHERE cloth.cloth_isdeleted = 'false'`,
       (error, response) => {
         if (error) {
           console.log(error);
@@ -476,8 +495,8 @@ router.post("/admin/cloth/add", function (req, res) {
 
   pool.query(
     `INSERT INTO cloth(
-	id, cloth_material, cloth_name, cloth_quantity, cloth_userid, cloth_typeid, cloth_image)
-	VALUES ('${id}', '${cloth_material}', '${cloth_name}', '${cloth_quantity}', '${cloth_userid}', '${cloth_typeid}', '${cloth_image}');`,
+	id, cloth_material, cloth_name, cloth_quantity, cloth_userid, cloth_typeid, cloth_image, cloth_isdeleted)
+	VALUES ('${id}', '${cloth_material}', '${cloth_name}', '${cloth_quantity}', '${cloth_userid}', '${cloth_typeid}', '${cloth_image}', 'false');`,
     (error, response) => {
       if (error) {
         console.log(error);
@@ -547,10 +566,11 @@ router.post("/admin/cloth/edit", function (req, res) {
 
 router.get("/admin/cloth/delete.:id", function (req, res) {
   const { id } = req.params;
-  pool.query(`DELETE FROM cloth WHERE id='${id}'`, (error, response) => {
+  pool.query(`UPDATE cloth SET cloth_isdeleted = 'true' WHERE id='${id}'`, (error, response) => {
     if (error) {
       console.log(error);
     } else {
+      res.send(id);
       console.log("Xoá thành công sản phẩm có id là: ", id);
     }
   });
@@ -727,7 +747,6 @@ router.post("/admin/users/changeStatus", function (req, res) {
 
 router.post("/admin/users/add", async function (req, res) {
   const {
-    id,
     user_firstname,
     user_password,
     user_lastname,
@@ -739,6 +758,8 @@ router.post("/admin/users/add", async function (req, res) {
     user_date,
     user_typeid,
     user_avatar,
+    user_wardid,
+    user_isdeleted,
     fileRecv,
     FRONTEND_URL,
   } = req.body;
@@ -746,7 +767,6 @@ router.post("/admin/users/add", async function (req, res) {
   const hashPass = await bcrypt.hash(user_password, salt);
   var newpassword = hashPass;
   console.log(
-    id,
     user_firstname,
     user_password,
     user_lastname,
@@ -758,28 +778,44 @@ router.post("/admin/users/add", async function (req, res) {
     user_date,
     user_typeid,
     user_avatar,
+    user_wardid,
+    user_isdeleted,
     fileRecv,
     FRONTEND_URL,
     newpassword
   );
+  var id = 0;
   if (parseInt(fileRecv) === 1) {
-    const file = req.files.file;
-    const filename = Date.now() + "-" + id + "-" + file.name;
-    var newpath = "";
-    var image_path = "./images";
-    newpath = FRONTEND_URL + "/images/avatar/";
-    image_path = image_path + "/avatar/" + filename;
-    console.log("co file");
-    console.log(newpath, image_path);
     pool.query(
       `INSERT INTO users(
-	user_typeid, user_username, user_password, user_firstname, user_lastname, user_address, user_tel, user_status, user_date, user_avatar, user_email)
-	VALUES ('${user_typeid}', '${user_username}', '${newpassword}', '${user_firstname}', '${user_lastname}', '${user_address}', '${user_tel}', '${user_status}', '${user_date}', '${image_path}', '${user_email}')`,
+	user_typeid, user_username, user_password, user_firstname, user_lastname, user_address, user_tel, user_status, user_date, user_email, user_wardid, user_isdeleted)
+	VALUES ('${user_typeid}', '${user_username}', '${newpassword}', '${user_firstname}', '${user_lastname}', '${user_address}', '${user_tel}', '${user_status}', '${user_date}', '${user_email}', '${user_wardid}', '${user_isdeleted}') RETURNING id`,
       (error, response) => {
         if (error) {
           console.log(error);
           res.send({ msg: "ERROR" });
         } else {
+          id = response.rows[0].id;
+          const file = req.files.file;
+          const filename = Date.now() + "-" + id + "-" + file.name;
+          var newpath = "";
+          var image_path = "./images";
+          newpath = FRONTEND_URL + "/images/avatar/User" + id + "/";
+          image_path = image_path + "/avatar/User" + id + "/" + filename;
+          console.log("co file");
+          console.log(newpath, image_path);
+          pool.query(
+            `UPDATE users
+	SET user_avatar='${image_path}'
+	WHERE id='${id}'`,
+            (error, response) => {
+              if (error) {
+                console.log(error);
+              } else {
+                console.log("Da update file");
+              }
+            }
+          );
           if (!fs.existsSync(newpath)) {
             fs.mkdirSync(newpath);
           }
@@ -788,47 +824,48 @@ router.post("/admin/users/add", async function (req, res) {
               console.log(err);
             }
           });
-          res.send({
-            id: parseInt(id),
-            user_username: user_username,
-            user_address: user_address,
-            user_tel: user_tel,
-            user_city: null,
-            user_firstname: user_firstname,
-            user_lastname: user_lastname,
-            user_status: user_status,
-            user_typeid: user_typeid,
-            user_date: user_date,
-            user_avatar: image_path,
-            user_email: user_email,
-          });
+          pool.query(
+            `SELECT users.id, users.user_typeid, users.user_username, users.user_password, users.user_firstname, users.user_lastname, CONCAT(user_address, ', ', ward.ward_prefix, ' ', ward.ward_name, ', ', district.district_prefix, ' ', district.district_name, ', ', province.province_name) AS user_address, users.user_tel, users.user_status, users.user_date, users.user_avatar, users.user_email, ward.ward_prefix, ward.ward_name, ward.ward_districtid, district.district_prefix, district.district_name, ward.ward_provinceid, province.province_name FROM users
+LEFT JOIN ward ON ward.id = users.user_wardid
+LEFT JOIN district ON district.id = ward.ward_districtid
+LEFT JOIN province ON province.id = ward.ward_provinceid
+WHERE users.id = '${id}'`,
+            (error, response) => {
+              if (error) {
+                console.log(error);
+              } else {
+                res.send(response.rows[0]);
+              }
+            }
+          );
         }
       }
     );
   } else {
     pool.query(
       `INSERT INTO users(
-	user_typeid, user_username, user_password, user_firstname, user_lastname, user_address, user_tel, user_status, user_date, user_avatar, user_email)
-	VALUES ('${user_typeid}', '${user_username}', '${newpassword}', '${user_firstname}', '${user_lastname}', '${user_address}', '${user_tel}', '${user_status}', '${user_date}', '${user_avatar}', '${user_email}')`,
+	user_typeid, user_username, user_password, user_firstname, user_lastname, user_address, user_tel, user_status, user_date, user_avatar, user_email, user_wardid, user_isdeleted)
+	VALUES ('${user_typeid}', '${user_username}', '${newpassword}', '${user_firstname}', '${user_lastname}', '${user_address}', '${user_tel}', '${user_status}', '${user_date}', '${user_avatar}', '${user_email}', '${user_wardid}', '${user_isdeleted}') RETURNING id`,
       (error, response) => {
         if (error) {
           console.log(error);
           res.send({ msg: "ERROR" });
         } else {
-          res.send({
-            id: parseInt(id),
-            user_username: user_username,
-            user_address: user_address,
-            user_tel: user_tel,
-            user_city: null,
-            user_firstname: user_firstname,
-            user_lastname: user_lastname,
-            user_status: user_status,
-            user_typeid: user_typeid,
-            user_date: user_date,
-            user_avatar: user_avatar,
-            user_email: user_email,
-          });
+          id = response.rows[0].id;
+          pool.query(
+            `SELECT users.id, users.user_typeid, users.user_username, users.user_password, users.user_firstname, users.user_lastname, CONCAT(user_address, ', ', ward.ward_prefix, ' ', ward.ward_name, ', ', district.district_prefix, ' ', district.district_name, ', ', province.province_name) AS user_address, users.user_tel, users.user_status, users.user_date, users.user_avatar, users.user_email, ward.ward_prefix, ward.ward_name, ward.ward_districtid, district.district_prefix, district.district_name, ward.ward_provinceid, province.province_name FROM users
+LEFT JOIN ward ON ward.id = users.user_wardid
+LEFT JOIN district ON district.id = ward.ward_districtid
+LEFT JOIN province ON province.id = ward.ward_provinceid
+WHERE users.id = '${id}'`,
+            (error, response) => {
+              if (error) {
+                console.log(error);
+              } else {
+                res.send(response.rows[0]);
+              }
+            }
+          );
         }
       }
     );
@@ -900,7 +937,7 @@ router.post("/admin/users/edit", function (req, res) {
 LEFT JOIN ward ON ward.id = users.user_wardid
 LEFT JOIN district ON district.id = ward.ward_districtid
 LEFT JOIN province ON province.id = ward.ward_provinceid
-WHERE users.user_typeid = 'KH' AND users.id = '${id}'`,
+WHERE users.id = '${id}'`,
             (error, response) => {
               if (error) {
                 console.log(error);
@@ -942,7 +979,7 @@ WHERE users.user_typeid = 'KH' AND users.id = '${id}'`,
 LEFT JOIN ward ON ward.id = users.user_wardid
 LEFT JOIN district ON district.id = ward.ward_districtid
 LEFT JOIN province ON province.id = ward.ward_provinceid
-WHERE users.user_typeid = 'KH' AND users.id = '${id}'`,
+WHERE users.id = '${id}'`,
             (error, response) => {
               if (error) {
                 console.log(error);
@@ -1014,8 +1051,6 @@ router.post("/admin/users/editUserInfo", function (req, res) {
     var image_path = "./images";
     newpath = FRONTEND_URL + "/images/avatar/User" + id + "/";
     image_path = image_path + "/avatar/User" + id + "/" + filename;
-    console.log("co file");
-    console.log(newpath, image_path);
     pool.query(
       `UPDATE users
 	SET user_typeid='${user_typeid}', user_username='${user_username}', user_firstname='${user_firstname}', user_lastname='${user_lastname}', user_address='${user_address}', user_tel='${user_tel}', user_status='${user_status}', user_date='${user_date}', user_avatar='${image_path}', user_email='${user_email}', user_wardid='${user_wardid}'
@@ -1322,8 +1357,8 @@ router.post("/admin/order/add", function (req, res) {
           console.log("nhan gia tri id", od_clothid);
           pool.query(
             `INSERT INTO cloth(
-	id, cloth_material, cloth_name, cloth_quantity, cloth_userid, cloth_typeid, cloth_image)
-	VALUES ('${od_clothid}', 'Không rõ', '${cloth_name}', '0', '${order_userid}', 'VCKH', '${image_path}')`,
+	id, cloth_material, cloth_name, cloth_quantity, cloth_userid, cloth_typeid, cloth_image, cloth_isdeleted)
+	VALUES ('${od_clothid}', 'Không rõ', '${cloth_name}', '0', '${order_userid}', 'VCKH', '${image_path}', 'false')`,
             (error, response) => {
               if (error) {
                 console.log("Loi insert cloth");
@@ -1849,13 +1884,22 @@ AND order_startdate BETWEEN '${startDate}' AND '${endDate}'
 router.post(`/admin/getTailorOrder`, function (req, res) {
   const { startDate, endDate } = req.body;
   pool.query(
-    `SELECT CONCAT(users.user_lastname, ' ', users.user_firstname) AS name, COUNT(orders.id) AS value 
+    `WITH table1 AS(
+SELECT CONCAT(users.user_lastname, ' ', users.user_firstname) AS name
+FROM users
+WHERE users.user_typeid = 'NV' AND user_date <= '${endDate}'),
+table2 AS (
+SELECT CONCAT(users.user_lastname, ' ', users.user_firstname) AS name, COUNT(orders.id) AS value 
 FROM orders 
-INNER JOIN users ON users.id = orders.order_tailorid
+LEFT JOIN users ON users.id = orders.order_tailorid
 WHERE orders.order_tailorid > 1
 AND orders.order_statusid = '6' 
 AND order_startdate BETWEEN '${startDate}' AND '${endDate}'
-GROUP BY name ORDER BY name ASC`,
+GROUP BY name ORDER BY name ASC
+)
+SELECT table1.name, COALESCE(table2.value, 0) AS value
+FROM table1
+LEFT JOIN table2 ON table1.name = table2.name`,
     (error, response) => {
       if (error) {
         console.log(error);
@@ -1872,7 +1916,7 @@ router.post(`/admin/getOrderCount`, function (req, res) {
   pool.query(
     `SELECT  (
         SELECT COUNT(*)
-        FROM   users WHERE user_typeid = 'NV'
+        FROM users WHERE user_typeid = 'NV' AND user_date <= '${endDate}'
         ) AS count_tailor,
         (
         SELECT COUNT(*)
