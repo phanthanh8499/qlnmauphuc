@@ -82,7 +82,7 @@ export const productReducer = (
 ) => {
   switch (action.type) {
     case YEU_CAU_LIET_KE_SP:
-      return { loading: true };
+      return { ...state, loading: true };
     case LIET_KE_SAN_PHAM:
       const data = action.payload.sort(function (a, b) {
         return a.id - b.id;

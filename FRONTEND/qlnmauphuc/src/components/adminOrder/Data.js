@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useSelector, useDispatch } from "react-redux";
+import { useDispatch } from "react-redux";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import { useSnackbar } from "notistack";
@@ -13,44 +13,29 @@ import AddForm from "./addForm/AddForm";
 import DetailForm from "./detailForm/DetailForm";
 import DeleteForm from "./deleteForm/DeteleForm";
 import {
-  Badge,
   Button,
   ButtonGroup,
   CircularProgress,
   Grid,
   IconButton,
-  InputBase,
   InputLabel,
-  Menu,
   MenuItem,
-  Paper,
   Select,
   TextField,
 } from "@mui/material";
-import { getOrderData, getProductData } from "../../redux/Action";
+import { getOrderData } from "../../redux/Action";
 import { createTheme } from "@mui/material/styles";
 import { createStyles, makeStyles } from "@mui/styles";
-import { styled, alpha } from "@mui/material/styles";
+import { styled } from "@mui/material/styles";
 import SearchIcon from "@mui/icons-material/Search";
-import Box from "@mui/material/Box";
-import Tab from "@mui/material/Tab";
-import TabContext from "@mui/lab/TabContext";
-import TabList from "@mui/lab/TabList";
-import TabPanel from "@mui/lab/TabPanel";
 import EditIcon from "@mui/icons-material/Edit";
 import Divider from "@mui/material/Divider";
-import ArchiveIcon from "@mui/icons-material/Archive";
-import FileCopyIcon from "@mui/icons-material/FileCopy";
-import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import BlockIcon from "@mui/icons-material/Block";
-import CloseIcon from "@mui/icons-material/Close";
 import CancelIcon from "@mui/icons-material/Cancel";
 import { cancelOrder, deleteOrder } from "../../redux/Action";
 import {
-  DateTextField,
   MyFormControl,
-  MyTextField,
   Search,
   SearchIconWrapper,
   StyledInputBase,
@@ -80,10 +65,6 @@ const useStyles = makeStyles((theme) => ({
     padding: 5,
     margin: "0px 0px 5px 0px !important",
   },
-}));
-
-const MyTab = styled(Tab)(({ theme }) => ({
-  textTransform: "none",
 }));
 
 const defaultTheme = createTheme();
@@ -353,8 +334,6 @@ export default function Data(props) {
 
   const [anchorEl, setAnchorEl] = useState(null);
   const openMenu = Boolean(anchorEl);
-
-  const rows = dataRender;
   const [orderId, setOrderId] = useState("");
   const [orderIdList, setOrderIdList] = useState([]);
   const { enqueueSnackbar } = useSnackbar();
@@ -689,16 +668,6 @@ export default function Data(props) {
 
   const [dataBackup, setDataBackup] = useState();
   const handleClickSearch = () => {
-    let temp = [...data]
-    // if(province !== 0 ){
-    //   temp = temp.filter((data) => data.order_provinceid === province);
-    // }
-    // if (district !== 0) {
-    //   temp = temp.filter((data) => data.order_districtid === district);
-    // }
-    // if (ward !== 0) {
-    //   temp = temp.filter((data) => data.order_wardid === ward);
-    // }
     if (Date.parse(endDate) > Date.parse(new Date(new Date().setHours(23, 59, 59, 0)))) {
       enqueueSnackbar("Không được chọn ngày lớn hơn ngày hiện tại", {
         variant: "error",
@@ -713,12 +682,6 @@ export default function Data(props) {
       });
       return false
     } else {
-      temp = temp.filter(
-        (data) =>
-          Date.parse(data.order_startdate) >= Date.parse(startDate) &&
-          Date.parse(data.order_startdate) <= Date.parse(endDate)
-      );
-      console.log("ok ")
       const dataSend = {
         id: 0,
         provinceId: province,
@@ -729,11 +692,6 @@ export default function Data(props) {
       };
       dispatch(getOrderData(dataSend));
     }
-    
-    
-
-    // setDataRender(temp)
-    // setDataBackup(temp)
   }
 
   const liveSearch = (event) => {
