@@ -1,49 +1,45 @@
 import React, { useEffect, useState } from "react";
-import { useSelector, useDispatch } from "react-redux";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import { useSnackbar } from "notistack";
-import { DataGrid, GridOverlay } from "@mui/x-data-grid";
+import { DataGrid } from "@mui/x-data-grid";
 import AddForm from "./addForm/AddForm";
 import DetailForm from "./detailForm/DetailForm";
 import DeleteForm from "./deleteForm/DeteleForm";
 import {
-  Badge,
   Button,
   ButtonGroup,
   CircularProgress,
   Divider,
-  FormControl,
   Grid,
   IconButton,
   InputLabel,
   MenuItem,
   OutlinedInput,
-  Paper,
   Select,
-  Tab,
 } from "@mui/material";
-import { getProductData } from "../../redux/Action";
-import { createTheme } from "@mui/material/styles";
-import { createStyles, makeStyles } from "@mui/styles";
+import { makeStyles } from "@mui/styles";
 import { LOCAL_PATH } from "../../constants/Constants";
 import { styled } from "@mui/material/styles";
-import { MyFormControl, Search, SearchIconWrapper, StyledInputBase, StyledMenu } from "../utility/Utility";
+import {
+  MyFormControl,
+  Search,
+  SearchIconWrapper,
+  StyledInputBase,
+  StyledMenu,
+} from "../utility/Utility";
 import SearchIcon from "@mui/icons-material/Search";
-import { Box } from "@mui/system";
-import TabList from "@mui/lab/TabList";
-import TabContext from "@mui/lab/TabContext";
-import TabPanel from "@mui/lab/TabPanel";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
-import BlockIcon from "@mui/icons-material/Block";
-import CloseIcon from "@mui/icons-material/Close";
 import CancelIcon from "@mui/icons-material/Cancel";
 import EditIcon from "@mui/icons-material/Edit";
 import XLSX from "xlsx";
 import SaveAltIcon from "@mui/icons-material/SaveAlt";
 import { useTheme } from "@mui/material/styles";
 import { format } from "date-fns";
-import { CustomNoRowsOverlay, useStylesAntDesign } from "../utility/DataGridTheme";
+import {
+  CustomNoRowsOverlay,
+  useStylesAntDesign,
+} from "../utility/DataGridTheme";
 
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
@@ -64,17 +60,6 @@ function getStyles(name, personName, theme) {
         : theme.typography.fontWeightMedium,
   };
 }
-
-const MyBadge = styled(Badge)(({ theme }) => ({
-  "& .MuiBadge-badge": {
-    right: "-10px",
-  },
-}));
-
-const MyTab = styled(Tab)(({ theme }) => ({
-  textTransform: "none",
-  padding: "12px 21px",
-}));
 
 const useStyles = makeStyles((theme) => ({
   topBar: {
@@ -105,24 +90,22 @@ export default function Data(props) {
   const classes = useStyles();
   const antDesignClasses = useStylesAntDesign();
   const { enqueueSnackbar } = useSnackbar();
-  const {data} = props;
+  const { data } = props;
   const [dataRender, setDataRender] = useState([]);
   const [loading, setLoading] = useState(true);
-  const dispatch = useDispatch();
   useEffect(() => {
-    setDataRender(data)
-    setDataBackup(data)
-    setLoading(false)
+    setDataRender(data);
+    setDataBackup(data);
+    setLoading(false);
   }, [data]);
 
   const rows = dataRender;
-  const [productid, setProductid] = useState("");
 
   const [addForm, setAddForm] = useState(false);
   const [detailForm, setDetailForm] = useState(false);
   const [deleteForm, setDeleteForm] = useState(false);
   const [productIdList, setProductIdList] = useState([]);
-  const [productId, setProductId] = useState(0)
+  const [productId, setProductId] = useState(0);
   const openAddForm = () => {
     setAddForm(true);
   };
@@ -154,12 +137,11 @@ export default function Data(props) {
   };
   const handleClickEdit = () => {
     setAnchorEl(null);
-    
   };
- 
+
   const handleClickDelete = () => {
     setAnchorEl(null);
-    if(productIdList.length === 0){
+    if (productIdList.length === 0) {
       enqueueSnackbar("Vui lòng chọn sản phẩm cần xoá", {
         variant: "error",
         autoHideDuration: 2000,
@@ -169,11 +151,6 @@ export default function Data(props) {
     openDeleteForm();
   };
 
-  const [value, setValue] = useState("1");
-  const handleChange = (event, newValue) => {
-    setValue(newValue);
-  };
-
   const removeAccents = (str) => {
     return str
       .normalize("NFD")
@@ -181,20 +158,6 @@ export default function Data(props) {
       .replace(/đ/g, "d")
       .replace(/Đ/g, "D");
   };
-
-  const formatDate = (dateString) => {
-    const options = {
-      year: "numeric",
-      month: "2-digit",
-      day: "2-digit",
-      hour: "2-digit",
-      minute: "2-digit",
-      second: "2-digit",
-    };
-    return new Date(dateString).toLocaleDateString(undefined, options);
-  };
-
-  
 
   const renderForm = () => {
     if (addForm) {
@@ -303,14 +266,11 @@ export default function Data(props) {
     });
     var now = new Date();
     now = format(now, "yyyy-MM-dd HH:mm:ss");
-    const ws = XLSX.utils.json_to_sheet(
-      list
-    );
+    const ws = XLSX.utils.json_to_sheet(list);
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, "data");
     XLSX.writeFile(wb, "DSSanPham " + now + ".xlsx");
   };
-
 
   const theme = useTheme();
   const [colorSelected, setColorSelected] = React.useState([]);
@@ -338,37 +298,34 @@ export default function Data(props) {
     );
   };
 
-  const [dataBackup, setDataBackup] = useState([])
+  const [dataBackup, setDataBackup] = useState([]);
   const handleClickSearch = () => {
     let temp = [...data];
-    if (colorSelected.length >= 1){
-      for(let i = 0; i<colorSelected.length; i++){
+    if (colorSelected.length >= 1) {
+      for (let i = 0; i < colorSelected.length; i++) {
         temp = temp.filter((data) => {
           return removeAccents(data.product_color)
             .toLowerCase()
             .includes(removeAccents(colorSelected[i]).toLowerCase());
-        } 
-        );
+        });
       }
     }
-    if(thicknessSelected){
+    if (thicknessSelected) {
       temp = temp.filter(
         (data) => data.product_thickness === thicknessSelected
       );
     }
-    if(softnessSelected){
-      temp = temp.filter(
-        (data) => data.product_softness === softnessSelected
-      );
+    if (softnessSelected) {
+      temp = temp.filter((data) => data.product_softness === softnessSelected);
     }
-    if(elasticitySelected){
+    if (elasticitySelected) {
       temp = temp.filter(
         (data) => data.product_elasticity === elasticitySelected
       );
     }
-    setDataRender(temp); 
-    setDataBackup(temp); 
-  }
+    setDataRender(temp);
+    setDataBackup(temp);
+  };
 
   const liveSearch = (event) => {
     let string = event.target.value;
@@ -409,7 +366,7 @@ export default function Data(props) {
     }
   };
 
-  const [thicknessSelected, setThicknessSelected] = useState('');
+  const [thicknessSelected, setThicknessSelected] = useState("");
   const [softnessSelected, setSoftnessSelected] = useState("");
   const [elasticitySelected, setElasticitySelected] = useState("");
   const renderSearchForm = () => {
@@ -517,14 +474,14 @@ export default function Data(props) {
             variant="outlined"
             color="primary"
             onClick={handleClickSearch}
-            sx={{ float: "right", mr:0.5 }}
+            sx={{ float: "right", mr: 0.5 }}
           >
             Tìm kiếm
           </Button>
         </Grid>
       </Grid>
     );
-  }
+  };
   return (
     <Grid container>
       {loading ? (
@@ -544,7 +501,7 @@ export default function Data(props) {
         </Grid>
       ) : (
         <>
-          <Grid item xs={12} sx={{mb:0.5}}>
+          <Grid item xs={12} sx={{ mb: 0.5 }}>
             <Grid container>
               <Grid item xs={12}>
                 {renderSearchForm()}

@@ -1,6 +1,5 @@
 import { TabContext, TabList, TabPanel } from "@mui/lab";
 import { Badge, Grid, Tab } from "@mui/material";
-import { makeStyles } from "@mui/styles";
 import { Box } from "@mui/system";
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
@@ -13,8 +12,6 @@ const MyBadge = styled(Badge)`
     right: -10px;
   }
 `;
-
-const useStyles = makeStyles((theme) => ({}));
 
 export default function UOder() {
   const dispatch = useDispatch();

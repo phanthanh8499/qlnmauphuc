@@ -6,19 +6,14 @@ import {
   FormControl,
   FormControlLabel,
   FormGroup,
-  FormLabel,
   Grid,
-  Stack,
   Switch,
   Typography,
 } from "@mui/material";
 import React, { useState } from "react";
 import { useDispatch } from "react-redux";
 import { useSnackbar } from "notistack";
-import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline";
 import makeStyles from "@mui/styles/makeStyles";
-import clsx from "clsx";
-import { deleteCloth, deleteUser } from "../../../redux/Action";
 
 const useStyle = makeStyles((theme) => ({
   root: {

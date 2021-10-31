@@ -1,11 +1,9 @@
 import {
   Button,
-  ButtonBase,
   ButtonGroup,
   Dialog,
   FormControl,
   Grid,
-  IconButton,
   InputAdornment,
   InputLabel,
   MenuItem,
@@ -18,7 +16,6 @@ import React, { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { useSnackbar } from "notistack";
 import ProductImageGallery from "./ProductImageGallery";
-import PhotoCamera from "@mui/icons-material/PhotoCamera";
 import axios from "axios";
 import makeStyles from "@mui/styles/makeStyles";
 import { editProduct } from "../../../redux/Action";
@@ -87,7 +84,6 @@ const useStyle = makeStyles((theme) => ({
   label: {
     color: "#00000099",
     padding: 0,
-    fontSize: "14px",
     fontFamily: `"Roboto", "Helvetica", "Arial", sans-serif`,
     fontWeight: 400,
     lineHeight: 1,
@@ -115,7 +111,7 @@ function DetailForm(props) {
   const classes = useStyle();
   const { enqueueSnackbar } = useSnackbar();
   const dispatch = useDispatch();
-  const { open, onClose, id } = props;
+  const { onClose, id } = props;
 
   const [imgUpload1, setImgUpload1] = useState("./images/loadingImg.gif");
   const [imgUpload2, setImgUpload2] = useState("./images/loadingImg.gif");
@@ -187,71 +183,10 @@ function DetailForm(props) {
   const getParamElasticity = (event, value) => {
     setElasticity(value);
   };
-  const [file1, setFile1] = useState();
-  const [fileName1, setFileName1] = useState("");
-  const saveFile1 = (e) => {
-    setFile1(e.target.files[0]);
-    setFileName1(e.target.files[0].name);
-    let reader = new FileReader();
-    var fileInput = e.target.files[0];
-    reader.readAsDataURL(fileInput);
-    reader.onload = () => {
-      setImgUpload1(reader.result);
-    };
-    reader.onerror = function (error) {
-      console.log("Error: ", error);
-    };
-  };
-  const [file2, setFile2] = useState();
-  const [fileName2, setFileName2] = useState("");
-  const saveFile2 = (e) => {
-    setFile2(e.target.files[0]);
-    setFileName2(e.target.files[0].name);
-    let reader = new FileReader();
-    var fileInput = e.target.files[0];
-    reader.readAsDataURL(fileInput);
-    reader.onload = () => {
-      setImgUpload2(reader.result);
-    };
-    reader.onerror = function (error) {
-      console.log("Error: ", error);
-    };
-  };
-  const [file3, setFile3] = useState();
-  const [fileName3, setFileName3] = useState("");
-  const saveFile3 = (e) => {
-    setFile3(e.target.files[0]);
-    setFileName3(e.target.files[0].name);
-    let reader = new FileReader();
-    var fileInput = e.target.files[0];
-    reader.readAsDataURL(fileInput);
-    reader.onload = () => {
-      setImgUpload3(reader.result);
-    };
-    reader.onerror = function (error) {
-      console.log("Error: ", error);
-    };
-  };
-  const [file4, setFile4] = useState();
-  const [fileName4, setFileName4] = useState("");
-  const saveFile4 = (e) => {
-    setFile4(e.target.files[0]);
-    setFileName4(e.target.files[0].name);
-    let reader = new FileReader();
-    var fileInput = e.target.files[0];
-    reader.readAsDataURL(fileInput);
-    reader.onload = () => {
-      setImgUpload4(reader.result);
-    };
-    reader.onerror = function (error) {
-      console.log("Error: ", error);
-    };
-  };
   const [loading, setLoading] = useState(true);
   useEffect(() => {
     async function getDetailProduct() {
       const { data } = await axios.get(`/getDetailProduct.${id}`);
-      console.log("data1", data)
       if (`${data[0].product_thickness}` === "Mỏng") {
         setThickness(0);
       } else if (`${data[0].product_thickness}` === "Vừa") {
@@ -291,7 +226,6 @@ function DetailForm(props) {
       setIntroduction4(`${data[0].product_introduction4}`);
       setIntroduction5(`${data[0].product_introduction5}`);
       setProductImage(`${data[0].product_image1}`);
-      
     }
     async function getProductType() {
       const { data } = await axios.get("/getProductTypeData");
@@ -308,7 +242,7 @@ function DetailForm(props) {
         {value.pt_name}
       </MenuItem>
     ));
-  }
+  };
   const handleSubmit = () => {
     let thicknessValue = "";
     let softnessValue = "";

@@ -1,9 +1,4 @@
-import {
-  CircularProgress,
-  Dialog,
-  Grid,
-  Typography,
-} from "@mui/material";
+import { CircularProgress, Dialog, Grid, Typography } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import React, { useEffect, useState } from "react";
 import makeStyles from "@mui/styles/makeStyles";
@@ -75,12 +70,9 @@ const center = {
 
 function DetailForm(props) {
   const classes = useStyle();
-  const { open, onClose, id, data } = props;
+  const { onClose, id } = props;
   const [loadingState, setLoadingState] = useState(true);
-  const dispatch = useDispatch()
-  // const [detailData[0], setdetailData[0]] = useState([]);
-
-  
+  const dispatch = useDispatch();
 
   const order = useSelector((state) => state.order);
   const { loadingDetail, detailData } = order;
@@ -89,7 +81,6 @@ function DetailForm(props) {
   }, [id]);
 
   useEffect(() => {
-    // setdetailData[0](detailData[0]);
     setLoadingState(false);
   }, [detailData]);
 
@@ -274,7 +265,7 @@ function DetailForm(props) {
         </Grid>
       </Grid>
     );
-  }
+  };
 
   const measurementInfo = () => {
     return (
@@ -377,7 +368,7 @@ function DetailForm(props) {
       </Grid>
     );
   };
-  
+
   const productInfo = () => {
     return (
       <>
@@ -403,41 +394,55 @@ function DetailForm(props) {
                   })}
                 </Typography>
               </Grid>
-              {detailData[0].order_statusid >= 1 ? (<><Grid item xs={12} sx={center}>
-                <Typography className={classes.title}>
-                  <MySpan>Đã trả: </MySpan>
-                  {(detailData[0].order_total * 0.5).toLocaleString("it-IT", {
-                    style: "currency",
-                    currency: "VND",
-                  })}
-                </Typography>
-              </Grid>
-              <Grid item xs={12} sx={center}>
-                <Typography className={classes.title}>
-                  <MySpan>Còn lại: </MySpan>
-                  {(detailData[0].order_total * 0.5).toLocaleString("it-IT", {
-                    style: "currency",
-                    currency: "VND",
-                  })}
-                </Typography>
-              </Grid> </>): (<><Grid item xs={12} sx={center}>
-                <Typography className={classes.title}>
-                  <MySpan>Đã trả: </MySpan>
-                 ...
-                </Typography>
-              </Grid>
-              <Grid item xs={12} sx={center}>
-                <Typography className={classes.title}>
-                  <MySpan>Còn lại: </MySpan>
-                  ...
-                </Typography>
-              </Grid></>)}
+              {detailData[0].order_statusid >= 1 ? (
+                <>
+                  <Grid item xs={12} sx={center}>
+                    <Typography className={classes.title}>
+                      <MySpan>Đã trả: </MySpan>
+                      {(detailData[0].order_total * 0.5).toLocaleString(
+                        "it-IT",
+                        {
+                          style: "currency",
+                          currency: "VND",
+                        }
+                      )}
+                    </Typography>
+                  </Grid>
+                  <Grid item xs={12} sx={center}>
+                    <Typography className={classes.title}>
+                      <MySpan>Còn lại: </MySpan>
+                      {(detailData[0].order_total * 0.5).toLocaleString(
+                        "it-IT",
+                        {
+                          style: "currency",
+                          currency: "VND",
+                        }
+                      )}
+                    </Typography>
+                  </Grid>{" "}
+                </>
+              ) : (
+                <>
+                  <Grid item xs={12} sx={center}>
+                    <Typography className={classes.title}>
+                      <MySpan>Đã trả: </MySpan>
+                      ...
+                    </Typography>
+                  </Grid>
+                  <Grid item xs={12} sx={center}>
+                    <Typography className={classes.title}>
+                      <MySpan>Còn lại: </MySpan>
+                      ...
+                    </Typography>
+                  </Grid>
+                </>
+              )}
             </Grid>
           </Grid>
         </Grid>
       </>
     );
-  }
+  };
   return (
     <Dialog
       onClose={onClose}

@@ -108,30 +108,30 @@ export default function Shirt() {
     formData.append("m_dresslength", detailData[0].m_dresslength);
     formData.append("m_pantslength", detailData[0].m_pantslength);
     formData.append("m_gender", "female");
-     if (
-       !neckline ||
-       !bust ||
-       !waist ||
-       !buttock ||
-       !shoulderwidth ||
-       !armpitcircumference ||
-       !biceps ||
-       !wristaround ||
-       !sleevelength ||
-       !shirtlength
-     ) {
-       enqueueSnackbar("Hãy điền đầy đủ thông tin", {
-         variant: "error",
-         autoHideDuration: 2000,
-       });
-     } else {
-       dispatch(editMeasurements(formData));
-       dispatch(getDetailMeasurements(id));
-       enqueueSnackbar("Chỉnh sửa thông tin thành công", {
-         variant: "success",
-         autoHideDuration: 2000,
-       });
-     }
+    if (
+      !neckline ||
+      !bust ||
+      !waist ||
+      !buttock ||
+      !shoulderwidth ||
+      !armpitcircumference ||
+      !biceps ||
+      !wristaround ||
+      !sleevelength ||
+      !shirtlength
+    ) {
+      enqueueSnackbar("Hãy điền đầy đủ thông tin", {
+        variant: "error",
+        autoHideDuration: 2000,
+      });
+    } else {
+      dispatch(editMeasurements(formData));
+      dispatch(getDetailMeasurements(id));
+      enqueueSnackbar("Chỉnh sửa thông tin thành công", {
+        variant: "success",
+        autoHideDuration: 2000,
+      });
+    }
   };
   return (
     <>

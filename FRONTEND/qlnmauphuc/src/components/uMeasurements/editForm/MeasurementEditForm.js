@@ -1,12 +1,11 @@
 import { TabContext, TabList, TabPanel } from "@mui/lab";
-import { Backdrop, CircularProgress, Grid, Tab } from "@mui/material";
+import { CircularProgress, Grid, Tab } from "@mui/material";
 import { Box } from "@mui/system";
 import React, { useEffect, useState } from "react";
 import Male from "./male/Male";
 import Female from "./female/Female";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router";
-import axios from "axios";
 import { getDetailMeasurements } from "../../../redux/Action";
 
 export default function MeasurementEditForm() {
@@ -28,7 +27,6 @@ export default function MeasurementEditForm() {
   // }, [id]);
   const measurements = useSelector((state) => state.measurements);
   const { loadingDetail, detailData } = measurements;
-  const [data, setData] = useState(measurements);
   useEffect(() => {
     dispatch(getDetailMeasurements(parseInt(id)));
     setLoading(false);

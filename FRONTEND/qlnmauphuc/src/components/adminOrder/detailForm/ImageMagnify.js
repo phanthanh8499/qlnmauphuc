@@ -1,9 +1,7 @@
 import React from "react";
 import ReactImageMagnify from "react-image-magnify";
-import { useSelector } from "react-redux";
 
 function ImageMagnify(props) {
-  // const cloth = useSelector((state) => state.cloth);
   const { image } = props;
 
   return (
@@ -20,7 +18,6 @@ function ImageMagnify(props) {
           width: 640,
           height: 480,
         },
-        // enlargedImagePortalId: "myPortal",
       }}
     />
   );

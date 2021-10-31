@@ -1,75 +1,23 @@
 import {
   Button,
-  ButtonBase,
   ButtonGroup,
   CircularProgress,
   Dialog,
   FormControl,
   Grid,
-  IconButton,
-  InputAdornment,
   InputLabel,
   MenuItem,
   Select,
-  Slider,
   TextField,
-  Typography,
 } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { useSnackbar } from "notistack";
-import ProductImageGallery from "./ProductImageGallery";
-import PhotoCamera from "@mui/icons-material/PhotoCamera";
 import axios from "axios";
 import makeStyles from "@mui/styles/makeStyles";
-import { editCloth, editProduct } from "../../../redux/Action";
+import { editCloth} from "../../../redux/Action";
 import ImageMagnify from "./ImageMagnify";
 import { LOCAL_PATH } from "../../../constants/Constants";
-
-const markThickness = [
-  {
-    value: 0,
-    label: "Mỏng",
-  },
-  {
-    value: 50,
-    label: "Vừa",
-  },
-  {
-    value: 100,
-    label: "Dày",
-  },
-];
-
-const markSoftness = [
-  {
-    value: 0,
-    label: "Mềm",
-  },
-  {
-    value: 50,
-    label: "Vừa",
-  },
-  {
-    value: 100,
-    label: "Cứng",
-  },
-];
-
-const markElasticity = [
-  {
-    value: 0,
-    label: "Không",
-  },
-  {
-    value: 50,
-    label: "Vừa",
-  },
-  {
-    value: 100,
-    label: "Có",
-  },
-];
 
 const useStyle = makeStyles((theme) => ({
   root: {
@@ -89,7 +37,6 @@ const useStyle = makeStyles((theme) => ({
   label: {
     color: "#00000099",
     padding: 0,
-    fontSize: "14px",
     fontFamily: `"Roboto", "Helvetica", "Arial", sans-serif`,
     fontWeight: 400,
     lineHeight: 1,
@@ -117,7 +64,7 @@ function DetailForm(props) {
   const classes = useStyle();
   const { enqueueSnackbar } = useSnackbar();
   const dispatch = useDispatch();
-  const { open, onClose, id } = props;
+  const { onClose, id } = props;
 
   const [imgUpload, setImgUpload] = useState("./images/loadingImg.gif");
 
@@ -158,7 +105,7 @@ function DetailForm(props) {
   useEffect(() => {
     async function getDetailProduct() {
       const { data } = await axios.get(`/getDetailCloth.${id}`);
-      console.log("nhan đc", data)
+      console.log("nhan đc", data);
       setName(`${data[0].cloth_name}`);
       setQuantity(`${data[0].cloth_quantity}`);
       setUserId(`${data[0].cloth_userid}`);
@@ -177,7 +124,7 @@ function DetailForm(props) {
     }
     getDetailProduct();
     getClothType();
-  }, []);
+  }, [id]);
 
   const handleSubmit = () => {
     const formData = new FormData();

@@ -6,15 +6,13 @@ import {
   Typography,
   CircularProgress,
 } from "@mui/material";
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { styled } from "@mui/material/styles";
 import LocalMallIcon from "@mui/icons-material/LocalMall";
-import NavigateNextIcon from "@mui/icons-material/NavigateNext";
 import PersonAddIcon from "@mui/icons-material/PersonAdd";
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 import MonetizationOnIcon from "@mui/icons-material/MonetizationOn";
 import { format } from "date-fns";
-import axios from "axios";
 import { Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { getEcommerceReportCountData } from "../../redux/Action";
@@ -26,21 +24,22 @@ const Item = styled(Paper)(({ theme }) => ({
 }));
 
 const center = {
-height: 127, display: 'flex', alignItems: 'center', justifyContent: 'center'
-}
+  height: 127,
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "center",
+};
+
 export default function DataCount() {
-  const [dataRender, setDataRender] = useState([])
-  const [loading, setLoading] = useState(true);
-  const [abc, setAbc] = useState([]);
   const dispatch = useDispatch();
   const ecommerceReport = useSelector((state) => state.ecommerceReport);
-  const {loadingDC, dataCount} = ecommerceReport;
+  const { loadingDC, dataCount } = ecommerceReport;
   useEffect(() => {
     var now = new Date();
     now.setHours(0, 0, 0, 0);
     var startDate = new Date(now);
     var endDate = new Date(now);
-    
+
     if (now.toLocaleDateString("en-us", { weekday: "long" }) === "Sunday") {
       startDate.setDate(startDate.getDate() - startDate.getDay() - 6);
       endDate.setDate(endDate.getDate() - endDate.getDay());
@@ -55,14 +54,7 @@ export default function DataCount() {
       endDate: format(endDate, "yyyy-MM-dd HH:mm:ss"),
     };
     dispatch(getEcommerceReportCountData(dataSend));
-    // async function getDataCount() {
-    //   const { data } = await axios.post(`/admin/getDataCount`, dataSend);
-    //   setDataRender(data[0]);
-    //   setLoading(false)
-    // }
-    // getDataCount();
-    // setLoading(false);
-  }, [])
+  }, []);
   return (
     <Grid container spacing={1}>
       {loadingDC ? (

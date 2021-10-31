@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import clsx from "clsx";
 import { Link } from "react-router-dom";
 import CategoryIcon from "@mui/icons-material/Category";
 import MenuIcon from "@mui/icons-material/Menu";
@@ -17,8 +16,6 @@ import TrendingUpIcon from "@mui/icons-material/TrendingUp";
 import ExitToAppIcon from "@mui/icons-material/ExitToApp";
 import {
   Avatar,
-  Badge,
-  Button,
   Collapse,
   IconButton,
   Menu,
@@ -63,7 +60,7 @@ const AppBar = styled(MuiAppBar, {
 })(({ theme, open }) => ({
   zIndex: theme.zIndex.drawer + 1,
   color: "#000000",
-  backgroundColor: '#ffffff !important',
+  backgroundColor: "#ffffff !important",
   transition: theme.transitions.create(["width", "margin"], {
     easing: theme.transitions.easing.sharp,
     duration: theme.transitions.duration.leavingScreen,
@@ -132,7 +129,6 @@ const MyListSubItem = styled(ListItem)(({ theme }) => ({
   },
 }));
 
-
 const useStyles = makeStyles((theme) => ({
   content: {
     flexGrow: 1,
@@ -176,11 +172,11 @@ const useStyles = makeStyles((theme) => ({
 export default function AAppBar(props) {
   const classes = useStyles();
   const abc = useLocation().pathname.substring(7).toUpperCase();
-  const [open, setOpen] = React.useState(true);
+  const [open, setOpen] = useState(true);
   const toggleDrawer = () => {
     setOpen(!open);
     const temp = [...openSubMenu];
-    if(open === true){
+    if (open === true) {
       for (let i = 0; i < temp.length; i++) {
         temp[i] = false;
       }
@@ -192,18 +188,13 @@ export default function AAppBar(props) {
       setOpenSubMenu(temp);
     }
   };
-  const [title, setTitle] = useState("Dashboard");
-  console.log(abc)
-  console.log(useLocation().pathname);
-  const dangNhap = useSelector((state) => state.dangNhap);
-  const { userInfo } = dangNhap;
 
-  const [selected, setSelected] = useState(0)
+  const [selected, setSelected] = useState(0);
   const changeTitle = (event, index) => {
     setSelected(index);
     setSelectedSubMenu();
   };
-  const [selectedSubMenu, setSelectedSubMenu] = useState()
+  const [selectedSubMenu, setSelectedSubMenu] = useState();
   const changeTitleMenu = (event, index, indexSub) => {
     setSelected(index);
     setSelectedSubMenu(indexSub);
@@ -285,54 +276,52 @@ export default function AAppBar(props) {
           </List>
         </Collapse>
 
-     
-          <MyListItem
-            button
-            selected={selected === 1}
-            onClick={(e) => handleClick(e, 1)}
-          >
-            <ListItemIcon>
-              <PeopleIcon />
-            </ListItemIcon>
-            <ListItemText primary="Account" />
-            {openSubMenu[1] ? <ExpandLess /> : <ExpandMore />}
-          </MyListItem>
-          <Collapse in={openSubMenu[1]} timeout="auto" unmountOnExit>
-            <List component="div" disablePadding>
-              <Link
-                Link
-                to="/admin/customer"
-                onClick={(e) => changeTitleMenu(e, 1, "1a")}
+        <MyListItem
+          button
+          selected={selected === 1}
+          onClick={(e) => handleClick(e, 1)}
+        >
+          <ListItemIcon>
+            <PeopleIcon />
+          </ListItemIcon>
+          <ListItemText primary="Account" />
+          {openSubMenu[1] ? <ExpandLess /> : <ExpandMore />}
+        </MyListItem>
+        <Collapse in={openSubMenu[1]} timeout="auto" unmountOnExit>
+          <List component="div" disablePadding>
+            <Link
+              Link
+              to="/admin/customer"
+              onClick={(e) => changeTitleMenu(e, 1, "1a")}
+            >
+              <MyListSubItem
+                button
+                sx={{ pl: 4 }}
+                selected={selectedSubMenu === "1a"}
               >
-                <MyListSubItem
-                  button
-                  sx={{ pl: 4 }}
-                  selected={selectedSubMenu === "1a"}
-                >
-                  <ListItemIcon>
-                    <PeopleIcon />
-                  </ListItemIcon>
-                  <ListItemText primary="Customers" />
-                </MyListSubItem>
-              </Link>
-              <Link
-                to="/admin/staff"
-                onClick={(e) => changeTitleMenu(e, 1, "1b")}
+                <ListItemIcon>
+                  <PeopleIcon />
+                </ListItemIcon>
+                <ListItemText primary="Customers" />
+              </MyListSubItem>
+            </Link>
+            <Link
+              to="/admin/staff"
+              onClick={(e) => changeTitleMenu(e, 1, "1b")}
+            >
+              <MyListSubItem
+                button
+                sx={{ pl: 4 }}
+                selected={selectedSubMenu === "1b"}
               >
-                <MyListSubItem
-                  button
-                  sx={{ pl: 4 }}
-                  selected={selectedSubMenu === "1b"}
-                >
-                  <ListItemIcon>
-                    <TrendingUpIcon />
-                  </ListItemIcon>
-                  <ListItemText primary="Staff" />
-                </MyListSubItem>
-              </Link>
-            </List>
-          </Collapse>
-
+                <ListItemIcon>
+                  <TrendingUpIcon />
+                </ListItemIcon>
+                <ListItemText primary="Staff" />
+              </MyListSubItem>
+            </Link>
+          </List>
+        </Collapse>
 
         <Link to="/admin/products">
           <MyListItem
@@ -362,22 +351,13 @@ export default function AAppBar(props) {
             <ListItemText primary="Orders" />
           </MyListItem>
         </Link>
-        {/* <Link to="/admin/statistic" onClick={(e) => changeTitle(e, 5)}>
-          <MyListItem button selected={selected === 5}>
-            <ListItemIcon>
-              <TrendingUpIcon />
-            </ListItemIcon>
-            <ListItemText primary="Statistic" />
-          </MyListItem>
-        </Link> */}
       </List>
     );
   };
 
-  
   const [anchorEl, setAnchorEl] = useState(null);
   const openMenu = Boolean(anchorEl);
-  
+
   const handleClickMenu = (event) => {
     setAnchorEl(event.currentTarget);
   };
@@ -414,14 +394,13 @@ export default function AAppBar(props) {
           >
             {abc}
           </Typography>
-
           <Box
             sx={{
               display: "flex",
               border: "1px solid #f1f3fa",
               padding: "9px",
               backgroundColor: "#fafbfd",
-              cursor: 'pointer'
+              cursor: "pointer",
             }}
             onClick={handleClickMenu}
           >
@@ -429,26 +408,26 @@ export default function AAppBar(props) {
               alt="Remy Sharp"
               src="./images/avatar/user-image.jpg"
               className={classes.lagre}
-              sx={{mr: 0.5}}
+              sx={{ mr: 0.5 }}
             />
             <Box sx={{ color: "#98a6ad" }}>
               <Typography>Nguyễn Văn A</Typography>
               <Typography sx={{ fontSize: 14 }}>Administrator</Typography>
             </Box>
           </Box>
-            <Menu
-              id="basic-menu"
-              anchorEl={anchorEl}
-              open={openMenu}
-              onClose={handleCloseMenu}
-              MenuListProps={{
-                "aria-labelledby": "basic-button",
-              }}
-            >
-              <MenuItem onClick={handleCloseMenu}>Profile</MenuItem>
-              <MenuItem onClick={handleCloseMenu}>My account</MenuItem>
-              <MenuItem onClick={handleCloseMenu}>Logout</MenuItem>
-            </Menu>
+          <Menu
+            id="basic-menu"
+            anchorEl={anchorEl}
+            open={openMenu}
+            onClose={handleCloseMenu}
+            MenuListProps={{
+              "aria-labelledby": "basic-button",
+            }}
+          >
+            <MenuItem onClick={handleCloseMenu}>Profile</MenuItem>
+            <MenuItem onClick={handleCloseMenu}>My account</MenuItem>
+            <MenuItem onClick={handleCloseMenu}>Logout</MenuItem>
+          </Menu>
         </Toolbar>
       </AppBar>
       <Drawer variant="permanent" open={open}>
@@ -464,8 +443,6 @@ export default function AAppBar(props) {
             <ChevronLeftIcon />
           </IconButton>
         </Toolbar>
-      
-        
         <Divider />
         {renderListModule()}
         <Divider />

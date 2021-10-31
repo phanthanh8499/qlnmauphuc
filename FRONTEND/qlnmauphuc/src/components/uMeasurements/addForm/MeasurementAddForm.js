@@ -1,14 +1,12 @@
-import { TabContext, TabList, TabPanel } from '@mui/lab';
-import { Grid, Tab } from '@mui/material';
-import { Box } from '@mui/system';
-import React, { useState } from 'react'
-import Male from './male/Male';
+import { TabContext, TabList, TabPanel } from "@mui/lab";
+import { Grid, Tab } from "@mui/material";
+import { Box } from "@mui/system";
+import React, { useState } from "react";
+import Male from "./male/Male";
 import Female from "./female/Female";
-import { useDispatch } from 'react-redux';
 
 export default function MeasurementAddForm() {
   const [value, setValue] = useState("1");
-  const dispatch = useDispatch();
   const handleChange = (event, newValue) => {
     setValue(newValue);
   };

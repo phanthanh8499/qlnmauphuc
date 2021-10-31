@@ -3,7 +3,6 @@ import { useSnackbar } from "notistack";
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
-  addMeasurements,
   editMeasurements,
   getDetailMeasurements,
 } from "../../../../redux/Action";

@@ -16,8 +16,8 @@ import { useDispatch } from "react-redux";
 import { useSnackbar } from "notistack";
 import PhotoCamera from "@mui/icons-material/PhotoCamera";
 import makeStyles from "@mui/styles/makeStyles";
-import { CAP_NHAT_HINH_ANH, FRONTEND_ADM_URL, FRONTEND_URL } from "../../../constants/Constants";
-import { addCloth, getClothData } from "../../../redux/Action";
+import { CAP_NHAT_HINH_ANH, FRONTEND_URL } from "../../../constants/Constants";
+import { addCloth} from "../../../redux/Action";
 import axios from "axios";
 
 
@@ -54,11 +54,7 @@ function AFCompany(props) {
   const classes = useStyle();
   const { enqueueSnackbar } = useSnackbar();
   const dispatch = useDispatch();
-  const [value, setValue] = useState(0);
 
-  const handleChange = (event, newValue) => {
-    setValue(newValue);
-  };
   const { onClose, id } = props;
   const [name, setName] = useState("");
   const [material, setMaterial] = useState("");
@@ -136,7 +132,6 @@ function AFCompany(props) {
       autoHideDuration: 2000,
     });
     dispatch(addCloth(formData));
-    // dispatch(getClothData());
     onClose();
   };
 

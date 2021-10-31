@@ -1,15 +1,14 @@
 import React, { useEffect, useState } from "react";
-import { useSelector, useDispatch } from "react-redux";
+import {  useDispatch } from "react-redux";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import { useSnackbar } from "notistack";
-import { DataGrid, GridOverlay } from "@mui/x-data-grid";
+import { DataGrid} from "@mui/x-data-grid";
 import AddForm from "./addForm/AddForm";
 import DetailForm from "./detailForm/DetailForm";
 import DeleteForm from "./deleteForm/DeteleForm";
 import {
   Avatar,
-  Badge,
   Button,
   ButtonGroup,
   CircularProgress,
@@ -18,19 +17,12 @@ import {
   IconButton,
   InputLabel,
   MenuItem,
-  Paper,
   Select,
   TextField,
 } from "@mui/material";
-import { getClothData, getProductData } from "../../redux/Action";
-import { LOCAL_PATH, XOA_HINH_ANH } from "../../constants/Constants";
-import { createTheme, styled } from "@mui/material/styles";
-import { createStyles, makeStyles } from "@mui/styles";
-import Box from "@mui/material/Box";
-import Tab from "@mui/material/Tab";
-import TabContext from "@mui/lab/TabContext";
-import TabList from "@mui/lab/TabList";
-import TabPanel from "@mui/lab/TabPanel";
+import { LOCAL_PATH } from "../../constants/Constants";
+import { styled } from "@mui/material/styles";
+import { makeStyles } from "@mui/styles";
 import {
   MyFormControl,
   Search,
@@ -39,8 +31,6 @@ import {
   StyledMenu,
 } from "../utility/Utility";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
-import BlockIcon from "@mui/icons-material/Block";
-import CloseIcon from "@mui/icons-material/Close";
 import CancelIcon from "@mui/icons-material/Cancel";
 import EditIcon from "@mui/icons-material/Edit";
 import SearchIcon from "@mui/icons-material/Search";
@@ -54,18 +44,10 @@ import DesktopDatePicker from "@mui/lab/DesktopDatePicker";
 import LocalizationProvider from "@mui/lab/LocalizationProvider";
 import AdapterDateFns from "@mui/lab/AdapterDateFns";
 import { format } from "date-fns";
-import { CustomNoRowsOverlay, useStylesAntDesign } from "../utility/DataGridTheme";
-
-const MyBadge = styled(Badge)`
-  .MuiBadge-badge {
-    right: -10px;
-  }
-`;
-
-const MyTab = styled(Tab)(({ theme }) => ({
-  textTransform: "none",
-  padding: "12px 21px",
-}));
+import {
+  CustomNoRowsOverlay,
+  useStylesAntDesign,
+} from "../utility/DataGridTheme";
 
 const useStyles = makeStyles((theme) => ({
   topBar: {
@@ -74,10 +56,6 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-// const MyButton = styled(Button)`
-//   text-transform: none;
-//   border-radius: 25px;
-// `;
 
 const MyButton = styled(Button)(({ theme }) => ({
   textTransform: "none",
@@ -127,7 +105,6 @@ export default function Data(props) {
   };
   const closeAddForm = () => {
     setAddForm(false);
-    dispatch({ type: XOA_HINH_ANH });
   };
 
   const openDetailForm = () => {
@@ -165,10 +142,6 @@ export default function Data(props) {
     setAnchorEl(null);
   };
 
-  const handleClickEdit = () => {
-    setAnchorEl(null);
-  };
-
   const handleClickDelete = () => {
     setAnchorEl(null);
     if (userIdList.length === 0) {
@@ -197,12 +170,12 @@ export default function Data(props) {
   const openMenu = Boolean(anchorEl);
 
   const removeAccents = (str) => {
-      return str
-        .normalize("NFD")
-        .replace(/[\u0300-\u036f]/g, "")
-        .replace(/đ/g, "d")
-        .replace(/Đ/g, "D")
-        .toLowerCase();
+    return str
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .replace(/đ/g, "d")
+      .replace(/Đ/g, "D")
+      .toLowerCase();
   };
 
   const formatDate = (dateString) => {
@@ -214,10 +187,8 @@ export default function Data(props) {
       minute: "2-digit",
       second: "2-digit",
     };
-      return new Date(dateString).toLocaleDateString(undefined, options);
+    return new Date(dateString).toLocaleDateString(undefined, options);
   };
-
-  
 
   const renderForm = () => {
     if (addForm) {
@@ -279,20 +250,28 @@ export default function Data(props) {
   };
 
   const columns = [
-    { field: "user_avatar", headerName: "Avatar", width: 100, 
-  renderCell: (params) => {
-    return <Avatar src={LOCAL_PATH + params.value.substring(2)} />;
-  } },
+    {
+      field: "user_avatar",
+      headerName: "Avatar",
+      width: 100,
+      renderCell: (params) => {
+        return <Avatar src={LOCAL_PATH + params.value.substring(2)} />;
+      },
+    },
     { field: "user_username", headerName: "UserName", width: 100 },
     { field: "user_lastname", headerName: "Họ", width: 200 },
     { field: "user_firstname", headerName: "Tên", width: 130 },
-    { field: "user_tel", headerName: "Số điện thoại", width: 140,
-  renderCell: (params) => {
-    const formatTel = (text) => {
-    return text.replace(/(\d{3})(\d{3})(\d{4})/, '$1-$2-$3');
-      };
-      return formatTel(params.value)
-  } },
+    {
+      field: "user_tel",
+      headerName: "Số điện thoại",
+      width: 140,
+      renderCell: (params) => {
+        const formatTel = (text) => {
+          return text.replace(/(\d{3})(\d{3})(\d{4})/, "$1-$2-$3");
+        };
+        return formatTel(params.value);
+      },
+    },
     { field: "user_address", headerName: "Địa chỉ", width: 300 },
     {
       field: "user_status",
@@ -329,8 +308,8 @@ export default function Data(props) {
         if (params.value === "NV") {
           return (
             <MyButton variant="outlined" color="secondary" fullWidth>
-            Nhân viên
-          </MyButton>
+              Nhân viên
+            </MyButton>
           );
         } else {
           return (
@@ -413,7 +392,6 @@ export default function Data(props) {
     XLSX.utils.book_append_sheet(wb, ws, "data");
     XLSX.writeFile(wb, "DSNhanVien " + now + ".xlsx");
   };
-
 
   const handleChangeProvince = async (e) => {
     setProvince(e.target.value);
@@ -513,7 +491,6 @@ export default function Data(props) {
             />
           </Grid>
         </LocalizationProvider>
-        
       </>
     );
   };
@@ -598,7 +575,7 @@ export default function Data(props) {
       setDataRender(dataBackup);
     }
   };
-  
+
   return (
     <Grid container>
       {loading ? (
@@ -628,7 +605,7 @@ export default function Data(props) {
                     </Grid>
                   </Grid>
                   <Grid item xs={2}>
-                    <Grid item xs={12} sx={{ float: "right", mr:0.5 }}>
+                    <Grid item xs={12} sx={{ float: "right", mr: 0.5 }}>
                       <Button
                         variant="outlined"
                         color="primary"

@@ -4,6 +4,7 @@ import React from "react";
 import { TabContext, TabList, TabPanel } from "@mui/lab";
 import Shirt from "./Shirt";
 import Pants from "./Pants";
+import { LOCAL_PATH } from "../../../../constants/Constants";
 
 export default function Male() {
   const [value, setValue] = React.useState("1");
@@ -14,7 +15,10 @@ export default function Male() {
   return (
     <Grid container>
       <Grid item xs={7}>
-        <img src="https://www.dongphucthienphuoc.vn/wp-content/uploads/2021/02/cach-lay-so-do-quan-ao-nu.jpg" alt="cach-lay-so-do-quan-ao-nu"></img>
+        <img
+          src={LOCAL_PATH + "images/cach-lay-so-do-quan-ao-nu.jpg"}
+          alt="cach-lay-so-do-quan-ao-nu"
+        ></img>
       </Grid>
       <Grid item xs={5}>
         <Grid container>

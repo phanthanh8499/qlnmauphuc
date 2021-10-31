@@ -1,11 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
-import VisibilityIcon from "@mui/icons-material/Visibility";
-import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import { useSnackbar } from "notistack";
 import {
   DataGrid,
-  GridOverlay,
   GridToolbarContainer,
   GridToolbarExport,
 } from "@mui/x-data-grid";
@@ -22,18 +19,18 @@ import {
   MenuItem,
   Select,
   TextField,
+  Divider,
 } from "@mui/material";
 import { getOrderData } from "../../redux/Action";
-import { createTheme } from "@mui/material/styles";
-import { createStyles, makeStyles } from "@mui/styles";
+import { makeStyles } from "@mui/styles";
 import { styled } from "@mui/material/styles";
 import SearchIcon from "@mui/icons-material/Search";
 import EditIcon from "@mui/icons-material/Edit";
-import Divider from "@mui/material/Divider";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import BlockIcon from "@mui/icons-material/Block";
 import CancelIcon from "@mui/icons-material/Cancel";
-import { cancelOrder, deleteOrder } from "../../redux/Action";
+import VisibilityIcon from "@mui/icons-material/Visibility";
+import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import {
   MyFormControl,
   Search,
@@ -49,7 +46,10 @@ import DesktopDatePicker from "@mui/lab/DesktopDatePicker";
 import LocalizationProvider from "@mui/lab/LocalizationProvider";
 import AdapterDateFns from "@mui/lab/AdapterDateFns";
 import { format } from "date-fns";
-import { CustomNoRowsOverlay, useStylesAntDesign } from "../utility/DataGridTheme";
+import {
+  CustomNoRowsOverlay,
+  useStylesAntDesign,
+} from "../utility/DataGridTheme";
 
 function CustomToolbar() {
   return (
@@ -95,14 +95,13 @@ export default function Data(props) {
     }
     getProvinceData();
   }, []);
-  
+
   useEffect(() => {
     setDataRender(data);
     setDataBackup(data);
     setLoading(false);
   }, [data]);
 
-  console.log(dataRender);
   const removeAccents = (str) => {
     return str
       .normalize("NFD")
@@ -133,9 +132,6 @@ export default function Data(props) {
   const [deleteForm, setDeleteForm] = useState(false);
   const [cancelForm, setCancelForm] = useState(false);
 
-  const openAddForm = () => {
-    setAddForm(true);
-  };
   const closeAddForm = () => {
     setAddForm(false);
   };
@@ -169,7 +165,6 @@ export default function Data(props) {
   };
   const handleClickEdit = () => {
     setAnchorEl(null);
-    console.log(orderIdList);
   };
   const handleClickCancel = () => {
     setAnchorEl(null);
@@ -334,29 +329,27 @@ export default function Data(props) {
   const exportFile = () => {
     var list = JSON.parse(JSON.stringify(dataRender));
     list.map((item) => {
-        delete item.id;
-        delete item.od_productid;
-        delete item.od_clothid;
-        delete item.order_wardid;
-        delete item.order_districtid;
-        delete item.order_provinceid;
-        delete item.order_paymentid;
-        delete item.order_shippingid;
-        delete item.order_tailorid;
-        delete item.order_statusid;
-        delete item.order_userid;
-        delete item.product_typeid;
-        delete item.product_image1;
-        return item;
-      })
-    const ws = XLSX.utils.json_to_sheet(
-      list
-    );
+      delete item.id;
+      delete item.od_productid;
+      delete item.od_clothid;
+      delete item.order_wardid;
+      delete item.order_districtid;
+      delete item.order_provinceid;
+      delete item.order_paymentid;
+      delete item.order_shippingid;
+      delete item.order_tailorid;
+      delete item.order_statusid;
+      delete item.order_userid;
+      delete item.product_typeid;
+      delete item.product_image1;
+      return item;
+    });
+    const ws = XLSX.utils.json_to_sheet(list);
     var now = new Date();
     now = format(now, "yyyy-MM-dd HH:mm:ss");
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, "data");
-    XLSX.writeFile(wb, "DSDonHang " + now +".xlsx");
+    XLSX.writeFile(wb, "DSDonHang " + now + ".xlsx");
   };
 
   const handleChangeProvince = async (e) => {
@@ -380,7 +373,7 @@ export default function Data(props) {
   const renderAddressForm = () => {
     return (
       <>
-        <Grid item xs={2} sx={{ml:0.5}}>
+        <Grid item xs={2} sx={{ ml: 0.5 }}>
           <MyFormControl fullWidth>
             <InputLabel id="province-select-label">Tỉnh/Thành</InputLabel>
             <Select
@@ -459,19 +452,22 @@ export default function Data(props) {
 
   const [dataBackup, setDataBackup] = useState();
   const handleClickSearch = () => {
-    if (Date.parse(endDate) > Date.parse(new Date(new Date().setHours(23, 59, 59, 0)))) {
+    if (
+      Date.parse(endDate) >
+      Date.parse(new Date(new Date().setHours(23, 59, 59, 0)))
+    ) {
       enqueueSnackbar("Không được chọn ngày lớn hơn ngày hiện tại", {
         variant: "error",
         autoHideDuration: 2000,
       });
       return false;
-    } 
-    if(Date.parse(startDate) > Date.parse(endDate)){
+    }
+    if (Date.parse(startDate) > Date.parse(endDate)) {
       enqueueSnackbar("Ngày bắt đầu không được lớn hơn ngày kết thúc", {
         variant: "error",
         autoHideDuration: 2000,
       });
-      return false
+      return false;
     } else {
       const dataSend = {
         id: 0,
@@ -483,7 +479,7 @@ export default function Data(props) {
       };
       dispatch(getOrderData(dataSend));
     }
-  }
+  };
 
   const liveSearch = (event) => {
     let string = event.target.value;
@@ -562,14 +558,19 @@ export default function Data(props) {
                           />
                         </Grid>
                       </LocalizationProvider>
-
                     </Grid>
                   </Grid>
                   <Grid item xs={2}>
                     <Grid container>
                       <Grid item xs={4}></Grid>
                       <Grid item xs={8}>
-                        <Button variant="outlined" color="primary" onClick={handleClickSearch}>Tìm kiếm</Button>
+                        <Button
+                          variant="outlined"
+                          color="primary"
+                          onClick={handleClickSearch}
+                        >
+                          Tìm kiếm
+                        </Button>
                       </Grid>
                     </Grid>
                   </Grid>

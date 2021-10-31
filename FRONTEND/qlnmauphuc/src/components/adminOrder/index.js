@@ -1,28 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import VisibilityIcon from "@mui/icons-material/Visibility";
-import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
-import { useSnackbar } from "notistack";
-import { DataGrid, GridOverlay, GridToolbarContainer, GridToolbarExport } from "@mui/x-data-grid";
-import AddForm from "./addForm/AddForm";
-import DetailForm from "./detailForm/DetailForm";
-import DeleteForm from "./deleteForm/DeteleForm";
-import {
-  Badge,
-  Button,
-  ButtonGroup,
-  CircularProgress,
-  Divider,
-  Grid,
-  IconButton,
-  InputBase,
-  Paper,
-} from "@mui/material";
-import { getOrderData, getProductData } from "../../redux/Action";
-import { createTheme } from "@mui/material/styles";
-import { createStyles, makeStyles } from "@mui/styles";
-import { styled, alpha } from "@mui/material/styles";
-import SearchIcon from "@mui/icons-material/Search";
+import { Badge, CircularProgress, Divider, Grid, Paper } from "@mui/material";
+import { getOrderData } from "../../redux/Action";
+import { makeStyles } from "@mui/styles";
+import { styled } from "@mui/material/styles";
 import Box from "@mui/material/Box";
 import Tab from "@mui/material/Tab";
 import TabContext from "@mui/lab/TabContext";
@@ -37,20 +18,10 @@ const MyBadge = styled(Badge)`
   }
 `;
 
-const MyTab = styled(Tab)(({theme}) => ({
+const MyTab = styled(Tab)(({ theme }) => ({
   textTransform: "none",
-  padding: '12px 21px',
+  padding: "12px 21px",
 }));
-
-function CustomToolbar() {
-  return (
-    <GridToolbarContainer>
-      <GridToolbarExport variant="outlined" utf8WithBom={true}/>
-      {/* <Button variant="outlined" color="primary">
-      </Button> */}
-    </GridToolbarContainer>
-  );
-}
 
 const useStyles = makeStyles((theme) => ({
   topBar: {
@@ -59,11 +30,8 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-
-
 export default function AdminOrder() {
   const classes = useStyles();
-  const { enqueueSnackbar } = useSnackbar();
   const order = useSelector((state) => state.order);
   const { orderData, error } = order;
   const dispatch = useDispatch();
@@ -76,15 +44,15 @@ export default function AdminOrder() {
     if (now.toLocaleDateString("en-us", { weekday: "long" }) === "Sunday") {
       startDate.setDate(startDate.getDate() - startDate.getDay() - 6);
       endDate.setDate(endDate.getDate() - endDate.getDay());
-      endDate.setHours(23, 59, 59, 0); 
+      endDate.setHours(23, 59, 59, 0);
     } else {
       startDate.setDate(startDate.getDate() - startDate.getDay() + 1);
       endDate.setDate(endDate.getDate() - endDate.getDay() + 7);
-      endDate.setHours(23, 59, 59, 0);  
+      endDate.setHours(23, 59, 59, 0);
     }
-    var sd = new Date('2021-9-1')
-    var ed = new Date('2021-10-24')
-    ed.setHours(23, 59, 59, 0); 
+    var sd = new Date("2021-9-1");
+    var ed = new Date("2021-10-24");
+    ed.setHours(23, 59, 59, 0);
     const dataSend = {
       id: 0,
       provinceId: 0,
@@ -103,13 +71,9 @@ export default function AdminOrder() {
   const [complete, setComplete] = useState();
   const [cancel, setCancel] = useState();
   const [all, setAll] = useState([]);
-  const [dataSearch, setDataSearch] = useState([]);
-  const [dataSearchBK, setDataSearchBK] = useState([]);
 
   useEffect(() => {
     setAll(orderData);
-    setDataSearch(orderData);
-    setDataSearchBK(orderData);
     setProcessing(
       orderData.filter((orderData) => orderData.order_statusid === 0)
     );
@@ -132,31 +96,9 @@ export default function AdminOrder() {
     setLoading(false);
   }, [orderData]);
 
-  
   const [value, setValue] = useState("1");
-  const [isSearch, setIsSearch] = useState(false);
   const handleChange = (event, newValue) => {
-    setValue(newValue); 
-  };
-
-  const removeAccents = (str) => {
-    return str
-      .normalize("NFD")
-      .replace(/[\u0300-\u036f]/g, "")
-      .replace(/đ/g, "d")
-      .replace(/Đ/g, "D");
-  };
-
-  const formatDate = (dateString) => {
-    const options = {
-      year: "numeric",
-      month: "2-digit",
-      day: "2-digit",
-      hour: "2-digit",
-      minute: "2-digit",
-      second: "2-digit",
-    };
-    return new Date(dateString).toLocaleDateString(undefined, options);
+    setValue(newValue);
   };
 
   return (

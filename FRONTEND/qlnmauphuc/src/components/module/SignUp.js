@@ -13,8 +13,6 @@ import {
   CircularProgress,
 } from "@mui/material";
 import { useSnackbar } from "notistack";
-import { useDispatch, useSelector } from "react-redux";
-import { getUserData } from "../../redux/Action";
 import { makeStyles } from "@mui/styles";
 
 const useStyles = makeStyles((theme) => ({

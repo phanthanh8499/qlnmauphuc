@@ -27,20 +27,20 @@ export default function ListModule () {
   }
   const dispatch = useDispatch();
   const { enqueueSnackbar } = useSnackbar();
-  const abc = useLocation().pathname.substring(9);
+  const pathname = useLocation().pathname.substring(9);
    useEffect(() => {
-     abc === "orders"
+     pathname === "orders"
        ? setValue(0)
-       : abc === "profile"
+       : pathname === "profile"
        ? setValue(1)
-       : abc === "measurements"
+       : pathname === "measurements"
        ? setValue(2)
-       : abc === "cloth"
+       : pathname === "cloth"
        ? setValue(3)
-       : abc === ""
+       : pathname === ""
        ? setValue("")
        : setValue(2);
-   }, []);
+   }, [pathname]);
 
    const dangXuat = () => {
      enqueueSnackbar("Đăng xuất thành công", {

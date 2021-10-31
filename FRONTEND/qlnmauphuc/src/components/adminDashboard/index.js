@@ -1,6 +1,4 @@
 import {
-  Button,
-  CircularProgress,
   Divider,
   Grid,
   IconButton,
@@ -9,11 +7,10 @@ import {
   Paper,
   Typography,
 } from "@mui/material";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { styled } from "@mui/material/styles";
 import DataCount from "./DataCount";
 import PPieChart from "./PPieChart";
-import { format } from "date-fns";
 import DLineChart from "./DLineChart";
 import WeeklyForm from "./weeklyForm/WeeklyForm";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
@@ -30,12 +27,8 @@ export default function AdminDashboard() {
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
   const [weeklyForm, setWeeklyForm] = useState(false);
-  const [monthlyForm, setMonthlyForm] = useState(false);
   const closeWeeklyForm = () => {
     setWeeklyForm(false);
-  };
-  const closeMonthlyForm = () => {
-    setMonthlyForm(false);
   };
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
@@ -44,12 +37,8 @@ export default function AdminDashboard() {
     setAnchorEl(null);
   };
   const handleSelect = (e, index) => {
-    console.log(index);
     if (index === 0) {
       setWeeklyForm(true);
-    }
-    if (index === 1) {
-      setMonthlyForm(true);
     }
     handleClose();
   };

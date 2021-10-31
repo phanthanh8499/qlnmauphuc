@@ -1,4 +1,4 @@
-import { Breadcrumbs, Container, Grid, List, ListItem, ListItemIcon, ListItemText, Paper, Typography } from '@mui/material';
+import { Breadcrumbs, Container, Grid, Paper, Typography } from '@mui/material';
 import React, { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom';
 import NavigateNextIcon from "@mui/icons-material/NavigateNext";
@@ -26,11 +26,10 @@ const useStyles = makeStyles((theme) => ({
 export default function AccountLayout (props){
   const classes = useStyles();
   let { pathname } = useLocation();
-  console.log(pathname);
   const [title, setTitle] = useState("");
   
   useEffect(() => {
-    function Title () {
+    function getTitle() {
       if (pathname === "/account/orders") {
         setTitle("Danh sách đơn hàng");
       } else if (pathname === "/account/profile") {
@@ -45,10 +44,10 @@ export default function AccountLayout (props){
         setTitle("Thêm số hiệu đăng ký");
       } else {
         setTitle("Sửa số hiệu đăng ký");
-      } 
-    };
-    Title();
-  }, [title]);
+      }
+    }
+    getTitle();
+  }, [pathname]);
     return (
       <>
         <Header></Header>

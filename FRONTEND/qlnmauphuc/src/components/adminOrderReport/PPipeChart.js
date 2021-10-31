@@ -1,30 +1,13 @@
 import { CircularProgress, Divider, Grid, Typography } from "@mui/material";
-import React, { PureComponent, useEffect, useState } from "react";
-import {
-  PieChart,
-  Pie,
-  Legend,
-  Cell,
-  Tooltip,
-  ResponsiveContainer,
-  Sector,
-} from "recharts";
-import TrendingUpOutlinedIcon from "@mui/icons-material/TrendingUpOutlined";
-import TrendingDownOutlinedIcon from "@mui/icons-material/TrendingDownOutlined";
+import React, { useEffect, useState } from "react";
+import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from "recharts";
 import { makeStyles } from "@mui/styles";
 import { format } from "date-fns";
-import axios from "axios";
 import { Box } from "@mui/system";
 import { useDispatch, useSelector } from "react-redux";
 import { getOrderReportPieChart } from "../../redux/Action";
 
 const COLORS = ["#FFBB28", "#00C49F", "#FF8042", "#0088FE", "#f00"];
-
-const center = {
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "center",
-};
 
 const useStyles = makeStyles((theme) => ({
   subTitle: {
@@ -70,28 +53,16 @@ export default function PPipeChart() {
       endDate.setDate(endDate.getDate() - endDate.getDay() + 7);
       endDate.setHours(23, 59, 59, 0);
     }
-    var date = new Date("2021-1-16");
-    var firstDay = new Date(date.getFullYear(), date.getMonth(), 1);
-    var lastDay = new Date(date.getFullYear(), date.getMonth() + 1, 0);
-    console.log(date, firstDay, lastDay);
+    // var date = new Date("2021-1-16");
+    // var firstDay = new Date(date.getFullYear(), date.getMonth(), 1);
+    // var lastDay = new Date(date.getFullYear(), date.getMonth() + 1, 0);
     const dataSend = {
       startDate: format(startDate, "yyyy-MM-dd"),
       endDate: format(endDate, "yyyy-MM-dd HH:mm:ss"),
     };
     dispatch(getOrderReportPieChart(dataSend));
-    // async function getRevenueData() {
-    //   const { data } = await axios.post(`/admin/getCountOrder`, dataSend);
-    //   setData([
-    //     { name: "Đợi xử lý", value: parseInt(data[0].processing_count) },
-    //     { name: "Đang may", value: parseInt(data[0].sewing_count) },
-    //     { name: "Đang vận chuyển", value: parseInt(data[0].shipping_count) },
-    //     { name: "Hoàn tất", value: parseInt(data[0].complete_count) },
-    //     // { name: "Huỷ bỏ", value: parseInt(data[0].cancel_count) },
-    //   ]);
-    //   setLoading(false);
-    // }
-    // getRevenueData();
   }, []);
+
   return (
     <>
       {loadingPC ? (

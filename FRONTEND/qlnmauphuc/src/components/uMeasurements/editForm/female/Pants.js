@@ -3,7 +3,10 @@ import { useSnackbar } from "notistack";
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router";
-import { editMeasurements, getDetailMeasurements } from "../../../../redux/Action";
+import {
+  editMeasurements,
+  getDetailMeasurements,
+} from "../../../../redux/Action";
 
 export default function Pants() {
   let { id } = useParams();
@@ -32,27 +35,27 @@ export default function Pants() {
     setThighcircumference(event.target.value);
   };
   const [loading, setLoading] = useState(true);
-   useEffect(() => {
-     async function getDetail() {
-       detailData[0].m_waist === 0
-         ? setWaist("")
-         : setWaist(detailData[0].m_waist);
-       detailData[0].m_buttock === 0
-         ? setButtock("")
-         : setButtock(detailData[0].m_buttock);
-       detailData[0].m_pantslength === 0
-         ? setPantslength("")
-         : setPantslength(detailData[0].m_pantslength);
-       detailData[0].m_thighcircumference === 0
-         ? setThighcircumference("")
-         : setThighcircumference(detailData[0].m_thighcircumference);
-       detailData[0].m_dresslength === 0
-         ? setDresslength("")
-         : setDresslength(detailData[0].m_dresslength);
-       setLoading(false);
-     }
-     getDetail();
-   }, []);
+  useEffect(() => {
+    async function getDetail() {
+      detailData[0].m_waist === 0
+        ? setWaist("")
+        : setWaist(detailData[0].m_waist);
+      detailData[0].m_buttock === 0
+        ? setButtock("")
+        : setButtock(detailData[0].m_buttock);
+      detailData[0].m_pantslength === 0
+        ? setPantslength("")
+        : setPantslength(detailData[0].m_pantslength);
+      detailData[0].m_thighcircumference === 0
+        ? setThighcircumference("")
+        : setThighcircumference(detailData[0].m_thighcircumference);
+      detailData[0].m_dresslength === 0
+        ? setDresslength("")
+        : setDresslength(detailData[0].m_dresslength);
+      setLoading(false);
+    }
+    getDetail();
+  }, []);
   const handleSubmit = () => {
     const formData = new FormData();
     formData.append("id", detailData[0].id);
@@ -62,7 +65,10 @@ export default function Pants() {
     formData.append("m_waist", waist);
     formData.append("m_buttock", buttock);
     formData.append("m_shoulderwidth", detailData[0].m_shoulderwidth);
-    formData.append("m_armpitcircumference", detailData[0].m_armpitcircumference);
+    formData.append(
+      "m_armpitcircumference",
+      detailData[0].m_armpitcircumference
+    );
     formData.append("m_biceps", detailData[0].m_biceps);
     formData.append("m_wristaround", detailData[0].m_wristaround);
     formData.append("m_sleevelength", detailData[0].m_sleevelength);

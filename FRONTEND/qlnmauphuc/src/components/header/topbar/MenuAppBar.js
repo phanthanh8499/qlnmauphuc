@@ -1,14 +1,16 @@
 import React from "react";
-import makeStyles from '@mui/styles/makeStyles';
-import IconButton from "@mui/material/IconButton";
+import makeStyles from "@mui/styles/makeStyles";
+import {
+  Typography,
+  IconButton,
+  MenuItem,
+  Menu,
+} from "@mui/material";
 import AccountCircle from "@mui/icons-material/AccountCircle";
-import MenuItem from "@mui/material/MenuItem";
-import Menu from "@mui/material/Menu";
 import { Link } from "react-router-dom";
 import { useSnackbar } from "notistack";
 import { DANG_XUAT } from "../../../constants/Constants";
 import { useDispatch, useSelector } from "react-redux";
-import { Typography } from "@mui/material";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -85,7 +87,7 @@ export default function MenuAppBar() {
             onClick={handleMenu}
             className={classes.icon}
             size="large"
-            sx={{color: '#ffffff'}}
+            sx={{ color: "#ffffff" }}
           >
             <AccountCircle />
           </IconButton>

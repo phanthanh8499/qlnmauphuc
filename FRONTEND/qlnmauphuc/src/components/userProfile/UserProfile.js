@@ -2,32 +2,21 @@ import {
   Avatar,
   Badge,
   Button,
-  ButtonGroup,
-  CardActionArea,
   Divider,
-  FormControl,
   Grid,
-  IconButton,
   InputLabel,
   MenuItem,
-  Paper,
   Select,
-  TextField,
-  Typography,
-  CircularProgress ,
+  CircularProgress,
 } from "@mui/material";
 import React, { useEffect, useState } from "react";
-import PhotoCamera from "@mui/icons-material/PhotoCamera";
 import { makeStyles } from "@mui/styles";
-import { Link } from "react-router-dom";
-import path from "path";
 import CameraAltIcon from "@mui/icons-material/CameraAlt";
 import { useDispatch } from "react-redux";
 import { editUserInfo } from "../../redux/Action";
-import { FRONTEND_ADM_URL, FRONTEND_URL, LOCAL_PATH } from "../../constants/Constants";
+import { FRONTEND_URL, LOCAL_PATH } from "../../constants/Constants";
 import { useSnackbar } from "notistack";
 import axios from "axios";
-import { styled } from "@mui/material/styles";
 import { MyFormControl, MyTextField } from "../utility/Utility";
 
 const useStyles = makeStyles((theme) => ({
@@ -67,7 +56,6 @@ export default function UserProfile() {
   const classes = useStyles();
   const dispatch = useDispatch();
   const { enqueueSnackbar } = useSnackbar();
-  const [id, setId] = useState();
   const [firstName, setFirstName] = useState();
   const [lastName, setLastName] = useState();
   const [tel, setTel] = useState();
@@ -118,7 +106,7 @@ export default function UserProfile() {
       setProvinceData(data);
     }
     async function setState() {
-      if(userInfo.user_wardid !== null){
+      if (userInfo.user_wardid !== null) {
         const data01 = await axios.get(`/getAddress.${userInfo.user_wardid}`);
         const data02 = await axios.get(
           `/getDistrict.${data01.data[0].ward_provinceid}`
@@ -137,9 +125,9 @@ export default function UserProfile() {
       setAddress(userInfo.user_address);
       setEmail(userInfo.user_email);
       setWard(userInfo.user_wardid);
-      setImgUpload(LOCAL_PATH + userInfo.user_avatar.substring(2)); 
-       setLoading(false);
-    } 
+      setImgUpload(LOCAL_PATH + userInfo.user_avatar.substring(2));
+      setLoading(false);
+    }
     getProvinceData();
     setState();
   }, []);
@@ -159,28 +147,28 @@ export default function UserProfile() {
     formData.append("user_avatar", userInfo.user_avatar);
     formData.append("token", userInfo.token);
     formData.append("FRONTEND_URL", FRONTEND_URL);
-    if(!firstName || !lastName || !address || !email || !tel){
+    if (!firstName || !lastName || !address || !email || !tel) {
       enqueueSnackbar("Vui lòng điền đầy đủ thông tin cá nhân", {
         variant: "error",
         autoHideDuration: 2000,
       });
       return false;
     }
-    if(!province){
+    if (!province) {
       enqueueSnackbar("Vui lòng chọn Tỉnh/Thành", {
         variant: "error",
         autoHideDuration: 2000,
       });
       return false;
-    } 
-    if(!district){
+    }
+    if (!district) {
       enqueueSnackbar("Vui lòng chọn Quận/Huyện", {
         variant: "error",
         autoHideDuration: 2000,
       });
       return false;
     }
-    if(!ward){
+    if (!ward) {
       enqueueSnackbar("Vui lòng chọn Xã/Phường", {
         variant: "error",
         autoHideDuration: 2000,
@@ -206,7 +194,7 @@ export default function UserProfile() {
       });
     }
   };
-  
+
   const handleChangeProvince = async (e) => {
     setProvince(e.target.value);
     const { data } = await axios.get(`/getDistrict.${e.target.value}`);
@@ -214,17 +202,17 @@ export default function UserProfile() {
     setWardData([]);
     setDistrict();
     setWard();
-  }
+  };
   const handleChangeDistrict = async (e) => {
     setDistrict(e.target.value);
     const { data } = await axios.get(`/getWard.${province}&${e.target.value}`);
     setWardData(data);
     setWard();
-  }
+  };
   const handleChangeWard = (e) => {
     setWard(e.target.value);
-  }
-  
+  };
+
   const renderAddressForm = () => {
     return (
       <>
@@ -284,12 +272,22 @@ export default function UserProfile() {
         </Grid>
       </>
     );
-  }
+  };
 
   return (
     <Grid container className={classes.content}>
       {loading ? (
-        <Grid item xs={12} sx={{width: '100%', height: 256, display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
+        <Grid
+          item
+          xs={12}
+          sx={{
+            width: "100%",
+            height: 256,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
           <CircularProgress />
         </Grid>
       ) : (

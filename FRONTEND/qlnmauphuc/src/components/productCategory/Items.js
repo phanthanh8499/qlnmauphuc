@@ -5,18 +5,12 @@ import {
   CardMedia,
   Typography,
   Grid,
-  Button,
-  IconButton,
   Pagination,
 } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
 import React, { useEffect, useState } from "react";
-import NavigateNextIcon from "@mui/icons-material/NavigateNext";
-import NavigateBeforeIcon from "@mui/icons-material/NavigateBefore";
-import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import { LOCAL_PATH } from "../../constants/Constants";
-
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -81,15 +75,14 @@ const center = {
   alignItems: "center",
   mt: 2,
   mb: 2,
-  float: 'right',
+  float: "right",
 };
 
 export default function Items(props) {
   const classes = useStyles();
   const { data } = props;
   const [dataRender, setDataRender] = useState([]);
-  const [loading, setLoading] = useState(true)
-  
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const rowsPerPage = 8;
@@ -98,15 +91,13 @@ export default function Items(props) {
     setCount(Math.ceil(data.length / rowsPerPage));
     setLoading(false);
   }, [data]);
+
   const [page, setPage] = useState(0);
-  // const [rowsPerPage] = useState(8);
-  // const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(0);
   const [count, setCount] = useState(0);
   const handleChange = (event, value) => {
     setPage(value - 1);
   };
-  
 
   const covertURL = (str) => {
     str = str.toLowerCase();
@@ -165,7 +156,6 @@ export default function Items(props) {
                       currency: "VND",
                     })}
                   </Typography>
-                  
                 </CardContent>
               </CardActionArea>
             </Card>
@@ -181,7 +171,12 @@ export default function Items(props) {
         <div>loading..</div>
       ) : (
         <>
-          <Grid container className={classes.gridroot} spacing={2} sx={{height: 702}}>
+          <Grid
+            container
+            className={classes.gridroot}
+            spacing={2}
+            sx={{ height: 702 }}
+          >
             {printData()}
           </Grid>
           <Grid item xs={12} sx={center}>

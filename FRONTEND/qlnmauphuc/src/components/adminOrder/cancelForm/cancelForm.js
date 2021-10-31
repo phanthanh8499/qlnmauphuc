@@ -1,17 +1,10 @@
-import {
-  Button,
-  Dialog,
-  Grid,
-  Stack,
-  Typography,
-} from "@mui/material";
+import { Button, Dialog, Grid, Stack, Typography } from "@mui/material";
 import React from "react";
 import { useDispatch } from "react-redux";
 import { useSnackbar } from "notistack";
-import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
 import makeStyles from "@mui/styles/makeStyles";
 import clsx from "clsx";
-import { cancelOrder, processingOrder } from "../../../redux/Action";
+import { processingOrder } from "../../../redux/Action";
 import BlockIcon from "@mui/icons-material/Block";
 
 const useStyle = makeStyles((theme) => ({
@@ -32,7 +25,7 @@ const useStyle = makeStyles((theme) => ({
     alignItems: "center",
   },
   title: {
-    margin: '10px 0px',
+    margin: "10px 0px",
   },
 }));
 
@@ -44,27 +37,29 @@ function CancelForm(props) {
   const handleSubmit = () => {
     if (listId.length !== 0) {
       listId.forEach((element) => {
-        if (element.order_statusid === 0){
+        if (element.order_statusid === 0) {
           dispatch(
             processingOrder({
               order_statusid: 10,
               od_orderid: element.od_orderid,
             })
           );
-        }        
+        }
       });
     } else {
-      dispatch(processingOrder({
+      dispatch(
+        processingOrder({
           order_statusid: 10,
           od_orderid: id,
-        }));
+        })
+      );
     }
     enqueueSnackbar("Huỷ đơn hàng thành công", {
       variant: "success",
       autoHideDuration: 2000,
     });
     onClose();
-  }
+  };
   return (
     <Dialog
       onClose={onClose}

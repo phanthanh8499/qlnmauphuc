@@ -1,6 +1,6 @@
 import { Breadcrumbs, Grid, Link, Paper, Typography, Button } from "@mui/material";
 import makeStyles from '@mui/styles/makeStyles';
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import Order from "../order/Order";
 import MyImageGallery from "./MyImageGallery";
 
@@ -109,15 +109,10 @@ const useStyles = makeStyles((theme) => ({
 }));
 export default function MainDetail(props) {
   const classes = useStyles();
-  const [mau, setMau] = useState(0);
   const { data } = props;
   const [open, setOpen] = React.useState(false);
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
-  console.log("main", data)
-  const choose = (abc) => {
-    setMau(abc);
-  };
   const renderBreadCrumbs = () => {
     if (
       data[0].product_typeid === "BFM" ||

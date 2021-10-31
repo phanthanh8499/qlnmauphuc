@@ -1,6 +1,5 @@
 import {
   Button,
-  ButtonBase,
   ButtonGroup,
   CircularProgress,
   Dialog,
@@ -10,14 +9,13 @@ import {
   InputAdornment,
   InputLabel,
   MenuItem,
-  NativeSelect,
   Select,
   Slider,
   TextField,
   Typography,
 } from "@mui/material";
 import React, { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { useSnackbar } from "notistack";
 import ProductImageGallery from "./ProductImageGallery";
 import PhotoCamera from "@mui/icons-material/PhotoCamera";
@@ -86,7 +84,6 @@ const useStyle = makeStyles((theme) => ({
   label: {
     color: "#00000099",
     padding: 0,
-    fontSize: 14,
     fontFamily: `"Roboto", "Helvetica", "Arial", sans-serif`,
     fontWeight: 400,
     lineHeight: 1,
@@ -107,17 +104,17 @@ const useStyle = makeStyles((theme) => ({
   },
   box: {
     margin: "0px 4px",
-    position: 'relative',
+    position: "relative",
   },
   btngroup: {
     bottom: 10,
     right: 0,
-    position: 'absolute',
+    position: "absolute",
   },
   imgTitle: {
-    overflow: 'hidden',
-    textOverflow: 'ellipsis',
-    fontSize: '10px !important',
+    overflow: "hidden",
+    textOverflow: "ellipsis",
+    fontSize: "10px !important",
   },
 }));
 
@@ -259,36 +256,38 @@ function AddForm(props) {
   };
   const renderProductTypeMenu = () => {
     return productTypeList.map((value, key) => (
-      <MenuItem value={value.id} key={key}>{value.pt_name}</MenuItem>
+      <MenuItem value={value.id} key={key}>
+        {value.pt_name}
+      </MenuItem>
     ));
-  }
-    const handleSubmit = () => {
+  };
+  const handleSubmit = () => {
     let thicknessValue = "";
     let softnessValue = "";
     let elasticityValue = "";
-    if(thickness === 0){
-      thicknessValue = 'Mỏng'
-    } else if (thickness === 50){
-      thicknessValue = 'Vừa'
+    if (thickness === 0) {
+      thicknessValue = "Mỏng";
+    } else if (thickness === 50) {
+      thicknessValue = "Vừa";
     } else {
-      thicknessValue = 'Dày'
-    };
-    if(softness === 0){
-      softnessValue = 'Mềm'
-    } else if (softness === 50){
-      softnessValue = 'Vừa'
+      thicknessValue = "Dày";
+    }
+    if (softness === 0) {
+      softnessValue = "Mềm";
+    } else if (softness === 50) {
+      softnessValue = "Vừa";
     } else {
-      softnessValue = 'Cứng'
-    };
-    if(elasticity === 0){
-      elasticityValue = 'Không'
-    } else if (elasticity === 50){
-      elasticityValue = 'Vừa'
+      softnessValue = "Cứng";
+    }
+    if (elasticity === 0) {
+      elasticityValue = "Không";
+    } else if (elasticity === 50) {
+      elasticityValue = "Vừa";
     } else {
-      elasticityValue = 'Có'
-    };
+      elasticityValue = "Có";
+    }
     const formData = new FormData();
-    formData.append("id", parseInt(id+1));
+    formData.append("id", parseInt(id + 1));
     formData.append("product_code", code);
     formData.append("product_name", name);
     formData.append("product_price", price);
@@ -322,7 +321,12 @@ function AddForm(props) {
       !price ||
       !color ||
       !material ||
-      !lining || !introduction1 || !introduction2 || !introduction3 || !introduction4 || !introduction5 
+      !lining ||
+      !introduction1 ||
+      !introduction2 ||
+      !introduction3 ||
+      !introduction4 ||
+      !introduction5
     ) {
       enqueueSnackbar("Hãy điền đầy đủ thông tin", {
         variant: "error",
@@ -344,13 +348,13 @@ function AddForm(props) {
   };
 
   useEffect(() => {
-    async function getProductType () {
+    async function getProductType() {
       const { data } = await axios.get("/getProductTypeData");
       setProductTypeList(data);
       setLoading(false);
-    } 
+    }
     getProductType();
-  }, [])
+  }, []);
 
   return (
     <Dialog

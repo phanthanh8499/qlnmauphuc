@@ -3,7 +3,6 @@ import { makeStyles } from "@mui/styles";
 import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import Items from "./Items";
-import Title from "./Title";
 import Box from "@mui/material/Box";
 import Tab from "@mui/material/Tab";
 import TabContext from "@mui/lab/TabContext";

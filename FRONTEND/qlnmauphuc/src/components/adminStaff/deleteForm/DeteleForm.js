@@ -11,7 +11,7 @@ import { useSnackbar } from "notistack";
 import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
 import makeStyles from "@mui/styles/makeStyles";
 import clsx from "clsx";
-import { deleteCloth, deleteUser } from "../../../redux/Action";
+import { deleteUser } from "../../../redux/Action";
 
 const useStyle = makeStyles((theme) => ({
   root: {

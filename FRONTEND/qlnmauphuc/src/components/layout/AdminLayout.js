@@ -1,12 +1,7 @@
 import React from "react";
 import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
-import {
-  CssBaseline,
-  Toolbar,
-  Typography,
-  Box,
-} from "@mui/material";
+import { CssBaseline, Toolbar, Typography, Box } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
 import AAppBar from "../adminAppBar/AAppBar";
 
@@ -88,9 +83,7 @@ export default function AdminLayout(props) {
         }}
       >
         <Toolbar />
-        <main className={classes.content}>
-          {props.children}
-        </main>
+        <main className={classes.content}>{props.children}</main>
       </Box>
     </Box>
   );

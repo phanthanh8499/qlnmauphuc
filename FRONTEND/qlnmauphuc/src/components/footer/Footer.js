@@ -1,5 +1,5 @@
 import { Button, Container, Grid, Typography } from "@mui/material";
-import makeStyles from '@mui/styles/makeStyles';
+import makeStyles from "@mui/styles/makeStyles";
 import React from "react";
 import { Link } from "react-router-dom";
 import ContentBtn from "./ContentBtn";
@@ -81,7 +81,6 @@ function Footer() {
             <Grid item xs={12}>
               <input
                 type="email"
-                className="form-control"
                 id="advertising-news"
                 placeholder="Nhập email của bạn để đăng ký"
                 className={classes.inputCustom}

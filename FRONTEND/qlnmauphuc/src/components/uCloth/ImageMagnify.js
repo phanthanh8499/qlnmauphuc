@@ -1,6 +1,5 @@
 import React from "react";
 import ReactImageMagnify from "react-image-magnify";
-import { useSelector } from "react-redux";
 
 function ImageMagnify(props) {
   const { image, name } = props;

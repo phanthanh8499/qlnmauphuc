@@ -5,22 +5,17 @@ import Stack from "@mui/material/Stack";
 import Stepper from "@mui/material/Stepper";
 import Step from "@mui/material/Step";
 import StepLabel from "@mui/material/StepLabel";
-import Check from "@mui/icons-material/Check";
-import SettingsIcon from "@mui/icons-material/Settings";
-import GroupAddIcon from "@mui/icons-material/GroupAdd";
-import VideoLabelIcon from "@mui/icons-material/VideoLabel";
 import StepConnector, {
   stepConnectorClasses,
 } from "@mui/material/StepConnector";
 import { Button, ButtonGroup, Grid, Typography } from "@mui/material";
-import { Box } from "@mui/system";
 import LocalShippingIcon from "@mui/icons-material/LocalShipping";
 import CropRotateIcon from "@mui/icons-material/CropRotate";
 import FactCheckOutlinedIcon from "@mui/icons-material/FactCheckOutlined";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import AlarmIcon from "@mui/icons-material/Alarm";
 import AlarmOnIcon from "@mui/icons-material/AlarmOn";
-import {useDispatch} from 'react-redux';
+import { useDispatch } from "react-redux";
 import { processingOrder } from "../../../redux/Action";
 import { format } from "date-fns";
 import { useSnackbar } from "notistack";
@@ -112,8 +107,6 @@ ColorlibStepIcon.propTypes = {
   icon: PropTypes.node,
 };
 
-
-
 export default function CustomizedSteppers(props) {
   const dispatch = useDispatch();
   const [activeStep, setActiveStep] = useState(0);
@@ -123,14 +116,10 @@ export default function CustomizedSteppers(props) {
   useEffect(() => {
     setActiveStep(activeId);
   }, [activeId]);
-  const isStepOptional = (step) => {
-    return step === 1;
-  };
 
   const isStepSkipped = (step) => {
     return skipped.has(step);
   };
-console.log("data-001", data);
   const handleNext = () => {
     let newSkipped = skipped;
     if (isStepSkipped(activeStep)) {
@@ -138,9 +127,9 @@ console.log("data-001", data);
       newSkipped.delete(activeStep);
     }
     const today = new Date();
-    
-    if(data.order_statusid === 2){
-      if(data.cloth_typeid === "VCKH"){
+
+    if (data.order_statusid === 2) {
+      if (data.cloth_typeid === "VCKH") {
         setActiveStep((prevActiveStep) => prevActiveStep + 1);
         dispatch(
           processingOrder({
@@ -152,7 +141,10 @@ console.log("data-001", data);
             od_clothid: data.od_clothid,
           })
         );
-      } else if (data.product_typeid === "SFF" || data.product_typeid === "SFM"){
+      } else if (
+        data.product_typeid === "SFF" ||
+        data.product_typeid === "SFM"
+      ) {
         if (data.cloth_quantity >= 6) {
           dispatch(
             processingOrder({
@@ -192,7 +184,7 @@ console.log("data-001", data);
           });
           return false;
         }
-      }    
+      }
     } else {
       setActiveStep((prevActiveStep) => prevActiveStep + 1);
       dispatch(
@@ -208,10 +200,6 @@ console.log("data-001", data);
 
   const handleBack = () => {
     setActiveStep((prevActiveStep) => prevActiveStep - 1);
-  };
-
-  const handleReset = () => {
-    setActiveStep(0);
   };
 
   const formatDate = (dateString) => {
@@ -272,7 +260,6 @@ console.log("data-001", data);
     },
   ];
 
-  console.log(steps)
   return (
     <Stack sx={{ width: "100%" }} spacing={4}>
       <Stepper

@@ -1,14 +1,13 @@
 import React, { useEffect, useState } from "react";
-import { useSelector, useDispatch } from "react-redux";
+import { useDispatch } from "react-redux";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import { useSnackbar } from "notistack";
-import { DataGrid, GridOverlay } from "@mui/x-data-grid";
+import { DataGrid } from "@mui/x-data-grid";
 import AddForm from "./addForm/AddForm";
 import DetailForm from "./detailForm/DetailForm";
 import DeleteForm from "./deleteForm/DeteleForm";
 import {
-  Badge,
   Button,
   ButtonGroup,
   CircularProgress,
@@ -18,29 +17,19 @@ import {
   InputLabel,
   MenuItem,
   OutlinedInput,
-  Paper,
   Select,
 } from "@mui/material";
-import { getClothData, getProductData } from "../../redux/Action";
 import { XOA_HINH_ANH } from "../../constants/Constants";
-import { createTheme, styled } from "@mui/material/styles";
-import { createStyles, makeStyles } from "@mui/styles";
-import Box from "@mui/material/Box";
-import Tab from "@mui/material/Tab";
-import TabContext from "@mui/lab/TabContext";
-import TabList from "@mui/lab/TabList";
-import TabPanel from "@mui/lab/TabPanel";
+import { styled } from "@mui/material/styles";
+import { makeStyles } from "@mui/styles";
 import {
   MyFormControl,
-  MyTextField,
   Search,
   SearchIconWrapper,
   StyledInputBase,
   StyledMenu,
 } from "../utility/Utility";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
-import BlockIcon from "@mui/icons-material/Block";
-import CloseIcon from "@mui/icons-material/Close";
 import CancelIcon from "@mui/icons-material/Cancel";
 import EditIcon from "@mui/icons-material/Edit";
 import SearchIcon from "@mui/icons-material/Search";
@@ -69,17 +58,6 @@ function getStyles(name, personName, theme) {
         : theme.typography.fontWeightMedium,
   };
 }
-
-const MyBadge = styled(Badge)`
-  .MuiBadge-badge {
-    right: -10px;
-  }
-`;
-
-const MyTab = styled(Tab)(({ theme }) => ({
-  textTransform: "none",
-  padding: "12px 21px",
-}));
 
 const useStyles = makeStyles((theme) => ({
   topBar: {
@@ -173,18 +151,6 @@ export default function Data(props) {
       .replace(/[\u0300-\u036f]/g, "")
       .replace(/đ/g, "d")
       .replace(/Đ/g, "D");
-  };
-
-  const formatDate = (dateString) => {
-    const options = {
-      year: "numeric",
-      month: "2-digit",
-      day: "2-digit",
-      hour: "2-digit",
-      minute: "2-digit",
-      second: "2-digit",
-    };
-    return new Date(dateString).toLocaleDateString(undefined, options);
   };
 
   const renderForm = () => {

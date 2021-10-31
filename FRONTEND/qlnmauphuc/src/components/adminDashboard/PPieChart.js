@@ -1,9 +1,8 @@
 import { CircularProgress, Grid, Typography, Divider } from "@mui/material";
 import { Box } from "@mui/system";
-import axios from "axios";
 import { format } from "date-fns";
-import React, { PureComponent, useEffect, useState } from "react";
-import { PieChart, Pie, Sector, Cell, ResponsiveContainer } from "recharts";
+import React, {  useEffect, useState } from "react";
+import { PieChart, Pie, Sector, Cell } from "recharts";
 import { makeStyles } from "@mui/styles";
 import { getEcommerceReportPieChart } from "../../redux/Action";
 import { useDispatch, useSelector } from "react-redux";
@@ -95,12 +94,6 @@ const useStyles = makeStyles((theme) => ({
     float: "right",
   },
 }));
-
-const center = {
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "center",
-};
 
 export default function PPieChart() {
   const classes = useStyles();

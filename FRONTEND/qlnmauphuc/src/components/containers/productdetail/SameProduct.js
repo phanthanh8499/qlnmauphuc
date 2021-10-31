@@ -14,7 +14,6 @@ import React, { useEffect, useState } from "react";
 import NavigateNextIcon from "@mui/icons-material/NavigateNext";
 import NavigateBeforeIcon from "@mui/icons-material/NavigateBefore";
 import { useDispatch, useSelector } from "react-redux";
-import { getProductData } from "../../../redux/Action";
 import { Link } from "react-router-dom";
 
 const useStyles = makeStyles((theme) => ({
@@ -77,7 +76,7 @@ const useStyles = makeStyles((theme) => ({
     outline: "none",
     border: "none",
   },
-  title: {
+  titleBox: {
     overflow: "hidden",
     textOverflow: "ellipsis",
     whiteSpace: "nowrap",
@@ -156,7 +155,7 @@ export default function SameProduct(props) {
                       variant="h5"
                       component="h2"
                       align="center"
-                      className={classes.title}
+                      className={classes.titleBox}
                     >
                       {value.product_name}
                     </Typography>

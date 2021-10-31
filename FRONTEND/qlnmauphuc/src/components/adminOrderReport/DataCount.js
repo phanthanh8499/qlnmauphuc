@@ -1,7 +1,6 @@
-import { Button, CircularProgress, Divider, Grid, Paper, Typography } from "@mui/material";
-import React, { useEffect, useState } from "react";
+import { CircularProgress, Grid, Paper, Typography } from "@mui/material";
+import React, { useEffect } from "react";
 import { styled } from "@mui/material/styles";
-import LocalMallIcon from "@mui/icons-material/LocalMall";
 import { makeStyles } from "@mui/styles";
 import GroupsOutlinedIcon from "@mui/icons-material/GroupsOutlined";
 import ListAltOutlinedIcon from "@mui/icons-material/ListAltOutlined";
@@ -10,7 +9,6 @@ import QueryStatsOutlinedIcon from "@mui/icons-material/QueryStatsOutlined";
 import TrendingUpIcon from "@mui/icons-material/TrendingUp";
 import TrendingDownIcon from "@mui/icons-material/TrendingDown";
 import { format } from "date-fns";
-import axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
 import { getOrderReportCountData } from "../../redux/Action";
 
@@ -40,7 +38,7 @@ export default function DataCount() {
   const classes = useStyles();
   const dispatch = useDispatch();
   const orderReport = useSelector((state) => state.orderReport);
-  const {loadingDC, dataCount} = orderReport
+  const { loadingDC, dataCount } = orderReport;
   useEffect(() => {
     var now = new Date();
     now.setHours(0, 0, 0, 0);
@@ -71,6 +69,7 @@ export default function DataCount() {
     };
     dispatch(getOrderReportCountData(dataSend));
   }, []);
+
   return (
     <Grid container>
       {loadingDC ? (
@@ -193,7 +192,9 @@ export default function DataCount() {
                       <TrendingDownIcon sx={{ color: "#fa5c80", mr: 1 }} />
                       <Typography variant="h5" sx={{ color: "#fa5c80" }}>
                         {(
-                          (Math.abs(dataCount.order_total - dataCount.order_pretotal) /
+                          (Math.abs(
+                            dataCount.order_total - dataCount.order_pretotal
+                          ) /
                             dataCount.order_pretotal) *
                           100
                         ).toFixed(2)}

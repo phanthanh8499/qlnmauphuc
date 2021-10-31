@@ -7,7 +7,6 @@ import {
 } from "@mui/material";
 import { makeStyles } from "@mui/styles";
 import React, { useEffect, useState } from "react";
-import { useDispatch } from "react-redux";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import { LOCAL_PATH } from "../../constants/Constants";
@@ -33,7 +32,7 @@ const useStyles = makeStyles((theme) => ({
   img: {
     width: 67,
     heigth: 67,
-    borderRadius: '4px',
+    borderRadius: "4px",
   },
   title: {
     fontSize: "14px !important",
@@ -44,8 +43,7 @@ const useStyles = makeStyles((theme) => ({
 
 export default function All(props) {
   const classes = useStyles();
-  const dispatch = useDispatch();
-  const { userid, data } = props;
+  const { data } = props;
 
   const [loading, setLoading] = useState(true);
   const [dataRender, setDataRender] = useState([]);
@@ -74,16 +72,10 @@ export default function All(props) {
     };
     return new Date(dateString).toLocaleDateString(undefined, options);
   };
-  const handleClickEdit = (id) => {
-    console.log("edit", id);
-
-    console.log("edit", id);
-  };
 
   const [detailForm, setDetailForm] = useState(false);
   const [deleteForm, setDeleteForm] = useState(false);
   const [orderid, setOrderid] = useState(0);
-  const [orderSelected, setOrderSelected] = useState([])
   const openDetailForm = () => {
     setDetailForm(true);
   };
@@ -127,17 +119,19 @@ export default function All(props) {
           open={detailForm}
           onClose={closeDetailForm}
           id={orderid}
-          data={orderSelected[0]}
         ></DetailForm>
       );
     }
   };
 
   const renderData = () => {
-    if(dataRender.length >=1){
+    if (dataRender.length >= 1) {
       return (
         rowsPerPage > 0
-          ? dataRender.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+          ? dataRender.slice(
+              page * rowsPerPage,
+              page * rowsPerPage + rowsPerPage
+            )
           : dataRender
       ).map((value, key) => (
         <Grid container className={classes.root} key={key}>
@@ -211,17 +205,17 @@ export default function All(props) {
           )}
         </Grid>
       ));
-    }
-    else return (
-      <Grid container className={classes.root} sx={{height: 256}}>
-        <Grid item xs={12} sx={center}>
-          <RemoveShoppingCartIcon sx={{fontSize: 200}}/>
+    } else
+      return (
+        <Grid container className={classes.root} sx={{ height: 256 }}>
+          <Grid item xs={12} sx={center}>
+            <RemoveShoppingCartIcon sx={{ fontSize: 200 }} />
+          </Grid>
+          <Grid item xs={12} sx={center}>
+            <Typography variant="h5">Không có đơn hàng</Typography>
+          </Grid>
         </Grid>
-        <Grid item xs={12} sx={center}>
-          <Typography variant="h5">Không có đơn hàng</Typography>
-        </Grid>
-      </Grid>
-    )
+      );
   };
   return (
     <>

@@ -4,7 +4,6 @@ import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router";
 import {
-  addMeasurements,
   editMeasurements,
   getDetailMeasurements,
 } from "../../../../redux/Action";
@@ -12,7 +11,7 @@ import {
 export default function Shirt(props) {
   let { id } = useParams();
   const measurements = useSelector((state) => state.measurements);
-  const { detailData, msg } = measurements;
+  const { detailData } = measurements;
   const dispatch = useDispatch();
   const { enqueueSnackbar } = useSnackbar();
   const [neckline, setNeckline] = useState("");
@@ -53,9 +52,7 @@ export default function Shirt(props) {
       detailData[0].m_neckline === 0
         ? setNeckline("")
         : setNeckline(detailData[0].m_neckline);
-      detailData[0].m_bust === 0
-        ? setBust("")
-        : setBust(detailData[0].m_bust);
+      detailData[0].m_bust === 0 ? setBust("") : setBust(detailData[0].m_bust);
       detailData[0].m_waist === 0
         ? setWaist("")
         : setWaist(detailData[0].m_waist);
@@ -78,7 +75,7 @@ export default function Shirt(props) {
     }
     getDetail();
   }, []);
-  
+
   const handleSubmit = async () => {
     const formData = new FormData();
     formData.append("id", parseInt(detailData[0].id));

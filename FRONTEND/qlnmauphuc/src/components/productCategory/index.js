@@ -9,8 +9,6 @@ import {
   Typography,
 } from "@mui/material";
 import React, { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { getProductData } from "../../redux/Action";
 import Items from "./Items";
 import AddIcon from "@mui/icons-material/Add";
 import RemoveIcon from "@mui/icons-material/Remove";
@@ -119,27 +117,19 @@ const SOFTNESS = [
 
 export default function ProductCategory() {
   const classes = useStyles();
-  const products = useSelector((state) => state.products);
-  const { productData } = products;
-  const dispatch = useDispatch();
-  useEffect(() => {
-    dispatch(getProductData());
-  }, [dispatch]);
   const [loading, setLoading] = useState(true);
   const [dataRender, setDataRender] = useState([]);
   const [dataBackup, setDataBackup] = useState([]);
   let { id } = useParams();
-  console.log("nhan id", id)
+
   useEffect(() => {
-    async function getData(){
+    async function getData() {
       const { data } = await axios.get(`/getProductCategoryData.${id}`);
-      console.log("ahihi", data)
       setDataRender(data);
       setDataBackup(data);
       setLoading(false);
     }
-    getData()
-    
+    getData();
   }, [id]);
   const [open, setOpen] = useState([true, true, false, false, false, true]);
   const handleClick = (e, index) => {
@@ -160,7 +150,6 @@ export default function ProductCategory() {
     { name: "Trắng", isChecked: false, value: "#ffffff" },
   ]);
 
-  const [colorSelected, setColorSelected] = useState([]);
   const handleSelectColor = (e, index) => {
     const list = [...color];
     list[index].isChecked = !list[index].isChecked;
@@ -170,7 +159,6 @@ export default function ProductCategory() {
   const [value, setValue] = useState([0, 3000000]);
 
   const handleChange = (event, newValue) => {
-    console.log(newValue);
     if (!beforeChange) {
       beforeChange = [...value];
     }
@@ -182,10 +170,6 @@ export default function ProductCategory() {
     beforeChange = null;
   };
 
-  
-  
-  
-
   const [cloth, setCloth] = useState([
     { name: "Polyester", value: false },
     { name: "Cotton", value: false },
@@ -193,15 +177,12 @@ export default function ProductCategory() {
     { name: "Spandex", value: false },
   ]);
 
-  const [personName, setPersonName] = useState([]);
   const handleSelectCloth = (e, index) => {
-    const {
-      target: { value },
-    } = e;
     const list = [...cloth];
     list[index].value = !list[index].value;
     setCloth(list);
   };
+
   const [thickness, setThickness] = useState(THICKNESS[0].value);
   const [softness, setSoftness] = useState(SOFTNESS[0].value);
   const [elasticity, setElasticity] = useState(ELASTICITY[0].value);
@@ -236,7 +217,6 @@ export default function ProductCategory() {
     for (let i = 0; i < color.length; i++) {
       if (color[i].isChecked === true) {
         colorSelected.push(color[i]);
-        console.log("da chon");
       }
     }
     if (colorSelected.length >= 1) {

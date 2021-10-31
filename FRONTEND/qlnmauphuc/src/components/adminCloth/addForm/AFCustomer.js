@@ -18,10 +18,9 @@ import PhotoCamera from "@mui/icons-material/PhotoCamera";
 import makeStyles from "@mui/styles/makeStyles";
 import {
   CAP_NHAT_HINH_ANH,
-  FRONTEND_ADM_URL,
   FRONTEND_URL,
 } from "../../../constants/Constants";
-import { addCloth, getClothData } from "../../../redux/Action";
+import { addCloth} from "../../../redux/Action";
 import axios from "axios";
 
 const useStyle = makeStyles((theme) => ({
@@ -57,15 +56,10 @@ function AFCustomer(props) {
   const classes = useStyle();
   const { enqueueSnackbar } = useSnackbar();
   const dispatch = useDispatch();
-  const [value, setValue] = useState(0);
-  const handleChange = (event, newValue) => {
-    setValue(newValue);
-  };
-  const { open, onClose, id } = props;
+  const { onClose, id } = props;
   const [name, setName] = useState("");
   const [material, setMaterial] = useState("");
   const [quantity, setQuantity] = useState("");
-  const [type, setType] = useState("");
   const [userId, setUserId] = useState("");
   const [userSelected, setUserSelected] = useState("");
   const getParamsName = (event) => {
@@ -80,9 +74,6 @@ function AFCustomer(props) {
   };
   const getParamsQuantity = (event) => {
     setQuantity(event.target.value);
-  };
-  const getParamsType = (event) => {
-    setType(event.target.value);
   };
   const [file, setFile] = useState();
   const [fileName, setFileName] = useState("");
@@ -136,7 +127,6 @@ function AFCustomer(props) {
       autoHideDuration: 2000,
     });
     dispatch(addCloth(formData));
-    // dispatch(getClothData());
     onClose()
   };
   const [loading, setLoading] = useState(true);

@@ -13,11 +13,8 @@ import {
 import React, { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { useSnackbar } from "notistack";
-import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline";
 import makeStyles from "@mui/styles/makeStyles";
-import clsx from "clsx";
 import {
-  deleteCloth,
   getOrderReportCountData,
   getOrderReportPieChart,
   getOrderReportStackChart,
@@ -50,12 +47,6 @@ const useStyle = makeStyles((theme) => ({
   },
 }));
 
-const provinceData = [
-  {
-    province_name: "abc",
-  },
-];
-
 const center = {
   display: "flex",
   alignItems: "center",
@@ -66,7 +57,7 @@ function WeeklyForm(props) {
   const classes = useStyle();
   const { enqueueSnackbar } = useSnackbar();
   const dispatch = useDispatch();
-  const { open, onClose, id, listId } = props;
+  const { onClose } = props;
   const handleSubmit = () => {
     if (selected) {
       const dataSend = {
@@ -93,7 +84,6 @@ function WeeklyForm(props) {
   };
   const handleChangeProvince = async (e) => {
     setSelected(e.target.value);
-    console.log(e.target.value);
   };
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -185,11 +175,19 @@ function WeeklyForm(props) {
       maxWidth="xs"
     >
       {loading ? (
-        <Box sx={{width: '350px', height: '143px', display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
+        <Box
+          sx={{
+            width: "350px",
+            height: "143px",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
           <CircularProgress />
         </Box>
       ) : (
-        <Grid container className={classes.root} sx={{width: 350}}>
+        <Grid container className={classes.root} sx={{ width: 350 }}>
           <Grid item xs={12} sx={center}>
             <Typography className={classes.title}>
               Chọn tuần cần báo cáo

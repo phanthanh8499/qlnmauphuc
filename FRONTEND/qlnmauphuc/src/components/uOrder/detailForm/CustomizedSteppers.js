@@ -1,25 +1,20 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import PropTypes from "prop-types";
 import { styled } from "@mui/material/styles";
 import Stack from "@mui/material/Stack";
 import Stepper from "@mui/material/Stepper";
 import Step from "@mui/material/Step";
 import StepLabel from "@mui/material/StepLabel";
-import Check from "@mui/icons-material/Check";
-import SettingsIcon from "@mui/icons-material/Settings";
-import GroupAddIcon from "@mui/icons-material/GroupAdd";
-import VideoLabelIcon from "@mui/icons-material/VideoLabel";
 import StepConnector, {
   stepConnectorClasses,
 } from "@mui/material/StepConnector";
-import { Button, Typography } from "@mui/material";
-import { Box } from "@mui/system";
 import LocalShippingIcon from "@mui/icons-material/LocalShipping";
 import CropRotateIcon from "@mui/icons-material/CropRotate";
 import FactCheckOutlinedIcon from "@mui/icons-material/FactCheckOutlined";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import AlarmIcon from "@mui/icons-material/Alarm";
 import AlarmOnIcon from "@mui/icons-material/AlarmOn";
+import { Typography } from "@mui/material";
 
 const ColorlibConnector = styled(StepConnector)(({ theme }) => ({
   [`&.${stepConnectorClasses.alternativeLabel}`]: {
@@ -108,37 +103,11 @@ ColorlibStepIcon.propTypes = {
   icon: PropTypes.node,
 };
 
-
-
 export default function CustomizedSteppers(props) {
-  const [activeStep, setActiveStep] = useState(0);
-  const [skipped, setSkipped] = useState(new Set());
-  const {activeId, data} = props
-  const isStepOptional = (step) => {
-    return step === 1;
-  };
+  
+  const { activeId, data } = props;
+  
 
-  const isStepSkipped = (step) => {
-    return skipped.has(step);
-  };
-
-  const handleNext = () => {
-    let newSkipped = skipped;
-    if (isStepSkipped(activeStep)) {
-      newSkipped = new Set(newSkipped.values());
-      newSkipped.delete(activeStep);
-    }
-
-    setActiveStep((prevActiveStep) => prevActiveStep + 1);
-    setSkipped(newSkipped);
-  };
-
-  const handleBack = () => {
-    setActiveStep((prevActiveStep) => prevActiveStep - 1);
-  };
-  const handleReset = () => {
-    setActiveStep(0);
-  };
 
   const formatDate = (dateString) => {
     const options = {
@@ -194,10 +163,7 @@ export default function CustomizedSteppers(props) {
     },
     {
       label: "Hoàn tất",
-      date:
-        data.order_enddate === null
-          ? null
-          : formatDate(data.order_enddate),
+      date: data.order_enddate === null ? null : formatDate(data.order_enddate),
     },
   ];
 

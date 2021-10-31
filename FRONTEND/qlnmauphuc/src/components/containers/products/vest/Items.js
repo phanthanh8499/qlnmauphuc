@@ -12,7 +12,6 @@ import makeStyles from "@mui/styles/makeStyles";
 import React, { useEffect, useState } from "react";
 import NavigateNextIcon from "@mui/icons-material/NavigateNext";
 import NavigateBeforeIcon from "@mui/icons-material/NavigateBefore";
-import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import { LOCAL_PATH } from "../../../../constants/Constants";
 

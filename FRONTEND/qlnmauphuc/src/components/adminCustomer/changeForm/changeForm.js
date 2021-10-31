@@ -8,10 +8,9 @@ import {
 import React from "react";
 import { useDispatch } from "react-redux";
 import { useSnackbar } from "notistack";
-import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
 import makeStyles from "@mui/styles/makeStyles";
 import clsx from "clsx";
-import { changeStatusUser, deleteCloth, deleteUser } from "../../../redux/Action";
+import { changeStatusUser } from "../../../redux/Action";
 import ChangeCircleIcon from "@mui/icons-material/ChangeCircle";
 
 const useStyle = makeStyles((theme) => ({

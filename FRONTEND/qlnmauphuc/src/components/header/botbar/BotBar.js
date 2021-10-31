@@ -1,5 +1,12 @@
-import { CssBaseline, Grid, Container, IconButton, Typography, Divider, MenuItem, Link } from "@mui/material";
-import makeStyles from '@mui/styles/makeStyles';
+import {
+  CssBaseline,
+  Grid,
+  Container,
+  IconButton,
+  MenuItem,
+  Link,
+} from "@mui/material";
+import makeStyles from "@mui/styles/makeStyles";
 import React, { useEffect } from "react";
 import { NavLink } from "react-router-dom";
 import ShoppingBasketIcon from "@mui/icons-material/ShoppingBasket";
@@ -49,10 +56,6 @@ const useStyles = makeStyles((theme) => ({
     "& a:hover": {
       fontWeight: "bold",
       color: "#000000",
-    },
-    "& a:hover": {
-      fontWeight: "bold",
-      color: "#000000",
       "& $navSubMenu": {
         display: "block",
       },
@@ -96,12 +99,6 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const center={
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center'
-};
-
 export default function BotBar() {
   const classes = useStyles();
   useEffect(() => {
@@ -121,7 +118,7 @@ export default function BotBar() {
       window.removeEventListener("scroll", scrollHandler);
     };
   }, [classes]);
-  
+
   return (
     <React.Fragment>
       <CssBaseline></CssBaseline>

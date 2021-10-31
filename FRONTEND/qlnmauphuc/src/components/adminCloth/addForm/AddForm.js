@@ -1,12 +1,5 @@
-import {
-  Dialog,
-  Grid,
-  Tab,
-  Tabs,
-  Typography,
-} from "@mui/material";
-import React, { useEffect, useState } from "react";
-import { useSnackbar } from "notistack";
+import { Dialog, Grid, Tab, Tabs, Typography } from "@mui/material";
+import React, { useState } from "react";
 import makeStyles from "@mui/styles/makeStyles";
 import ImageMagnify from "./ImageMagnify";
 import { Box } from "@mui/system";
@@ -14,7 +7,6 @@ import AFCompany from "./AFCompany";
 import AFCustomer from "./AFCustomer";
 import { useDispatch } from "react-redux";
 import { XOA_HINH_ANH } from "../../../constants/Constants";
-
 
 const useStyle = makeStyles((theme) => ({
   root: {
@@ -54,8 +46,7 @@ function a11yProps(index) {
 
 function AddForm(props) {
   const classes = useStyle();
-  const { enqueueSnackbar } = useSnackbar();
-  const dispatch = useDispatch()
+  const dispatch = useDispatch();
   const [value, setValue] = useState(0);
   const handleChange = (event, newValue) => {
     setValue(newValue);
@@ -71,10 +62,9 @@ function AddForm(props) {
     >
       <Grid container className={classes.root}>
         <Grid item xs={4}>
-          <ImageMagnify ></ImageMagnify>
+          <ImageMagnify></ImageMagnify>
         </Grid>
         <Grid item xs={8} className={classes.detailBox}>
-          {/* <Grid container spacing={1} className={classes.box}></Grid> */}
           <Grid item xs={12}>
             <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
               <Tabs

@@ -1,15 +1,14 @@
 import React, { useEffect, useState } from "react";
-import { useSelector, useDispatch } from "react-redux";
+import { useDispatch } from "react-redux";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import { useSnackbar } from "notistack";
-import { DataGrid, GridOverlay } from "@mui/x-data-grid";
+import { DataGrid } from "@mui/x-data-grid";
 import AddForm from "./addForm/AddForm";
 import DetailForm from "./detailForm/DetailForm";
 import DeleteForm from "./deleteForm/DeteleForm";
 import {
   Avatar,
-  Badge,
   Button,
   ButtonGroup,
   CircularProgress,
@@ -18,19 +17,12 @@ import {
   IconButton,
   InputLabel,
   MenuItem,
-  Paper,
   Select,
   TextField,
 } from "@mui/material";
-import { getClothData, getProductData } from "../../redux/Action";
 import { LOCAL_PATH, XOA_HINH_ANH } from "../../constants/Constants";
-import { createTheme, styled } from "@mui/material/styles";
-import { createStyles, makeStyles } from "@mui/styles";
-import Box from "@mui/material/Box";
-import Tab from "@mui/material/Tab";
-import TabContext from "@mui/lab/TabContext";
-import TabList from "@mui/lab/TabList";
-import TabPanel from "@mui/lab/TabPanel";
+import { styled } from "@mui/material/styles";
+import { makeStyles } from "@mui/styles";
 import {
   MyFormControl,
   Search,
@@ -39,33 +31,21 @@ import {
   StyledMenu,
 } from "../utility/Utility";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
-import BlockIcon from "@mui/icons-material/Block";
-import CloseIcon from "@mui/icons-material/Close";
 import CancelIcon from "@mui/icons-material/Cancel";
 import EditIcon from "@mui/icons-material/Edit";
 import SearchIcon from "@mui/icons-material/Search";
 import ChangeForm from "./changeForm/changeForm";
 import XLSX from "xlsx";
 import SaveAltIcon from "@mui/icons-material/SaveAlt";
-import PermissionForm from "./permissionForm/PermissionForm";
-import SettingsIcon from "@mui/icons-material/Settings";
 import axios from "axios";
 import DesktopDatePicker from "@mui/lab/DesktopDatePicker";
 import LocalizationProvider from "@mui/lab/LocalizationProvider";
 import AdapterDateFns from "@mui/lab/AdapterDateFns";
 import { format } from "date-fns";
-import { CustomNoRowsOverlay, useStylesAntDesign } from "../utility/DataGridTheme";
-
-const MyBadge = styled(Badge)`
-  .MuiBadge-badge {
-    right: -10px;
-  }
-`;
-
-const MyTab = styled(Tab)(({ theme }) => ({
-  textTransform: "none",
-  padding: "12px 21px",
-}));
+import {
+  CustomNoRowsOverlay,
+  useStylesAntDesign,
+} from "../utility/DataGridTheme";
 
 const useStyles = makeStyles((theme) => ({
   topBar: {
@@ -73,8 +53,6 @@ const useStyles = makeStyles((theme) => ({
     margin: "0px 0px 5px 0px !important",
   },
 }));
-
-
 
 // const MyButton = styled(Button)`
 //   text-transform: none;
@@ -122,7 +100,6 @@ export default function Data(props) {
   const [detailForm, setDetailForm] = useState(false);
   const [deleteForm, setDeleteForm] = useState(false);
   const [changeForm, setChangeForm] = useState(false);
-  const [permissionForm, setPermissionForm] = useState(false);
   const [userIdList, setUserIdList] = useState([]);
   const openAddForm = () => {
     setAddForm(true);
@@ -153,21 +130,10 @@ export default function Data(props) {
     setChangeForm(false);
   };
 
-  const openPermissionForm = () => {
-    setPermissionForm(true);
-  };
-  const closePermissionForm = () => {
-    setPermissionForm(false);
-  };
-
   const handleClickMenu = (event) => {
     setAnchorEl(event.currentTarget);
   };
   const handleCloseMenu = () => {
-    setAnchorEl(null);
-  };
-
-  const handleClickEdit = () => {
     setAnchorEl(null);
   };
 
@@ -199,12 +165,12 @@ export default function Data(props) {
   const openMenu = Boolean(anchorEl);
 
   const removeAccents = (str) => {
-      return str
-        .normalize("NFD")
-        .replace(/[\u0300-\u036f]/g, "")
-        .replace(/đ/g, "d")
-        .replace(/Đ/g, "D")
-        .toLowerCase();
+    return str
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .replace(/đ/g, "d")
+      .replace(/Đ/g, "D")
+      .toLowerCase();
   };
 
   const formatDate = (dateString) => {
@@ -216,7 +182,7 @@ export default function Data(props) {
       minute: "2-digit",
       second: "2-digit",
     };
-      return new Date(dateString).toLocaleDateString(undefined, options);
+    return new Date(dateString).toLocaleDateString(undefined, options);
   };
 
   const renderForm = () => {
@@ -266,33 +232,31 @@ export default function Data(props) {
         ></ChangeForm>
       );
     }
-    if (permissionForm) {
-      return (
-        <PermissionForm
-          open={permissionForm}
-          onClose={closePermissionForm}
-          id={parseInt(userId)}
-          listId={userIdList}
-        ></PermissionForm>
-      );
-    }
   };
 
   const columns = [
-    { field: "user_avatar", headerName: "Avatar", width: 100, 
-  renderCell: (params) => {
-    return <Avatar src={LOCAL_PATH + params.value.substring(2)} />;
-  } },
+    {
+      field: "user_avatar",
+      headerName: "Avatar",
+      width: 100,
+      renderCell: (params) => {
+        return <Avatar src={LOCAL_PATH + params.value.substring(2)} />;
+      },
+    },
     { field: "user_username", headerName: "UserName", width: 100 },
     { field: "user_lastname", headerName: "Họ", width: 200 },
     { field: "user_firstname", headerName: "Tên", width: 130 },
-    { field: "user_tel", headerName: "Số điện thoại", width: 140,
-  renderCell: (params) => {
-    const formatTel = (text) => {
-    return text.replace(/(\d{3})(\d{3})(\d{4})/, '$1-$2-$3');
-      };
-      return formatTel(params.value)
-  } },
+    {
+      field: "user_tel",
+      headerName: "Số điện thoại",
+      width: 140,
+      renderCell: (params) => {
+        const formatTel = (text) => {
+          return text.replace(/(\d{3})(\d{3})(\d{4})/, "$1-$2-$3");
+        };
+        return formatTel(params.value);
+      },
+    },
     { field: "user_address", headerName: "Địa chỉ", width: 300 },
     {
       field: "user_status",
@@ -329,8 +293,8 @@ export default function Data(props) {
         if (params.value === "NV") {
           return (
             <MyButton variant="outlined" color="secondary" fullWidth>
-            Nhân viên
-          </MyButton>
+              Nhân viên
+            </MyButton>
           );
         } else {
           return (
@@ -371,7 +335,6 @@ export default function Data(props) {
             <IconButton onClick={handleClickEdit} size="large">
               <VisibilityIcon />
             </IconButton>
-            
 
             <IconButton onClick={handleClickDelete} size="large">
               <DeleteOutlineIcon color="error" />
@@ -505,16 +468,13 @@ export default function Data(props) {
       delete item.province_name;
       return item;
     });
-    const ws = XLSX.utils.json_to_sheet(
-      list
-    );
+    const ws = XLSX.utils.json_to_sheet(list);
     const wb = XLSX.utils.book_new();
     var now = new Date();
     now = format(now, "yyyy-MM-dd HH:mm:ss");
     XLSX.utils.book_append_sheet(wb, ws, "data");
     XLSX.writeFile(wb, "DSKhachHang " + now + ".xlsx");
   };
-
 
   const handleChangeProvince = async (e) => {
     setProvince(e.target.value);
@@ -689,7 +649,9 @@ export default function Data(props) {
           removeAccents(data.user_username).includes(removeAccents(string)) ||
           removeAccents(data.user_lastname).includes(removeAccents(string)) ||
           removeAccents(data.user_firstname).includes(removeAccents(string)) ||
-          removeAccents(data.user_lastname + " " + data.user_firstname).includes(removeAccents(string)) ||
+          removeAccents(
+            data.user_lastname + " " + data.user_firstname
+          ).includes(removeAccents(string)) ||
           removeAccents(data.user_address).includes(removeAccents(string)) ||
           removeAccents(data.user_status).includes(removeAccents(string)) ||
           formatDate(data.user_date).toString().includes(string) ||
@@ -724,7 +686,7 @@ export default function Data(props) {
       setDataRender(dataBackup);
     }
   };
-  
+
   return (
     <Grid container>
       {loading ? (
@@ -768,16 +730,15 @@ export default function Data(props) {
                 <Divider sx={{ mt: 0.5, mb: 0.5 }} />
               </Grid>
               <Grid item xs={6}>
-                
-                  <Button
-                    variant="outlined"
-                    color="primary"
-                    onClick={openAddForm}
-                    sx={{ ml: 0.5 }}
-                  >
-                    Thêm người dùng
-                  </Button>
-                
+                <Button
+                  variant="outlined"
+                  color="primary"
+                  onClick={openAddForm}
+                  sx={{ ml: 0.5 }}
+                >
+                  Thêm người dùng
+                </Button>
+
                 <Button
                   variant="outlined"
                   color="success"

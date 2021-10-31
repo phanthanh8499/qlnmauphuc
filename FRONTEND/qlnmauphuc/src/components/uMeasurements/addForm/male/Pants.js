@@ -28,7 +28,7 @@ export default function Pants() {
     setCrotchlength(event.target.value);
   };
   const { id } = JSON.parse(localStorage.getItem("userInfo")).userInfo;
-  console.log("??", id)
+  console.log("??", id);
   const handleSubmit = () => {
     const formData = new FormData();
     formData.append("id", 1);
@@ -66,7 +66,7 @@ export default function Pants() {
         variant: "success",
         autoHideDuration: 2000,
       });
-    }  
+    }
   };
   return (
     <>

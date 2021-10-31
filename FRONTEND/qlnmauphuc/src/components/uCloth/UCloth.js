@@ -41,11 +41,10 @@ const useStyles = makeStyles((theme) => ({
 export default function UCloth() {
   const classes = useStyles();
   const dispatch = useDispatch();
-  const {id} = JSON.parse(localStorage.getItem('userInfo')).userInfo
+  const { id } = JSON.parse(localStorage.getItem("userInfo")).userInfo;
 
-  const cloth = useSelector(state => state.cloth)
+  const cloth = useSelector((state) => state.cloth);
   const { loadingMyData, myClothData } = cloth;
-
 
   const idSend = {
     cloth_userid: id,
@@ -57,11 +56,10 @@ export default function UCloth() {
   const handleChange = (event, value) => {
     setPage(value - 1);
   };
-  
-  
+
   useEffect(() => {
     dispatch(getMyClothData(idSend));
-  }, [])
+  }, []);
 
   useEffect(() => {
     const rowsPerPage = 4;
@@ -70,8 +68,8 @@ export default function UCloth() {
   }, [myClothData]);
 
   const renderCloth = () => {
-    if (myClothData.length >=1 ){
-return (
+    if (myClothData.length >= 1) {
+      return (
         rowsPerPage > 0
           ? myClothData.slice(
               page * rowsPerPage,
@@ -109,21 +107,20 @@ return (
           </Grid>
         </Grid>
       ));
-    } else return (
-      <Grid item xs={12} sx={{ height: 256 }} className={classes.root}>
-        <Grid container>
-          <Grid item xs={12} sx={center}>
-            <DoNotTouchIcon sx={{ fontSize: 200 }} />
-          </Grid>
-          <Grid item xs={12} sx={center}>
-            <Typography variant="h6">Không có vải gửi may</Typography>
+    } else
+      return (
+        <Grid item xs={12} sx={{ height: 256 }} className={classes.root}>
+          <Grid container>
+            <Grid item xs={12} sx={center}>
+              <DoNotTouchIcon sx={{ fontSize: 200 }} />
+            </Grid>
+            <Grid item xs={12} sx={center}>
+              <Typography variant="h6">Không có vải gửi may</Typography>
+            </Grid>
           </Grid>
         </Grid>
-      </Grid>
-    );
-      
-  }
-  const loading = true;
+      );
+  };
   return (
     <Grid container spacing={1}>
       {loadingMyData ? (
