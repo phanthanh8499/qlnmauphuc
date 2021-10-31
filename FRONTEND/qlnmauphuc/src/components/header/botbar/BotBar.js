@@ -1,7 +1,7 @@
-import { CssBaseline, Grid, Container, IconButton, Typography, Divider, MenuItem } from "@mui/material";
+import { CssBaseline, Grid, Container, IconButton, Typography, Divider, MenuItem, Link } from "@mui/material";
 import makeStyles from '@mui/styles/makeStyles';
 import React, { useEffect } from "react";
-import { Link, NavLink } from "react-router-dom";
+import { NavLink } from "react-router-dom";
 import ShoppingBasketIcon from "@mui/icons-material/ShoppingBasket";
 import SearchIcon from "@mui/icons-material/Search";
 import { LOCAL_PATH } from "../../../constants/Constants";
@@ -83,6 +83,16 @@ const useStyles = makeStyles((theme) => ({
   subMenuTitle: {
     fontSize: 18,
     fontWeight: 500,
+    color: "#757474 !important",
+    "&:hover": {
+      color: "#000000",
+    },
+  },
+  subNavLink: {
+    color: "#757474 !important",
+    "&:hover": {
+      color: "#000000",
+    },
   },
 }));
 
@@ -137,6 +147,16 @@ export default function BotBar() {
                       fontWeight: "bold",
                       color: "#000000",
                     }}
+                    isActive={(match, location) => {
+                      var pathname = location.pathname.substring(1, 9);
+                      if (pathname === "home") {
+                        return true;
+                      }
+                      if (pathname === "") {
+                        return true;
+                      }
+                      return false;
+                    }}
                   >
                     Trang chủ
                   </NavLink>
@@ -167,15 +187,22 @@ export default function BotBar() {
                 </li>
                 <li className={classes.navItem}>
                   <NavLink
-                    to="/contacts"
+                    to="/category/type=ALL"
                     className="nav-link"
                     activeStyle={{
                       fontWeight: "bold",
                       color: "#000000",
                     }}
+                    isActive={(match, location) => {
+                      var pathname = location.pathname.substring(1, 9);
+                      if (pathname === "category") {
+                        return true;
+                      }
+                      return false;
+                    }}
                   >
                     Thời trang
-                    <KeyboardArrowDownIcon sx={{verticalAlign: 'middle'}}/>
+                    <KeyboardArrowDownIcon sx={{ verticalAlign: "middle" }} />
                   </NavLink>
 
                   <ul className={classes.navSubMenu}>
@@ -205,14 +232,32 @@ export default function BotBar() {
                                   alt="male-icon"
                                 />
                               </Box>
-                              <span className={classes.subMenuTitle}>
-                                Thời trang nam
-                              </span>
+                              <Link
+                                href="/category/type=FFM"
+                                className={classes.subMenuTitle}
+                              >
+                                Thời trang NAM
+                              </Link>
                             </Grid>
                             <Grid item xs={12}>
-                              <MenuItem isableRipple>Áo Gile </MenuItem>
-                              <MenuItem isableRipple>Áo Blazer </MenuItem>
-                              <MenuItem isableRipple>Bộ Vest </MenuItem>
+                              <Link
+                                href="/category/type=GFM"
+                                className={classes.subNavLink}
+                              >
+                                <MenuItem isableRipple>Áo Gile </MenuItem>
+                              </Link>
+                              <Link
+                                href="/category/type=BFM"
+                                className={classes.subNavLink}
+                              >
+                                <MenuItem isableRipple>Áo Blazer </MenuItem>
+                              </Link>
+                              <Link
+                                href="/category/type=SFM"
+                                className={classes.subNavLink}
+                              >
+                                <MenuItem isableRipple>Bộ Vest </MenuItem>
+                              </Link>
                             </Grid>
                           </Grid>
                         </Grid>
@@ -239,14 +284,32 @@ export default function BotBar() {
                                   alt="male-icon"
                                 />
                               </Box>
-                              <span className={classes.subMenuTitle}>
+                              <Link
+                                href="/category/type=FFF"
+                                className={classes.subMenuTitle}
+                              >
                                 Thời trang nữ
-                              </span>
+                              </Link>
                             </Grid>
                             <Grid item xs={12}>
-                              <MenuItem isableRipple>Áo Gile </MenuItem>
-                              <MenuItem isableRipple>Áo Blazer </MenuItem>
-                              <MenuItem isableRipple>Bộ Vest </MenuItem>
+                              <Link
+                                href="/category/type=GFF"
+                                className={classes.subNavLink}
+                              >
+                                <MenuItem isableRipple>Áo Gile </MenuItem>
+                              </Link>
+                              <Link
+                                href="/category/type=VFF"
+                                className={classes.subNavLink}
+                              >
+                                <MenuItem isableRipple>Áo Blazer </MenuItem>
+                              </Link>
+                              <Link
+                                href="/category/type=SFF"
+                                className={classes.subNavLink}
+                              >
+                                <MenuItem isableRipple>Bộ Vest </MenuItem>
+                              </Link>
                             </Grid>
                           </Grid>
                         </Grid>

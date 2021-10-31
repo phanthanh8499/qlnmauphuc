@@ -5,6 +5,7 @@ import {
   FormGroup,
   Grid,
   IconButton,
+  RadioGroup,
   Typography,
 } from "@mui/material";
 import React, { useEffect, useState } from "react";
@@ -17,6 +18,9 @@ import { makeStyles } from "@mui/styles";
 import { Box } from "@mui/system";
 import Slider, { SliderThumb } from "@mui/material/Slider";
 import { styled } from "@mui/material/styles";
+import axios from "axios";
+import { useParams } from "react-router";
+import { BpRadio } from "../utility/RadioTheme";
 
 const useStyles = makeStyles((theme) => ({
   circleBox: {
@@ -94,6 +98,25 @@ function valuetext(value) {
 
 let beforeChange = null;
 
+const THICKNESS = [
+  { label: "Tất cả", value: "All" },
+  { label: "Mỏng", value: "Mỏng" },
+  { label: "Vừa", value: "Vừa" },
+  { label: "Dày", value: "Dày" },
+];
+const ELASTICITY = [
+  { label: "Tất cả", value: "All" },
+  { label: "Không", value: "Không" },
+  { label: "Vừa", value: "Vừa" },
+  { label: "Có", value: "Có" },
+];
+const SOFTNESS = [
+  { label: "Tất cả", value: "All" },
+  { label: "Mềm", value: "Mềm" },
+  { label: "Vừa", value: "Vừa" },
+  { label: "Cứng", value: "Cứng" },
+];
+
 export default function ProductCategory() {
   const classes = useStyles();
   const products = useSelector((state) => state.products);
@@ -105,12 +128,20 @@ export default function ProductCategory() {
   const [loading, setLoading] = useState(true);
   const [dataRender, setDataRender] = useState([]);
   const [dataBackup, setDataBackup] = useState([]);
+  let { id } = useParams();
+  console.log("nhan id", id)
   useEffect(() => {
-    setDataRender(productData);
-    setDataBackup(productData);
-    setLoading(false);
-  }, [productData]);
-  const [open, setOpen] = useState([true, true, true, true]);
+    async function getData(){
+      const { data } = await axios.get(`/getProductCategoryData.${id}`);
+      console.log("ahihi", data)
+      setDataRender(data);
+      setDataBackup(data);
+      setLoading(false);
+    }
+    getData()
+    
+  }, [id]);
+  const [open, setOpen] = useState([true, true, false, false, false, true]);
   const handleClick = (e, index) => {
     const list = [...open];
     list[index] = !open[index];
@@ -151,7 +182,9 @@ export default function ProductCategory() {
     beforeChange = null;
   };
 
-  const CLOTH = ["Polyester", "Cotton", "Viscose", "Spandex"];
+  
+  
+  
 
   const [cloth, setCloth] = useState([
     { name: "Polyester", value: false },
@@ -169,7 +202,9 @@ export default function ProductCategory() {
     list[index].value = !list[index].value;
     setCloth(list);
   };
-
+  const [thickness, setThickness] = useState(THICKNESS[0].value);
+  const [softness, setSoftness] = useState(SOFTNESS[0].value);
+  const [elasticity, setElasticity] = useState(ELASTICITY[0].value);
   useEffect(() => {
     const removeAccents = (str) => {
       return str
@@ -195,7 +230,6 @@ export default function ProductCategory() {
             .includes(removeAccents(clothSelected[i].name).toLowerCase());
         });
       }
-      // setDataRender(temp);
     }
 
     var colorSelected = [];
@@ -214,14 +248,20 @@ export default function ProductCategory() {
         });
       }
     }
-
+    if (thickness !== "All") {
+      temp = temp.filter((item) => item.product_thickness === thickness);
+    }
+    if (softness !== "All") {
+      temp = temp.filter((item) => item.product_softness === softness);
+    }
+    if (elasticity !== "All") {
+      temp = temp.filter((item) => item.product_elasticity === elasticity);
+    }
     temp = temp.filter(
       (item) => item.product_price >= value[0] && item.product_price <= value[1]
     );
-
-    console.log(temp);
     setDataRender(temp);
-  }, [color, value, cloth]);
+  }, [color, value, cloth, thickness, softness, elasticity]);
 
   return (
     <Grid container>
@@ -328,7 +368,133 @@ export default function ProductCategory() {
           <Grid item xs={12} sx={{ mt: 0.5, mb: 0.5 }}>
             <Divider />
           </Grid>
-          
+
+          <Grid item xs={12}>
+            <Box sx={{ display: "flex" }}>
+              <Typography
+                sx={{
+                  width: "80%",
+                  fontSize: "16px",
+                  fontFamily: "Muli,Arial,Helvetica,sans-serif!important",
+                  fontWeight: 600,
+                }}
+              >
+                Độ dày
+              </Typography>
+              <IconButton
+                sx={{ float: "right", p: 0 }}
+                onClick={(e) => handleClick(e, 2)}
+              >
+                {open[2] ? <AddIcon /> : <RemoveIcon />}
+              </IconButton>
+            </Box>
+            {open[2] ? (
+              <>
+                <RadioGroup
+                  defaultValue={THICKNESS[0].value}
+                  name="thickness-radios"
+                >
+                  {THICKNESS.map((item, key) => (
+                    <FormControlLabel
+                      value={item.value}
+                      control={<BpRadio />}
+                      label={item.label}
+                      onClick={(e) => setThickness(e.target.value)}
+                    />
+                  ))}
+                </RadioGroup>
+              </>
+            ) : null}
+          </Grid>
+
+          <Grid item xs={12} sx={{ mt: 0.5, mb: 0.5 }}>
+            <Divider />
+          </Grid>
+
+          <Grid item xs={12}>
+            <Box sx={{ display: "flex" }}>
+              <Typography
+                sx={{
+                  width: "80%",
+                  fontSize: "16px",
+                  fontFamily: "Muli,Arial,Helvetica,sans-serif!important",
+                  fontWeight: 600,
+                }}
+              >
+                Độ mềm
+              </Typography>
+              <IconButton
+                sx={{ float: "right", p: 0 }}
+                onClick={(e) => handleClick(e, 3)}
+              >
+                {open[3] ? <AddIcon /> : <RemoveIcon />}
+              </IconButton>
+            </Box>
+            {open[3] ? (
+              <>
+                <RadioGroup
+                  defaultValue={SOFTNESS[0].value}
+                  name="softness-radios"
+                >
+                  {SOFTNESS.map((item, key) => (
+                    <FormControlLabel
+                      value={item.value}
+                      control={<BpRadio />}
+                      label={item.label}
+                      onClick={(e) => setSoftness(e.target.value)}
+                    />
+                  ))}
+                </RadioGroup>
+              </>
+            ) : null}
+          </Grid>
+
+          <Grid item xs={12} sx={{ mt: 0.5, mb: 0.5 }}>
+            <Divider />
+          </Grid>
+
+          <Grid item xs={12}>
+            <Box sx={{ display: "flex" }}>
+              <Typography
+                sx={{
+                  width: "80%",
+                  fontSize: "16px",
+                  fontFamily: "Muli,Arial,Helvetica,sans-serif!important",
+                  fontWeight: 600,
+                }}
+              >
+                Độ co giãn
+              </Typography>
+              <IconButton
+                sx={{ float: "right", p: 0 }}
+                onClick={(e) => handleClick(e, 4)}
+              >
+                {open[4] ? <AddIcon /> : <RemoveIcon />}
+              </IconButton>
+            </Box>
+            {open[4] ? (
+              <>
+                <RadioGroup
+                  defaultValue={ELASTICITY[0].value}
+                  name="elasticity-radios"
+                >
+                  {ELASTICITY.map((item, key) => (
+                    <FormControlLabel
+                      value={item.value}
+                      control={<BpRadio />}
+                      label={item.label}
+                      onClick={(e) => setElasticity(e.target.value)}
+                    />
+                  ))}
+                </RadioGroup>
+              </>
+            ) : null}
+          </Grid>
+
+          <Grid item xs={12} sx={{ mt: 0.5, mb: 0.5 }}>
+            <Divider />
+          </Grid>
+
           <Grid item xs={12}>
             <Box sx={{ display: "flex" }}>
               <Typography
@@ -343,12 +509,12 @@ export default function ProductCategory() {
               </Typography>
               <IconButton
                 sx={{ float: "right", p: 0 }}
-                onClick={(e) => handleClick(e, 2)}
+                onClick={(e) => handleClick(e, 5)}
               >
-                {open[2] ? <AddIcon /> : <RemoveIcon />}
+                {open[5] ? <AddIcon /> : <RemoveIcon />}
               </IconButton>
             </Box>
-            {open[2] ? (
+            {open[5] ? (
               <>
                 <AirbnbSlider
                   components={{ Thumb: AirbnbThumbComponent }}

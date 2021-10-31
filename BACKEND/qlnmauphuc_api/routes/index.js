@@ -208,6 +208,57 @@ router.get("/getProductData", function (req, res) {
   });
 });
 
+router.get("/getProductCategoryData.:id", function (req, res) {
+  const { id } = req.params;
+  console.log(id);
+  let temp = "";
+  if(id === "ALL"){  
+    pool.query(`SELECT * FROM products WHERE product_isdeleted = 'false'`, (error, response) => {
+      if (error) {
+        console.log(error);
+      } else {
+        res.send(response.rows);
+      }
+    });
+  } else if(id === "FFM"){
+    temp = `product_typeid = 'BFM' OR product_typeid = 'GFM' OR product_typeid = 'SFM'`;
+    pool.query(
+      `SELECT * FROM products WHERE ${temp} AND product_isdeleted = 'false'`,
+      (error, response) => {
+        if (error) {
+          console.log(error);
+        } else {
+          res.send(response.rows);
+        }
+      }
+    );
+  } else if(id === "FFF"){
+    temp = `product_typeid = 'VFF' OR product_typeid = 'GFF' OR product_typeid = 'SFF'`;
+    pool.query(
+      `SELECT * FROM products WHERE ${temp} AND product_isdeleted = 'false'`,
+      (error, response) => {
+        if (error) {
+          console.log(error);
+        } else {
+          res.send(response.rows);
+        }
+      }
+    );
+  } else {
+    pool.query(
+      `SELECT * FROM products WHERE product_typeid = '${id}' AND product_isdeleted = 'false'`,
+      (error, response) => {
+        if (error) {
+          console.log(error);
+        } else {
+          res.send(response.rows);
+        }
+      }
+    );
+  }
+
+});
+
 router.post("/admin/products/add", function (req, res) {
   const {
     product_code,

@@ -17,7 +17,7 @@ export const routes = [
     component: lazy(() => import("./../pages/users/product/Product")),
   },
   {
-    path: "/category/:slug.:id",
+    path: "/category/:slug=:id",
     exact: false,
     component: lazy(() => import("./../pages/users/category/Category")),
   },

@@ -90,8 +90,8 @@ export default function AdminOrder() {
       provinceId: 0,
       districtId: 0,
       wardId: 0,
-      startDate: format(sd, "yyyy-MM-dd"),
-      endDate: format(ed, "yyyy-MM-dd HH:mm:ss"),
+      startDate: format(startDate, "yyyy-MM-dd"),
+      endDate: format(endDate, "yyyy-MM-dd HH:mm:ss"),
     };
     dispatch(getOrderData(dataSend));
   }, [dispatch]);
