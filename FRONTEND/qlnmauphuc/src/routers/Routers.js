@@ -22,6 +22,11 @@ export const routes = [
     component: lazy(() => import("./../pages/users/category/Category")),
   },
   {
+    path: "/search=:name",
+    exact: false,
+    component: lazy(() => import("./../pages/users/category/Category")),
+  },
+  {
     path: "/account",
     exact: true,
     component: lazy(() => import("./../pages/users/account/Account")),

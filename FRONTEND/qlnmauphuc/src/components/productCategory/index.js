@@ -1,5 +1,6 @@
 import {
   Checkbox,
+  CircularProgress,
   Divider,
   FormControlLabel,
   FormGroup,
@@ -17,7 +18,7 @@ import { Box } from "@mui/system";
 import Slider, { SliderThumb } from "@mui/material/Slider";
 import { styled } from "@mui/material/styles";
 import axios from "axios";
-import { useParams } from "react-router";
+import { useLocation, useParams } from "react-router";
 import { BpRadio } from "../utility/RadioTheme";
 
 const useStyles = makeStyles((theme) => ({
@@ -115,22 +116,45 @@ const SOFTNESS = [
   { label: "Cứng", value: "Cứng" },
 ];
 
+const center = {
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+};
+
 export default function ProductCategory() {
   const classes = useStyles();
   const [loading, setLoading] = useState(true);
   const [dataRender, setDataRender] = useState([]);
   const [dataBackup, setDataBackup] = useState([]);
+  const [productType, setProductType] = useState([]);
   let { id } = useParams();
-
+  let { name } = useParams();
+  const { pathname } = useLocation();
   useEffect(() => {
-    async function getData() {
-      const { data } = await axios.get(`/getProductCategoryData.${id}`);
-      setDataRender(data);
-      setDataBackup(data);
-      setLoading(false);
+    if (pathname.substring(1, 7) === "search") {
+      async function getData() {
+        const { data } = await axios.get(`/livesearch.${name}`);
+        setDataRender(data);
+        setDataBackup(data);
+        setLoading(false);
+      }
+      getData();
+    } else {
+      async function getProductType() {
+        const { data } = await axios.get(`/getProductTypeData`);
+        setProductType(data.filter((item) => item.id === id));
+      }
+      async function getData() {
+        const { data } = await axios.get(`/getProductCategoryData.${id}`);
+        setDataRender(data);
+        setDataBackup(data);
+        setLoading(false);
+      }
+      getProductType();
+      getData();
     }
-    getData();
-  }, [id]);
+  }, [id, pathname, name]);
   const [open, setOpen] = useState([true, true, false, false, false, true]);
   const handleClick = (e, index) => {
     const list = [...open];
@@ -241,8 +265,41 @@ export default function ProductCategory() {
       (item) => item.product_price >= value[0] && item.product_price <= value[1]
     );
     setDataRender(temp);
-  }, [color, value, cloth, thickness, softness, elasticity]);
+  }, [color, value, cloth, thickness, softness, elasticity, dataBackup]);
 
+  const renderTitle = () => {
+    if (name) {
+      return (
+        <Typography sx={{ fontSize: 18, fontWeight: 600 }}>
+          Kết quả tìm kiếm của : {name}
+        </Typography>
+      );
+    } else if (id === "ALL") {
+      return (
+        <Typography sx={{ fontSize: 18, fontWeight: 600 }}>
+          Thời trang
+        </Typography>
+      );
+    } else if (id === "FFM") {
+      return (
+        <Typography sx={{ fontSize: 18, fontWeight: 600 }}>
+          Thời trang nam
+        </Typography>
+      );
+    } else if (id === "FFF") {
+      return (
+        <Typography sx={{ fontSize: 18, fontWeight: 600 }}>
+          Thời trang nữ
+        </Typography>
+      );
+    } else {
+      return (
+        <Typography sx={{ fontSize: 18, fontWeight: 600 }}>
+          {productType[0].pt_name}
+        </Typography>
+      );
+    }
+  };
   return (
     <Grid container>
       <Grid
@@ -520,9 +577,16 @@ export default function ProductCategory() {
         </Grid>
       </Grid>
       {loading ? (
-        <div>loading...</div>
+        <Grid item xs={10} sx={center}>
+          <CircularProgress></CircularProgress>
+        </Grid>
       ) : (
         <Grid item xs={10}>
+          <Box sx={{ pr: 2, pl: 2, mt: 1, width: "50%" }}>
+            {renderTitle()}
+
+            <Divider />
+          </Box>
           <Items data={dataRender} />
         </Grid>
       )}

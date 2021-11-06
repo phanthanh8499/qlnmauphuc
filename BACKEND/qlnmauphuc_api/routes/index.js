@@ -92,8 +92,8 @@ router.post("/signup", async function (req, res, next) {
           console.log(error);
         } else {
           res.send("Đã insert thành công! user: " + username);
-          console.log(response)
-          console.log(response.rows)
+          console.log(response);
+          console.log(response.rows);
         }
       }
     );
@@ -163,7 +163,7 @@ WHERE users.user_typeid != 'KH' AND user_isdeleted = 'false'`,
 });
 
 router.get("/admin/users/delete.:id", function (req, res) {
-  const {id} = req.params;
+  const { id } = req.params;
   pool.query(
     `UPDATE users
 	SET user_isdeleted='true'
@@ -199,28 +199,34 @@ router.get("/getClothTypeData", function (req, res) {
 });
 
 router.get("/getProductData", function (req, res) {
-  pool.query(`SELECT * FROM products WHERE product_isdeleted = 'false'`, (error, response) => {
-    if (error) {
-      console.log(error);
-    } else {
-      res.send(response.rows);
+  pool.query(
+    `SELECT * FROM products WHERE product_isdeleted = 'false'`,
+    (error, response) => {
+      if (error) {
+        console.log(error);
+      } else {
+        res.send(response.rows);
+      }
     }
-  });
+  );
 });
 
 router.get("/getProductCategoryData.:id", function (req, res) {
   const { id } = req.params;
   console.log(id);
   let temp = "";
-  if(id === "ALL"){  
-    pool.query(`SELECT * FROM products WHERE product_isdeleted = 'false'`, (error, response) => {
-      if (error) {
-        console.log(error);
-      } else {
-        res.send(response.rows);
+  if (id === "ALL") {
+    pool.query(
+      `SELECT * FROM products WHERE product_isdeleted = 'false'`,
+      (error, response) => {
+        if (error) {
+          console.log(error);
+        } else {
+          res.send(response.rows);
+        }
       }
-    });
-  } else if(id === "FFM"){
+    );
+  } else if (id === "FFM") {
     temp = `product_typeid = 'BFM' OR product_typeid = 'GFM' OR product_typeid = 'SFM'`;
     pool.query(
       `SELECT * FROM products WHERE ${temp} AND product_isdeleted = 'false'`,
@@ -232,7 +238,7 @@ router.get("/getProductCategoryData.:id", function (req, res) {
         }
       }
     );
-  } else if(id === "FFF"){
+  } else if (id === "FFF") {
     temp = `product_typeid = 'VFF' OR product_typeid = 'GFF' OR product_typeid = 'SFF'`;
     pool.query(
       `SELECT * FROM products WHERE ${temp} AND product_isdeleted = 'false'`,
@@ -256,7 +262,6 @@ router.get("/getProductCategoryData.:id", function (req, res) {
       }
     );
   }
-
 });
 
 router.post("/admin/products/add", function (req, res) {
@@ -442,13 +447,16 @@ router.post("/admin/products/edit", function (req, res) {
 router.get("/admin/products/delete.:id", function (req, res) {
   const { id } = req.params;
   console.log(id);
-  pool.query(`UPDATE products SET product_isdeleted = 'true' WHERE id='${id}'`, (error, response) => {
-    if (error) {
-      console.log(error);
-    } else {
-      res.send(id)
+  pool.query(
+    `UPDATE products SET product_isdeleted = 'true' WHERE id='${id}'`,
+    (error, response) => {
+      if (error) {
+        console.log(error);
+      } else {
+        res.send(id);
+      }
     }
-  });
+  );
 });
 
 router.post("/getClothData", function (req, res) {
@@ -617,14 +625,17 @@ router.post("/admin/cloth/edit", function (req, res) {
 
 router.get("/admin/cloth/delete.:id", function (req, res) {
   const { id } = req.params;
-  pool.query(`UPDATE cloth SET cloth_isdeleted = 'true' WHERE id='${id}'`, (error, response) => {
-    if (error) {
-      console.log(error);
-    } else {
-      res.send(id);
-      console.log("Xoá thành công sản phẩm có id là: ", id);
+  pool.query(
+    `UPDATE cloth SET cloth_isdeleted = 'true' WHERE id='${id}'`,
+    (error, response) => {
+      if (error) {
+        console.log(error);
+      } else {
+        res.send(id);
+        console.log("Xoá thành công sản phẩm có id là: ", id);
+      }
     }
-  });
+  );
 });
 
 router.get("/getMeasurementsData.:id", function (req, res) {
@@ -1035,7 +1046,7 @@ WHERE users.id = '${id}'`,
               if (error) {
                 console.log(error);
               } else {
-                res.send(response.rows[0])
+                res.send(response.rows[0]);
               }
             }
           );
@@ -1172,7 +1183,7 @@ router.post("/getOrderData", function (req, res) {
   const { id, provinceId, districtId, wardId, startDate, endDate } = req.body;
   console.log(id, provinceId, districtId, wardId, startDate, endDate);
   if (parseInt(id) === 0) {
-    if(wardId !== 0){
+    if (wardId !== 0) {
       pool.query(
         `SELECT order_details.id, order_details.od_orderid, order_details.od_productid, order_details.od_clothid, order_customername, order_wardid, district.id AS order_districtid, province.id AS order_provinceid, CONCAT(order_customeraddress, ', ', ward.ward_prefix, ' ', ward.ward_name, ', ', district.district_prefix, ' ', district.district_name, ', ', province.province_name) AS order_customeraddress, order_customerphone, order_customeremail, order_startdate, order_total, order_paymentid, opm_name, order_shippingid, osm_name, order_tailorid, CONCAT(user_lastname, ' ', user_firstname) AS tailor_name, user_tel as tailor_tel, order_statusid, order_userid, products.product_name, products.product_typeid, products.product_image1, os_name FROM order_details 
               INNER JOIN orders ON orders.id = order_details.od_orderid 
@@ -1196,7 +1207,7 @@ router.post("/getOrderData", function (req, res) {
       );
       return true;
     }
-    if(districtId !== 0){
+    if (districtId !== 0) {
       pool.query(
         `SELECT order_details.id, order_details.od_orderid, order_details.od_productid, order_details.od_clothid, order_customername, order_wardid, district.id AS order_districtid, province.id AS order_provinceid, CONCAT(order_customeraddress, ', ', ward.ward_prefix, ' ', ward.ward_name, ', ', district.district_prefix, ' ', district.district_name, ', ', province.province_name) AS order_customeraddress, order_customerphone, order_customeremail, order_startdate, order_total, order_paymentid, opm_name, order_shippingid, osm_name, order_tailorid, CONCAT(user_lastname, ' ', user_firstname) AS tailor_name, user_tel as tailor_tel, order_statusid, order_userid, products.product_name, products.product_typeid, products.product_image1, os_name FROM order_details 
               INNER JOIN orders ON orders.id = order_details.od_orderid 
@@ -1220,7 +1231,7 @@ router.post("/getOrderData", function (req, res) {
       );
       return true;
     }
-    if(provinceId !== 0){
+    if (provinceId !== 0) {
       pool.query(
         `SELECT order_details.id, order_details.od_orderid, order_details.od_productid, order_details.od_clothid, order_customername, order_wardid, district.id AS order_districtid, province.id AS order_provinceid, CONCAT(order_customeraddress, ', ', ward.ward_prefix, ' ', ward.ward_name, ', ', district.district_prefix, ' ', district.district_name, ', ', province.province_name) AS order_customeraddress, order_customerphone, order_customeremail, order_startdate, order_total, order_paymentid, opm_name, order_shippingid, osm_name, order_tailorid, CONCAT(user_lastname, ' ', user_firstname) AS tailor_name, user_tel as tailor_tel, order_statusid, order_userid, products.product_name, products.product_typeid, products.product_image1, os_name FROM order_details 
               INNER JOIN orders ON orders.id = order_details.od_orderid 
@@ -1264,7 +1275,7 @@ router.post("/getOrderData", function (req, res) {
           }
         }
       );
-    }   
+    }
   } else {
     pool.query(
       `SELECT order_details.*, order_customername, order_customeraddress, order_customerphone, order_customeremail, order_startdate, order_enddate, order_subtotal, order_discount, order_total, order_paymentid, opm_name, order_shippingid, osm_name, order_statusid, order_userid, products.product_name, products.product_typeid, products.product_image1, cloth.cloth_name, cloth.cloth_image, cloth.cloth_quantity, cloth.cloth_material, os_name FROM order_details 
@@ -1808,10 +1819,7 @@ WHERE ward.id = '${id}'`,
 });
 
 router.post(`/admin/getDataCount`, function (req, res) {
-  const {
-    startDate, 
-    endDate,
-  } = req.body;
+  const { startDate, endDate } = req.body;
   console.log(startDate, endDate);
   pool.query(
     `SELECT  (
@@ -1838,7 +1846,7 @@ router.post(`/admin/getDataCount`, function (req, res) {
       }
     }
   );
-})
+});
 
 router.post(`/admin/getRevenue`, function (req, res) {
   const { startDate, endDate, startDateLW, endDateLW } = req.body;
@@ -1867,10 +1875,10 @@ LEFT JOIN table1 ON table1.revenue_date = table3.revenue_date
       }
     }
   );
-})
+});
 
 router.post(`/admin/getCountProductSold`, function (req, res) {
-  const { startDate, endDate} = req.body;
+  const { startDate, endDate } = req.body;
   pool.query(
     `WITH table1 AS (
 SELECT pt_name as name, COUNT(*) AS value FROM orders
@@ -1893,7 +1901,7 @@ ORDER BY name ASC`,
       }
     }
   );
-})
+});
 
 router.post(`/admin/getCountOrder`, function (req, res) {
   const { startDate, endDate } = req.body;
@@ -1930,7 +1938,7 @@ AND order_startdate BETWEEN '${startDate}' AND '${endDate}'
       }
     }
   );
-})
+});
 
 router.post(`/admin/getTailorOrder`, function (req, res) {
   const { startDate, endDate } = req.body;
@@ -1959,7 +1967,7 @@ LEFT JOIN table2 ON table1.name = table2.name`,
       }
     }
   );
-})
+});
 
 router.post(`/admin/getOrderCount`, function (req, res) {
   const { startDate, endDate, startDateLW, endDateLW } = req.body;
@@ -1993,6 +2001,24 @@ router.post(`/admin/getOrderCount`, function (req, res) {
       }
     }
   );
-})
+});
+
+router.get(`/livesearch.:name`, function (req, res) {
+  const { name } = req.params;
+  pool.query(
+    `SELECT * FROM products 
+WHERE unaccent(product_name) ILIKE '%${name}%'
+OR product_name ILIKE '%${name}%'
+OR unaccent(product_color) ILIKE '%${name}%'
+OR product_color ILIKE '%${name}%'`,
+    (error, response) => {
+      if (error) {
+        console.log(error);
+      } else {
+        res.send(response.rows);
+      }
+    }
+  );
+});
 
 module.exports = router;

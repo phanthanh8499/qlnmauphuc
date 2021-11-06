@@ -1,12 +1,19 @@
-import { Grid, Paper, Typography } from "@mui/material";
-import makeStyles from '@mui/styles/makeStyles';
-import React from "react";
+import { Button, Grid, Paper, Typography } from "@mui/material";
+import makeStyles from "@mui/styles/makeStyles";
+import React, { useState } from "react";
+import clsx from "clsx";
+import { Box } from "@mui/system";
 
 const useStyles = makeStyles((theme) => ({
   root: {
     padding: "20px 10px 20px 10px",
     margin: "10px 0px 10px 0px",
     border: "1px solid #d3d3d3",
+    position: "relative",
+  },
+  rootHidden: {
+    height: 480,
+    overflow: "hidden",
   },
   star: {
     position: "relative",
@@ -47,13 +54,61 @@ const useStyles = makeStyles((theme) => ({
   priceTable: {
     width: "80%",
   },
+  seeMore: {
+    position: "absolute",
+    bottom: 0,
+    width: "100%",
+    backgroundColor: "#fff",
+    "&:before": {
+      position: "absolute",
+      content: '" "',
+      left: 0,
+      right: 0,
+      bottom: "100%",
+      height: 100,
+      background:
+        "linear-gradient(180deg, rgba(255, 255, 255, 0) 17%, #FFFFFF 93.12%)",
+    },
+  },
+  seeMoreActive: {
+    display: "none !important",
+  },
 }));
+
+const center = {
+  display: "flex",
+  justifyContent: "center",
+  alignItems: "center",
+};
 
 export default function AdditionalDetails(props) {
   const classes = useStyles();
-  const {data} = props;
+  const { data } = props;
+  const [open, setOpen] = useState(true);
+
   return (
-    <Grid container xs={12} component={Paper} className={classes.root}>
+    <Grid
+      container
+      xs={12}
+      component={Paper}
+      className={clsx(classes.root, open && classes.rootHidden)}
+    >
+      <Grid
+        item
+        xs={12}
+        sx={center}
+        className={open ? null : classes.seeMoreActive}
+      >
+        <Box sx={center} className={classes.seeMore}>
+          <Button
+            variant="outlined"
+            color="primary"
+            onClick={(e) => setOpen(false)}
+          >
+            Xem thêm
+          </Button>
+        </Box>
+      </Grid>
       <Grid item xs={2}>
         <Typography className={classes.title}>MÔ TẢ</Typography>
       </Grid>

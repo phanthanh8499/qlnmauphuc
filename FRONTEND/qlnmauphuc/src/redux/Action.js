@@ -237,6 +237,7 @@ export const getOrderData = (id) => async (dispatch) => {
 };
 
 export const addOrder = (dataReq) => async (dispatch) => {
+  console.log("Nhan ve", dataReq)
   const { data } = await Axios.post("/admin/order/add", dataReq);
   console.log(data)
   dispatch({ type: THEM_DON_HANG, payload: dataReq });

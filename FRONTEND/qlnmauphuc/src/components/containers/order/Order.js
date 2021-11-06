@@ -528,12 +528,15 @@ export default function Order(props) {
                   format(today, "yyyy-MM-dd HH:mm:ss")
               );
               formData.set("od_clothid", od_id + 1);
-              dispatch(addOrder(formData));
+              setTimeout(() => {
+                dispatch(addOrder(formData));
+              }, i * 10 + 500); 
             }
           }
         }
       }
     }
+
     // suit nam
     if (productData.product_typeid === "SFM") {
       if (
@@ -692,7 +695,7 @@ export default function Order(props) {
                   format(today, "yyyy-MM-dd HH:mm:ss")
               );
               formData.set("od_clothid", od_id + 1);
-              dispatch(addOrder(formData));
+              setTimeout(() => {dispatch(addOrder(formData));}, i*10 + 500) 
             }
           }
         }
@@ -852,7 +855,9 @@ export default function Order(props) {
                   format(today, "yyyy-MM-dd HH:mm:ss")
               );
               formData.set("od_clothid", od_id + 1);
-              dispatch(addOrder(formData));
+              setTimeout(() => {
+                dispatch(addOrder(formData));
+              }, i * 10 + 500); 
             }
           }
         }
@@ -1013,7 +1018,9 @@ export default function Order(props) {
                   format(today, "yyyy-MM-dd HH:mm:ss")
               );
               formData.set("od_clothid", od_id + 1);
-              dispatch(addOrder(formData));
+              setTimeout(() => {
+                dispatch(addOrder(formData));
+              }, i * 10 + 500); 
             }
           }
         }
@@ -1177,7 +1184,9 @@ export default function Order(props) {
                   format(today, "yyyy-MM-dd HH:mm:ss")
               );
               formData.set("od_clothid", od_id + 1);
-              dispatch(addOrder(formData));
+              setTimeout(() => {
+                dispatch(addOrder(formData));
+              }, i * 10 + 500); 
             }
           }
         }
@@ -1344,7 +1353,9 @@ export default function Order(props) {
                   format(today, "yyyy-MM-dd HH:mm:ss")
               );
               formData.set("od_clothid", od_id + 1);
-              dispatch(addOrder(formData));
+              setTimeout(() => {
+                dispatch(addOrder(formData));
+              }, i * 10 + 500); 
             }
           }
         }

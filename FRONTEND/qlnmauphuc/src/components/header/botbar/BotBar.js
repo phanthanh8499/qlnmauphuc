@@ -5,15 +5,19 @@ import {
   IconButton,
   MenuItem,
   Link,
+  TextField,
+  Typography,
+  Grow,
 } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
-import React, { useEffect } from "react";
+import React, {  useEffect, useRef, useState } from "react";
 import { NavLink } from "react-router-dom";
 import ShoppingBasketIcon from "@mui/icons-material/ShoppingBasket";
 import SearchIcon from "@mui/icons-material/Search";
 import { LOCAL_PATH } from "../../../constants/Constants";
 import { Box } from "@mui/system";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
+import axios from "axios";
 
 const useStyles = makeStyles((theme) => ({
   bg: {
@@ -35,6 +39,7 @@ const useStyles = makeStyles((theme) => ({
   icon: {
     margin: "25px 0px !important",
     padding: "0px 10px !important",
+    position: "relative",
   },
   sticky: {
     top: 0,
@@ -97,7 +102,68 @@ const useStyles = makeStyles((theme) => ({
       color: "#000000",
     },
   },
+  searchForm: {
+    width: 300,
+    position: "absolute",
+    right: 0,
+    boxShadow: "1px 1px 10px rgb(0 0 0 / 15%)",
+    zIndex: 9,
+    backgroundColor: "#fff",
+    padding: "5px",
+    "&:before": {
+      content: '" "',
+      position: "absolute",
+      top: -11,
+      right: 22,
+      borderLeft: "10px solid transparent",
+      borderRight: "10px solid transparent",
+      borderBottom: "10px solid #e7e7e7",
+    },
+  },
+  resultForm: {
+    width: 300,
+    position: "absolute",
+    right: 0,
+    boxShadow: "1px 1px 10px rgb(0 0 0 / 15%)",
+    zIndex: 20,
+    top: 95,
+    backgroundColor: "#fff",
+  },
+  resultImg: {
+    width: 70,
+    height: 70,
+  },
+  resultTitle: {
+    overflow: "hidden",
+    fontSize: "18px !important",
+    whiteSpace: "nowrap",
+    textOverflow: "ellipsis",
+    fontWeight: "600 !important",
+  },
+  resultBox: {
+    padding: "5px",
+    borderBottom: "1px solid #eeeeee",
+    "&:hover": {
+      backgroundColor: "#eeeeee",
+    },
+    color: "#000000",
+    
+  },
+  resultMore: {
+    padding: 5,
+    backgroundColor: "#000000",
+    color: "#fff",
+    "& a": {
+      color: "#fff",
+    },
+  },
 }));
+
+const center = {
+  display: "flex",
+  justifyContent: "center",
+  alignItems: "center",
+};
 
 export default function BotBar() {
   const classes = useStyles();
@@ -118,6 +184,45 @@ export default function BotBar() {
       window.removeEventListener("scroll", scrollHandler);
     };
   }, [classes]);
+  const [string, setString] = useState("");
+  const [open, setOpen] = useState(false);
+  const [openResult, setOpenResult] = useState(false);
+  const [data, setData] = useState([]);
+  const typingTimeoutRef = useRef(null);
+
+  const handleSearch = async (e) => {
+    let searchString = e.target.value;
+    if (typingTimeoutRef.current) {
+      clearTimeout(typingTimeoutRef.current);
+    }
+    if (searchString) {
+      typingTimeoutRef.current = setTimeout(async () => {
+        setString(e.target.value);
+        setOpenResult(true);
+        const { data } = await axios.get(`/livesearch.${searchString}`);
+        setData(data);
+      }, 300);
+    } else {
+      setOpenResult(false);
+      setData([]);
+    }
+  };
+
+  const covertURL = (str) => {
+    str = str.toLowerCase();
+    str = str.replace(/(à|á|ạ|ả|ã|â|ầ|ấ|ậ|ẩ|ẫ|ă|ằ|ắ|ặ|ẳ|ẵ)/g, "a");
+    str = str.replace(/(è|é|ẹ|ẻ|ẽ|ê|ề|ế|ệ|ể|ễ)/g, "e");
+    str = str.replace(/(ì|í|ị|ỉ|ĩ)/g, "i");
+    str = str.replace(/(ò|ó|ọ|ỏ|õ|ô|ồ|ố|ộ|ổ|ỗ|ơ|ờ|ớ|ợ|ở|ỡ)/g, "o");
+    str = str.replace(/(ù|ú|ụ|ủ|ũ|ư|ừ|ứ|ự|ử|ữ)/g, "u");
+    str = str.replace(/(ỳ|ý|ỵ|ỷ|ỹ)/g, "y");
+    str = str.replace(/(đ)/g, "d");
+    str = str.replace(/([^0-9a-z-\s])/g, "");
+    str = str.replace(/(\s+)/g, "-");
+    str = str.replace(/^-+/g, "");
+    str = str.replace(/-+$/g, "");
+    return str;
+  };
 
   return (
     <React.Fragment>
@@ -323,8 +428,88 @@ export default function BotBar() {
                 ></ShoppingBasketIcon>
               </IconButton>
               <IconButton size="large">
-                <SearchIcon className={classes.buttonIcon}></SearchIcon>
+                <SearchIcon
+                  className={classes.buttonIcon}
+                  onClick={(e) => setOpen(!open)}
+                ></SearchIcon>
               </IconButton>
+              <Grow
+                in={open}
+                style={{ transformOrigin: "0 0 0" }}
+                {...(open ? { timeout: 500 } : {})}
+              >
+                <Box className={classes.searchForm}>
+                  <TextField
+                    type="search"
+                    variant="standard"
+                    fullWidth
+                    onChange={handleSearch}
+                  />
+                </Box>
+              </Grow>
+              <Grow
+                in={openResult}
+                style={{ transformOrigin: "0 0 0" }}
+                {...(openResult ? { timeout: 1000 } : {})}
+              >
+                <Box className={classes.resultForm}>
+                  {data.length === 0 ? (
+                    <Grid container>
+                      <Grid item xs={12} sx={center}>
+                        <Typography sx={{ padding: "10px 5px" }}>
+                          Không tìm thấy kết quả
+                        </Typography>
+                      </Grid>
+                    </Grid>
+                  ) : (
+                    data.slice(0,3).map((item, key) => (
+                      <Link
+                        href={
+                          "/" +
+                          covertURL(item.product_name) +
+                          "." +
+                          item.id +
+                          ".html"
+                        }
+                      >
+                        <Grid container className={classes.resultBox} key={key}>
+                          <Grid item xs={3} sx={center}>
+                            <img
+                              className={classes.resultImg}
+                              src={
+                                LOCAL_PATH + item.product_image1.substring(2)
+                              }
+                              alt="sml"
+                            />
+                          </Grid>
+                          <Grid item xs={9}>
+                            <Box sx={{ pl: 0.5 }}>
+                              <Typography className={classes.resultTitle}>
+                                {item.product_name}
+                              </Typography>
+                            </Box>
+                            <Typography sx={{ fontSize: 14, pl: 0.5 }}>
+                              {item.product_price} d
+                            </Typography>
+                          </Grid>
+                        </Grid>
+                      </Link>
+                    ))
+                  )}
+
+                  {data.length === 0 ? null : (
+                    <Grid container className={classes.resultMore}>
+                      <Grid item xs={12} sx={center}>
+                        <Link href={"/search=" + string}>
+                          <Typography>
+                            Xem thêm ({data.length} sản phẩm)
+                          </Typography>
+                        </Link>
+                      </Grid>
+                    </Grid>
+                  )}
+                </Box>
+              </Grow>
             </Grid>
           </Grid>
         </Container>
