@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useDispatch } from "react-redux";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
@@ -19,7 +19,7 @@ import {
   OutlinedInput,
   Select,
 } from "@mui/material";
-import { XOA_HINH_ANH } from "../../constants/Constants";
+import { INFO, XOA_HINH_ANH } from "../../constants/Constants";
 import { styled } from "@mui/material/styles";
 import { makeStyles } from "@mui/styles";
 import {
@@ -35,9 +35,12 @@ import EditIcon from "@mui/icons-material/Edit";
 import SearchIcon from "@mui/icons-material/Search";
 import XLSX from "xlsx";
 import SaveAltIcon from "@mui/icons-material/SaveAlt";
+import PrintIcon from "@mui/icons-material/Print";
 import { useTheme } from "@mui/material/styles";
 import { format } from "date-fns";
 import { CustomNoRowsOverlay, useStylesAntDesign } from "../utility/DataGridTheme";
+import { useReactToPrint } from "react-to-print";
+import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from "@material-ui/core";
 
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
@@ -144,6 +147,18 @@ export default function Data(props) {
 
   const [anchorEl, setAnchorEl] = useState(null);
   const openMenu = Boolean(anchorEl);
+
+  const formatDate = (dateString) => {
+    const options = {
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit",
+    };
+    return new Date(dateString).toLocaleDateString(undefined, options);
+  };
 
   const removeAccents = (str) => {
     return str
@@ -323,6 +338,7 @@ export default function Data(props) {
     XLSX.writeFile(wb, "DSVai " + now + ".xlsx");
   };
 
+  const [count, setCount] = useState(0)
   const handleClickSearch = () => {
     let temp = [...data]
     if(materialSelected.length >= 1){
@@ -339,6 +355,7 @@ export default function Data(props) {
         return removeAccents(data.cloth_name).toLowerCase().includes(removeAccents(colorSelected).toLowerCase())
       })
     }
+    setCount(count+1);
     setDataRender(temp);
     setDataBackup(temp);
   };
@@ -504,6 +521,35 @@ export default function Data(props) {
       </>
     );
   };
+
+  const componentRef = useRef();
+  const subtotal = (items) => {
+    return items
+      .map((item) => item.cloth_quantity)
+      .reduce((sum, i) => sum + i, 0);
+  };
+  const now = new Date();
+  const pageStyle = `
+   @page {margin: 10px; size: 1240px 700px}
+   @media print {
+    html, body {
+      height: initial !important;
+      overflow: initial !important;
+      -webkit-print-color-adjust: exact;
+    }
+  }
+  @page {
+    size: auto;
+    margin: 20mm;
+  }
+`;
+
+  const handlePrint = useReactToPrint({
+    content: () => componentRef.current,
+    documentTitle: "BaoCaoDonHang" + "_Ngay_" + format(now, "dd-MM/yyyy"),
+    pageStyle: pageStyle,
+  });
+
   return (
     <Grid container>
       {loading ? (
@@ -547,6 +593,14 @@ export default function Data(props) {
                   sx={{ ml: 0.5 }}
                 >
                   <SaveAltIcon />
+                </Button>
+                <Button
+                  variant="outlined"
+                  color="primary"
+                  onClick={() => handlePrint()}
+                  sx={{ ml: 0.5 }}
+                >
+                  <PrintIcon />
                 </Button>
                 <Button
                   id="demo-customized-button"
@@ -625,6 +679,86 @@ export default function Data(props) {
             />
           </Grid>
           {renderForm()}
+          <Grid container sx={{ display: "none" }}>
+            <div ref={componentRef}>
+              <Grid container>
+                <Grid item xs={6} sx={{ textAlign: "left" }}>
+                  <Typography sx={{ fontWeight: 600 }}>{INFO.name}</Typography>
+                </Grid>
+                <Grid item xs={6} sx={{ textAlign: "right" }}>
+                  <Typography sx={{ fontWeight: 600 }}>Mẫu in: B112</Typography>
+                  <Typography sx={{ fontWeight: 600 }}>
+                    Ngày in: {format(now, "dd/MM/yyyy")}
+                  </Typography>
+                </Grid>
+                <Grid item xs={12} sx={{ textAlign: "center" }}>
+                  <Typography variant="h5">
+                    Báo cáo kết quả thống kê vải
+                  </Typography>
+                  <Typography sx={{ fontSize: 14, fontStyle: "italic" }}>
+                    {/* {count === 0
+                      ? `(Từ ngày: ${format(
+                          startD,
+                          "dd-MM-yyyy"
+                        )} --- Đến ngày: 
+                    ${format(endD, "dd-MM-yyyy")})`
+                      : `(Từ ngày: ${format(
+                          startDate,
+                          "dd-MM-yyyy"
+                        )} --- Đến ngày: 
+                    ${format(endDate, "dd-MM-yyyy")})`} */}
+                  </Typography>
+                </Grid>
+              </Grid>
+              <TableContainer>
+                <Table sx={{ minWidth: 700 }} aria-label="customized table">
+                  <TableHead>
+                    <TableRow>
+                      <TableCell>ID</TableCell>
+                      <TableCell align="center">Thành phần</TableCell>
+                      <TableCell align="center">Tên vải</TableCell>
+                      <TableCell align="center">Loại vải</TableCell>
+                      <TableCell align="center">Chủ sở hữu</TableCell>
+                      <TableCell align="center">Số lượng (mét)</TableCell>
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    {dataRender.map((row) => {
+                      return (
+                        <TableRow key={row.name}>
+                          <TableCell component="th" scope="row">
+                            {row.id}
+                          </TableCell>
+                          <TableCell align="left">
+                            {row.cloth_material}
+                          </TableCell>
+                          <TableCell align="left">{row.cloth_name}</TableCell>
+                          <TableCell align="left">{row.ct_name}</TableCell>
+                          <TableCell align="left">
+                            {row.user_username}
+                          </TableCell>
+                          <TableCell align="right">
+                            {row.cloth_quantity}
+                          </TableCell>
+                        </TableRow>
+                      );
+                    })}
+                    <TableRow>
+                      <TableCell colSpan={3}></TableCell>
+                      <TableCell colSpan={2} align="right">
+                        <Typography sx={{ fontWeight: 500 }}>
+                          Tổng cộng:
+                        </Typography>
+                      </TableCell>
+                      <TableCell align="right">
+                        {subtotal(dataRender)}
+                      </TableCell>
+                    </TableRow>
+                  </TableBody>
+                </Table>
+              </TableContainer>
+            </div>
+          </Grid>
         </>
       )}
     </Grid>

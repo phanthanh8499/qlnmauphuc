@@ -11,7 +11,6 @@ import TabList from "@mui/lab/TabList";
 import TabPanel from "@mui/lab/TabPanel";
 import Data from "./Data";
 import { format } from "date-fns";
-
 const MyBadge = styled(Badge)`
   .MuiBadge-badge {
     right: -10px;
@@ -35,7 +34,8 @@ export default function AdminOrder() {
   const order = useSelector((state) => state.order);
   const { orderData, error } = order;
   const dispatch = useDispatch();
-
+  const [startD, setStartD] = useState(new Date());
+  const [endD, setEndD] = useState(new Date());
   useEffect(() => {
     var now = new Date();
     now.setHours(0, 0, 0, 0);
@@ -50,9 +50,8 @@ export default function AdminOrder() {
       endDate.setDate(endDate.getDate() - endDate.getDay() + 7);
       endDate.setHours(23, 59, 59, 0);
     }
-    var sd = new Date("2021-9-1");
-    var ed = new Date("2021-10-24");
-    ed.setHours(23, 59, 59, 0);
+    setStartD(startDate);
+    setEndD(endD);
     const dataSend = {
       id: 0,
       provinceId: 0,
@@ -200,22 +199,22 @@ export default function AdminOrder() {
             </Grid>
             <Grid item xs={12}>
               <TabPanel value="1" sx={{ padding: 0 }}>
-                <Data data={all} />
+                <Data data={all} startD={startD} endD={endD}/>
               </TabPanel>
               <TabPanel value="2" sx={{ padding: 0 }}>
-                <Data data={processing} />
+                <Data data={processing} startD={startD} endD={endD}/>
               </TabPanel>
               <TabPanel value="3" sx={{ padding: 0 }}>
-                <Data data={sewing} />
+                <Data data={sewing} startD={startD} endD={endD}/>
               </TabPanel>
               <TabPanel value="4" sx={{ padding: 0 }}>
-                <Data data={transport} />
+                <Data data={transport} startD={startD} endD={endD}/>
               </TabPanel>
               <TabPanel value="5" sx={{ padding: 0 }}>
-                <Data data={complete} />
+                <Data data={complete} startD={startD} endD={endD}/>
               </TabPanel>
               <TabPanel value="6" sx={{ padding: 0 }}>
-                <Data data={cancel} />
+                <Data data={cancel} startD={startD} endD={endD}/>
               </TabPanel>
             </Grid>
           </TabContext>

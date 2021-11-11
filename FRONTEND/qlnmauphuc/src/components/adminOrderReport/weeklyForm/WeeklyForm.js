@@ -158,6 +158,7 @@ function WeeklyForm(props) {
       setLoading(false);
     }
     var now = new Date();
+    // var now = new Date("2021-10-1");
     now.setDate(1);
     console.log(now);
     var month = now.getMonth() + 1;

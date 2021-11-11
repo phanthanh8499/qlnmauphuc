@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useDispatch } from "react-redux";
 import { useSnackbar } from "notistack";
 import {
@@ -20,6 +20,13 @@ import {
   Select,
   TextField,
   Divider,
+  Typography,
+  TableContainer,
+  Table,
+  TableHead,
+  TableRow,
+  TableCell,
+  TableBody,
 } from "@mui/material";
 import { getOrderData } from "../../redux/Action";
 import { makeStyles } from "@mui/styles";
@@ -31,6 +38,7 @@ import BlockIcon from "@mui/icons-material/Block";
 import CancelIcon from "@mui/icons-material/Cancel";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
+import PrintIcon from "@mui/icons-material/Print";
 import {
   MyFormControl,
   Search,
@@ -50,6 +58,8 @@ import {
   CustomNoRowsOverlay,
   useStylesAntDesign,
 } from "../utility/DataGridTheme";
+import { useReactToPrint } from "react-to-print";
+import { INFO } from "../../constants/Constants";
 
 function CustomToolbar() {
   return (
@@ -76,7 +86,8 @@ const MyButton = styled(Button)`
 export default function Data(props) {
   const classes = useStyles();
   const antDesignClasses = useStylesAntDesign();
-  const { data } = props;
+  const { data, startD, endD } = props;
+
   const dispatch = useDispatch();
   const [dataRender, setDataRender] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -242,35 +253,35 @@ export default function Data(props) {
       },
     },
     {
-      field: "order_statusid",
+      field: "os_name",
       headerName: "Trạng thái",
       width: 200,
       renderCell: (params) => {
-        return params.value === 0 ? (
+        return params.value === "Đang đợi xử lý" ? (
           <MyButton variant="outlined" color="warning" fullWidth>
             Đang đợi xử lý
           </MyButton>
-        ) : params.value === 1 ? (
+        ) : params.value === "Đợi thợ may" ? (
           <MyButton variant="outlined" color="primary" fullWidth>
             Đợi thợ may
           </MyButton>
-        ) : params.value === 2 ? (
+        ) : params.value === "Đang lấy vải" ? (
           <MyButton variant="outlined" color="primary" fullWidth>
             Đang lấy vải
           </MyButton>
-        ) : params.value === 3 ? (
+        ) : params.value === "Đang may" ? (
           <MyButton variant="outlined" color="primary" fullWidth>
             Đang may
           </MyButton>
-        ) : params.value === 4 ? (
+        ) : params.value === "Đã may xong" ? (
           <MyButton variant="outlined" color="primary" fullWidth>
             Đã may xong
           </MyButton>
-        ) : params.value === 5 ? (
+        ) : params.value === "Đang vận chuyển" ? (
           <MyButton variant="outlined" color="secondary" fullWidth>
             Đang vận chuyển
           </MyButton>
-        ) : params.value === 6 ? (
+        ) : params.value === "Hoàn tất" ? (
           <MyButton variant="outlined" color="success" fullWidth>
             Hoàn tất
           </MyButton>
@@ -451,6 +462,7 @@ export default function Data(props) {
   };
 
   const [dataBackup, setDataBackup] = useState();
+  const [count, setCount] = useState(0)
   const handleClickSearch = () => {
     if (
       Date.parse(endDate) >
@@ -478,6 +490,7 @@ export default function Data(props) {
         endDate: format(endDate, "yyyy-MM-dd HH:mm:ss"),
       };
       dispatch(getOrderData(dataSend));
+      setCount(count+1);
     }
   };
 
@@ -506,6 +519,33 @@ export default function Data(props) {
       setDataRender(dataBackup);
     }
   };
+
+  const componentRef = useRef();
+  const subtotal = (items) => {
+    return items.map((item) => item.order_total).reduce((sum, i) => sum + i, 0);
+  }
+  const total = subtotal(dataRender)
+  const now = new Date();
+  const pageStyle = `
+   @page {margin: 10px; size: 1240px 700px}
+   @media print {
+    html, body {
+      height: initial !important;
+      overflow: initial !important;
+      -webkit-print-color-adjust: exact;
+    }
+  }
+  @page {
+    size: auto;
+    margin: 20mm;
+  }
+`;
+
+  const handlePrint = useReactToPrint({
+    content: () => componentRef.current,
+    documentTitle: "BaoCaoDonHang" + "_Ngay_" + format(now, "dd-MM/yyyy"),
+    pageStyle: pageStyle,
+  });
 
   return (
     <Grid container>
@@ -560,19 +600,15 @@ export default function Data(props) {
                       </LocalizationProvider>
                     </Grid>
                   </Grid>
-                  <Grid item xs={2}>
-                    <Grid container>
-                      <Grid item xs={4}></Grid>
-                      <Grid item xs={8}>
-                        <Button
-                          variant="outlined"
-                          color="primary"
-                          onClick={handleClickSearch}
-                        >
-                          Tìm kiếm
-                        </Button>
-                      </Grid>
-                    </Grid>
+                  <Grid item xs={2} align="right">
+                    <Button
+                      variant="outlined"
+                      color="primary"
+                      onClick={handleClickSearch}
+                      sx={{mr: 0.5}}
+                    >
+                      Tìm kiếm
+                    </Button>
                   </Grid>
                 </Grid>
                 <Divider sx={{ mt: 0.5, mb: 0.5 }} />
@@ -585,6 +621,14 @@ export default function Data(props) {
                   sx={{ ml: 0.5 }}
                 >
                   <SaveAltIcon />
+                </Button>
+                <Button
+                  variant="outlined"
+                  color="primary"
+                  onClick={() => handlePrint()}
+                  sx={{ ml: 0.5 }}
+                >
+                  <PrintIcon />
                 </Button>
                 <Button
                   id="demo-customized-button"
@@ -668,6 +712,95 @@ export default function Data(props) {
           </Grid>
 
           {renderForm()}
+          <Grid container sx={{ display: "none" }}>
+            <div ref={componentRef}>
+              <Grid container>
+                <Grid item xs={6} sx={{ textAlign: "left" }}>
+                  <Typography sx={{ fontWeight: 600 }}>{INFO.name}</Typography>
+                </Grid>
+                <Grid item xs={6} sx={{ textAlign: "right" }}>
+                  <Typography sx={{ fontWeight: 600 }}>Mẫu in: B111</Typography>
+                  <Typography sx={{ fontWeight: 600 }}>
+                    Ngày in: {format(now, "dd/MM/yyyy")}
+                  </Typography>
+                </Grid>
+                <Grid item xs={12} sx={{ textAlign: "center" }}>
+                  <Typography variant="h5">
+                    Báo cáo kết quả thống kê đơn hàng
+                  </Typography>
+                  <Typography sx={{ fontSize: 14, fontStyle: "italic" }}>
+                    {count === 0
+                      ? `(Từ ngày: ${format(
+                          startD,
+                          "dd-MM-yyyy"
+                        )} --- Đến ngày: 
+                    ${format(endD, "dd-MM-yyyy")})`
+                      : `(Từ ngày: ${format(
+                          startDate,
+                          "dd-MM-yyyy"
+                        )} --- Đến ngày: 
+                    ${format(endDate, "dd-MM-yyyy")})`}
+                  </Typography>
+                </Grid>
+              </Grid>
+              <TableContainer>
+                <Table sx={{ minWidth: 700 }} aria-label="customized table">
+                  <TableHead>
+                    <TableRow>
+                      <TableCell>Mã đơn hàng</TableCell>
+                      <TableCell align="center">Ngày tạo</TableCell>
+                      <TableCell align="center">Trạng thái</TableCell>
+                      <TableCell align="center">Tên khách hàng</TableCell>
+                      <TableCell align="center">Địa chỉ</TableCell>
+                      <TableCell align="center">Tên sản phẩm</TableCell>
+                      <TableCell align="center">Tổng tiền</TableCell>
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    {dataRender.map((row) => {
+                      return (
+                        <TableRow key={row.name}>
+                          <TableCell component="th" scope="row">
+                            {row.od_orderid}
+                          </TableCell>
+                          <TableCell align="center">
+                            {formatDate(row.order_startdate)}
+                          </TableCell>
+                          <TableCell align="left">{row.os_name}</TableCell>
+                          <TableCell align="left">{row.tailor_name}</TableCell>
+                          <TableCell align="left">
+                            {row.order_customeraddress}
+                          </TableCell>
+                          <TableCell align="left">{row.product_name}</TableCell>
+                          <TableCell align="right">
+                            {row.order_total.toLocaleString("it-IT", {
+                              style: "currency",
+                              currency: "VND",
+                            })}
+                          </TableCell>
+                        </TableRow>
+                      );
+                    })}
+                    <TableRow>
+                      <TableCell colSpan={5}></TableCell>
+                      <TableCell>
+                        <Typography sx={{ fontWeight: 500 }}>
+                          Tổng cộng:
+                        </Typography>
+                      </TableCell>
+                      <TableCell align="right">
+                        {total.toLocaleString("it-IT", {
+                          style: "currency",
+                          currency: "VND",
+                        })}
+                      </TableCell>
+                    </TableRow>
+                  </TableBody>
+                </Table>
+              </TableContainer>
+            </div>
+          </Grid>
+
         </>
       )}
     </Grid>

@@ -2,6 +2,15 @@
 export const FRONTEND_URL = "F:/project/LV/FRONTEND/qlnmauphuc/public";
 export const FRONTEND_ADM_URL = "F:/project/LV/FRONTEND/qlnmauphuc/public/admin";
 export const LOCAL_PATH = "http://localhost:3000/";
+
+//INFO
+export const INFO = {
+  name: "Nhà may âu phục Thành Phan",
+  address: "999/9, Nguyễn Văn Linh, Ninh Kiều, Cần Thơ",
+  email: "thanhauphuc@gmail.com",
+  tel: "0915518013",
+};
+
 //=== DANG NHAP
 export const YEU_CAU_DANG_NHAP = "YEU_CAU_DANG_NHAP";
 export const DANG_NHAP_THANH_CONG = "DANG_NHAP_THANH_CONG";

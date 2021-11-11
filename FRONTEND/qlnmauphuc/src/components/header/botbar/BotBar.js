@@ -489,7 +489,7 @@ export default function BotBar() {
                               </Typography>
                             </Box>
                             <Typography sx={{ fontSize: 14, pl: 0.5 }}>
-                              {item.product_price} d
+                              {item.product_price.toLocaleString('it-IT', {style : 'currency', currency : 'VND'})}
                             </Typography>
                           </Grid>
                         </Grid>
