@@ -43,11 +43,14 @@ export default function AdminCustomer() {
 
   const { loadingCustomer, customerData } = users;
   const [loadingState, setLoadingState] = useState(true);
-
+  const [startD, setStartD] = useState(new Date());
+  const [endD, setEndD] = useState(new Date());
   const dispatch = useDispatch();
 
   useEffect(() => {
     dispatch(getCustomerData());
+    setStartD(new Date())
+    setEndD(new Date())
   },[]);
 
   const [dcn, setDcn] = useState([]);
@@ -119,10 +122,10 @@ export default function AdminCustomer() {
             </Grid>
             <Grid item xs={12}>
               <TabPanel value="1" sx={{ padding: 0 }}>
-                <Data data={dcn} />
+                <Data data={dcn} startD={startD} endD={endD} />
               </TabPanel>
               <TabPanel value="2" sx={{ padding: 0 }}>
-                <Data data={ccn} isCcn />
+                <Data data={ccn} startD={startD} endD={endD} isCcn />
               </TabPanel>
             </Grid>
           </TabContext>

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import { useSnackbar } from "notistack";
@@ -17,9 +17,16 @@ import {
   MenuItem,
   OutlinedInput,
   Select,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Typography,
 } from "@mui/material";
 import { makeStyles } from "@mui/styles";
-import { LOCAL_PATH } from "../../constants/Constants";
+import { INFO, LOCAL_PATH } from "../../constants/Constants";
 import { styled } from "@mui/material/styles";
 import {
   MyFormControl,
@@ -34,12 +41,14 @@ import CancelIcon from "@mui/icons-material/Cancel";
 import EditIcon from "@mui/icons-material/Edit";
 import XLSX from "xlsx";
 import SaveAltIcon from "@mui/icons-material/SaveAlt";
+import PrintIcon from "@mui/icons-material/Print";
 import { useTheme } from "@mui/material/styles";
 import { format } from "date-fns";
 import {
   CustomNoRowsOverlay,
   useStylesAntDesign,
 } from "../utility/DataGridTheme";
+import { useReactToPrint } from "react-to-print";
 
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
@@ -482,6 +491,31 @@ export default function Data(props) {
       </Grid>
     );
   };
+
+  const componentRef = useRef();
+  
+  const now = new Date();
+  const pageStyle = `
+   @page {margin: 10px; size: 1240px 700px}
+   @media print {
+    html, body {
+      height: initial !important;
+      overflow: initial !important;
+      -webkit-print-color-adjust: exact;
+    }
+  }
+  @page {
+    size: auto;
+    margin: 20mm;
+  }
+`;
+
+  const handlePrint = useReactToPrint({
+    content: () => componentRef.current,
+    documentTitle: "BaoCaoSanPham" + "_Ngay_" + format(now, "dd-MM/yyyy"),
+    pageStyle: pageStyle,
+  });
+
   return (
     <Grid container>
       {loading ? (
@@ -523,6 +557,14 @@ export default function Data(props) {
                   sx={{ ml: 0.5 }}
                 >
                   <SaveAltIcon />
+                </Button>
+                <Button
+                  variant="outlined"
+                  color="primary"
+                  onClick={() => handlePrint()}
+                  sx={{ ml: 0.5 }}
+                >
+                  <PrintIcon />
                 </Button>
                 <Button
                   id="demo-customized-button"
@@ -600,6 +642,88 @@ export default function Data(props) {
             />
           </Grid>
           {renderForm()}
+          <Grid container sx={{ display: "none" }}>
+            <div ref={componentRef}>
+              <Grid container>
+                <Grid item xs={6} sx={{ textAlign: "left" }}>
+                  <Typography sx={{ fontWeight: 600 }}>{INFO.name}</Typography>
+                </Grid>
+                <Grid item xs={6} sx={{ textAlign: "right" }}>
+                  <Typography sx={{ fontWeight: 600 }}>Mẫu in: B111</Typography>
+                  <Typography sx={{ fontWeight: 600 }}>
+                    Ngày in: {format(now, "dd/MM/yyyy")}
+                  </Typography>
+                </Grid>
+                <Grid item xs={12} sx={{ textAlign: "center" }}>
+                  <Typography variant="h5">
+                    Báo cáo kết quả thống kê sản phẩm
+                  </Typography>
+                </Grid>
+              </Grid>
+              <TableContainer>
+                <Table sx={{ minWidth: 700 }} aria-label="customized table">
+                  <TableHead>
+                    <TableRow>
+                      <TableCell>Mã SP</TableCell>
+                      <TableCell align="center">Hình ảnh</TableCell>
+                      <TableCell align="center">Tên SP</TableCell>
+                      <TableCell align="center">Giá</TableCell>
+                      <TableCell align="center">Màu sắc</TableCell>
+                      <TableCell align="center">Chất liệu</TableCell>
+                      <TableCell align="center">Lớp lót</TableCell>
+                      <TableCell align="center">Độ dày</TableCell>
+                      <TableCell align="center">Độ mỏng</TableCell>
+                      <TableCell align="center">Độ co giãn</TableCell>
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    {dataRender.map((row) => {
+                      return (
+                        <TableRow key={row.name}>
+                          <TableCell component="th" scope="row">
+                            {row.product_code}
+                          </TableCell>
+                          <TableCell align="center">
+                            <img
+                              src={LOCAL_PATH + row.product_image1.substring(2)}
+                              style={{ width: "100px", height: "100px" }}
+                              alt={row.product_name}
+                            ></img>
+                          </TableCell>
+                          <TableCell align="center">
+                            {row.product_name}
+                          </TableCell>
+                          <TableCell align="right">
+                            {new Intl.NumberFormat("de-DE").format(
+                              row.product_price
+                            )}
+                          </TableCell>
+                          <TableCell align="left">
+                            {row.product_color}
+                          </TableCell>
+                          <TableCell align="left">
+                            {row.product_material}
+                          </TableCell>
+                          <TableCell align="left">
+                            {row.product_lining}
+                          </TableCell>
+                          <TableCell align="left">
+                            {row.product_thickness}
+                          </TableCell>
+                          <TableCell align="left">
+                            {row.product_softness}
+                          </TableCell>
+                          <TableCell align="left">
+                            {row.product_elasticity}
+                          </TableCell>
+                        </TableRow>
+                      );
+                    })}
+                  </TableBody>
+                </Table>
+              </TableContainer>
+            </div>
+          </Grid>
         </>
       )}
     </Grid>

@@ -35,9 +35,12 @@ export default function AdminStaff() {
   const { loadingStaff, staffData} = users;
   const [loadingState, setLoadingState] = useState(true)
   const dispatch = useDispatch()
-
+  const [startD, setStartD] = useState(new Date())
+  const [endD, setEndD] = useState(new Date())
   useEffect(() => {
     dispatch(getStaffData());
+    setStartD(new Date())
+    setEndD(new Date())
   }, []);
 
   const [nv, setNv] = useState([]);
@@ -112,10 +115,10 @@ export default function AdminStaff() {
             </Grid>
             <Grid item xs={12}>
               <TabPanel value="1" sx={{ padding: 0 }}>
-                <Data data={nv} isNv />
+                <Data data={nv} startD={startD} endD={endD} isNv />
               </TabPanel>
               <TabPanel value="2" sx={{ padding: 0 }}>
-                <Data data={qt} />
+                <Data data={qt} startD={startD} endD={endD} />
               </TabPanel>
             </Grid>
           </TabContext>

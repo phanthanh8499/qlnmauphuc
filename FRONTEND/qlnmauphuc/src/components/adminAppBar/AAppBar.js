@@ -34,6 +34,7 @@ import { Box } from "@mui/system";
 import ExpandLess from "@mui/icons-material/ExpandLess";
 import ExpandMore from "@mui/icons-material/ExpandMore";
 import StarBorder from "@mui/icons-material/StarBorder";
+import { LOCAL_PATH } from "../../constants/Constants";
 
 function Copyright(props) {
   return (
@@ -220,6 +221,24 @@ export default function AAppBar(props) {
   const [openSubMenu, setOpenSubMenu] = useState([true, true]);
   const [openSubMenuBK, setOpenSubMenuBK] = useState([true, true]);
 
+  const title = (item) => {
+    if (item === "DASHBOARD") {
+      return "Bảng điều khiển - Thương mại";
+    } else if (item === "CUSTOMER") {
+      return "Quản lý tài khoản khách hàng";
+    } else if (item === "STAFF") {
+      return "Quản lý tài khoản nhân viên";
+    } else if (item === "PRODUCTS") {
+      return "Quản lý sản phẩm";
+    } else if (item === "CLOTH") {
+      return "Quản lý vải";
+    } else if (item === "ORDERS") {
+      return "Quản lý đơn hàng";
+    } else if (item === "STATISTIC") {
+      return "Bảng điểu khiển - Tình trạng đơn hàng";
+    } 
+  }
+
   const handleClick = (e, index) => {
     const temp = [...openSubMenu];
     temp[index] = !temp[index];
@@ -238,7 +257,7 @@ export default function AAppBar(props) {
           <ListItemIcon>
             <DashboardIcon />
           </ListItemIcon>
-          <ListItemText primary="Dashboard" />
+          <ListItemText primary="Bảng điều khiển" />
           {openSubMenu[0] ? <ExpandLess /> : <ExpandMore />}
         </MyListItem>
         <Collapse in={openSubMenu[0]} timeout="auto" unmountOnExit>
@@ -255,7 +274,7 @@ export default function AAppBar(props) {
                 <ListItemIcon>
                   <StarBorder />
                 </ListItemIcon>
-                <ListItemText primary="Ecommerce" />
+                <ListItemText primary="Thương mại" />
               </MyListSubItem>
             </Link>
             <Link
@@ -270,7 +289,7 @@ export default function AAppBar(props) {
                 <ListItemIcon>
                   <TrendingUpIcon />
                 </ListItemIcon>
-                <ListItemText primary="Statistic" />
+                <ListItemText primary="Tình trạng đơn hàng" />
               </MyListSubItem>
             </Link>
           </List>
@@ -284,7 +303,7 @@ export default function AAppBar(props) {
           <ListItemIcon>
             <PeopleIcon />
           </ListItemIcon>
-          <ListItemText primary="Account" />
+          <ListItemText primary="Quản lý tài khoản" />
           {openSubMenu[1] ? <ExpandLess /> : <ExpandMore />}
         </MyListItem>
         <Collapse in={openSubMenu[1]} timeout="auto" unmountOnExit>
@@ -302,7 +321,7 @@ export default function AAppBar(props) {
                 <ListItemIcon>
                   <PeopleIcon />
                 </ListItemIcon>
-                <ListItemText primary="Customers" />
+                <ListItemText primary="Khách hàng" />
               </MyListSubItem>
             </Link>
             <Link
@@ -317,7 +336,7 @@ export default function AAppBar(props) {
                 <ListItemIcon>
                   <TrendingUpIcon />
                 </ListItemIcon>
-                <ListItemText primary="Staff" />
+                <ListItemText primary="Nhân viên" />
               </MyListSubItem>
             </Link>
           </List>
@@ -332,7 +351,7 @@ export default function AAppBar(props) {
             <ListItemIcon>
               <CategoryIcon />
             </ListItemIcon>
-            <ListItemText primary="Products" />
+            <ListItemText primary="Quản lý sản phẩm" />
           </MyListItem>
         </Link>
         <Link to="/admin/cloth" onClick={(e) => changeTitle(e, 3)}>
@@ -340,7 +359,7 @@ export default function AAppBar(props) {
             <ListItemIcon>
               <AppsIcon />
             </ListItemIcon>
-            <ListItemText primary="Cloth" />
+            <ListItemText primary="Quản lý vải" />
           </MyListItem>
         </Link>
         <Link to="/admin/orders" onClick={(e) => changeTitle(e, 4)}>
@@ -348,7 +367,7 @@ export default function AAppBar(props) {
             <ListItemIcon>
               <ShoppingCartIcon />
             </ListItemIcon>
-            <ListItemText primary="Orders" />
+            <ListItemText primary="Quản lý đơn hàng" />
           </MyListItem>
         </Link>
       </List>
@@ -392,7 +411,7 @@ export default function AAppBar(props) {
             noWrap
             sx={{ flexGrow: 1, color: "#000000" }}
           >
-            {abc}
+            {title(abc)}
           </Typography>
           <Box
             sx={{
@@ -439,6 +458,11 @@ export default function AAppBar(props) {
             px: [1],
           }}
         >
+          <img
+            src={LOCAL_PATH + "images/logo.png"}
+            alt="logo"
+            style={{ width: "145px", height: '65px' }}
+          />
           <IconButton onClick={toggleDrawer}>
             <ChevronLeftIcon />
           </IconButton>

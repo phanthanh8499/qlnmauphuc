@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {  useDispatch } from "react-redux";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
@@ -18,9 +18,16 @@ import {
   InputLabel,
   MenuItem,
   Select,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
   TextField,
+  Typography,
 } from "@mui/material";
-import { LOCAL_PATH } from "../../constants/Constants";
+import { INFO, LOCAL_PATH } from "../../constants/Constants";
 import { styled } from "@mui/material/styles";
 import { makeStyles } from "@mui/styles";
 import {
@@ -37,6 +44,7 @@ import SearchIcon from "@mui/icons-material/Search";
 import ChangeForm from "./changeForm/changeForm";
 import XLSX from "xlsx";
 import SaveAltIcon from "@mui/icons-material/SaveAlt";
+import PrintIcon from "@mui/icons-material/Print";
 import PermissionForm from "./permissionForm/PermissionForm";
 import SettingsIcon from "@mui/icons-material/Settings";
 import axios from "axios";
@@ -48,6 +56,7 @@ import {
   CustomNoRowsOverlay,
   useStylesAntDesign,
 } from "../utility/DataGridTheme";
+import { useReactToPrint } from "react-to-print";
 
 const useStyles = makeStyles((theme) => ({
   topBar: {
@@ -68,7 +77,7 @@ export default function Data(props) {
   const antDesignClasses = useStylesAntDesign();
   const dispatch = useDispatch();
   const [dataRender, setDataRender] = useState();
-  const { data, isNv } = props;
+  const { data, isNv, startD, endD } = props;
   const [loading, setLoading] = useState(true);
 
   const [province, setProvince] = useState(0);
@@ -512,6 +521,7 @@ export default function Data(props) {
   };
 
   const [dataBackup, setDataBackup] = useState();
+  const [count, setCount] = useState(0)
   const handleClickSearch = () => {
     let temp = [...data];
     if (province !== 0) {
@@ -549,6 +559,7 @@ export default function Data(props) {
     }
     setDataRender(temp);
     setDataBackup(temp);
+    setCount(count+1)
   };
 
   const liveSearch = (event) => {
@@ -575,6 +586,29 @@ export default function Data(props) {
       setDataRender(dataBackup);
     }
   };
+
+  const componentRef = useRef();
+  const now = new Date();
+  const pageStyle = `
+   @page {margin: 10px; size: 1240px 700px}
+   @media print {
+    html, body {
+      height: initial !important;
+      overflow: initial !important;
+      -webkit-print-color-adjust: exact;
+    }
+  }
+  @page {
+    size: auto;
+    margin: 20mm;
+  }
+`;
+
+  const handlePrint = useReactToPrint({
+    content: () => componentRef.current,
+    documentTitle: "ThongKeNhanVien" + "_Ngay_" + format(now, "dd-MM/yyyy"),
+    pageStyle: pageStyle,
+  });
 
   return (
     <Grid container>
@@ -636,6 +670,14 @@ export default function Data(props) {
                   sx={{ ml: 0.5 }}
                 >
                   <SaveAltIcon />
+                </Button>
+                <Button
+                  variant="outlined"
+                  color="primary"
+                  onClick={() => handlePrint()}
+                  sx={{ ml: 0.5 }}
+                >
+                  <PrintIcon />
                 </Button>
                 <Button
                   id="demo-customized-button"
@@ -714,6 +756,101 @@ export default function Data(props) {
             />
           </Grid>
           {renderForm()}
+          <Grid container sx={{ display: "none" }}>
+            <div ref={componentRef}>
+              <Grid container>
+                <Grid item xs={6} sx={{ textAlign: "left" }}>
+                  <Typography sx={{ fontWeight: 600 }}>{INFO.name}</Typography>
+                </Grid>
+                <Grid item xs={6} sx={{ textAlign: "right" }}>
+                  <Typography sx={{ fontWeight: 600 }}>Mẫu in: B115</Typography>
+                  <Typography sx={{ fontWeight: 600 }}>
+                    Ngày in: {format(now, "dd/MM/yyyy")}
+                  </Typography>
+                </Grid>
+                <Grid item xs={12} sx={{ textAlign: "center" }}>
+                  <Typography variant="h5">
+                    Kết quả thống kê tài khoản nhân viên
+                  </Typography>
+                  <Typography sx={{ fontSize: 14, fontStyle: "italic" }}>
+                    {count === 0
+                      ? `(Từ ngày: ${format(
+                          startD,
+                          "dd-MM-yyyy"
+                        )} --- Đến ngày: 
+                    ${format(endD, "dd-MM-yyyy")})`
+                      : `(Từ ngày: ${format(
+                          startDate,
+                          "dd-MM-yyyy"
+                        )} --- Đến ngày: 
+                    ${format(endDate, "dd-MM-yyyy")})`}
+                  </Typography>
+                </Grid>
+              </Grid>
+              <TableContainer>
+                <Table sx={{ minWidth: 700 }} aria-label="customized table">
+                  <TableHead>
+                    <TableRow>
+                      <TableCell>Avatar</TableCell>
+                      <TableCell align="center">UserName</TableCell>
+                      <TableCell align="center">Họ</TableCell>
+                      <TableCell align="center">Tên</TableCell>
+                      <TableCell align="center" sx={{ width: "121px" }}>
+                        Số điện thoại
+                      </TableCell>
+                      <TableCell align="center">Địa chỉ</TableCell>
+                      <TableCell align="center">Trạng thái</TableCell>
+                      <TableCell align="center">Loại người dùng</TableCell>
+                      <TableCell align="center">Ngày tạo</TableCell>
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    {dataRender.map((row) => {
+                      return (
+                        <TableRow key={row.name}>
+                          <TableCell component="th" scope="row">
+                            <Avatar
+                              src={LOCAL_PATH + row.user_avatar.substring(2)}
+                            />
+                          </TableCell>
+
+                          <TableCell align="left">
+                            {row.user_username}
+                          </TableCell>
+                          <TableCell align="left">
+                            {row.user_lastname}
+                          </TableCell>
+                          <TableCell align="left">
+                            {row.user_firstname}
+                          </TableCell>
+                          <TableCell align="center">
+                            {row.user_tel.replace(
+                              /(\d{3})(\d{3})(\d{4})/,
+                              "$1-$2-$3"
+                            )}
+                          </TableCell>
+                          <TableCell align="left">{row.user_address}</TableCell>
+                          <TableCell align="left">
+                            {row.user_status === "active"
+                              ? "Hoạt động"
+                              : "Bị khoá"}
+                          </TableCell>
+                          <TableCell align="left">
+                            {row.user_typeid === "NV"
+                              ? "Nhân viên"
+                              : "Quản trị viên"}
+                          </TableCell>
+                          <TableCell align="center">
+                            {formatDate(row.user_date)}
+                          </TableCell>
+                        </TableRow>
+                      );
+                    })}
+                  </TableBody>
+                </Table>
+              </TableContainer>
+            </div>
+          </Grid>
         </>
       )}
     </Grid>

@@ -148,18 +148,6 @@ export default function Data(props) {
   const [anchorEl, setAnchorEl] = useState(null);
   const openMenu = Boolean(anchorEl);
 
-  const formatDate = (dateString) => {
-    const options = {
-      year: "numeric",
-      month: "2-digit",
-      day: "2-digit",
-      hour: "2-digit",
-      minute: "2-digit",
-      second: "2-digit",
-    };
-    return new Date(dateString).toLocaleDateString(undefined, options);
-  };
-
   const removeAccents = (str) => {
     return str
       .normalize("NFD")
@@ -546,7 +534,7 @@ export default function Data(props) {
 
   const handlePrint = useReactToPrint({
     content: () => componentRef.current,
-    documentTitle: "BaoCaoDonHang" + "_Ngay_" + format(now, "dd-MM/yyyy"),
+    documentTitle: "BaoCaoVai" + "_Ngay_" + format(now, "dd-MM/yyyy"),
     pageStyle: pageStyle,
   });
 
@@ -738,7 +726,9 @@ export default function Data(props) {
                             {row.user_username}
                           </TableCell>
                           <TableCell align="right">
-                            {row.cloth_quantity}
+                            {new Intl.NumberFormat("de-DE").format(
+                              row.cloth_quantity
+                            )}
                           </TableCell>
                         </TableRow>
                       );
@@ -751,7 +741,9 @@ export default function Data(props) {
                         </Typography>
                       </TableCell>
                       <TableCell align="right">
-                        {subtotal(dataRender)}
+                        {new Intl.NumberFormat("de-DE").format(
+                          subtotal(dataRender)
+                        )}
                       </TableCell>
                     </TableRow>
                   </TableBody>
