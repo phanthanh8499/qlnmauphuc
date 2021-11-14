@@ -31,6 +31,7 @@ import { INFO, LOCAL_PATH } from "../../constants/Constants";
 import { styled } from "@mui/material/styles";
 import { makeStyles } from "@mui/styles";
 import {
+  Copyright,
   MyFormControl,
   Search,
   SearchIconWrapper,
@@ -754,6 +755,7 @@ export default function Data(props) {
                 setUserIdList(selectedRowData);
               }}
             />
+            {Copyright()}
           </Grid>
           {renderForm()}
           <Grid container sx={{ display: "none" }}>

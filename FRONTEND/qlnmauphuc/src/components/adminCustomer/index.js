@@ -5,7 +5,9 @@ import {
   CircularProgress,
   Divider,
   Grid,
+  Link,
   Paper,
+  Typography,
 } from "@mui/material";
 import {
   getCustomerData,
@@ -18,6 +20,8 @@ import TabContext from "@mui/lab/TabContext";
 import TabList from "@mui/lab/TabList";
 import TabPanel from "@mui/lab/TabPanel";
 import Data from "./Data";
+
+
 
 const MyBadge = styled(Badge)`
   .MuiBadge-badge {
@@ -128,6 +132,7 @@ export default function AdminCustomer() {
                 <Data data={ccn} startD={startD} endD={endD} isCcn />
               </TabPanel>
             </Grid>
+            
           </TabContext>
         </>
       )}

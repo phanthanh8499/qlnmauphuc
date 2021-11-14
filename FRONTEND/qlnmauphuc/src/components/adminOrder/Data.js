@@ -40,6 +40,7 @@ import VisibilityIcon from "@mui/icons-material/Visibility";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import PrintIcon from "@mui/icons-material/Print";
 import {
+  Copyright,
   MyFormControl,
   Search,
   SearchIconWrapper,
@@ -605,7 +606,7 @@ export default function Data(props) {
                       variant="outlined"
                       color="primary"
                       onClick={handleClickSearch}
-                      sx={{mr: 0.5}}
+                      sx={{ mr: 0.5 }}
                     >
                       Tìm kiếm
                     </Button>
@@ -709,6 +710,7 @@ export default function Data(props) {
                 setOrderIdList(selectedRowData);
               }}
             />
+            {Copyright()}
           </Grid>
 
           {renderForm()}
@@ -800,7 +802,6 @@ export default function Data(props) {
               </TableContainer>
             </div>
           </Grid>
-
         </>
       )}
     </Grid>

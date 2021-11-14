@@ -8,6 +8,7 @@ import PPipeChart from "./PPipeChart";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import WeeklyForm from "./weeklyForm/WeeklyForm";
 import MonthlyForm from "./monthlyForm/monthlyForm";
+import { Copyright } from "../utility/Utility";
 
 const options = [
   "Báo cáo mỗi tuần",
@@ -167,6 +168,7 @@ export default function AdminProject() {
             </Item>
           </Grid>
         </Grid>
+        {Copyright()}
       </Grid>
       {renderForm()}
     </Grid>

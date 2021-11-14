@@ -16,6 +16,7 @@ import {
   Grid,
   IconButton,
   InputLabel,
+  Link,
   MenuItem,
   Select,
   Table,
@@ -31,6 +32,7 @@ import { INFO, LOCAL_PATH, XOA_HINH_ANH } from "../../constants/Constants";
 import { styled } from "@mui/material/styles";
 import { makeStyles } from "@mui/styles";
 import {
+  Copyright,
   MyFormControl,
   Search,
   SearchIconWrapper,
@@ -864,6 +866,7 @@ export default function Data(props) {
                 setUserIdList(selectedRowData);
               }}
             />
+            {Copyright()}
           </Grid>
           {renderForm()}
           <Grid container sx={{ display: "none" }}>
@@ -910,9 +913,7 @@ export default function Data(props) {
                       </TableCell>
                       <TableCell align="center">Địa chỉ</TableCell>
                       <TableCell align="center">Trạng thái</TableCell>
-                      <TableCell align="center">
-                        Loại người dùng
-                      </TableCell>
+                      <TableCell align="center">Loại người dùng</TableCell>
                       <TableCell align="center">Ngày tạo</TableCell>
                     </TableRow>
                   </TableHead>

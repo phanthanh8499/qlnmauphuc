@@ -28,6 +28,7 @@ import { styled } from "@mui/material/styles";
 import MuiAppBar from "@mui/material/AppBar";
 import MuiDrawer from "@mui/material/Drawer";
 import { useSelector } from "react-redux";
+import PersonAddAlt1Icon from "@mui/icons-material/PersonAddAlt1";
 import { useLocation } from "react-router";
 import AppsIcon from "@mui/icons-material/Apps";
 import { Box } from "@mui/system";
@@ -60,8 +61,8 @@ const AppBar = styled(MuiAppBar, {
   shouldForwardProp: (prop) => prop !== "open",
 })(({ theme, open }) => ({
   zIndex: theme.zIndex.drawer + 1,
-  color: "#000000",
-  backgroundColor: "#ffffff !important",
+  color: "#ffffff",
+  backgroundColor: "#1976d2 !important",
   transition: theme.transitions.create(["width", "margin"], {
     easing: theme.transitions.easing.sharp,
     duration: theme.transitions.duration.leavingScreen,
@@ -104,15 +105,22 @@ const Drawer = styled(MuiDrawer, {
 
 const MyListItem = styled(ListItem)(({ theme }) => ({
   color: "#000000",
+  "& .MuiTypography-root":{
+    fontWeight: '500 !important',
+  },
   "&.Mui-selected": {
     color: "#ffffff !important",
-    backgroundColor: "#000000",
+    backgroundColor: "#1976d2",
     "& .MuiListItemIcon-root": {
       color: "#ffffff",
     },
     ":hover": {
-      backgroundColor: "#000000",
+      backgroundColor: "#1976d2",
     },
+  },
+  "&:hover": {
+    color: "#ffffff",
+    backgroundColor: "#1976d275",
   },
 }));
 
@@ -120,12 +128,12 @@ const MyListSubItem = styled(ListItem)(({ theme }) => ({
   color: "#000000",
   "&.Mui-selected": {
     color: "#ffffff !important",
-    backgroundColor: "#b7b3b3",
+    backgroundColor: "#1976d2ad",
     "& .MuiListItemIcon-root": {
       color: "#ffffff",
     },
     ":hover": {
-      backgroundColor: "#b7b3b3",
+      backgroundColor: "#1976d2ad",
     },
   },
 }));
@@ -319,7 +327,7 @@ export default function AAppBar(props) {
                 selected={selectedSubMenu === "1a"}
               >
                 <ListItemIcon>
-                  <PeopleIcon />
+                  <PersonAddAlt1Icon />
                 </ListItemIcon>
                 <ListItemText primary="Khách hàng" />
               </MyListSubItem>
@@ -334,7 +342,7 @@ export default function AAppBar(props) {
                 selected={selectedSubMenu === "1b"}
               >
                 <ListItemIcon>
-                  <TrendingUpIcon />
+                  <PersonAddAlt1Icon />
                 </ListItemIcon>
                 <ListItemText primary="Nhân viên" />
               </MyListSubItem>
@@ -409,16 +417,16 @@ export default function AAppBar(props) {
             variant="h6"
             color="inherit"
             noWrap
-            sx={{ flexGrow: 1, color: "#000000" }}
+            sx={{ flexGrow: 1, color: "#ffffff" }}
           >
             {title(abc)}
           </Typography>
           <Box
             sx={{
               display: "flex",
-              border: "1px solid #f1f3fa",
+              border: "1px solid #ffffff",
               padding: "9px",
-              backgroundColor: "#fafbfd",
+              backgroundColor: "#ffffff",
               cursor: "pointer",
             }}
             onClick={handleClickMenu}
@@ -429,7 +437,7 @@ export default function AAppBar(props) {
               className={classes.lagre}
               sx={{ mr: 0.5 }}
             />
-            <Box sx={{ color: "#98a6ad" }}>
+            <Box sx={{ color: "#000000" }}>
               <Typography>Nguyễn Văn A</Typography>
               <Typography sx={{ fontSize: 14 }}>Administrator</Typography>
             </Box>
@@ -461,7 +469,7 @@ export default function AAppBar(props) {
           <img
             src={LOCAL_PATH + "images/logo.png"}
             alt="logo"
-            style={{ width: "145px", height: '65px' }}
+            style={{ width: "145px", height: "65px" }}
           />
           <IconButton onClick={toggleDrawer}>
             <ChevronLeftIcon />

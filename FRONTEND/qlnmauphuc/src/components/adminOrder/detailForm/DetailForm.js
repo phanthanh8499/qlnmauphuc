@@ -7,12 +7,19 @@ import {
   InputLabel,
   MenuItem,
   Select,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Divider,
   Typography,
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import makeStyles from "@mui/styles/makeStyles";
-import { LOCAL_PATH } from "../../../constants/Constants";
+import { INFO, LOCAL_PATH } from "../../../constants/Constants";
 import CustomizedSteppers from "./CustomizedSteppers";
 import LocalShippingIcon from "@mui/icons-material/LocalShipping";
 import AccessAlarmIcon from "@mui/icons-material/AccessAlarm";
@@ -32,6 +39,7 @@ import CheckIcon from "@mui/icons-material/Check";
 import CloseIcon from "@mui/icons-material/Close";
 import { useSnackbar } from "notistack";
 import { format } from "date-fns";
+import { useReactToPrint } from "react-to-print";
 
 const useStyle = makeStyles((theme) => ({
   root: {
@@ -569,6 +577,43 @@ function DetailForm(props) {
       </>
     );
   };
+
+  const now = new Date();
+  var DAYS = ["Chủ nhật", "Thứ hai", "Thứ ba", "Thứ tư", "Thứ năm", "Thứ sáu", "Thứ bảy"]
+  console.log(now.getDay());
+  console.log(now.getMonth());
+  console.log(now.getFullYear());
+  console.log(now.getDate());
+  const formatDateVn = (now) => {
+    var day = now.getDay();
+    var date = now.getDate();
+    var month = now.getMonth() +1;
+    var year = now.getFullYear();
+    return (DAYS[day] + ", ngày " + date + " tháng " + month + " năm " + year)
+  }
+
+  const componentRef = useRef();
+  const pageStyle = `
+   @page {margin: 10px; size: 1240px 700px}
+   @media print {
+    html, body {
+      height: initial !important;
+      overflow: initial !important;
+      -webkit-print-color-adjust: exact;
+    }
+  }
+  @page {
+    size: auto;
+    margin: 20mm;
+  }
+`;
+
+  const handlePrint = useReactToPrint({
+    content: () => componentRef.current,
+    documentTitle: "PhieuDatMay" + "_Ngay_" + format(now, "dd-MM/yyyy"),
+    pageStyle: pageStyle,
+  });
+
   return (
     <Dialog
       onClose={onClose}
@@ -603,6 +648,7 @@ function DetailForm(props) {
                     activeId={detailData[0].order_statusid}
                     id={id}
                     data={detailData[0]}
+                    handlePrint={() => handlePrint()}
                   />
                 </Grid>
               </Grid>
@@ -624,6 +670,132 @@ function DetailForm(props) {
                 </Grid>
               </Grid>
             </Grid>
+            <Grid container sx={{display: 'none'}}>
+            <div ref={componentRef}>
+              <Grid container>
+                <Grid item xs={8} align="left">
+                  <Typography sx={{ fontWeight: 600, fontSize: 18 }}>
+                    {INFO.name}
+                  </Typography>
+                  <Typography>{INFO.address}</Typography>
+                  <Typography>
+                    Email: {INFO.email}/Hotline: {INFO.tel}
+                  </Typography>
+                </Grid>
+                <Grid item xs={4} align="right">
+                  {/* <img src="http://a-dong.com.vn/upload/news/2019/11/07/logo_msmv.jpg"/> */}
+                  <Typography>{formatDateVn(now)}</Typography>
+                </Grid>
+                <Grid item xs={12} align="center">
+                  <Typography sx={{ fontWeight: 600, fontSize: 25 }}>
+                    PHIẾU ĐẶT MAY
+                  </Typography>
+                </Grid>
+                <Grid item xs={12}>
+                  <Typography>
+                    Mã đơn hàng: {detailData[0].od_orderid}
+                  </Typography>
+                </Grid>
+                <Grid item xs={8}>
+                  <Typography>
+                    Khách hàng: {detailData[0].order_customername}
+                  </Typography>
+                  <Typography>
+                    Địa chỉ: {detailData[0].order_customeraddress}
+                  </Typography>
+                  <Typography>
+                    Số điện thoại: {detailData[0].order_customerphone}
+                  </Typography>
+                </Grid>
+                <Grid item xs={4}>
+                  <Typography>
+                    Ngày in: {format(now, "dd/MM/yyyy HH:mm:ss")}
+                  </Typography>
+                  <Typography>
+                    H.T thanh toán: {detailData[0].opm_name}
+                  </Typography>
+                  <Typography>
+                    P.T vận chuyển: {detailData[0].osm_name}
+                  </Typography>
+                </Grid>
+                <Grid item xs={12}>
+                  <TableContainer>
+                    <Table sx={{ minWidth: 700 }} aria-label="customized table">
+                      <TableHead>
+                        <TableRow>
+                          <TableCell>Mã hàng</TableCell>
+                          <TableCell align="center">Tên hàng</TableCell>
+                          <TableCell align="center">Đơn giá</TableCell>
+                          <TableCell align="center">Chiết khấu</TableCell>
+                          <TableCell align="center">Thuế</TableCell>
+                          <TableCell align="center">Thành tiền</TableCell>
+                        </TableRow>
+                      </TableHead>
+                      <TableBody>
+                        <TableRow>
+                          <TableCell component="th" scope="row">
+                            {detailData[0].product_code}
+                          </TableCell>
+                          <TableCell align="left">
+                            {detailData[0].product_name}
+                          </TableCell>
+                          <TableCell align="right">
+                            {new Intl.NumberFormat().format(
+                              detailData[0].product_price
+                            )}
+                          </TableCell>
+                          <TableCell align="left"></TableCell>
+                          <TableCell align="left"></TableCell>
+                          <TableCell align="right">
+                            {new Intl.NumberFormat().format(
+                              detailData[0].product_price
+                            )}
+                          </TableCell>
+                        </TableRow>
+                      </TableBody>
+                    </Table>
+                  </TableContainer>
+                </Grid>
+                <Grid item xs={10} align="right" sx={{ fontWeight: 600 }}>
+                  Tổng tiền hàng:
+                </Grid>
+                <Grid
+                  item
+                  xs={2}
+                  align="right"
+                  sx={{ pr: "16px", fontWeight: 600 }}
+                >
+                  {new Intl.NumberFormat().format(detailData[0].product_price)}
+                </Grid>
+                <Grid item xs={10} align="right">
+                  Tiền thuế GTGT:
+                </Grid>
+                <Grid item xs={2} align="right" sx={{ pr: "16px" }}>
+                  0
+                </Grid>
+                <Grid item xs={10} align="right">
+                  Phí vận chuyển:
+                </Grid>
+                <Grid item xs={2} align="right" sx={{ pr: "16px" }}>
+                  0
+                </Grid>
+                <Grid item xs={12} align="right">
+                  <Divider sx={{ width: "30%" }} />
+                </Grid>
+                <Grid item xs={10} align="right" sx={{ fontWeight: 600 }}>
+                  Tổng tiền:
+                </Grid>
+                <Grid
+                  item
+                  xs={2}
+                  align="right"
+                  sx={{ pr: "16px", fontWeight: 600 }}
+                >
+                  {new Intl.NumberFormat().format(detailData[0].product_price)}
+                </Grid>
+                </Grid>
+            </div>
+              </Grid>
           </>
         )}
       </Grid>

@@ -1,5 +1,23 @@
-import { Button, InputBase, Menu, Switch, FormControl, TextField } from "@mui/material";
+import { Button, InputBase, Menu, Switch, FormControl, TextField, Typography, Link } from "@mui/material";
 import { styled, alpha } from "@mui/material/styles";
+
+export function Copyright(props) {
+  return (
+    <Typography
+      variant="body2"
+      color="text.secondary"
+      align="center"
+      {...props}
+    >
+      {"Copyright © "}
+      <Link color="inherit" href="/admin">
+        Thành Phan Fashion
+      </Link>{" "}
+      {new Date().getFullYear()}
+      {"."}
+    </Typography>
+  );
+}
 
 export const Search = styled("div")(({ theme }) => ({
   position: "relative",

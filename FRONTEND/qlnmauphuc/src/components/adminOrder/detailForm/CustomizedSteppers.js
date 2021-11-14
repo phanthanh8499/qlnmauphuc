@@ -19,6 +19,7 @@ import { useDispatch } from "react-redux";
 import { processingOrder } from "../../../redux/Action";
 import { format } from "date-fns";
 import { useSnackbar } from "notistack";
+import PrintIcon from "@mui/icons-material/Print";
 
 const ColorlibConnector = styled(StepConnector)(({ theme }) => ({
   [`&.${stepConnectorClasses.alternativeLabel}`]: {
@@ -112,7 +113,7 @@ export default function CustomizedSteppers(props) {
   const [activeStep, setActiveStep] = useState(0);
   const [skipped, setSkipped] = useState(new Set());
   const { enqueueSnackbar } = useSnackbar();
-  const { activeId, id, data } = props;
+  const { activeId, id, data, handlePrint } = props;
   useEffect(() => {
     setActiveStep(activeId);
   }, [activeId]);
@@ -283,19 +284,27 @@ export default function CustomizedSteppers(props) {
           </Step>
         ))}
       </Stepper>
-      {activeStep === steps.length - 1 ? (
-        // <React.Fragment>
-        //   <Box sx={{ display: "flex", flexDirection: "row", pt: 2 }}>
-        //     <Box sx={{ flex: "1 1 auto" }} />
-        //     <Button onClick={handleReset}>Reset</Button>
-        //   </Box>
-        // </React.Fragment>
-        <></>
-      ) : activeStep === 10 ? (
-        <></>
-      ) : (
-        <Grid container sx={{ margin: "0px !important" }}>
-          <Grid item xs={10}></Grid>
+      <Grid container sx={{ margin: "0px !important" }}>
+        <Grid item xs={10}>
+          <Button
+            variant="outlined"
+            color="primary"
+            onClick={() => handlePrint()}
+          >
+            <PrintIcon/>
+          </Button>
+        </Grid>
+        {activeStep === steps.length - 1 ? (
+          // <React.Fragment>
+          //   <Box sx={{ display: "flex", flexDirection: "row", pt: 2 }}>
+          //     <Box sx={{ flex: "1 1 auto" }} />
+          //     <Button onClick={handleReset}>Reset</Button>
+          //   </Box>
+          // </React.Fragment>
+          <></>
+        ) : activeStep === 10 ? (
+          <></>
+        ) : (
           <Grid item xs={2}>
             <ButtonGroup>
               <Button
@@ -313,8 +322,8 @@ export default function CustomizedSteppers(props) {
               </Button>
             </ButtonGroup>
           </Grid>
-        </Grid>
-      )}
+        )}
+      </Grid>
     </Stack>
   );
 }

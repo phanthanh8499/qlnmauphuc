@@ -14,6 +14,7 @@ import PPieChart from "./PPieChart";
 import DLineChart from "./DLineChart";
 import WeeklyForm from "./weeklyForm/WeeklyForm";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
+import { Copyright } from "../utility/Utility";
 
 const Item = styled(Paper)(({ theme }) => ({
   ...theme.typography.body2,
@@ -142,6 +143,7 @@ export default function AdminDashboard() {
             </Item>
           </Grid>
         </Grid>
+        {Copyright()}
       </Grid>
       {renderMenu()}
       {renderForm()}
