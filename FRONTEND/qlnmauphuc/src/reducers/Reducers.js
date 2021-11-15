@@ -31,8 +31,6 @@ import {
   LIET_KE_VAI_CUA_TOI,
   LIET_KE_VAI_THAT_BAI,
   SUA_THONG_TIN_USER,
-  SUA_THONG_TIN_USER_THANH_CONG,
-  SUA_THONG_TIN_USER_THAT_BAI,
   SUA_USER,
   THAY_DOI_TRANG_THAI_USER,
   THEM_DON_HANG,
@@ -458,18 +456,24 @@ export const orderReducer = (
             item.od_orderid = action.payload.od_orderid;
             if (action.payload.order_statusid === 1) {
               item.order_processingtime1 = action.payload.date;
+              item.os_name = "Đợi thợ may";
             } else if (action.payload.order_statusid === 2) {
               item.order_processingtime2 = action.payload.date;
               item.order_tailorid = action.payload.tailorid;
+              item.os_name = "Đang lấy vải";
             } else if (action.payload.order_statusid === 3) {
               item.order_processingtime3 = action.payload.date;
               item.cloth_quantity = action.payload.cloth_quantity;
+              item.os_name = "Đang may";
             } else if (action.payload.order_statusid === 4) {
               item.order_processingtime4 = action.payload.date;
+              item.os_name = "Đã may xong";
             } else if (action.payload.order_statusid === 5) {
               item.order_shippingtime = action.payload.date;
+              item.os_name = "Đang vận chuyển";
             } else if (action.payload.order_statusid === 6) {
               item.order_enddate = action.payload.date;
+              item.os_name = "Hoàn tất";
             } else {
               item.os_name = "Đã huỷ";
             }

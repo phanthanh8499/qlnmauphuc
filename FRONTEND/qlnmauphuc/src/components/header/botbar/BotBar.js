@@ -8,6 +8,9 @@ import {
   TextField,
   Typography,
   Grow,
+  InputLabel,
+  FormControl,
+  Select,
 } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
 import React, {  useEffect, useRef, useState } from "react";
@@ -103,7 +106,7 @@ const useStyles = makeStyles((theme) => ({
     },
   },
   searchForm: {
-    width: 300,
+    width: 500,
     position: "absolute",
     right: 0,
     boxShadow: "1px 1px 10px rgb(0 0 0 / 15%)",
@@ -196,10 +199,11 @@ export default function BotBar() {
       clearTimeout(typingTimeoutRef.current);
     }
     if (searchString) {
+      setString(searchString);
       typingTimeoutRef.current = setTimeout(async () => {
         setString(e.target.value);
         setOpenResult(true);
-        const { data } = await axios.get(`/livesearch.${searchString}`);
+        const { data } = await axios.get(`/livesearch&name=${searchString}&type=${type}&color=${color}`);
         setData(data);
       }, 300);
     } else {
@@ -207,6 +211,13 @@ export default function BotBar() {
       setData([]);
     }
   };
+
+  const handleClickSearch = async () => {
+    const { data } = await axios.get(
+      `/livesearch&name=${string}&type=${type}&color=${color}`
+    );
+    setData(data);
+  }
 
   const covertURL = (str) => {
     str = str.toLowerCase();
@@ -223,6 +234,29 @@ export default function BotBar() {
     str = str.replace(/-+$/g, "");
     return str;
   };
+
+  const [type, setType] = useState("All");
+  const [color, setColor] = useState("All");
+  const PRODUCTTYPES = [
+    { id: "BFM", pt_name: "Blazer cho nam" },
+    { id: "SFM", pt_name: "Suit cho nam" },
+    { id: "GFF", pt_name: "Gile cho nữ" },
+    { id: "VFF", pt_name: "Vest cho nữ" },
+    { id: "GFM", pt_name: "Gile cho nam" },
+    { id: "SFF", pt_name: "Suit cho nữ" },
+  ];
+  const COLORS = [
+    "Trắng",
+    "Đen",
+    "Xám",
+    "Xanh",
+    "Xanh thanh",
+    "Vàng",
+    "Vàng nâu",
+    "Đỏ",
+    "Đỏ rượu",
+    "Đỏ nâu",
+  ];
 
   return (
     <React.Fragment>
@@ -439,12 +473,60 @@ export default function BotBar() {
                 {...(open ? { timeout: 500 } : {})}
               >
                 <Box className={classes.searchForm}>
+                  <FormControl variant="standard" sx={{ width: "25%" }}>
+                    <InputLabel id="type-select-standard-label">
+                      Loại sản phẩm
+                    </InputLabel>
+                    <Select
+                      labelId="type-select-standard-label"
+                      id="type-select-standard"
+                      label="Loại sản phẩm"
+                      value={type}
+                      onChange={(e) => setType(e.target.value)}
+                    >
+                      <MenuItem value="All">Tất cả</MenuItem>
+                      {PRODUCTTYPES.map((item, key) => (
+                        <MenuItem value={item.id} key={key}>
+                          {item.pt_name}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  </FormControl>
+                  <FormControl variant="standard" sx={{ width: "25%" }}>
+                    <InputLabel id="color-select-standard-label">
+                      Màu sắc
+                    </InputLabel>
+                    <Select
+                      labelId="color-select-standard-label"
+                      id="color-select-standard"
+                      label="Màu sắc"
+                      value={color}
+                      onChange={(e) => setColor(e.target.value)}
+                    >
+                      <MenuItem value="All">Tất cả</MenuItem>
+                      {COLORS.map((item, key) => (
+                        <MenuItem value={item} key={key}>
+                          {item}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  </FormControl>
+
                   <TextField
                     type="search"
                     variant="standard"
-                    fullWidth
+                    sx={{ width: "45%", marginTop: "16px" }}
                     onChange={handleSearch}
                   />
+                  <IconButton
+                    color="primary"
+                    aria-label="upload picture"
+                    component="span"
+                    sx={{ marginTop: "12px", padding: "0px" }}
+                    onClick={handleClickSearch}
+                  >
+                    <SearchIcon />
+                  </IconButton>
                 </Box>
               </Grow>
               <Grow
@@ -462,7 +544,7 @@ export default function BotBar() {
                       </Grid>
                     </Grid>
                   ) : (
-                    data.slice(0,3).map((item, key) => (
+                    data.slice(0, 3).map((item, key) => (
                       <Link
                         href={
                           "/" +
@@ -489,7 +571,10 @@ export default function BotBar() {
                               </Typography>
                             </Box>
                             <Typography sx={{ fontSize: 14, pl: 0.5 }}>
-                              {item.product_price.toLocaleString('it-IT', {style : 'currency', currency : 'VND'})}
+                              {item.product_price.toLocaleString("it-IT", {
+                                style: "currency",
+                                currency: "VND",
+                              })}
                             </Typography>
                           </Grid>
                         </Grid>
@@ -500,7 +585,7 @@ export default function BotBar() {
                   {data.length === 0 ? null : (
                     <Grid container className={classes.resultMore}>
                       <Grid item xs={12} sx={center}>
-                        <Link href={"/search=" + string}>
+                        <Link href={"/searchname=" + string +"&type=" + type + "&color=" + color}>
                           <Typography>
                             Xem thêm ({data.length} sản phẩm)
                           </Typography>

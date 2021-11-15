@@ -129,12 +129,14 @@ export default function ProductCategory() {
   const [dataBackup, setDataBackup] = useState([]);
   const [productType, setProductType] = useState([]);
   let { id } = useParams();
-  let { name } = useParams();
+  let { name, type, colors } = useParams();
   const { pathname } = useLocation();
   useEffect(() => {
     if (pathname.substring(1, 7) === "search") {
       async function getData() {
-        const { data } = await axios.get(`/livesearch.${name}`);
+        const { data } = await axios.get(
+          `/livesearch&name=${name}&type=${type}&color=${colors}`
+        );
         setDataRender(data);
         setDataBackup(data);
         setLoading(false);
@@ -154,7 +156,8 @@ export default function ProductCategory() {
       getProductType();
       getData();
     }
-  }, [id, pathname, name]);
+  }, [id, pathname, name, type, colors]);
+
   const [open, setOpen] = useState([true, true, false, false, false, true]);
   const handleClick = (e, index) => {
     const list = [...open];
@@ -271,7 +274,7 @@ export default function ProductCategory() {
     if (name) {
       return (
         <Typography sx={{ fontSize: 18, fontWeight: 600 }}>
-          Kết quả tìm kiếm của : {name}
+          Kết quả tìm kiếm của từ khoá: {name} - Loại sản phẩm: {type} - Màu sắc: {colors}
         </Typography>
       );
     } else if (id === "ALL") {
@@ -582,7 +585,7 @@ export default function ProductCategory() {
         </Grid>
       ) : (
         <Grid item xs={10}>
-          <Box sx={{ pr: 2, pl: 2, mt: 1, width: "50%" }}>
+          <Box sx={{ pr: 2, pl: 2, mt: 1, width: "60%" }}>
             {renderTitle()}
 
             <Divider />

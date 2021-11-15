@@ -40,6 +40,7 @@ import CloseIcon from "@mui/icons-material/Close";
 import { useSnackbar } from "notistack";
 import { format } from "date-fns";
 import { useReactToPrint } from "react-to-print";
+import EmailIcon from "@mui/icons-material/Email";
 
 const useStyle = makeStyles((theme) => ({
   root: {
@@ -257,6 +258,13 @@ function DetailForm(props) {
             <Typography className={classes.title}>
               <MySpan>Số điện thoại:</MySpan>{" "}
               {detailData[0].order_customerphone}
+            </Typography>
+          </MyTitle>
+          <MyTitle>
+            <EmailIcon />
+            <Typography className={classes.title}>
+              <MySpan>Email:</MySpan>{" "}
+              {detailData[0].order_customeremail}
             </Typography>
           </MyTitle>
         </Grid>

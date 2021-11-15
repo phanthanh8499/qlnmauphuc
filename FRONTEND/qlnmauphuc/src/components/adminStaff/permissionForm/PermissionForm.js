@@ -61,6 +61,10 @@ function PermissionForm(props) {
     onClose();
   };
 
+  const [dDashboard, setDDashboard] = useState(true);
+  const [dOrder, setDOrder] = useState(true);
+  const [customer, setCustomer] = useState(true);
+  const [staff, setStaff] = useState(true);
   const [product, setProduct] = useState(true);
   const [order, setOrder] = useState(true);
   const [cloth, setCloth] = useState(true);
@@ -82,6 +86,46 @@ function PermissionForm(props) {
               <FormControlLabel
                 control={
                   <Switch
+                    checked={dDashboard}
+                    onChange={(e) => setDDashboard(!dDashboard)}
+                    name="dDashboard"
+                  />
+                }
+                label="Bảng điều khiển - Thương mại"
+              />
+              <FormControlLabel
+                control={
+                  <Switch
+                    checked={dOrder}
+                    onChange={(e) => setDOrder(!dOrder)}
+                    name="dOrder"
+                  />
+                }
+                label="Bảng điều khiển - Tình trạng hoá đơn"
+              />
+              <FormControlLabel
+                control={
+                  <Switch
+                    checked={customer}
+                    onChange={(e) => setCustomer(!customer)}
+                    name="customer"
+                  />
+                }
+                label="Quản lý tài khoản khách hàng"
+              />
+              <FormControlLabel
+                control={
+                  <Switch
+                    checked={staff}
+                    onChange={(e) => setStaff(!staff)}
+                    name="staff"
+                  />
+                }
+                label="Quản lý tài khoản nhân viên"
+              />
+              <FormControlLabel
+                control={
+                  <Switch
                     checked={product}
                     onChange={(e) => setProduct(!product)}
                     name="product"
@@ -97,7 +141,7 @@ function PermissionForm(props) {
                     name="order"
                   />
                 }
-                label="Quản lý hoá đơn"
+                label="Quản lý đơn hàng"
               />
               <FormControlLabel
                 control={

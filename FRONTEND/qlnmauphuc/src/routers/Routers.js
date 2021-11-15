@@ -22,7 +22,7 @@ export const routes = [
     component: lazy(() => import("./../pages/users/category/Category")),
   },
   {
-    path: "/search=:name",
+    path: "/searchname=:name&type=:type&color=:colors",
     exact: false,
     component: lazy(() => import("./../pages/users/category/Category")),
   },

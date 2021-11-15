@@ -19,6 +19,74 @@ const pool = new Pool({
   port: 5432,
 });
 
+const nodemailer = require("nodemailer");
+router.get("/", function (req, res, next) {});
+router.get("/send-mail", function (req, res) {
+  //Tiến hành gửi mail, nếu có gì đó bạn có thể xử lý trước khi gửi mail
+  var transporter = nodemailer.createTransport({
+    // config mail server
+    host: "smtp.gmail.com",
+    port: 465,
+    secure: true,
+    auth: {
+      user: "phanthanh8499@gmail.com", //Tài khoản gmail vừa tạo
+      pass: "121311Aa", //Mật khẩu tài khoản gmail vừa tạo
+    },
+    tls: {
+      // do not fail on invalid certs
+      rejectUnauthorized: false,
+    },
+  });
+  var content = "";
+  content += `
+         <div style="margin-bottom: 10px">
+            <p stlye="margin: 0px">Chào Thành,</p>
+            <p stlye="margin: 0px">
+              Đơn hàng bbedfec0-f376-4ff6-9b5c-083cefef2334 của bạn đã được
+              duyệt, bạn có thể tiến hành theo dõi đơn hàng <a href="http://localhost:3000/account/orders" target="_blank">
+                ở đây
+              </a>
+              .
+            </p>
+            <p stlye="margin: 0px">Trân trọng </p>
+            <p stlye="margin: 0px">Nhà may âu phục Thành Phan </p>
+          </div>
+          <div
+            style="
+              font-size: 14px;
+              border-top: 1px dashed black;
+              padding-top: 10px;
+              font-style: italic
+            "
+          >
+            <p style="font-weight: 600; margin: 0px">Nhà may âu phục Thành Phan</p>
+            <p style="margin: 0px">Địa chỉ: 999/9, Nguyễn Văn Linh, Ninh Kiều, Cần Thơ</p>
+            <p style="margin: 0px">Email: thanhphan8499@gmail.com</p>
+            <p style="margin: 0px">Hotline: (+84)91 551 80 13</p>
+          </div>
+    `;
+  var mainOptions = {
+    // thiết lập đối tượng, nội dung gửi mail
+    from: "NQH-Test nodemailer",
+    to: "devilmaycry5554@gmail.com",
+    subject: "Test Nodemailer",
+    text: "Your text is here", //Thường thi mình không dùng cái này thay vào đó mình sử dụng html để dễ edit hơn
+    html: content, //Nội dung html mình đã tạo trên kia :))
+  };
+  transporter.sendMail(mainOptions, function (err, info) {
+    if (err) {
+      console.log(err);
+      // req.flash("mess", "Lỗi gửi mail: " + err); //Gửi thông báo đến người dùng
+      res.redirect("/");
+    } else {
+      console.log("Message sent: " + info.response);
+      // req.flash("mess", "Một email đã được gửi đến tài khoản của bạn"); //Gửi thông báo đến người dùng
+      res.redirect("/");
+    }
+  });
+
+});
+
 /* GET home page. */
 router.get("/", function (req, res, next) {});
 
@@ -1602,6 +1670,8 @@ router.post("/admin/order/processing", function (req, res) {
     cloth_typeid,
     cloth_quantity,
     od_clothid,
+    customername,
+    customeremail,
   } = req.body;
   if (order_statusid === 1) {
     console.log("đợi thợ may");
@@ -1617,6 +1687,65 @@ router.post("/admin/order/processing", function (req, res) {
         } else {
           console.log("OK");
           res.send("OK");
+          var transporter = nodemailer.createTransport({
+            // config mail server
+            host: "smtp.gmail.com",
+            port: 465,
+            secure: true,
+            auth: {
+              user: "phanthanh8499@gmail.com", //Tài khoản gmail vừa tạo
+              pass: "121311Aa", //Mật khẩu tài khoản gmail vừa tạo
+            },
+            tls: {
+              // do not fail on invalid certs
+              rejectUnauthorized: false,
+            },
+          });
+          var content = "";
+          content += `
+         <div style="margin-bottom: 10px">
+            <p stlye="margin: 0px">Xin chào ${customername},</p>
+            <p stlye="margin: 0px">
+              Đơn hàng ${od_orderid} của bạn đã được
+              duyệt, bạn có thể tiến hành theo dõi đơn hàng <a href="http://localhost:3000/account/orders" target="_blank">tại đây</a>
+              .
+            </p>
+            <p stlye="margin: 0px">Trân trọng </p>
+            <p stlye="margin: 0px">Nhà may âu phục Thành Phan </p>
+          </div>
+          <div
+            style="
+              font-size: 14px;
+              border-top: 1px dashed black;
+              padding-top: 10px;
+              font-style: italic
+            "
+          >
+            <p style="font-weight: 600; margin: 0px">Nhà may âu phục Thành Phan</p>
+            <p style="margin: 0px">Địa chỉ: 999/9, Nguyễn Văn Linh, Ninh Kiều, Cần Thơ</p>
+            <p style="margin: 0px">Email: phanthanh8499@gmail.com</p>
+            <p style="margin: 0px">Hotline: (+84)91 551 80 13</p>
+          </div>
+    `;
+          var mainOptions = {
+            // thiết lập đối tượng, nội dung gửi mail
+            from: "Nhà may âu phục Thành Phan",
+            to: customeremail,
+            subject: `Xử lý đơn hàng ${od_orderid}`,
+            text: "Your text is here", //Thường thi mình không dùng cái này thay vào đó mình sử dụng html để dễ edit hơn
+            html: content, //Nội dung html mình đã tạo trên kia :))
+          };
+          transporter.sendMail(mainOptions, function (err, info) {
+            if (err) {
+              console.log(err);
+              // req.flash("mess", "Lỗi gửi mail: " + err); //Gửi thông báo đến người dùng
+              res.redirect("/");
+            } else {
+              console.log("Message sent: " + info.response);
+              // req.flash("mess", "Một email đã được gửi đến tài khoản của bạn"); //Gửi thông báo đến người dùng
+              res.redirect("/");
+            }
+          });
         }
       }
     );
@@ -2003,14 +2132,23 @@ router.post(`/admin/getOrderCount`, function (req, res) {
   );
 });
 
-router.get(`/livesearch.:name`, function (req, res) {
-  const { name } = req.params;
+router.get(`/livesearch&name=:name&type=:type&color=:color`, function (req, res) {
+  const { name, type, color } = req.params;
+  var string1 = " ";
+  var string2 = " ";
+  if (type !== "All") {
+    string1 = ` AND product_typeid = '${type}' `;
+  }
+  if (color !== "All") {
+    string2 = ` AND (unaccent(product_color) ILIKE '%${color}%'
+OR product_color ILIKE '%${color}%') `;
+  }
   pool.query(
     `SELECT * FROM products 
-WHERE unaccent(product_name) ILIKE '%${name}%'
-OR product_name ILIKE '%${name}%'
-OR unaccent(product_color) ILIKE '%${name}%'
-OR product_color ILIKE '%${name}%'`,
+WHERE (unaccent(product_name) ILIKE '%${name}%'
+OR product_name ILIKE '%${name}%)') 
+${string1}
+${string2}`,
     (error, response) => {
       if (error) {
         console.log(error);
