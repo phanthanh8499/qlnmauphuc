@@ -27,7 +27,7 @@ import makeStyles from "@mui/styles/makeStyles";
 import { styled } from "@mui/material/styles";
 import MuiAppBar from "@mui/material/AppBar";
 import MuiDrawer from "@mui/material/Drawer";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import PersonAddAlt1Icon from "@mui/icons-material/PersonAddAlt1";
 import { useLocation } from "react-router";
 import AppsIcon from "@mui/icons-material/Apps";
@@ -35,7 +35,8 @@ import { Box } from "@mui/system";
 import ExpandLess from "@mui/icons-material/ExpandLess";
 import ExpandMore from "@mui/icons-material/ExpandMore";
 import StarBorder from "@mui/icons-material/StarBorder";
-import { LOCAL_PATH } from "../../constants/Constants";
+import { DANG_XUAT, LOCAL_PATH } from "../../constants/Constants";
+import { getUserPermissions } from "../../redux/Action";
 
 function Copyright(props) {
   return (
@@ -105,8 +106,8 @@ const Drawer = styled(MuiDrawer, {
 
 const MyListItem = styled(ListItem)(({ theme }) => ({
   color: "#000000",
-  "& .MuiTypography-root":{
-    fontWeight: '500 !important',
+  "& .MuiTypography-root": {
+    fontWeight: "500 !important",
   },
   "&.Mui-selected": {
     color: "#ffffff !important",
@@ -182,10 +183,7 @@ export default function AAppBar(props) {
   const classes = useStyles();
   const abc = useLocation().pathname.substring(7).toUpperCase();
   const { userInfo } = JSON.parse(localStorage.getItem("userInfo"));
-  const [userData, setUserData] = useState(userInfo)
-  useEffect(() => {
-    setUserData(JSON.parse(localStorage.getItem("userInfo")).userInfo);
-  }, [userInfo]);
+  const [userData, setUserData] = useState(userInfo);
 
   const [open, setOpen] = useState(true);
   const toggleDrawer = () => {
@@ -229,7 +227,9 @@ export default function AAppBar(props) {
       ? setSelected(4)
       : abc === ""
       ? setSelected(0)
-      : setSelected(0) || setSelectedSubMenu("0b");
+      : abc === "STATISTIC"
+      ? setSelected(0) || setSelectedSubMenu("0b")
+      : setSelected() || setSelectedSubMenu();
   }, [abc]);
 
   const [openSubMenu, setOpenSubMenu] = useState([true, true]);
@@ -252,8 +252,8 @@ export default function AAppBar(props) {
       return "Bảng điểu khiển - Tình trạng đơn hàng";
     } else if (item === "PROFILE") {
       return "Trang cá nhân";
-    } 
-  }
+    }
+  };
 
   const handleClick = (e, index) => {
     const temp = [...openSubMenu];
@@ -278,36 +278,40 @@ export default function AAppBar(props) {
         </MyListItem>
         <Collapse in={openSubMenu[0]} timeout="auto" unmountOnExit>
           <List component="div" disablePadding>
-            <Link
-              to="/admin/dashboard"
-              onClick={(e) => changeTitleMenu(e, 0, "0a")}
-            >
-              <MyListSubItem
-                button
-                sx={{ pl: 4 }}
-                selected={selectedSubMenu === "0a"}
+            {permissionData[0].up_eccommercedashboard ? (
+              <Link
+                to="/admin/dashboard"
+                onClick={(e) => changeTitleMenu(e, 0, "0a")}
               >
-                <ListItemIcon>
-                  <StarBorder />
-                </ListItemIcon>
-                <ListItemText primary="Thương mại" />
-              </MyListSubItem>
-            </Link>
-            <Link
-              to="/admin/statistic"
-              onClick={(e) => changeTitleMenu(e, 0, "0b")}
-            >
-              <MyListSubItem
-                button
-                sx={{ pl: 4 }}
-                selected={selectedSubMenu === "0b"}
+                <MyListSubItem
+                  button
+                  sx={{ pl: 4 }}
+                  selected={selectedSubMenu === "0a"}
+                >
+                  <ListItemIcon>
+                    <StarBorder />
+                  </ListItemIcon>
+                  <ListItemText primary="Thương mại" />
+                </MyListSubItem>
+              </Link>
+            ) : null}
+            {permissionData[0].up_orderdashboard ? (
+              <Link
+                to="/admin/statistic"
+                onClick={(e) => changeTitleMenu(e, 0, "0b")}
               >
-                <ListItemIcon>
-                  <TrendingUpIcon />
-                </ListItemIcon>
-                <ListItemText primary="Tình trạng đơn hàng" />
-              </MyListSubItem>
-            </Link>
+                <MyListSubItem
+                  button
+                  sx={{ pl: 4 }}
+                  selected={selectedSubMenu === "0b"}
+                >
+                  <ListItemIcon>
+                    <TrendingUpIcon />
+                  </ListItemIcon>
+                  <ListItemText primary="Tình trạng đơn hàng" />
+                </MyListSubItem>
+              </Link>
+            ) : null}
           </List>
         </Collapse>
 
@@ -324,68 +328,80 @@ export default function AAppBar(props) {
         </MyListItem>
         <Collapse in={openSubMenu[1]} timeout="auto" unmountOnExit>
           <List component="div" disablePadding>
-            <Link
-              Link
-              to="/admin/customer"
-              onClick={(e) => changeTitleMenu(e, 1, "1a")}
-            >
-              <MyListSubItem
-                button
-                sx={{ pl: 4 }}
-                selected={selectedSubMenu === "1a"}
+            {permissionData[0].up_customeraccountmanager === true ? (
+              <Link
+                Link
+                to="/admin/customer"
+                onClick={(e) => changeTitleMenu(e, 1, "1a")}
               >
-                <ListItemIcon>
-                  <PersonAddAlt1Icon />
-                </ListItemIcon>
-                <ListItemText primary="Khách hàng" />
-              </MyListSubItem>
-            </Link>
-            <Link
-              to="/admin/staff"
-              onClick={(e) => changeTitleMenu(e, 1, "1b")}
-            >
-              <MyListSubItem
-                button
-                sx={{ pl: 4 }}
-                selected={selectedSubMenu === "1b"}
+                <MyListSubItem
+                  button
+                  sx={{ pl: 4 }}
+                  selected={selectedSubMenu === "1a"}
+                >
+                  <ListItemIcon>
+                    <PersonAddAlt1Icon />
+                  </ListItemIcon>
+                  <ListItemText primary="Khách hàng" />
+                </MyListSubItem>
+              </Link>
+            ) : null}
+            {permissionData[0].up_staffaccountmanager === true ? (
+              <Link
+                to="/admin/staff"
+                onClick={(e) => changeTitleMenu(e, 1, "1b")}
               >
-                <ListItemIcon>
-                  <PersonAddAlt1Icon />
-                </ListItemIcon>
-                <ListItemText primary="Nhân viên" />
-              </MyListSubItem>
-            </Link>
+                <MyListSubItem
+                  button
+                  sx={{ pl: 4 }}
+                  selected={selectedSubMenu === "1b"}
+                >
+                  <ListItemIcon>
+                    <PersonAddAlt1Icon />
+                  </ListItemIcon>
+                  <ListItemText primary="Nhân viên" />
+                </MyListSubItem>
+              </Link>
+            ) : null}
           </List>
         </Collapse>
 
-        <Link to="/admin/products">
-          <MyListItem
-            button
-            selected={selected === 2}
-            onClick={(e) => changeTitle(e, 2)}
-          >
-            <ListItemIcon>
-              <CategoryIcon />
-            </ListItemIcon>
-            <ListItemText primary="Quản lý sản phẩm" />
-          </MyListItem>
-        </Link>
-        <Link to="/admin/cloth" onClick={(e) => changeTitle(e, 3)}>
-          <MyListItem button selected={selected === 3}>
-            <ListItemIcon>
-              <AppsIcon />
-            </ListItemIcon>
-            <ListItemText primary="Quản lý vải" />
-          </MyListItem>
-        </Link>
-        <Link to="/admin/orders" onClick={(e) => changeTitle(e, 4)}>
-          <MyListItem button selected={selected === 4}>
-            <ListItemIcon>
-              <ShoppingCartIcon />
-            </ListItemIcon>
-            <ListItemText primary="Quản lý đơn hàng" />
-          </MyListItem>
-        </Link>
+        {permissionData[0].up_productmanager === true ? (
+          <Link to="/admin/products">
+            <MyListItem
+              button
+              selected={selected === 2}
+              onClick={(e) => changeTitle(e, 2)}
+            >
+              <ListItemIcon>
+                <CategoryIcon />
+              </ListItemIcon>
+              <ListItemText primary="Quản lý sản phẩm" />
+            </MyListItem>
+          </Link>
+        ) : null}
+
+        {permissionData[0].up_clothmanager === true ? (
+          <Link to="/admin/cloth" onClick={(e) => changeTitle(e, 3)}>
+            <MyListItem button selected={selected === 3}>
+              <ListItemIcon>
+                <AppsIcon />
+              </ListItemIcon>
+              <ListItemText primary="Quản lý vải" />
+            </MyListItem>
+          </Link>
+        ) : null}
+
+        {permissionData[0].up_ordermanager === true ? (
+          <Link to="/admin/orders" onClick={(e) => changeTitle(e, 4)}>
+            <MyListItem button selected={selected === 4}>
+              <ListItemIcon>
+                <ShoppingCartIcon />
+              </ListItemIcon>
+              <ListItemText primary="Quản lý đơn hàng" />
+            </MyListItem>
+          </Link>
+        ) : null}
       </List>
     );
   };
@@ -399,6 +415,18 @@ export default function AAppBar(props) {
   const handleCloseMenu = () => {
     setAnchorEl(false);
   };
+
+  const dispatch = useDispatch();
+  const dangXuat = () => {
+    dispatch({ type: DANG_XUAT });
+  };
+ 
+  const users = useSelector((state) => state.users);
+  const {loadingPermissions, permissionData} = users
+
+  useEffect(() => {
+    dispatch(getUserPermissions(userInfo.id));
+  }, [])
 
   return (
     <>
@@ -464,7 +492,9 @@ export default function AAppBar(props) {
             <Link to="/admin/profile">
               <MenuItem onClick={handleCloseMenu}>Trang cá nhân</MenuItem>
             </Link>
-            <MenuItem onClick={handleCloseMenu}>Đăng xuất</MenuItem>
+            <Link to="/">
+              <MenuItem onClick={dangXuat}>Đăng xuất</MenuItem>
+            </Link>
           </Menu>
         </Toolbar>
       </AppBar>
@@ -487,7 +517,7 @@ export default function AAppBar(props) {
           </IconButton>
         </Toolbar>
         <Divider />
-        {renderListModule()}
+        {loadingPermissions ? null : renderListModule()}
         <Divider />
       </Drawer>
     </>

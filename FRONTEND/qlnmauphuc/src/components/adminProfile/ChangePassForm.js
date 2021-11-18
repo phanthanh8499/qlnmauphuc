@@ -1,14 +1,10 @@
-import {
-  Button,
-  Divider,
-  Grid,
-  Paper,
-  Typography,
-} from "@mui/material";
+import { Button, Divider, Grid, Paper, Typography } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import React, { useState } from "react";
 import { Box } from "@mui/system";
 import { MyTextField } from "../utility/Utility";
+import { useSnackbar } from "notistack";
+import axios from "axios";
 
 const Item = styled(Paper)(({ theme }) => ({
   ...theme.typography.body2,
@@ -23,13 +19,47 @@ const Item = styled(Paper)(({ theme }) => ({
 }));
 
 export default function ChangePassForm() {
-
+  const { enqueueSnackbar } = useSnackbar();
   const [currentPass, setCurrentPass] = useState();
   const [newPass, setNewPass] = useState();
   const [confirmPass, setConfirmPass] = useState();
+  const { userInfo } = JSON.parse(localStorage.getItem("userInfo"));
+  const handleSubmit = async () => {
+    const formData = new FormData();
+    formData.append("id", userInfo.id);
+    if(!currentPass || !newPass || !confirmPass){
+      enqueueSnackbar("Vui lòng điền đầy đủ thông tin", {
+        variant: "error",
+        autoHideDuration: 2000,
+      });
+      return false;
+    } 
+    if (newPass !== confirmPass) {
+      enqueueSnackbar("Mật khẩu không khớp", {
+        variant: "error",
+        autoHideDuration: 2000,
+      });
+      return false;
+    }
+    formData.append("currentpass", currentPass);
+    formData.append("newpass", newPass);
+    const {data} = await axios.post(`/changePassword`, formData)
+    if(data === "ERROR"){
+       enqueueSnackbar("Cập nhật mật khẩu thất bại", {
+         variant: "error",
+         autoHideDuration: 2000,
+       });
+       return false;
+     } else {
+       enqueueSnackbar("Cập nhật mật khẩu thành công", {
+         variant: "success",
+         autoHideDuration: 2000,
+       });
+     }
+  };
 
   return (
-    <Grid container spacing={1} sx={{height: 406}}>
+    <Grid container spacing={1} sx={{ height: 406 }}>
       <Grid item xs={12}>
         <Item>
           <Box sx={{ padding: "10px" }}>
@@ -51,7 +81,7 @@ export default function ChangePassForm() {
                 defaultValue={currentPass}
                 fullWidth
                 type="password"
-                onChange={(e) => setCurrentPass(e.target.vale)}
+                onChange={(e) => setCurrentPass(e.target.value)}
                 size="small"
                 InputLabelProps={{
                   shrink: true,
@@ -68,7 +98,7 @@ export default function ChangePassForm() {
                 defaultValue={newPass}
                 fullWidth
                 type="password"
-                onChange={(e) => setNewPass(e.target.vale)}
+                onChange={(e) => setNewPass(e.target.value)}
                 size="small"
                 InputLabelProps={{
                   shrink: true,
@@ -84,7 +114,7 @@ export default function ChangePassForm() {
                 defaultValue={confirmPass}
                 fullWidth
                 type="password"
-                onChange={(e) => setConfirmPass(e.target.vale)}
+                onChange={(e) => setConfirmPass(e.target.value)}
                 size="small"
                 InputLabelProps={{
                   shrink: true,
@@ -93,7 +123,7 @@ export default function ChangePassForm() {
             </Grid>
 
             <Grid item xs={12} align="right">
-              <Button variant="outlined" color="primary">
+              <Button variant="outlined" color="primary" onClick={handleSubmit}>
                 Lưu thay đổi
               </Button>
             </Grid>

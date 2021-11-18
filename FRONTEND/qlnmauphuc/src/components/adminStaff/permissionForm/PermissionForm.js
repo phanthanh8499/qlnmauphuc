@@ -10,10 +10,10 @@ import {
   Switch,
   Typography,
 } from "@mui/material";
-import React, { useState } from "react";
-import { useDispatch } from "react-redux";
+import React, { useEffect, useState } from "react";
 import { useSnackbar } from "notistack";
 import makeStyles from "@mui/styles/makeStyles";
+import axios from "axios";
 
 const useStyle = makeStyles((theme) => ({
   root: {
@@ -43,21 +43,37 @@ const center = {
 function PermissionForm(props) {
   const classes = useStyle();
   const { enqueueSnackbar } = useSnackbar();
-  const dispatch = useDispatch();
   const { open, onClose, id, listId } = props;
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
+    const dataSend = {
+      up_userid: id,
+      up_eccommercedashboard: dDashboard,
+      up_orderdashboard: dOrder,
+      up_customeraccountmanager: customer,
+      up_staffaccountmanager: staff,
+      up_productmanager: product,
+      up_clothmanager: cloth,
+      up_ordermanager: order,
+    };
     if (listId.length !== 0) {
       listId.forEach((element) => {
         // dispatch(deleteUser(element.id));
       });
     } else {
-      // dispatch(deleteUser(parseInt(id)));
+      const { data } = await axios.post(`/editUserPermissions`, dataSend);
+      if(data === "ERROR"){
+        enqueueSnackbar("Phân quyền thất bại", {
+          variant: "error",
+          autoHideDuration: 2000,
+        });
+      } else {
+        enqueueSnackbar("Phân quyền thành công", {
+          variant: "success",
+          autoHideDuration: 2000,
+        });
+      }
     }
-    enqueueSnackbar("Phân quyền thành công", {
-      variant: "success",
-      autoHideDuration: 2000,
-    });
     onClose();
   };
 
@@ -68,6 +84,20 @@ function PermissionForm(props) {
   const [product, setProduct] = useState(true);
   const [order, setOrder] = useState(true);
   const [cloth, setCloth] = useState(true);
+  useEffect(() => {
+    async function setState() {
+      const {data} = await axios.get(`/getUserPermissions.${id}`)
+      setDDashboard(data[0].up_eccommercedashboard);
+      setDOrder(data[0].up_orderdashboard);
+      setCustomer(data[0].up_customeraccountmanager);
+      setStaff(data[0].up_staffaccountmanager);
+      setProduct(data[0].up_productmanager);
+      setCloth(data[0].up_clothmanager);
+      setOrder(data[0].up_ordermanager);
+    }
+    setState()
+  }, [id])
+
   return (
     <Dialog
       onClose={onClose}

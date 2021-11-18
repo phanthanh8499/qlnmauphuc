@@ -304,6 +304,7 @@ export default function ProfileForm() {
       </>
     );
   };
+
   return (
     <Grid container spacing={1}>
       {loading ? (
@@ -328,10 +329,11 @@ export default function ProfileForm() {
                   item
                   xs={12}
                   sx={{
-                    height: 380,
                     display: "flex",
                     justifyContent: "center",
                     alignItems: "center",
+                    mt: 3,
+                    mb: 3,
                   }}
                 >
                   <Box className={classes.inputAvatar}>
@@ -370,6 +372,21 @@ export default function ProfileForm() {
                       className={classes.avatar}
                     />
                   </Box>
+                </Grid>
+                <Grid
+                  item
+                  xs={12}
+                  sx={{
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    flexDirection: "column",
+                  }}
+                >
+                  <Typography sx={{ fontSize: 20, fontWeight: 600 }}>
+                    {userInfo.user_lastname + " " + userInfo.user_firstname}
+                  </Typography>
+                  <Typography>{userInfo.ut_name}</Typography>
                 </Grid>
               </Grid>
             </Item>

@@ -56,6 +56,7 @@ import {
   YEU_CAU_LIET_KE_VAI,
   LIET_KE_NHAN_VIEN,
   LIET_KE_KHACH_HANG,
+  LIET_KE_QUYEN,
 } from "../constants/Constants";
 
 export const dangNhapReducer = (state = { loading: true }, action) => {
@@ -143,12 +144,14 @@ export const userReducer = (
     loading: true,
     loadingCustomer: true,
     loadingStaff: true,
+    loadingPermissions: true,
     userData: [],
     customerData: [],
     staffData: [],
     userData1: [],
     userData2: [],
     userInfo: [],
+    permissionData: [],
   },
   action
 ) => {
@@ -183,6 +186,12 @@ export const userReducer = (
         userData2: state.userData.filter(
           (userData) => userData.user_firstname === null
         ),
+      };
+    case LIET_KE_QUYEN:
+      return {
+        ...state,
+        loadingPermissions: false,
+        permissionData: action.payload,
       };
     case LIET_KE_USERS_THAT_BAI:
       return { loading: false, error: action.payload };

@@ -144,6 +144,52 @@ WHERE user_isdeleted = 'false' AND (user_username = '${username}' OR user_tel = 
   );
 });
 
+router.post("/changePassword", async function (req, res, next) {
+  // get data
+  const { currentpass, newpass, id } = req.body;
+  const salt = await bcrypt.genSalt(10);
+  const hashPass = await bcrypt.hash(newpass, salt);
+  var newpassword = hashPass;
+  console.log(currentpass, newpass, id);
+  pool.query(
+    `SELECT user_password FROM users WHERE id = '${id}'`,
+    (error, response) => {
+      if (error) {
+        console.log(error);
+        res.send("ERROR");
+      } else {
+        console.log(response.rows.length);
+        console.log(response.rows);
+        if (response.rows.length === 0) {
+          res.send("ERROR");
+        } else {
+          var check = bcrypt.compareSync(
+            currentpass,
+            response.rows[0].user_password
+          );
+          if (!check) {
+            res.send("ERROR");
+            console.log("mk khong hop le");
+            return false;
+          } else {
+            
+            pool.query(
+              `UPDATE users SET user_password = '${newpassword}' WHERE id = '${id}'`,
+              (error, response) => {
+                if (error) {
+                  console.log(error);
+                } else {
+                  res.send("OK");
+                }
+              }
+            );
+          }
+        }
+      }
+    }
+  );
+});
+
 router.post("/signup", async function (req, res, next) {
   var username = req.body.username,
     password = req.body.password,
@@ -1244,6 +1290,7 @@ router.post("/admin/users/editUserInfo", function (req, res) {
             user_avatar: user_avatar,
             user_email: user_email,
             user_wardid: user_wardid,
+            ut_name: ut_name,
             token: token,
           });
         }
@@ -2159,6 +2206,46 @@ ${string2}`,
         console.log(error);
       } else {
         res.send(response.rows);
+      }
+    }
+  );
+});
+
+router.get(`/getUserPermissions.:id`, function (req, res) {
+  const { id} = req.params;
+  pool.query(
+    `SELECT * FROM user_permissions WHERE up_userid = '${id}'`,
+    (error, response) => {
+      if (error) {
+        console.log(error);
+      } else {
+        res.send(response.rows);
+      }
+    }
+  );
+});
+
+router.post(`/editUserPermissions`, function (req, res) {
+  const {
+    up_userid,
+    up_eccommercedashboard,
+    up_orderdashboard,
+    up_customeraccountmanager,
+    up_staffaccountmanager,
+    up_productmanager,
+    up_clothmanager,
+    up_ordermanager,
+  } = req.body;
+  pool.query(
+    `UPDATE user_permissions
+	SET up_eccommercedashboard='${up_eccommercedashboard}', up_orderdashboard='${up_orderdashboard}', up_customeraccountmanager='${up_customeraccountmanager}', up_staffaccountmanager='${up_staffaccountmanager}', up_productmanager='${up_productmanager}', up_clothmanager='${up_clothmanager}', up_ordermanager='${up_ordermanager}'
+	WHERE up_userid='${up_userid}'`,
+    (error, response) => {
+      if (error) {
+        console.log(error);
+        res.send("ERROR");
+      } else {
+        res.send("OK");
       }
     }
   );

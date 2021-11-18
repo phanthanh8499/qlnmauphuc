@@ -54,6 +54,7 @@ import {
   BAO_CAO_DOANH_THU_THUONG_MAI,
   LIET_KE_KHACH_HANG,
   LIET_KE_NHAN_VIEN,
+  LIET_KE_QUYEN,
 } from "../constants/Constants";
 
 export const dangNhapKhangHang = (username, password) => async (dispatch) => {
@@ -78,6 +79,12 @@ export const getUserData = () => async (dispatch) => {
     dispatch({ type: LIET_KE_USERS_THAT_BAI, payload: error.message });
   }
 };
+
+export const getUserPermissions = (id) => async (dispatch) => {
+  const {data} = await Axios.get(`/getUserPermissions.${id}`);
+  dispatch({type: LIET_KE_QUYEN, payload: data})
+}
+
 export const getCustomerData = () => async (dispatch) => {
     const { data } = await Axios.get("/admin/users/getCustomer");
     dispatch({ type: LIET_KE_KHACH_HANG, payload: data });  

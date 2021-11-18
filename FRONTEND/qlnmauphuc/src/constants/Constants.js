@@ -28,6 +28,8 @@ export const LIET_KE_USERS_THAT_BAI = "LIET_KE_USERS_THAT_BAI";
 export const LIET_KE_KHACH_HANG = "LIET_KE_KHACH_HANG";
 export const LIET_KE_NHAN_VIEN = "LIET_KE_NHAN_VIEN";
 
+export const LIET_KE_QUYEN = "LIET_KE_QUYEN";
+
 export const SUA_THONG_TIN_USER = "SUA_THONG_TIN_USER";
 export const SUA_USER = "SUA_USER";
 
