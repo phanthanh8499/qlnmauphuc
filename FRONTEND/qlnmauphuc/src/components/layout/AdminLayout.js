@@ -29,6 +29,7 @@ const useStyles = makeStyles((theme) => ({
     height: "90vh",
     overflow: "auto",
     padding: "10px",
+    backgroundColor: "#e3f2fd",
   },
   center: {
     display: "flex",

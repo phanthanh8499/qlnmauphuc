@@ -124,12 +124,12 @@ const useStyles = makeStyles((theme) => ({
     },
   },
   resultForm: {
-    width: 300,
+    width: 500,
     position: "absolute",
     right: 0,
     boxShadow: "1px 1px 10px rgb(0 0 0 / 15%)",
     zIndex: 20,
-    top: 95,
+    top: 110,
     backgroundColor: "#fff",
   },
   resultImg: {

@@ -9,6 +9,11 @@ export default function Home () {
       <AdminLayout>
         <Switch>
           <Route
+            path="/admin/profile"
+            exact={true}
+            component={lazy(() => import("../../../components/adminProfile"))}
+          ></Route>
+          <Route
             path="/admin/orders"
             exact={true}
             component={lazy(() => import("../../../components/adminOrder"))}

@@ -181,6 +181,12 @@ const useStyles = makeStyles((theme) => ({
 export default function AAppBar(props) {
   const classes = useStyles();
   const abc = useLocation().pathname.substring(7).toUpperCase();
+  const { userInfo } = JSON.parse(localStorage.getItem("userInfo"));
+  const [userData, setUserData] = useState(userInfo)
+  useEffect(() => {
+    setUserData(JSON.parse(localStorage.getItem("userInfo")).userInfo);
+  }, [userInfo]);
+
   const [open, setOpen] = useState(true);
   const toggleDrawer = () => {
     setOpen(!open);
@@ -244,6 +250,8 @@ export default function AAppBar(props) {
       return "Quản lý đơn hàng";
     } else if (item === "STATISTIC") {
       return "Bảng điểu khiển - Tình trạng đơn hàng";
+    } else if (item === "PROFILE") {
+      return "Trang cá nhân";
     } 
   }
 
@@ -432,14 +440,16 @@ export default function AAppBar(props) {
             onClick={handleClickMenu}
           >
             <Avatar
-              alt="Remy Sharp"
-              src="./images/avatar/user-image.jpg"
+              alt={userData.user_firstname}
+              src={LOCAL_PATH + userData.user_avatar.substring(2)}
               className={classes.lagre}
               sx={{ mr: 0.5 }}
             />
             <Box sx={{ color: "#000000" }}>
-              <Typography>Nguyễn Văn A</Typography>
-              <Typography sx={{ fontSize: 14 }}>Administrator</Typography>
+              <Typography>
+                {userData.user_lastname + " " + userData.user_firstname}
+              </Typography>
+              <Typography sx={{ fontSize: 14 }}>{userData.ut_name}</Typography>
             </Box>
           </Box>
           <Menu
@@ -451,9 +461,10 @@ export default function AAppBar(props) {
               "aria-labelledby": "basic-button",
             }}
           >
-            <MenuItem onClick={handleCloseMenu}>Profile</MenuItem>
-            <MenuItem onClick={handleCloseMenu}>My account</MenuItem>
-            <MenuItem onClick={handleCloseMenu}>Logout</MenuItem>
+            <Link to="/admin/profile">
+              <MenuItem onClick={handleCloseMenu}>Trang cá nhân</MenuItem>
+            </Link>
+            <MenuItem onClick={handleCloseMenu}>Đăng xuất</MenuItem>
           </Menu>
         </Toolbar>
       </AppBar>

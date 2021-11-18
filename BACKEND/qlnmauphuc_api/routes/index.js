@@ -97,7 +97,9 @@ router.post("/signin", function (req, res, next) {
   const password = req.body.password;
   console.log(username, password);
   pool.query(
-    `SELECT * FROM users WHERE user_isdeleted = 'false' AND (user_username = '${username}' OR user_tel = '${username}')`,
+    `SELECT users.*, ut_name FROM users 
+INNER JOIN user_types on users.user_typeid = user_types.id
+WHERE user_isdeleted = 'false' AND (user_username = '${username}' OR user_tel = '${username}')`,
     (error, response) => {
       if (error) {
         console.log(error);
@@ -131,6 +133,7 @@ router.post("/signin", function (req, res, next) {
               user_avatar: response.rows[0].user_avatar,
               user_email: response.rows[0].user_email,
               user_wardid: response.rows[0].user_wardid,
+              ut_name: response.rows[0].ut_name,
               // Copy het tat ca cac phan tu trong mang
               token,
             });
@@ -1154,6 +1157,7 @@ router.post("/admin/users/editUserInfo", function (req, res) {
     user_email,
     fileRecv,
     token,
+    ut_name,
     user_wardid,
     FRONTEND_URL,
   } = req.body;
@@ -1211,6 +1215,7 @@ router.post("/admin/users/editUserInfo", function (req, res) {
             user_avatar: image_path,
             user_email: user_email,
             user_wardid: user_wardid,
+            ut_name: ut_name,
             token: token,
           });
         }
