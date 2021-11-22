@@ -37,6 +37,7 @@ import ExpandMore from "@mui/icons-material/ExpandMore";
 import StarBorder from "@mui/icons-material/StarBorder";
 import { DANG_XUAT, LOCAL_PATH } from "../../constants/Constants";
 import { getUserPermissions } from "../../redux/Action";
+import AssignmentIcon from "@mui/icons-material/Assignment";
 
 function Copyright(props) {
   return (
@@ -229,6 +230,8 @@ export default function AAppBar(props) {
       ? setSelected(0)
       : abc === "STATISTIC"
       ? setSelected(0) || setSelectedSubMenu("0b")
+      : abc === "LOG"
+      ? setSelected(5)
       : setSelected() || setSelectedSubMenu();
   }, [abc]);
 
@@ -252,6 +255,8 @@ export default function AAppBar(props) {
       return "Bảng điểu khiển - Tình trạng đơn hàng";
     } else if (item === "PROFILE") {
       return "Trang cá nhân";
+    } else if (item === "LOG") {
+      return "Nhật ký hoạt động";
     }
   };
 
@@ -399,6 +404,18 @@ export default function AAppBar(props) {
                 <ShoppingCartIcon />
               </ListItemIcon>
               <ListItemText primary="Quản lý đơn hàng" />
+            </MyListItem>
+          </Link>
+        ) : null}
+
+
+        {permissionData[0].up_ordermanager === true ? (
+          <Link to="/admin/log" onClick={(e) => changeTitle(e, 5)}>
+            <MyListItem button selected={selected === 5}>
+              <ListItemIcon>
+                <AssignmentIcon />
+              </ListItemIcon>
+              <ListItemText primary="Nhật ký hoạt động" />
             </MyListItem>
           </Link>
         ) : null}

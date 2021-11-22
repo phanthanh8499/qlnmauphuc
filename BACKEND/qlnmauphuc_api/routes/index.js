@@ -84,7 +84,6 @@ router.get("/send-mail", function (req, res) {
       res.redirect("/");
     }
   });
-
 });
 
 /* GET home page. */
@@ -172,7 +171,6 @@ router.post("/changePassword", async function (req, res, next) {
             console.log("mk khong hop le");
             return false;
           } else {
-            
             pool.query(
               `UPDATE users SET user_password = '${newpassword}' WHERE id = '${id}'`,
               (error, response) => {
@@ -400,6 +398,9 @@ router.post("/admin/products/add", function (req, res) {
     product_introduction4,
     product_introduction5,
     frontEndURL,
+    log_date,
+    log_userid,
+    log_eventtypeid,
   } = req.body;
   const file1 = req.files.file1;
   const filename1 = file1.name;
@@ -476,12 +477,11 @@ router.post("/admin/products/add", function (req, res) {
   pool.query(
     `INSERT INTO products(
 	product_code, product_typeid, product_name, product_price, product_color, product_material, product_lining, product_size, product_thickness, product_softness, product_elasticity, product_introduction1, product_introduction2, product_introduction3, product_introduction4, product_introduction5, product_sizeimage, product_image1, product_image2, product_image3, product_isdeleted)
-	VALUES ('${product_code}', '${product_typeid}', '${product_name}', '${product_price}', '${product_color}', '${product_material}', '${product_lining}', '${product_size}', '${product_thickness}', '${product_softness}', '${product_elasticity}', '${product_introduction1}', '${product_introduction2}', '${product_introduction3}', '${product_introduction4}', '${product_introduction5}', '${product_image4}', '${product_image1}', '${product_image2}', '${product_image3}', 'false')`,
+	VALUES ('${product_code}', '${product_typeid}', '${product_name}', '${product_price}', '${product_color}', '${product_material}', '${product_lining}', '${product_size}', '${product_thickness}', '${product_softness}', '${product_elasticity}', '${product_introduction1}', '${product_introduction2}', '${product_introduction3}', '${product_introduction4}', '${product_introduction5}', '${product_image4}', '${product_image1}', '${product_image2}', '${product_image3}', 'false') RETURNING id`,
     (error, response) => {
       if (error) {
         console.log(error);
       } else {
-        res.send({ message: "Them san pham thanh cong" });
         if (!fs.existsSync(newpath)) {
           fs.mkdirSync(newpath);
         }
@@ -509,6 +509,28 @@ router.post("/admin/products/add", function (req, res) {
             console.log(err);
           }
         });
+        pool.query(
+          `SELECT * FROM products WHERE id = '${response.rows[0].id}'`,
+          (error, response) => {
+            if (error) {
+              console.log(error);
+            } else {
+              res.send(response.rows)
+              pool.query(
+                `INSERT INTO log(
+	log_userid, log_eventtypeid, log_date, log_description)
+	VALUES ('${log_userid}', '${log_eventtypeid}', '${log_date}', 'Thêm mới sản phẩm có mã ${response.rows[0].product_code}');`,
+                (error, response) => {
+                  if (error) {
+                    console.log(error);
+                  } else {
+                    console.log("Ghi nhật ký thành công!");
+                  }
+                }
+              );
+            }
+          }
+        );
       }
     }
   );
@@ -532,6 +554,7 @@ WHERE products.id = ${id}`,
 
 router.post("/admin/products/edit", function (req, res) {
   const {
+    id,
     product_code,
     product_name,
     product_color,
@@ -548,22 +571,72 @@ router.post("/admin/products/edit", function (req, res) {
     product_introduction3,
     product_introduction4,
     product_introduction5,
+    product_old_name,
+    product_old_color,
+    product_old_typeid,
+    product_old_price,
+    product_old_material,
+    product_old_lining,
+    product_old_thickness,
+    product_old_softness,
+    product_old_elasticity,
+    product_old_size,
+    product_old_introduction1,
+    product_old_introduction2,
+    product_old_introduction3,
+    product_old_introduction4,
+    product_old_introduction5,
+    log_date,
+    log_userid,
+    log_eventtypeid,
   } = req.body;
   pool.query(
-    `UPDATE products SET product_typeid='${product_typeid}', product_name='${product_name}', product_price='${product_price}', product_color='${product_color}', product_material='${product_material}', product_lining='${product_lining}', product_size='${product_size}', product_thickness='${product_thickness}', product_softness='${product_softness}', product_elasticity='${product_elasticity}', product_introduction1='${product_introduction1}', product_introduction2='${product_introduction2}', product_introduction3='${product_introduction3}', product_introduction4='${product_introduction4}', product_introduction5='${product_introduction5}' WHERE product_code='${product_code}'`,
+    `UPDATE products SET product_typeid='${product_typeid}', product_name='${product_name}', product_price='${product_price}', product_color='${product_color}', product_material='${product_material}', product_lining='${product_lining}', product_size='${product_size}', product_thickness='${product_thickness}', product_softness='${product_softness}', product_elasticity='${product_elasticity}', product_introduction1='${product_introduction1}', product_introduction2='${product_introduction2}', product_introduction3='${product_introduction3}', product_introduction4='${product_introduction4}', product_introduction5='${product_introduction5}' WHERE id='${id}'`,
     (error, response) => {
       if (error) {
         console.log(error);
       } else {
-        console.log("Chỉnh sửa thông tin thành công!");
+        pool.query(
+          `SELECT * FROM products WHERE id='${id}'`,
+          (error, response) => {
+            if (error) {
+              console.log(error);
+            } else {
+              res.send(response.rows[0]);
+            }
+          }
+        );
+        pool.query(
+          `INSERT INTO log(
+            log_userid, log_eventtypeid, log_date, log_description)
+            VALUES ('${log_userid}', '${log_eventtypeid}', '${log_date}', 'Chỉnh sửa thông tin sản phẩm ${product_code}') RETURNING id`,
+          (error, response) => {
+            if (error) {
+              console.log(error);
+            } else {
+              pool.query(
+                `INSERT INTO product_log_detail(
+	pld_logid, pld_old_typeid, pld_new_typeid, pld_old_name, pld_new_name, pld_old_price, pld_new_price, pld_old_color, pld_new_color, pld_old_material, pld_new_material, pld_old_lining, pld_new_lining, pld_old_size, pld_new_size, pld_old_thickness, pld_new_thickness, pld_old_softness, pld_new_softness, pld_old_elasticity, pld_new_elasticity, pld_old_introduction1, pld_new_introduction1, pld_old_introduction2, pld_new_introduction2, pld_old_introduction3, pld_new_introduction3, pld_old_introduction4, pld_new_introduction4, pld_old_introduction5, pld_new_introduction5)
+	VALUES ('${response.rows[0].id}', '${product_old_typeid}', '${product_typeid}', '${product_old_name}', '${product_name}', '${product_old_price}', '${product_price}', '${product_old_color}', '${product_color}', '${product_old_material}', '${product_material}', '${product_old_lining}', '${product_lining}', '${product_old_size}', '${product_size}', '${product_old_thickness}', '${product_thickness}', '${product_old_softness}', '${product_softness}', '${product_old_elasticity}', '${product_elasticity}', '${product_old_introduction1}', '${product_introduction1}', '${product_old_introduction2}', '${product_introduction2}', '${product_old_introduction3}', '${product_introduction3}', '${product_old_introduction4}', '${product_introduction4}', '${product_old_introduction5}', '${product_introduction5}')`,
+                (error, response) => {
+                  if (error) {
+                    console.log(error);
+                  } else {
+                    console.log("Ghi nhật ký thành công!!!");
+                  }
+                }
+              );
+            }
+          }
+        );
       }
     }
   );
 });
 
-router.get("/admin/products/delete.:id", function (req, res) {
-  const { id } = req.params;
-  console.log(id);
+router.post("/admin/products/delete", function (req, res) {
+  const { id, log_date, log_userid, log_eventtypeid } = req.body;
+  console.log(id, log_date, log_userid, log_eventtypeid);
   pool.query(
     `UPDATE products SET product_isdeleted = 'true' WHERE id='${id}'`,
     (error, response) => {
@@ -571,6 +644,24 @@ router.get("/admin/products/delete.:id", function (req, res) {
         console.log(error);
       } else {
         res.send(id);
+        pool.query(`SELECT product_code FROM products WHERE id='${id}'`, (error, response) => {
+          if (error) {
+            console.log(error);
+          } else {
+            pool.query(
+              `INSERT INTO log(
+	log_userid, log_eventtypeid, log_date, log_description)
+	VALUES ('${log_userid}', '${log_eventtypeid}',  '${log_date}',  'Xoá sản phẩm ${response.rows[0].product_code}');`,
+              (error, response) => {
+                if (error) {
+                  console.log(error);
+                } else {
+                  console.log("Ghi nhật ký thành công!");
+                }
+              }
+            );
+          }
+        });
       }
     }
   );
@@ -2184,35 +2275,38 @@ router.post(`/admin/getOrderCount`, function (req, res) {
   );
 });
 
-router.get(`/livesearch&name=:name&type=:type&color=:color`, function (req, res) {
-  const { name, type, color } = req.params;
-  var string1 = " ";
-  var string2 = " ";
-  if (type !== "All") {
-    string1 = ` AND product_typeid = '${type}' `;
-  }
-  if (color !== "All") {
-    string2 = ` AND (unaccent(product_color) ILIKE '%${color}%'
+router.get(
+  `/livesearch&name=:name&type=:type&color=:color`,
+  function (req, res) {
+    const { name, type, color } = req.params;
+    var string1 = " ";
+    var string2 = " ";
+    if (type !== "All") {
+      string1 = ` AND product_typeid = '${type}' `;
+    }
+    if (color !== "All") {
+      string2 = ` AND (unaccent(product_color) ILIKE '%${color}%'
 OR product_color ILIKE '%${color}%') `;
-  }
-  pool.query(
-    `SELECT * FROM products 
+    }
+    pool.query(
+      `SELECT * FROM products 
 WHERE (unaccent(product_name) ILIKE '%${name}%'
 OR product_name ILIKE '%${name}%)') 
 ${string1}
 ${string2}`,
-    (error, response) => {
-      if (error) {
-        console.log(error);
-      } else {
-        res.send(response.rows);
+      (error, response) => {
+        if (error) {
+          console.log(error);
+        } else {
+          res.send(response.rows);
+        }
       }
-    }
-  );
-});
+    );
+  }
+);
 
 router.get(`/getUserPermissions.:id`, function (req, res) {
-  const { id} = req.params;
+  const { id } = req.params;
   pool.query(
     `SELECT * FROM user_permissions WHERE up_userid = '${id}'`,
     (error, response) => {
@@ -2246,6 +2340,24 @@ router.post(`/editUserPermissions`, function (req, res) {
         res.send("ERROR");
       } else {
         res.send("OK");
+      }
+    }
+  );
+});
+
+router.get(`/getActivityLog`, function (req, res) {
+  const { id } = req.params;
+  pool.query(
+    `SELECT log.*, users.user_username, eventtype.et_name, functiontype.ft_name FROM log
+INNER JOIN users ON users.id = log.log_userid
+INNER JOIN eventtype ON eventtype.id = log_eventtypeid
+INNER JOIN functiontype ON functiontype.id = eventtype.et_functiontypeid
+ORDER BY log_date DESC`,
+    (error, response) => {
+      if (error) {
+        console.log(error);
+      } else {
+        res.send(response.rows);
       }
     }
   );

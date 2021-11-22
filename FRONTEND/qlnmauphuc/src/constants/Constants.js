@@ -93,3 +93,6 @@ export const BAO_CAO_TIEN_DO_HOA_DON = "BAO_CAO_TIEN_DO_HOA_DON";
 export const BAO_CAO_THUONG_MAI = "BAO_CAO_THUONG_MAI";
 export const BAO_CAO_DOANH_THU_THUONG_MAI = "BAO_CAO_DOANH_THU_THUONG_MAI";
 export const BAO_CAO_SAN_PHAM_THUONG_MAI = "BAO_CAO_SAN_PHAM_THUONG_MAI";
+
+//======================== NHAT KY HOAT DONG =====================================
+export const LIET_KE_NHAT_KY = "LIET_KE_NHAT_KY";

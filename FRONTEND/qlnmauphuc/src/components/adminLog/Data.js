@@ -42,7 +42,6 @@ import CancelIcon from "@mui/icons-material/Cancel";
 import EditIcon from "@mui/icons-material/Edit";
 import XLSX from "xlsx";
 import SaveAltIcon from "@mui/icons-material/SaveAlt";
-import AddIcon from "@mui/icons-material/Add";
 import PrintIcon from "@mui/icons-material/Print";
 import { useTheme } from "@mui/material/styles";
 import { format } from "date-fns";
@@ -51,6 +50,11 @@ import {
   useStylesAntDesign,
 } from "../utility/DataGridTheme";
 import { useReactToPrint } from "react-to-print";
+
+const MyButton = styled(Button)(({ theme }) => ({
+  textTransform: "none",
+  borderRadius: 25,
+}));
 
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
@@ -80,20 +84,6 @@ const useStyles = makeStyles((theme) => ({
   img: {
     height: 100,
     width: 100,
-  },
-}));
-
-const MyDataGrid = styled(DataGrid)(({ theme }) => ({
-  "& .MuiDataGrid-row": {
-    minHeight: "100px !important",
-    maxHeight: "100px !important",
-  },
-  "& .MuiDataGrid-cell": {
-    minHeight: "100px !important",
-    maxHeight: "100px !important",
-  },
-  "& .MuiDataGrid-viewport": {
-    height: "500px !important",
   },
 }));
 
@@ -205,86 +195,150 @@ export default function Data(props) {
     }
   };
 
+  const formatDate = (dateString) => {
+    const options = {
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit",
+    };
+    return new Date(dateString).toLocaleDateString(undefined, options);
+  };
+
   const columns = [
-    // { field: "id", headerName: "ID", resizable: true },
-    { field: "product_code", headerName: "Mã SP", width: 120 },
     {
-      field: "product_image1",
-      headerName: "Hình ảnh",
-      width: 120,
+      field: "stt",
+      headerName: "STT",
+      resizable: true,
+      width: 105,
+      align: "center",
+    },
+    // { field: "id", headerName: "id", width: 120 },
+    {
+      field: "user_username",
+      headerName: "Nhân viên",
+      width: 160,
       renderCell: (params) => {
-        return (
-          <img
-            src={LOCAL_PATH + params.value.substring(2)}
-            alt="HinhAnhSP"
-            className={classes.img}
-          ></img>
-        );
+        if (params.value === "admin") {
+          return (
+            <MyButton variant="outlined" color="primary" fullWidth>
+              {params.value}
+            </MyButton>
+          );
+        } else {
+          return (
+            <MyButton variant="outlined" color="success" fullWidth>
+              {params.value}
+            </MyButton>
+          );
+        }
       },
     },
-    { field: "product_name", headerName: "Tên sản phẩm", width: 400 },
-    { field: "product_price", headerName: "Giá", width: 100, type: "number" },
     {
-      field: "product_old_price",
-      headerName: "Giá cũ",
-      width: 130,
-      type: "number",
-    },
-    { field: "product_color", headerName: "Màu sắc", width: 250 },
-    { field: "product_material", headerName: "Chất liệu", width: 300 },
-    { field: "product_lining", headerName: "Lớp lót", width: 130 },
-    { field: "product_thickness", headerName: "Độ dày", width: 130 },
-    { field: "product_softness", headerName: "Độ mềm", width: 130 },
-    { field: "product_elasticity", headerName: "Độ co giãn", width: 130 },
-    {
-      field: "id",
-      headerName: "Hành động",
-      sortable: false,
-      width: 110,
-      disableClickEventBubbling: true,
+      field: "ft_name",
+      headerName: "Chức năng",
+      width: 200,
       renderCell: (params) => {
-        const handleClickEdit = () => {
-          openDetailForm();
-          setProductId(params.value);
-        };
-
-        const handleClickDelete = () => {
-          openDeleteForm();
-          setProductId(params.value);
-        };
-
-        return (
-          <ButtonGroup variant="outlined">
-            <IconButton onClick={handleClickEdit} size="large">
-              <VisibilityIcon />
-            </IconButton>
-            <IconButton onClick={handleClickDelete} size="large">
-              <DeleteOutlineIcon color="error" />
-            </IconButton>
-          </ButtonGroup>
-        );
+        if (params.value === "Quản lý sản phẩm") {
+          return (
+            <MyButton variant="outlined" color="success" fullWidth>
+              {params.value}
+            </MyButton>
+          );
+        }
+        if (params.value === "Quản lý vải") {
+          return (
+            <MyButton variant="outlined" color="success" fullWidth>
+              {params.value}
+            </MyButton>
+          );
+        }
+        if (params.value === "Quản lý đơn hàng") {
+          return (
+            <MyButton variant="outlined" color="success" fullWidth>
+              {params.value}
+            </MyButton>
+          );
+        }
+        if (params.value === "Quản lý tài khoản người dùng") {
+          return (
+            <MyButton variant="outlined" color="success" fullWidth>
+              {params.value}
+            </MyButton>
+          );
+        }
+        if (params.value === "Quản lý tài khoản nhân viên") {
+          return (
+            <MyButton variant="outlined" color="success" fullWidth>
+              {params.value}
+            </MyButton>
+          );
+        }
+      },
+    },
+    {
+      field: "et_name",
+      headerName: "Thao tác",
+      width: 150,
+      renderCell: (params) => {
+        if (params.value === "Thêm mới") {
+          return (
+            <MyButton variant="outlined" color="success" fullWidth>
+              {params.value}
+            </MyButton>
+          );
+        }
+        if (params.value === "Chỉnh sửa") {
+          return (
+            <MyButton variant="outlined" color="primary" fullWidth>
+              {params.value}
+            </MyButton>
+          );
+        }
+        if (params.value === "Xoá") {
+          return (
+            <MyButton variant="outlined" color="error" fullWidth>
+              {params.value}
+            </MyButton>
+          );
+        }
+      },
+    },
+    {
+      field: "log_description",
+      headerName: "Nội dung",
+      width: 400,
+    },
+    {
+      field: "log_date",
+      headerName: "Thời gian",
+      width: 200,
+      renderCell: (params) => {
+        return formatDate(params.value);
       },
     },
   ];
 
   const exportFile = () => {
-    var list = JSON.parse(JSON.stringify(dataRender));
-    list.map((item) => {
-      delete item.product_image2;
-      delete item.product_image3;
-      delete item.product_introduction1;
-      delete item.product_introduction2;
-      delete item.product_introduction3;
-      delete item.product_introduction4;
-      delete item.product_introduction5;
-      return item;
-    });
     var now = new Date();
+    var list = [];
+    for (let i = 0; i < dataRender.length; i++) {
+      list.push({
+        STT: dataRender[i].stt,
+        "Nhân viên": dataRender[i].user_username,
+        "Chức năng": dataRender[i].ft_name,
+        "Thao tác": dataRender[i].et_name,
+        "Nội dung": dataRender[i].log_description,
+        "Thời gian": formatDate(dataRender[i].log_date),
+      });
+    }
     now = format(now, "yyyy-MM-dd HH:mm:ss");
     const ws = XLSX.utils.json_to_sheet(list);
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, "data");
-    XLSX.writeFile(wb, "DSSanPham " + now + ".xlsx");
+    XLSX.writeFile(wb, "NhatKyHoatDong " + now + ".xlsx");
   };
 
   const theme = useTheme();
@@ -348,30 +402,20 @@ export default function Data(props) {
     if (string) {
       let filtered = dataBackup.filter((data) => {
         return (
-          data.id === parseInt(string) ||
-          data.product_code.toLowerCase().includes(string.toLowerCase()) ||
-          removeAccents(data.product_name)
+          data.stt === parseInt(string) ||
+          data.user_username.toLowerCase().includes(string.toLowerCase()) ||
+          removeAccents(data.log_description)
             .toLowerCase()
             .includes(removeAccents(string).toLowerCase()) ||
-          removeAccents(data.product_material)
+          removeAccents(data.ft_name)
             .toLowerCase()
             .includes(removeAccents(string).toLowerCase()) ||
-          removeAccents(data.product_lining)
+          removeAccents(data.et_name)
             .toLowerCase()
             .includes(removeAccents(string).toLowerCase()) ||
-          removeAccents(data.product_thickness)
+          formatDate(data.log_date)
             .toLowerCase()
-            .includes(removeAccents(string).toLowerCase()) ||
-          removeAccents(data.product_softness)
-            .toLowerCase()
-            .includes(removeAccents(string).toLowerCase()) ||
-          removeAccents(data.product_color)
-            .toLowerCase()
-            .includes(removeAccents(string).toLowerCase()) ||
-          removeAccents(data.product_elasticity)
-            .toLowerCase()
-            .includes(removeAccents(string).toLowerCase()) ||
-          data.product_price.toString().includes(string)
+            .includes(removeAccents(string).toLowerCase())
           // data.product_old_price.toString().includes(string)
         );
       });
@@ -499,7 +543,7 @@ export default function Data(props) {
   };
 
   const componentRef = useRef();
-  
+
   const now = new Date();
   const pageStyle = `
    @page {margin: 10px; size: 1240px 700px}
@@ -550,15 +594,6 @@ export default function Data(props) {
               <Grid item xs={9}>
                 <Button
                   variant="outlined"
-                  color="primary"
-                  onClick={openAddForm}
-                  sx={{ ml: 0.5 }}
-                >
-                  <AddIcon sx={{ mr: 0.5 }} />
-                  Thêm sản phẩm
-                </Button>
-                <Button
-                  variant="outlined"
                   color="success"
                   onClick={exportFile}
                   sx={{ ml: 0.5 }}
@@ -573,37 +608,6 @@ export default function Data(props) {
                 >
                   <PrintIcon sx={{ mr: 0.5 }} /> Tạo bản in
                 </Button>
-                <Button
-                  id="demo-customized-button"
-                  aria-controls="demo-customized-menu"
-                  aria-haspopup="true"
-                  aria-expanded={openMenu ? "true" : undefined}
-                  variant="contained"
-                  disableElevation
-                  onClick={handleClickMenu}
-                  endIcon={<KeyboardArrowDownIcon />}
-                  sx={{ ml: 0.5 }}
-                >
-                  Hành động
-                </Button>
-                <StyledMenu
-                  id="demo-customized-menu"
-                  MenuListProps={{
-                    "aria-labelledby": "demo-customized-button",
-                  }}
-                  anchorEl={anchorEl}
-                  open={openMenu}
-                  onClose={handleCloseMenu}
-                >
-                  <MenuItem onClick={handleClickEdit} disableRipple>
-                    <EditIcon />
-                    Cập nhật trạng thái
-                  </MenuItem>
-                  <MenuItem onClick={handleClickDelete} disableRipple>
-                    <CancelIcon />
-                    Xoá
-                  </MenuItem>
-                </StyledMenu>
               </Grid>
               <Grid item xs={3}>
                 <Search>
@@ -624,15 +628,15 @@ export default function Data(props) {
             item
             xs={12}
             style={{
-              height: 425,
+              height: 525,
               width: "100%",
               "background-color": "#ffffff",
             }}
           >
-            <MyDataGrid
+            <DataGrid
               rows={rows}
               columns={columns}
-              pageSize={3}
+              pageSize={7}
               className={antDesignClasses.root}
               checkboxSelection
               disableSelectionOnClick
@@ -663,25 +667,19 @@ export default function Data(props) {
                   </Typography>
                 </Grid>
                 <Grid item xs={12} sx={{ textAlign: "center" }}>
-                  <Typography variant="h5">
-                    Báo cáo kết quả thống kê sản phẩm
-                  </Typography>
+                  <Typography variant="h5">Nhật ký hoạt động</Typography>
                 </Grid>
               </Grid>
               <TableContainer>
                 <Table sx={{ minWidth: 700 }} aria-label="customized table">
                   <TableHead>
                     <TableRow>
-                      <TableCell>Mã SP</TableCell>
-                      <TableCell align="center">Hình ảnh</TableCell>
-                      <TableCell align="center">Tên SP</TableCell>
-                      <TableCell align="center">Giá</TableCell>
-                      <TableCell align="center">Màu sắc</TableCell>
-                      <TableCell align="center">Chất liệu</TableCell>
-                      <TableCell align="center">Lớp lót</TableCell>
-                      <TableCell align="center">Độ dày</TableCell>
-                      <TableCell align="center">Độ mỏng</TableCell>
-                      <TableCell align="center">Độ co giãn</TableCell>
+                      <TableCell>STT</TableCell>
+                      <TableCell align="center">Nhân viên</TableCell>
+                      <TableCell align="center">Chức năng</TableCell>
+                      <TableCell align="center">Thao tác</TableCell>
+                      <TableCell align="center">Nội dung</TableCell>
+                      <TableCell align="center">Thời gian</TableCell>
                     </TableRow>
                   </TableHead>
                   <TableBody>
@@ -689,40 +687,18 @@ export default function Data(props) {
                       return (
                         <TableRow key={row.name}>
                           <TableCell component="th" scope="row">
-                            {row.product_code}
+                            {row.stt}
                           </TableCell>
                           <TableCell align="center">
-                            <img
-                              src={LOCAL_PATH + row.product_image1.substring(2)}
-                              style={{ width: "100px", height: "100px" }}
-                              alt={row.product_name}
-                            ></img>
+                            {row.user_username}
                           </TableCell>
-                          <TableCell align="center">
-                            {row.product_name}
-                          </TableCell>
-                          <TableCell align="right">
-                            {new Intl.NumberFormat("de-DE").format(
-                              row.product_price
-                            )}
+                          <TableCell align="center">{row.ft_name}</TableCell>
+                          <TableCell align="center">{row.et_name}</TableCell>
+                          <TableCell align="left">
+                            {row.log_description}
                           </TableCell>
                           <TableCell align="left">
-                            {row.product_color}
-                          </TableCell>
-                          <TableCell align="left">
-                            {row.product_material}
-                          </TableCell>
-                          <TableCell align="left">
-                            {row.product_lining}
-                          </TableCell>
-                          <TableCell align="left">
-                            {row.product_thickness}
-                          </TableCell>
-                          <TableCell align="left">
-                            {row.product_softness}
-                          </TableCell>
-                          <TableCell align="left">
-                            {row.product_elasticity}
+                            {formatDate(row.log_date)}
                           </TableCell>
                         </TableRow>
                       );

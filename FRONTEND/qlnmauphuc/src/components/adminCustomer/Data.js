@@ -45,6 +45,7 @@ import EditIcon from "@mui/icons-material/Edit";
 import SearchIcon from "@mui/icons-material/Search";
 import ChangeForm from "./changeForm/changeForm";
 import XLSX from "xlsx";
+import AddIcon from "@mui/icons-material/Add";
 import SaveAltIcon from "@mui/icons-material/SaveAlt";
 import PrintIcon from "@mui/icons-material/Print";
 import axios from "axios";
@@ -765,23 +766,23 @@ export default function Data(props) {
                 </Grid>
                 <Divider sx={{ mt: 0.5, mb: 0.5 }} />
               </Grid>
-              <Grid item xs={6}>
+              <Grid item xs={9}>
                 <Button
                   variant="outlined"
                   color="primary"
                   onClick={openAddForm}
                   sx={{ ml: 0.5 }}
                 >
+                  <AddIcon sx={{ mr: 0.5 }} />
                   Thêm người dùng
                 </Button>
-
                 <Button
                   variant="outlined"
                   color="success"
                   onClick={exportFile}
                   sx={{ ml: 0.5 }}
                 >
-                  <SaveAltIcon />
+                  <SaveAltIcon sx={{ mr: 0.5 }} /> Xuất Excel
                 </Button>
                 <Button
                   variant="outlined"
@@ -789,7 +790,7 @@ export default function Data(props) {
                   onClick={() => handlePrint()}
                   sx={{ ml: 0.5 }}
                 >
-                  <PrintIcon />
+                  <PrintIcon sx={{ mr: 0.5 }} /> Tạo bản in
                 </Button>
                 <Button
                   id="demo-customized-button"
@@ -824,7 +825,6 @@ export default function Data(props) {
                   </MenuItem>
                 </StyledMenu>
               </Grid>
-              <Grid item xs={3}></Grid>
               <Grid item xs={3}>
                 <Search>
                   <SearchIconWrapper>

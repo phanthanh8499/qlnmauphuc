@@ -134,24 +134,24 @@ export const getProductData = () => async (dispatch) => {
   }
 }
 
-export const addProduct = (data) => async (dispatch) => {
-  const abc = {};
-  data.forEach((value, key) => (abc[key] = value));
-  abc.id = parseInt(abc.id);
-  console.log(abc)
-  dispatch({ type: THEM_SAN_PHAM, payload: abc });
-  await Axios.post("/admin/products/add", data);
+export const addProduct = (dataReq) => async (dispatch) => {
+  // const abc = {};
+  // data.forEach((value, key) => (abc[key] = value));
+  // abc.id = parseInt(abc.id);
+  // console.log(abc)
+  const {data} = await Axios.post("/admin/products/add", dataReq);
+  dispatch({ type: THEM_SAN_PHAM, payload: data });
 }
 
-export const editProduct = (data) =>  (dispatch) => {
-  const abc = {};
-  data.forEach((value, key) => (abc[key] = value));
-  Axios.post("/admin/products/edit", data);
-  dispatch({ type: CHINH_SUA_THONG_TIN_SAN_PHAM, payload: abc});
-}
+export const editProduct = (dataReq) => async (dispatch) => {
+  // const abc = {};
+  // data.forEach((value, key) => (abc[key] = value));
+  const { data } = await Axios.post("/admin/products/edit", dataReq);
+  dispatch({ type: CHINH_SUA_THONG_TIN_SAN_PHAM, payload: data });
+};
 
 export const deleteProduct = (dataReq) => async (dispatch) => {
-  const {data} = await Axios.get(`/admin/products/delete.${dataReq}`);
+  const {data} = await Axios.post(`/admin/products/delete`, dataReq);
   dispatch({ type: XOA_SAN_PHAM, payload: data});
 }
 

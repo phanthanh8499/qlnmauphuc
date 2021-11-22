@@ -621,7 +621,7 @@ export default function Data(props) {
                   onClick={exportFile}
                   sx={{ ml: 0.5 }}
                 >
-                  <SaveAltIcon />
+                  <SaveAltIcon sx={{ mr: 0.5 }} /> Xuất Excel
                 </Button>
                 <Button
                   variant="outlined"
@@ -629,7 +629,7 @@ export default function Data(props) {
                   onClick={() => handlePrint()}
                   sx={{ ml: 0.5 }}
                 >
-                  <PrintIcon />
+                  <PrintIcon sx={{ mr: 0.5 }} /> Tạo bản in
                 </Button>
                 <Button
                   id="demo-customized-button"
@@ -802,7 +802,6 @@ export default function Data(props) {
               </TableContainer>
             </div>
           </Grid>
-         
         </>
       )}
     </Grid>
