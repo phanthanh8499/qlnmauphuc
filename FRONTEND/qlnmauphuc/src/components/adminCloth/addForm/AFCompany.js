@@ -19,6 +19,7 @@ import makeStyles from "@mui/styles/makeStyles";
 import { CAP_NHAT_HINH_ANH, FRONTEND_URL } from "../../../constants/Constants";
 import { addCloth} from "../../../redux/Action";
 import axios from "axios";
+import { format } from "date-fns";
 
 
 const useStyle = makeStyles((theme) => ({
@@ -55,7 +56,7 @@ function AFCompany(props) {
   const { enqueueSnackbar } = useSnackbar();
   const dispatch = useDispatch();
 
-  const { onClose, id } = props;
+  const { onClose, id, userid} = props;
   const [name, setName] = useState("");
   const [material, setMaterial] = useState("");
   const [quantity, setQuantity] = useState("");
@@ -106,6 +107,10 @@ function AFCompany(props) {
     formData.append("file", file);
     formData.append("fileName", fileName);
     formData.append("frontEndURL", FRONTEND_URL);
+    const now = new Date();
+    formData.append("log_date", format(now, "yyyy-MM-dd HH:mm:ss"));
+    formData.append("log_userid", userid);
+    formData.append("log_eventtypeid", "ACF");
     if (!type) {
       enqueueSnackbar("Vui lòng chọn loại vải", {
         variant: "error",

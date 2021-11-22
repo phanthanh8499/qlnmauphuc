@@ -250,7 +250,7 @@ export default function Data(props) {
         }
         if (params.value === "Quản lý vải") {
           return (
-            <MyButton variant="outlined" color="success" fullWidth>
+            <MyButton variant="outlined" color="primary" fullWidth>
               {params.value}
             </MyButton>
           );

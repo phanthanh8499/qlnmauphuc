@@ -178,15 +178,15 @@ export const addCloth = (dataReq) => async (dispatch) => {
   dispatch({ type: THEM_VAI, payload: data });
 };
 
-export const editCloth = (data) => (dispatch) => {
-  const abc = {};
-  data.forEach((value, key) => (abc[key] = value));
-  Axios.post("/admin/cloth/edit", data);
-  dispatch({ type: CHINH_SUA_THONG_TIN_VAI, payload: abc });
+export const editCloth = (dataReq) => async (dispatch) => {
+  // const abc = {};
+  // data.forEach((value, key) => (abc[key] = value));
+  const { data } = await Axios.post("/admin/cloth/edit", dataReq);
+  dispatch({ type: CHINH_SUA_THONG_TIN_VAI, payload: data });
 };
 
 export const deleteCloth = (dataReq) => async (dispatch) => {
-  const {data} = await Axios.get(`/admin/cloth/delete.${dataReq}`);
+  const {data} = await Axios.post(`/admin/cloth/delete`, dataReq);
   dispatch({ type: XOA_VAI, payload: data });
 };
 

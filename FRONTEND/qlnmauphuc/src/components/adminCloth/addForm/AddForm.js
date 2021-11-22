@@ -52,7 +52,7 @@ function AddForm(props) {
     setValue(newValue);
     dispatch({ type: XOA_HINH_ANH });
   };
-  const { open, onClose, id } = props;
+  const { open, onClose, id, userid } = props;
   return (
     <Dialog
       onClose={onClose}
@@ -81,13 +81,13 @@ function AddForm(props) {
 
           <TabPanel value={value} index={0}>
             <Grid container spacing={1}>
-              <AFCompany onClose={onClose} id={id}></AFCompany>
+              <AFCompany onClose={onClose} id={id} userid={userid}></AFCompany>
             </Grid>
           </TabPanel>
 
           <TabPanel value={value} index={1}>
             <Grid container spacing={1}>
-              <AFCustomer onClose={onClose} id={id}></AFCustomer>
+              <AFCustomer onClose={onClose} id={id} userid={userid}></AFCustomer>
             </Grid>
           </TabPanel>
         </Grid>

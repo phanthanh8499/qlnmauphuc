@@ -730,6 +730,9 @@ router.post("/admin/cloth/add", function (req, res) {
     ct_name,
     user_username,
     frontEndURL,
+    log_date,
+    log_userid,
+    log_eventtypeid,
   } = req.body;
   const file = req.files.file;
 
@@ -787,6 +790,18 @@ router.post("/admin/cloth/add", function (req, res) {
             console.log(err);
           }
         });
+        pool.query(
+          `INSERT INTO log(
+	log_userid, log_eventtypeid, log_date, log_description)
+	VALUES ('${log_userid}', '${log_eventtypeid}', '${log_date}', 'Thêm mới ${cloth_name} (ID: ${id} - ${cloth_material})');`,
+          (error, response) => {
+            if (error) {
+              console.log(error);
+            } else {
+              console.log("Ghi nhật ký thành công!");
+            }
+          }
+        );
       }
     }
   );
@@ -812,11 +827,31 @@ router.post("/admin/cloth/edit", function (req, res) {
   const {
     id,
     cloth_material,
+    cloth_old_name,
     cloth_name,
+    cloth_old_quantity,
     cloth_quantity,
     cloth_userid,
+    cloth_old_typeid,
     cloth_typeid,
+    log_date,
+    log_userid,
+    log_eventtypeid,
   } = req.body;
+  console.log(
+    id,
+    cloth_material,
+    cloth_old_name,
+    cloth_name,
+    cloth_old_quantity,
+    cloth_quantity,
+    cloth_userid,
+    cloth_old_typeid,
+    cloth_typeid,
+    log_date,
+    log_userid,
+    log_eventtypeid
+  );
   pool.query(
     `UPDATE cloth
 	SET cloth_name='${cloth_name}', cloth_quantity='${cloth_quantity}', cloth_typeid='${cloth_typeid}'
@@ -825,14 +860,51 @@ router.post("/admin/cloth/edit", function (req, res) {
       if (error) {
         console.log(error);
       } else {
-        console.log("Chỉnh sửa thông tin thành công!");
+        pool.query(
+          `SELECT DISTINCT cloth.id, cloth.cloth_material, cloth.cloth_name, cloth.cloth_quantity, cloth.cloth_userid, cloth.cloth_typeid, cloth.cloth_image, clothtypes.ct_name, user_username, user_firstname, user_lastname
+FROM cloth
+INNER JOIN clothtypes ON clothtypes.id = cloth.cloth_typeid
+INNER JOIN users ON users.id = cloth.cloth_userid
+WHERE cloth.id='${id}' AND cloth_material = '${cloth_material}' AND cloth.cloth_isdeleted = 'false'`,
+          (error, response) => {
+            if (error) {
+              console.log(error);
+            } else {
+              res.send(response.rows[0]);
+            }
+          }
+        );
+        pool.query(
+          `INSERT INTO log(
+	log_userid, log_eventtypeid, log_date, log_description)
+	VALUES ('${log_userid}', '${log_eventtypeid}',  '${log_date}',  'Chỉnh sửa thông tin ${cloth_name} (ID: ${id} - ${cloth_material})' ) RETURNING id;`,
+          (error, response) => {
+            if (error) {
+              console.log(error);
+            } else {
+              pool.query(
+                `INSERT INTO cloth_log_detail(
+	cld_logid, cld_old_name, cld_new_name, cld_old_quantity, cld_name_quantity, cld_old_typeid, cld_new_typeid)
+	VALUES ('${response.rows[0].id}', '${cloth_old_name}', '${cloth_name}', '${cloth_old_quantity}', '${cloth_quantity}', '${cloth_old_typeid}', '${cloth_typeid}');`,
+                (error, response) => {
+                  if (error) {
+                    console.log(error);
+                  } else {
+                    console.log("Ghi nhật ký thành công!");
+                  }
+                }
+              );
+            }
+          }
+        );
       }
     }
   );
 });
 
-router.get("/admin/cloth/delete.:id", function (req, res) {
-  const { id } = req.params;
+router.post("/admin/cloth/delete", function (req, res) {
+  const { id, log_date, log_userid, log_eventtypeid } = req.body;
+  console.log(id, log_date, log_userid, log_eventtypeid);
   pool.query(
     `UPDATE cloth SET cloth_isdeleted = 'true' WHERE id='${id}'`,
     (error, response) => {
@@ -840,7 +912,27 @@ router.get("/admin/cloth/delete.:id", function (req, res) {
         console.log(error);
       } else {
         res.send(id);
-        console.log("Xoá thành công sản phẩm có id là: ", id);
+        pool.query(
+          `SELECT * FROM cloth WHERE id='${id}'`,
+          (error, response) => {
+            if (error) {
+              console.log(error);
+            } else {
+              pool.query(
+                `INSERT INTO log(
+	log_userid, log_eventtypeid, log_date, log_description)
+	VALUES ('${log_userid}', '${log_eventtypeid}',  '${log_date}',  'Xoá ${response.rows[0].cloth_name} (ID: ${response.rows[0].id} - ${response.rows[0].cloth_material})');`,
+                (error, response) => {
+                  if (error) {
+                    console.log(error);
+                  } else {
+                    console.log("Ghi nhật ký thành công!");
+                  }
+                }
+              );
+            }
+          }
+        );
       }
     }
   );

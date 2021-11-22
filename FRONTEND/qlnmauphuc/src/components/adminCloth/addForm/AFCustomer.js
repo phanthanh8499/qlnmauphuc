@@ -22,6 +22,7 @@ import {
 } from "../../../constants/Constants";
 import { addCloth} from "../../../redux/Action";
 import axios from "axios";
+import { format } from "date-fns";
 
 const useStyle = makeStyles((theme) => ({
   label: {
@@ -56,7 +57,7 @@ function AFCustomer(props) {
   const classes = useStyle();
   const { enqueueSnackbar } = useSnackbar();
   const dispatch = useDispatch();
-  const { onClose, id } = props;
+  const { onClose, id, userid } = props;
   const [name, setName] = useState("");
   const [material, setMaterial] = useState("");
   const [quantity, setQuantity] = useState("");
@@ -107,6 +108,10 @@ function AFCustomer(props) {
     formData.append("file", file);
     formData.append("fileName", fileName);
     formData.append("frontEndURL", FRONTEND_URL);
+    const now = new Date();
+    formData.append("log_date", format(now, "yyyy-MM-dd HH:mm:ss"));
+    formData.append("log_userid", userid);
+    formData.append("log_eventtypeid", "ACF");
     if (!name || !quantity) {
       enqueueSnackbar("Vui lòng điền đầy đủ thông tin", {
         variant: "error",

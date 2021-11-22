@@ -18,6 +18,7 @@ import makeStyles from "@mui/styles/makeStyles";
 import { editCloth} from "../../../redux/Action";
 import ImageMagnify from "./ImageMagnify";
 import { LOCAL_PATH } from "../../../constants/Constants";
+import { format } from "date-fns";
 
 const useStyle = makeStyles((theme) => ({
   root: {
@@ -64,7 +65,7 @@ function DetailForm(props) {
   const classes = useStyle();
   const { enqueueSnackbar } = useSnackbar();
   const dispatch = useDispatch();
-  const { onClose, id } = props;
+  const { onClose, id, userid } = props;
 
   const [imgUpload, setImgUpload] = useState("./images/loadingImg.gif");
 
@@ -101,11 +102,11 @@ function DetailForm(props) {
       </MenuItem>
     ));
   };
-
+  const [data, setData] = useState([]) 
   useEffect(() => {
     async function getDetailProduct() {
       const { data } = await axios.get(`/getDetailCloth.${id}`);
-      console.log("nhan đc", data);
+      setData(data[0])
       setName(`${data[0].cloth_name}`);
       setQuantity(`${data[0].cloth_quantity}`);
       setUserId(`${data[0].cloth_userid}`);
@@ -138,6 +139,14 @@ function DetailForm(props) {
     formData.append("user_username", userName);
     formData.append("user_firstname", firstName);
     formData.append("user_lastname", lastName);
+    formData.append("cloth_old_name", data.cloth_name);
+    formData.append("cloth_old_quantity", data.cloth_quantity);
+    formData.append("cloth_old_typeid", data.cloth_typeid);
+    const now = new Date();
+    formData.append("log_date", format(now, "yyyy-MM-dd HH:mm:ss"));
+    formData.append("log_userid", userid);
+    formData.append("log_eventtypeid", "ECF");
+
     if (!type) {
       enqueueSnackbar("Vui lòng chọn loại vải", {
         variant: "error",

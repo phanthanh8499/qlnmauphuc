@@ -12,6 +12,7 @@ import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
 import makeStyles from "@mui/styles/makeStyles";
 import clsx from "clsx";
 import { deleteCloth } from "../../../redux/Action";
+import { format } from "date-fns";
 
 const useStyle = makeStyles((theme) => ({
   root: {
@@ -39,14 +40,26 @@ function DeleteForm(props) {
   const classes = useStyle();
   const { enqueueSnackbar } = useSnackbar();
   const dispatch = useDispatch();
-  const { open, onClose, id, listId} = props;
+  const { open, onClose, id, listId, userid } = props;
   const handleSubmit = () => {
     if (listId.length !== 0) {
       listId.forEach((element) => {
-        dispatch(deleteCloth(element.id));
+        const formData = new FormData();
+        const now = new Date();
+        formData.append("log_date", format(now, "yyyy-MM-dd HH:mm:ss"));
+        formData.append("log_userid", userid);
+        formData.append("log_eventtypeid", "DCF");
+        formData.append("id", element.id);
+        dispatch(deleteCloth(formData));
       });
     } else {
-      dispatch(deleteCloth(parseInt(id)));
+      const formData = new FormData();
+      const now = new Date();
+      formData.append("log_date", format(now, "yyyy-MM-dd HH:mm:ss"));
+      formData.append("log_userid", userid);
+      formData.append("log_eventtypeid", "DCF");
+      formData.append("id", id);
+      dispatch(deleteCloth(formData));
     }
     enqueueSnackbar("Xoá sản phẩm thành công", {
       variant: "success",
