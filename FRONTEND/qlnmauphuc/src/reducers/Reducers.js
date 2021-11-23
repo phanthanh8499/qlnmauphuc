@@ -57,6 +57,7 @@ import {
   LIET_KE_NHAN_VIEN,
   LIET_KE_KHACH_HANG,
   LIET_KE_QUYEN,
+  LIET_KE_NHAT_KY,
 } from "../constants/Constants";
 
 export const dangNhapReducer = (state = { loading: true }, action) => {
@@ -584,6 +585,21 @@ export const ecommerceReportReducer = (
         return a.id - b.id;
       });
       return { ...state, loadingDC: false, clothData: data };
+    default:
+      return state;
+  }
+};
+
+export const logReducer = (
+  state = {
+    loading: true,
+    logData: [],
+  },
+  action
+) => {
+  switch (action.type) {
+    case LIET_KE_NHAT_KY:
+      return { ...state, loading: false, logData: action.payload };
     default:
       return state;
   }

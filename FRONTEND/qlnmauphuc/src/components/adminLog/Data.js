@@ -23,6 +23,7 @@ import {
   TableContainer,
   TableHead,
   TableRow,
+  TextField,
   Typography,
 } from "@mui/material";
 import { makeStyles } from "@mui/styles";
@@ -50,6 +51,12 @@ import {
   useStylesAntDesign,
 } from "../utility/DataGridTheme";
 import { useReactToPrint } from "react-to-print";
+import axios from "axios";
+import DesktopDatePicker from "@mui/lab/DesktopDatePicker";
+import LocalizationProvider from "@mui/lab/LocalizationProvider";
+import AdapterDateFns from "@mui/lab/AdapterDateFns";
+import { useDispatch } from "react-redux";
+import { getActivityLogData } from "../../redux/Action";
 
 const MyButton = styled(Button)(({ theme }) => ({
   textTransform: "none",
@@ -91,9 +98,10 @@ export default function Data(props) {
   const classes = useStyles();
   const antDesignClasses = useStylesAntDesign();
   const { enqueueSnackbar } = useSnackbar();
-  const { data } = props;
+  const { data, startD, endD } = props;
   const [dataRender, setDataRender] = useState([]);
   const [loading, setLoading] = useState(true);
+  const dispatch = useDispatch();
   useEffect(() => {
     setDataRender(data);
     setDataBackup(data);
@@ -342,7 +350,6 @@ export default function Data(props) {
   };
 
   const theme = useTheme();
-  const [colorSelected, setColorSelected] = React.useState([]);
 
   const names = [
     "Trắng",
@@ -357,43 +364,62 @@ export default function Data(props) {
     "Đỏ nâu",
   ];
 
-  const handleChangeColor = (event) => {
-    const {
-      target: { value },
-    } = event;
-    setColorSelected(
-      // On autofill we get a the stringified value.
-      typeof value === "string" ? value.split(",") : value
-    );
+  const handleChangeFunction = async (event) => {
+    var string = event.target.value
+    setFunctionSelected(string);
+    console.log(string)
+    const {data} = await axios.get(`/getEventTypeData.${string}`);
+    setEventType(data)
+    if(string === "All"){
+      setEventSelected("All");
+    }
   };
 
   const [dataBackup, setDataBackup] = useState([]);
+  const [count, setCount] = useState(0)
   const handleClickSearch = () => {
-    let temp = [...data];
-    if (colorSelected.length >= 1) {
-      for (let i = 0; i < colorSelected.length; i++) {
-        temp = temp.filter((data) => {
-          return removeAccents(data.product_color)
-            .toLowerCase()
-            .includes(removeAccents(colorSelected[i]).toLowerCase());
-        });
-      }
+    // let temp = [...data];
+    
+    // if (thicknessSelected) {
+    //   temp = temp.filter(
+    //     (data) => data.product_thickness === thicknessSelected
+    //   );
+    // }
+    // if (softnessSelected) {
+    //   temp = temp.filter((data) => data.product_softness === softnessSelected);
+    // }
+    // if (elasticitySelected) {
+    //   temp = temp.filter(
+    //     (data) => data.product_elasticity === elasticitySelected
+    //   );
+    // }
+    if (
+      Date.parse(endDate) >
+      Date.parse(new Date(new Date().setHours(23, 59, 59, 0)))
+    ) {
+      enqueueSnackbar("Không được chọn ngày lớn hơn ngày hiện tại", {
+        variant: "error",
+        autoHideDuration: 2000,
+      });
+      return false;
     }
-    if (thicknessSelected) {
-      temp = temp.filter(
-        (data) => data.product_thickness === thicknessSelected
-      );
+    if (Date.parse(startDate) > Date.parse(endDate)) {
+      enqueueSnackbar("Ngày bắt đầu không được lớn hơn ngày kết thúc", {
+        variant: "error",
+        autoHideDuration: 2000,
+      });
+      return false;
     }
-    if (softnessSelected) {
-      temp = temp.filter((data) => data.product_softness === softnessSelected);
-    }
-    if (elasticitySelected) {
-      temp = temp.filter(
-        (data) => data.product_elasticity === elasticitySelected
-      );
-    }
-    setDataRender(temp);
-    setDataBackup(temp);
+    const dataSend = {
+      functiontypeid: functionSelected,
+      eventtypeid: eventSelected,
+      startDate: format(startDate, "yyyy-MM-dd"),
+      endDate: format(endDate, "yyyy-MM-dd HH:mm:ss"),
+    };
+    dispatch(getActivityLogData(dataSend));
+    // setDataRender(temp);
+    // setDataBackup(temp);
+    setCount(count+1);
   };
 
   const liveSearch = (event) => {
@@ -428,37 +454,67 @@ export default function Data(props) {
   const [thicknessSelected, setThicknessSelected] = useState("");
   const [softnessSelected, setSoftnessSelected] = useState("");
   const [elasticitySelected, setElasticitySelected] = useState("");
+  const [functionType, setFunctionType] = useState([])
+  const [functionSelected, setFunctionSelected] = useState("All");
+  const [eventType, setEventType] = useState([])
+  const [eventSelected, setEventSelected] = useState("All");
+  useEffect(() => {
+    async function getFunctionType(){
+      const {data} = await axios.get(`/getFunctionTypeData`);
+      setFunctionType(data)
+    }
+    async function getEventType(){
+      const {data} = await axios.get(`/getEventTypeData.All`);
+      setEventType(data);
+    }
+    getFunctionType();
+    getEventType()
+  },[])
+
+  const eventTypes = [
+    { id: "Add", et_name: "Thêm mới" },
+    { id: "Edit", et_name: "Chỉnh sửa" },
+    { id: "Remove", et_name: "Xoá" },
+    { id: "Cancel", et_name: "Huỷ bỏ" },
+  ];
+
+  const [startDate, setStartDate] = useState(
+    new Date(new Date().setHours(0, 0, 0, 0))
+  );
+
+  const handleChangeStartDate = (newValue) => {
+    setStartDate(newValue);
+  };
+
+  const [endDate, setEndDate] = useState(
+    new Date(new Date().setHours(23, 59, 59, 0))
+  );
+
+  const handleChangeEndDate = (newValue) => {
+    setEndDate(newValue);
+  };
+
   const renderSearchForm = () => {
     return (
       <Grid container spacing={1}>
         <Grid item xs={3}>
           <MyFormControl sx={{ ml: 0.5, width: "100%" }}>
-            <InputLabel id="select-color-label">Màu sắc</InputLabel>
+            <InputLabel id="select-function-color-label">Chức năng</InputLabel>
             <Select
-              multiple
+              labelId="function-select-label"
+              id="function-select"
+              value={functionSelected}
               displayEmpty
-              value={colorSelected}
-              onChange={handleChangeColor}
-              input={<OutlinedInput />}
-              renderValue={(selected) => {
-                if (selected.length === 0) {
-                  return <em>Tất cả</em>;
-                }
-                return selected.join(", ");
-              }}
-              MenuProps={MenuProps}
+              label="Độ dày"
+              onChange={handleChangeFunction}
               inputProps={{ "aria-label": "Without label" }}
             >
-              <MenuItem disabled value="">
+              <MenuItem value="All">
                 <em>Tất cả</em>
               </MenuItem>
-              {names.map((name) => (
-                <MenuItem
-                  key={name}
-                  value={name}
-                  style={getStyles(name, colorSelected, theme)}
-                >
-                  {name}
+              {functionType.map((name, key) => (
+                <MenuItem key={key} value={name.id}>
+                  {name.ft_name}
                 </MenuItem>
               ))}
             </Select>
@@ -466,68 +522,52 @@ export default function Data(props) {
         </Grid>
         <Grid item xs={1}>
           <MyFormControl fullWidth>
-            <InputLabel id="thickess-select-label">Độ dày</InputLabel>
+            <InputLabel id="event-select-label">Thao tác</InputLabel>
             <Select
-              labelId="thickess-select-label"
-              id="thickess-select"
-              value={thicknessSelected}
+              labelId="event-select-label"
+              id="event-select"
+              value={eventSelected}
               displayEmpty
               label="Độ dày"
-              onChange={(e) => setThicknessSelected(e.target.value)}
+              onChange={(e) => setEventSelected(e.target.value)}
               inputProps={{ "aria-label": "Without label" }}
             >
-              <MenuItem value="">
+              <MenuItem value="All">
                 <em>Tất cả</em>
               </MenuItem>
-              <MenuItem value="Mỏng">Mỏng</MenuItem>
-              <MenuItem value="Vừa">Vừa</MenuItem>
-              <MenuItem value="Dày">Dày</MenuItem>
+              {eventType.map((name, key) => (
+                <MenuItem
+                  key={key}
+                  value={name.id}
+                  style={getStyles(name, functionSelected, theme)}
+                >
+                  {name.et_name}
+                </MenuItem>
+              ))}
             </Select>
           </MyFormControl>
         </Grid>
-        <Grid item xs={1}>
-          <MyFormControl fullWidth>
-            <InputLabel id="softness-select-label">Độ dày</InputLabel>
-            <Select
-              labelId="softness-select-label"
-              id="softness-select"
-              value={softnessSelected}
-              displayEmpty
-              label="Độ dày"
-              onChange={(e) => setSoftnessSelected(e.target.value)}
-              inputProps={{ "aria-label": "Without label" }}
-            >
-              <MenuItem value="">
-                <em>Tất cả</em>
-              </MenuItem>
-              <MenuItem value="Mềm">Mềm</MenuItem>
-              <MenuItem value="Vừa">Vừa</MenuItem>
-              <MenuItem value="Cứng">Cứng</MenuItem>
-            </Select>
-          </MyFormControl>
-        </Grid>
-        <Grid item xs={1}>
-          <MyFormControl fullWidth>
-            <InputLabel id="elasticity-select-label">Độ co giãn</InputLabel>
-            <Select
-              labelId="elasticity-select-label"
-              id="elasticity-select"
-              value={elasticitySelected}
-              displayEmpty
-              label="Độ co giãn"
-              onChange={(e) => setElasticitySelected(e.target.value)}
-              inputProps={{ "aria-label": "Without label" }}
-            >
-              <MenuItem value="">
-                <em>Tất cả</em>
-              </MenuItem>
-              <MenuItem value="Không">Không</MenuItem>
-              <MenuItem value="Vừa">Vừa</MenuItem>
-              <MenuItem value="Có">Có</MenuItem>
-            </Select>
-          </MyFormControl>
-        </Grid>
-        <Grid item xs={4}></Grid>
+        <LocalizationProvider dateAdapter={AdapterDateFns}>
+          <Grid item xs={2}>
+            <DesktopDatePicker
+              label="Từ ngày"
+              inputFormat="dd/MM/yyyy"
+              value={startDate}
+              onChange={handleChangeStartDate}
+              renderInput={(params) => <TextField size="small" {...params} />}
+            />
+          </Grid>
+          <Grid item xs={2}>
+            <DesktopDatePicker
+              label="Đến ngày"
+              inputFormat="dd/MM/yyyy"
+              value={endDate}
+              onChange={handleChangeEndDate}
+              renderInput={(params) => <TextField size="small" {...params} />}
+            />
+          </Grid>
+        </LocalizationProvider>
+        <Grid item xs={2}></Grid>
         <Grid item xs={2}>
           <Button
             variant="outlined"
@@ -668,6 +708,19 @@ export default function Data(props) {
                 </Grid>
                 <Grid item xs={12} sx={{ textAlign: "center" }}>
                   <Typography variant="h5">Nhật ký hoạt động</Typography>
+                  <Typography sx={{ fontSize: 14, fontStyle: "italic" }}>
+                    {count === 0
+                      ? `(Từ ngày: ${format(
+                          startD,
+                          "dd-MM-yyyy"
+                        )} --- Đến ngày: 
+                    ${format(endD, "dd-MM-yyyy")})`
+                      : `(Từ ngày: ${format(
+                          startDate,
+                          "dd-MM-yyyy"
+                        )} --- Đến ngày: 
+                    ${format(endDate, "dd-MM-yyyy")})`}
+                  </Typography>
                 </Grid>
               </Grid>
               <TableContainer>

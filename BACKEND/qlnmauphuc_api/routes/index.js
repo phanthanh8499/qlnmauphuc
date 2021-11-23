@@ -2437,14 +2437,54 @@ router.post(`/editUserPermissions`, function (req, res) {
   );
 });
 
-router.get(`/getActivityLog`, function (req, res) {
-  const { id } = req.params;
-  pool.query(
-    `SELECT log.*, users.user_username, eventtype.et_name, functiontype.ft_name FROM log
+router.post(`/getActivityLog`, function (req, res) {
+  const { functiontypeid, eventtypeid, startDate, endDate } = req.body;
+  var functionString = "";
+  var eventtypeString = "";
+  if (functiontypeid !== "All"){
+    functionString = `AND eventtype.et_functiontypeid = '${functiontypeid}'`;
+  }
+  if (eventtypeid !== "All"){
+    if (eventtypeid === "Add") {
+      eventtypeString = `AND (log_eventtypeid = 'APF' OR log_eventtypeid = 'ACF' OR log_eventtypeid = 'ACA' OR log_eventtypeid = 'ASA')`;
+    } else if (eventtypeid === "Edit") {
+      eventtypeString = `AND (log_eventtypeid = 'EPF' OR log_eventtypeid = 'ECF' OR log_eventtypeid = 'ECA' OR log_eventtypeid = 'ESA')`;
+    } else if (eventtypeid === "Delete") {
+      eventtypeString = `AND (log_eventtypeid = 'DPF' OR log_eventtypeid = 'DCF' OR log_eventtypeid = 'DCA' OR log_eventtypeid = 'DSA')`;
+    } else if (eventtypeid === "Cancel") {
+      eventtypeString = `AND log_eventtypeid = 'COF'`;
+    } else if (eventtypeid === "Processing") {
+      eventtypeString = `AND log_eventtypeid = 'POF'`;
+    } else {
+      eventtypeString = `AND log_eventtypeid = '${eventtypeid}'`;
+    }
+  }  
+  console.log(functionString);
+  console.log(eventtypeString);
+  console.log(startDate);
+  console.log(endDate);
+    pool.query(
+      `SELECT log.*, users.user_username, eventtype.et_name, functiontype.ft_name FROM log
 INNER JOIN users ON users.id = log.log_userid
 INNER JOIN eventtype ON eventtype.id = log_eventtypeid
 INNER JOIN functiontype ON functiontype.id = eventtype.et_functiontypeid
+WHERE log_date BETWEEN '${startDate}' AND '${endDate}'
+${functionString}
+${eventtypeString}
 ORDER BY log_date DESC`,
+      (error, response) => {
+        if (error) {
+          console.log(error);
+        } else {
+          res.send(response.rows);
+        }
+      }
+    );
+});
+
+router.get(`/getFunctionTypeData`, function (req, res) {
+  pool.query(
+    `SELECT * FROM functiontype`,
     (error, response) => {
       if (error) {
         console.log(error);
@@ -2453,6 +2493,29 @@ ORDER BY log_date DESC`,
       }
     }
   );
+});
+
+router.get(`/getEventTypeData.:functiontypeid`, function (req, res) {
+  const { functiontypeid } = req.params;
+  var string = "";
+  if (functiontypeid !== "All") {
+    string = `WHERE et_functiontypeid = '${functiontypeid}'`;
+    pool.query(`SELECT * FROM eventtype ${string}`, (error, response) => {
+      if (error) {
+        console.log(error);
+      } else {
+        res.send(response.rows);
+      }
+    });
+  } else {
+    res.send([
+      { id: "Add", et_name: "Thêm mới" },
+      { id: "Edit", et_name: "Chỉnh sửa" },
+      { id: "Delete", et_name: "Xoá" },
+      { id: "Cancel", et_name: "Huỷ bỏ" },
+      { id: "Processing", et_name: "Duyệt" },
+    ]);
+  }
 });
 
 module.exports = router;

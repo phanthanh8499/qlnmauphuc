@@ -8,7 +8,7 @@ import {
   Paper,
   Tab,
 } from "@mui/material";
-import { getProductData } from "../../redux/Action";
+import { getActivityLogData, getProductData } from "../../redux/Action";
 import { makeStyles } from "@mui/styles";
 import { styled } from "@mui/material/styles";
 import { Box } from "@mui/system";
@@ -17,6 +17,7 @@ import TabContext from "@mui/lab/TabContext";
 import TabPanel from "@mui/lab/TabPanel";
 import Data from "./Data";
 import axios from "axios";
+import { format } from "date-fns";
 
 const MyBadge = styled(Badge)(({ theme }) => ({
   "& .MuiBadge-badge": {
@@ -42,24 +43,38 @@ const useStyles = makeStyles((theme) => ({
 
 export default function AdminLog() {
   const classes = useStyles();
-  const products = useSelector((state) => state.products);
-  const { productData, error } = products;
+  const log = useSelector((state) => state.log);
+  const { logData, loading } = log;
   const dispatch = useDispatch();
 
   const [data, setData] = useState();
-  const [loading, setLoading] = useState(true);
+  // const [loading, setLoading] = useState(true);
+  const [startD, setStartD] = useState(new Date());
+  const [endD, setEndD] = useState(new Date());
   useEffect(() => {
-    async function getActivityLog(){
-      const {data} = await axios.get(`/getActivityLog`)
-      for (let i = 0; i < data.length; i++) {
-        data[i] = {...data[i], stt: i+1}
-      }
-      setData(data)
-      setLoading(false);
+    var now = new Date();
+    now.setHours(0, 0, 0, 0);
+    var startDate = new Date(now);
+    var endDate = new Date(now);
+    if (now.toLocaleDateString("en-us", { weekday: "long" }) === "Sunday") {
+      startDate.setDate(startDate.getDate() - startDate.getDay() - 6);
+      endDate.setDate(endDate.getDate() - endDate.getDay());
+      endDate.setHours(23, 59, 59, 0);
+    } else {
+      startDate.setDate(startDate.getDate() - startDate.getDay() + 1);
+      endDate.setDate(endDate.getDate() - endDate.getDay() + 7);
+      endDate.setHours(23, 59, 59, 0);
     }
-    getActivityLog()
-  }, []);
-
+    setStartD(startDate);
+    setEndD(endD);
+    const dataSend = {
+      functiontypeid: "All",
+      eventtypeid: "All",
+      startDate: format(startDate, "yyyy-MM-dd"),
+      endDate: format(endDate, "yyyy-MM-dd HH:mm:ss"),
+    };
+    dispatch(getActivityLogData(dataSend));
+  }, [dispatch]);
 
   return (
     <Grid container component={Paper}>
@@ -78,8 +93,6 @@ export default function AdminLog() {
         >
           <CircularProgress />
         </Grid>
-      ) : error ? (
-        <div>error</div>
       ) : (
         <>
           <Grid item xs={12}>
@@ -87,7 +100,7 @@ export default function AdminLog() {
           </Grid>
 
           <Grid item xs={12}>
-            <Data data={data} />
+            <Data data={logData} startD={startD} endD={endD} />
           </Grid>
         </>
       )}

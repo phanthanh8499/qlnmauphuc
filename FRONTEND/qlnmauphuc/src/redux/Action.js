@@ -55,6 +55,7 @@ import {
   LIET_KE_KHACH_HANG,
   LIET_KE_NHAN_VIEN,
   LIET_KE_QUYEN,
+  LIET_KE_NHAT_KY,
 } from "../constants/Constants";
 
 export const dangNhapKhangHang = (username, password) => async (dispatch) => {
@@ -330,3 +331,13 @@ export const getEcommerceReportLineChart =
     // }
     dispatch({ type: BAO_CAO_DOANH_THU_THUONG_MAI, payload: data });
   };
+
+
+  // ================== NHAT KY HOAT DONG ============================
+export const getActivityLogData = (dataReq) => async (dispatch) => {
+  const { data } = await Axios.post(`/getActivityLog`, dataReq);
+  for (let i = 0; i < data.length; i++) {
+    data[i] = { ...data[i], stt: i + 1 };
+  }
+  dispatch({ type: LIET_KE_NHAT_KY, payload: data });
+};
