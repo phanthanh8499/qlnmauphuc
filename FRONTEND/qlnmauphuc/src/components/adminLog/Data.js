@@ -59,6 +59,7 @@ import { useDispatch } from "react-redux";
 import { getActivityLogData } from "../../redux/Action";
 import { ProductLog } from "./productLog";
 import { ClothLog } from "./clothLog";
+import { UserLog } from "./userLog";
 
 const MyButton = styled(Button)(({ theme }) => ({
   textTransform: "none",
@@ -174,13 +175,18 @@ export default function Data(props) {
 
   const [productLog, setProductLog] = useState(false);
   const closeProductLog = () => {
-    setProductLog(false)
-  }
+    setProductLog(false);
+  };
 
   const [clothLog, setClothLog] = useState(false);
   const closeClothLog = () => {
-    setClothLog(false)
-  }
+    setClothLog(false);
+  };
+
+  const [userLog, setUserLog] = useState(false);
+  const closeUserLog = () => {
+    setUserLog(false);
+  };
 
   const renderForm = () => {
     if (addForm) {
@@ -209,6 +215,15 @@ export default function Data(props) {
           onClose={closeClothLog}
           dataReq={rowSelected}
         ></ClothLog>
+      );
+    }
+    if (userLog) {
+      return (
+        <UserLog
+          open={userLog}
+          onClose={closeUserLog}
+          dataReq={rowSelected}
+        ></UserLog>
       );
     }
     if (detailForm) {
@@ -376,25 +391,27 @@ export default function Data(props) {
       headerName: "Hành động",
       width: 140,
       renderCell: (params) => {
-        if (params.value === "EPF"){
+        if (params.value === "EPF") {
           return (
-            <IconButton onClick={(e) => setProductLog(true)} size="large" >
+            <IconButton onClick={(e) => setProductLog(true)} size="large">
               <VisibilityIcon color="primary" />
             </IconButton>
           );
-        } else if (
-          params.value === "ECF" ||
-          params.value === "ESA" ||
-          params.value === "ECA"
-        ) {
+        } else if (params.value === "ECF") {
           return (
             <IconButton onClick={(e) => setClothLog(true)} size="large">
               <VisibilityIcon color="primary" />
             </IconButton>
           );
+        } else if (params.value === "ESA" || params.value === "ECA") {
+          return (
+            <IconButton onClick={(e) => setUserLog(true)} size="large">
+              <VisibilityIcon color="primary" />
+            </IconButton>
+          );
         } else {
           return <></>;
-        } 
+        }
       },
     },
   ];
@@ -421,18 +438,18 @@ export default function Data(props) {
 
   const theme = useTheme();
   const handleChangeFunction = async (event) => {
-    var string = event.target.value
+    var string = event.target.value;
     setFunctionSelected(string);
-    console.log(string)
-    const {data} = await axios.get(`/getEventTypeData.${string}`);
-    setEventType(data)
-    if(string === "All"){
+    console.log(string);
+    const { data } = await axios.get(`/getEventTypeData.${string}`);
+    setEventType(data);
+    if (string === "All") {
       setEventSelected("All");
     }
   };
 
   const [dataBackup, setDataBackup] = useState([]);
-  const [count, setCount] = useState(0)
+  const [count, setCount] = useState(0);
   const handleClickSearch = () => {
     // let temp = [...data];
     if (
@@ -461,7 +478,7 @@ export default function Data(props) {
     dispatch(getActivityLogData(dataSend));
     // setDataRender(temp);
     // setDataBackup(temp);
-    setCount(count+1);
+    setCount(count + 1);
   };
 
   const liveSearch = (event) => {
@@ -496,22 +513,22 @@ export default function Data(props) {
   const [thicknessSelected, setThicknessSelected] = useState("");
   const [softnessSelected, setSoftnessSelected] = useState("");
   const [elasticitySelected, setElasticitySelected] = useState("");
-  const [functionType, setFunctionType] = useState([])
+  const [functionType, setFunctionType] = useState([]);
   const [functionSelected, setFunctionSelected] = useState("All");
-  const [eventType, setEventType] = useState([])
+  const [eventType, setEventType] = useState([]);
   const [eventSelected, setEventSelected] = useState("All");
   useEffect(() => {
-    async function getFunctionType(){
-      const {data} = await axios.get(`/getFunctionTypeData`);
-      setFunctionType(data)
+    async function getFunctionType() {
+      const { data } = await axios.get(`/getFunctionTypeData`);
+      setFunctionType(data);
     }
-    async function getEventType(){
-      const {data} = await axios.get(`/getEventTypeData.All`);
+    async function getEventType() {
+      const { data } = await axios.get(`/getEventTypeData.All`);
       setEventType(data);
     }
     getFunctionType();
-    getEventType()
-  },[])
+    getEventType();
+  }, []);
 
   const eventTypes = [
     { id: "Add", et_name: "Thêm mới" },
@@ -728,7 +745,11 @@ export default function Data(props) {
                 NoRowsOverlay: CustomNoRowsOverlay,
               }}
               onRowClick={(param) =>
-                setRowSelected({ id: param.row.id, eventtypeid: param.row.log_eventtypeid, productid: param.row.log_description.substring(29) })
+                setRowSelected({
+                  id: param.row.id,
+                  eventtypeid: param.row.log_eventtypeid,
+                  description: param.row.log_description,
+                })
               }
               onSelectionModelChange={(ids) => {
                 const selectedIDs = new Set(ids);

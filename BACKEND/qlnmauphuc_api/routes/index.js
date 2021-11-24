@@ -1305,19 +1305,28 @@ router.post("/admin/users/edit", function (req, res) {
   const {
     id,
     user_username,
-    user_address,
-    user_tel,
     user_firstname,
     user_lastname,
+    user_address,
+    user_tel,
     user_status,
+    user_email,
+    user_wardid,
     user_typeid,
     user_date,
     user_avatar,
-    user_email,
     fileRecv,
-    user_city,
-    user_wardid,
     FRONTEND_URL,
+    uld_old_firstname,
+    uld_old_lastname,
+    uld_old_address,
+    uld_old_tel,
+    uld_old_status,
+    uld_old_email,
+    uld_old_wardid,
+    log_date,
+    log_userid,
+    log_eventtypeid,
   } = req.body;
   console.log(
     id,
@@ -1335,6 +1344,20 @@ router.post("/admin/users/edit", function (req, res) {
     user_wardid,
     FRONTEND_URL
   );
+  console.log("================================================")
+  console.log(
+    uld_old_firstname,
+    uld_old_lastname,
+    uld_old_address,
+    uld_old_tel,
+    uld_old_status,
+    uld_old_email,
+    uld_old_wardid,
+    log_date,
+    log_userid,
+    log_eventtypeid
+  );
+
   if (parseInt(fileRecv) === 1) {
     const file = req.files.file;
     const filename = Date.now() + "-" + id + "-" + file.name;
@@ -1375,21 +1398,29 @@ WHERE users.id = '${id}'`,
               }
             }
           );
-          // res.send({
-          //   id: parseInt(id),
-          //   user_username: user_username,
-          //   user_address: user_address,
-          //   user_tel: user_tel,
-          //   user_city: user_city,
-          //   user_firstname: user_firstname,
-          //   user_lastname: user_lastname,
-          //   user_status: user_status,
-          //   user_typeid: user_typeid,
-          //   user_date: user_date,
-          //   user_avatar: image_path,
-          //   user_email: user_email,
-          //   user_wardid: parseInt(user_wardid),
-          // });
+          pool.query(
+            `INSERT INTO log(
+	log_userid, log_eventtypeid, log_date, log_description)
+	VALUES ('${log_userid}', '${log_eventtypeid}',  '${log_date}',  'Chỉnh sửa thông tin tài khoản ${user_username} (ID: ${id})') RETURNING id;`,
+            (error, response) => {
+              if (error) {
+                console.log(error);
+              } else {
+                pool.query(
+                  `INSERT INTO user_log_detail(
+	uld_logid, uld_old_firstname, uld_new_firstname, uld_old_lastname, uld_new_lastname, uld_old_address, uld_new_address, uld_old_tel, uld_new_tel, uld_old_email, uld_new_email, uld_old_wardid, uld_new_wardid, uld_old_status, uld_new_status)
+	VALUES ('${response.rows[0].id}', '${uld_old_firstname}', '${user_firstname}', '${uld_old_lastname}', '${user_lastname}', '${uld_old_address}', '${user_address}', '${uld_old_tel}', '${user_tel}', '${uld_old_email}', '${user_email}', '${uld_old_wardid}', '${user_wardid}', '${uld_old_status}', '${user_status}')`,
+                  (error, response) => {
+                    if (error) {
+                      console.log(error);
+                    } else {
+                      console.log("Ghi nhật ký thành công!!!")
+                    }
+                  }
+                );
+              }
+            }
+          );
         }
       }
     );
@@ -1417,21 +1448,29 @@ WHERE users.id = '${id}'`,
               }
             }
           );
-          // res.send({
-          //   id: parseInt(id),
-          //   user_username: user_username,
-          //   user_address: user_address,
-          //   user_tel: user_tel,
-          //   user_city: user_city,
-          //   user_firstname: user_firstname,
-          //   user_lastname: user_lastname,
-          //   user_status: user_status,
-          //   user_typeid: user_typeid,
-          //   user_date: user_date,
-          //   user_avatar: user_avatar,
-          //   user_email: user_email,
-          //   user_wardid: parseInt(user_wardid),
-          // });
+          pool.query(
+            `INSERT INTO log(
+	log_userid, log_eventtypeid, log_date, log_description)
+	VALUES ('${log_userid}', '${log_eventtypeid}',  '${log_date}',  'Chỉnh sửa thông tin tài khoản ${user_username} (ID: ${id})') RETURNING id;`,
+            (error, response) => {
+              if (error) {
+                console.log(error);
+              } else {
+                pool.query(
+                  `INSERT INTO user_log_detail(
+	uld_logid, uld_old_firstname, uld_new_firstname, uld_old_lastname, uld_new_lastname, uld_old_address, uld_new_address, uld_old_tel, uld_new_tel, uld_old_email, uld_new_email, uld_old_wardid, uld_new_wardid, uld_old_status, uld_new_status)
+	VALUES ('${response.rows[0].id}', '${uld_old_firstname}', '${user_firstname}', '${uld_old_lastname}', '${user_lastname}', '${uld_old_address}', '${user_address}', '${uld_old_tel}', '${user_tel}', '${uld_old_email}', '${user_email}', '${uld_old_wardid}', '${user_wardid}', '${uld_old_status}', '${user_status}')`,
+                  (error, response) => {
+                    if (error) {
+                      console.log(error);
+                    } else {
+                      console.log("Ghi nhật ký thành công!!!");
+                    }
+                  }
+                );
+              }
+            }
+          );
         }
       }
     );
@@ -2613,6 +2652,29 @@ router.get(`/getClothLogDetail.:id`, function (req,res) {
       res.send(response.rows[0]);
     }
   })
+})
+
+router.get(`/getUserLogDetail.:id`, function (req,res) {
+  const {id} = req.params;
+  pool.query(
+    `SELECT user_log_detail.*, 
+CONCAT(uld_old_address, ', ', old_ward.ward_prefix, ' ', old_ward.ward_name, ', ', old_district.district_prefix, ' ', old_district.district_name, ', ', old_province.province_name) AS uld_old_address,
+CONCAT(uld_new_address, ', ', new_ward.ward_prefix, ' ', new_ward.ward_name, ', ', new_district.district_prefix, ' ', new_district.district_name, ', ', new_province.province_name) AS uld_new_address FROM user_log_detail
+INNER JOIN ward AS new_ward ON new_ward.id  = user_log_detail.uld_new_wardid
+INNER JOIN district AS new_district ON new_district.id = new_ward.ward_districtid
+INNER JOIN province AS new_province ON new_province.id = new_ward.ward_provinceid
+INNER JOIN ward AS old_ward ON old_ward.id  = user_log_detail.uld_old_wardid
+INNER JOIN district AS old_district ON old_district.id = old_ward.ward_districtid
+INNER JOIN province AS old_province ON old_province.id = old_ward.ward_provinceid
+WHERE uld_logid = '${id}'`,
+    (error, response) => {
+      if (error) {
+        console.log(error);
+      } else {
+        res.send(response.rows[0]);
+      }
+    }
+  );
 })
 
 module.exports = router;

@@ -7,6 +7,7 @@ import {
   Divider,
   CircularProgress,
   Typography,
+  FormControlLabel,
 } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
@@ -14,7 +15,7 @@ import { useSnackbar } from "notistack";
 import axios from "axios";
 import makeStyles from "@mui/styles/makeStyles";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
-import { NumberFormatCustom } from "../../utility/Utility";
+import { IOSSwitch, NumberFormatCustom } from "../../utility/Utility";
 
 const useStyle = makeStyles((theme) => ({
   root: {
@@ -63,7 +64,7 @@ const center = {
   justifyContent: "center",
 };
 
-export function ClothLog(props) {
+export function UserLog(props) {
   const classes = useStyle();
   const { enqueueSnackbar } = useSnackbar();
   const dispatch = useDispatch();
@@ -73,19 +74,13 @@ export function ClothLog(props) {
   const [data, setData] = useState([]);
   const [clothTypeList, setClothTypeList] = useState([]);
   useEffect(() => {
-    async function getClothLogDetail() {
-      const { data } = await axios.get(`/getClothLogDetail.${dataReq.id}`);
+    async function getUserLogDetail() {
+      const { data } = await axios.get(`/getUserLogDetail.${dataReq.id}`);
       console.log(data)
       setData(data);
-    }
-    getClothLogDetail();
-    async function getClothType() {
-      const { data } = await axios.get("/getClothTypeData");
-      console.log(data)
-      setClothTypeList(data);
       setLoading(false);
     }
-    getClothType();
+    getUserLogDetail();
   }, []);
 
   return (
@@ -117,26 +112,194 @@ export function ClothLog(props) {
                 <Typography
                   sx={{ color: "#1976d2", fontSize: 20, fontWeight: 600 }}
                 >
-                  Chi tiết chỉnh sửa vải
+                  Chi tiết chỉnh sửa tài khoản
                 </Typography>
                 <Typography
                   sx={{ color: "#1976d2", fontSize: 16, fontWeight: 600 }}
                 >
                   {dataReq.description.substring(
-                    dataReq.description.lastIndexOf("(ID")
+                    dataReq.description.lastIndexOf("tài khoản") + 10
                   )}
                 </Typography>
-                <Divider sx={{mt: 0.5, mb: 0.5}}/>
+                <Divider sx={{ mt: 0.5, mb: 0.5 }} />
               </Grid>
-              {data.cld_old_typeid === data.cld_new_typeid ? null : (
+              {data.uld_new_lastname === data.uld_old_lastname ? null : (
                 <Grid item xs={12} sx={center}>
                   <TextField
-                    id="cld_old_typeid"
-                    label="Loại vải cũ"
+                    id="uld_old_lastname"
+                    label="Họ cũ"
+                    defaultValue={data.uld_old_lastname}
+                    margin="normal"
+                    size="small"
+                    error
+                    InputLabelProps={{
+                      shrink: true,
+                    }}
+                    InputProps={{
+                      readOnly: true,
+                    }}
+                  />
+                  <ArrowForwardIcon color="primary" />
+                  <TextField
+                    id="uld_new_lastname"
+                    label="Họ mới"
+                    color="success"
+                    defaultValue={data.uld_new_lastname}
+                    margin="normal"
+                    size="small"
+                    focused
+                    InputLabelProps={{
+                      shrink: true,
+                    }}
+                    InputProps={{
+                      readOnly: true,
+                    }}
+                  />
+                </Grid>
+              )}
+              {data.uld_old_firstname === data.uld_new_firstname ? null : (
+                <Grid item xs={12} sx={center}>
+                  <TextField
+                    id="uld_old_firstname"
+                    label="Tên cũ"
+                    defaultValue={data.uld_old_firstname}
+                    margin="normal"
+                    size="small"
+                    error
+                    InputLabelProps={{
+                      shrink: true,
+                    }}
+                    InputProps={{
+                      readOnly: true,
+                    }}
+                  />
+                  <ArrowForwardIcon color="primary" />
+                  <TextField
+                    id="uld_new_firstname"
+                    label="Tên mới"
+                    color="success"
+                    defaultValue={data.uld_new_firstname}
+                    margin="normal"
+                    size="small"
+                    focused
+                    InputLabelProps={{
+                      shrink: true,
+                    }}
+                    InputProps={{
+                      readOnly: true,
+                    }}
+                  />
+                </Grid>
+              )}
+              {data.uld_old_tel === data.uld_new_tel ? null : (
+                <Grid item xs={12} sx={center}>
+                  <TextField
+                    id="uld_old_tel"
+                    label="Số điện thoại cũ"
+                    defaultValue={data.uld_old_tel}
+                    margin="normal"
+                    size="small"
+                    error
+                    InputLabelProps={{
+                      shrink: true,
+                    }}
+                    InputProps={{
+                      readOnly: true,
+                    }}
+                  />
+                  <ArrowForwardIcon color="primary" />
+                  <TextField
+                    id="uld_new_tel"
+                    label="Số điện thoại mới"
+                    color="success"
+                    defaultValue={data.uld_new_tel}
+                    margin="normal"
+                    size="small"
+                    focused
+                    InputLabelProps={{
+                      shrink: true,
+                    }}
+                    InputProps={{
+                      readOnly: true,
+                    }}
+                  />
+                </Grid>
+              )}
+              {data.uld_old_email === data.uld_new_email ? null : (
+                <Grid item xs={12} sx={center}>
+                  <TextField
+                    id="uld_old_email"
+                    label="Email cũ"
+                    defaultValue={data.uld_old_email}
+                    margin="normal"
+                    size="small"
+                    error
+                    InputLabelProps={{
+                      shrink: true,
+                    }}
+                    InputProps={{
+                      readOnly: true,
+                    }}
+                  />
+                  <ArrowForwardIcon color="primary" />
+                  <TextField
+                    id="uld_new_email"
+                    label="Email mới"
+                    color="success"
+                    defaultValue={data.uld_new_email}
+                    margin="normal"
+                    size="small"
+                    focused
+                    InputLabelProps={{
+                      shrink: true,
+                    }}
+                    InputProps={{
+                      readOnly: true,
+                    }}
+                  />
+                </Grid>
+              )}
+              {data.uld_old_address === data.uld_new_address ? null : (
+                <Grid item xs={12} sx={center}>
+                  <TextField
+                    id="uld_old_address"
+                    label="Địa chỉ cũ"
+                    defaultValue={data.uld_old_address}
+                    margin="normal"
+                    size="small"
+                    error
+                    InputLabelProps={{
+                      shrink: true,
+                    }}
+                    InputProps={{
+                      readOnly: true,
+                    }}
+                  />
+                  <ArrowForwardIcon color="primary" />
+                  <TextField
+                    id="uld_new_address"
+                    label="Địa chỉ mới"
+                    color="success"
+                    defaultValue={data.uld_new_address}
+                    margin="normal"
+                    size="small"
+                    focused
+                    InputLabelProps={{
+                      shrink: true,
+                    }}
+                    InputProps={{
+                      readOnly: true,
+                    }}
+                  />
+                </Grid>
+              )}
+              {data.uld_old_status === data.uld_new_status ? null : (
+                <Grid item xs={12} sx={center}>
+                  <TextField
+                    id="uld_old_status"
+                    label="Trạng thái cũ"
                     defaultValue={
-                      clothTypeList.filter(
-                        (item) => item.id === data.cld_old_typeid
-                      )[0].ct_name
+                      data.uld_old_status === "block" ? "Đã khóa" : "Hoạt động"
                     }
                     margin="normal"
                     size="small"
@@ -150,13 +313,11 @@ export function ClothLog(props) {
                   />
                   <ArrowForwardIcon color="primary" />
                   <TextField
-                    id="cld_new_typeid"
-                    label="Loại vải mới"
+                    id="uld_new_status"
+                    label="Trạng thái mới"
                     color="success"
                     defaultValue={
-                      clothTypeList.filter(
-                        (item) => item.id === data.cld_new_typeid
-                      )[0].ct_name
+                      data.uld_new_status === "block" ? "Đã khóa" : "Hoạt động"
                     }
                     margin="normal"
                     size="small"
@@ -166,76 +327,6 @@ export function ClothLog(props) {
                     }}
                     InputProps={{
                       readOnly: true,
-                    }}
-                  />
-                </Grid>
-              )}
-              {data.cld_old_name === data.cld_new_name ? null : (
-                <Grid item xs={12} sx={center}>
-                  <TextField
-                    id="cld_old_name"
-                    label="Tên vải cũ"
-                    defaultValue={data.cld_old_name}
-                    margin="normal"
-                    size="small"
-                    error
-                    InputLabelProps={{
-                      shrink: true,
-                    }}
-                    InputProps={{
-                      readOnly: true,
-                    }}
-                  />
-                  <ArrowForwardIcon color="primary" />
-                  <TextField
-                    id="cld_new_name"
-                    label="Tên vải mới"
-                    color="success"
-                    defaultValue={data.cld_new_name}
-                    margin="normal"
-                    size="small"
-                    focused
-                    InputLabelProps={{
-                      shrink: true,
-                    }}
-                    InputProps={{
-                      readOnly: true,
-                    }}
-                  />
-                </Grid>
-              )}
-              {data.cld_old_quantity === data.cld_new_quantity ? null : (
-                <Grid item xs={12} sx={center}>
-                  <TextField
-                    id="cld_old_quantity"
-                    label="Số lượng vải cũ"
-                    defaultValue={data.cld_old_quantity}
-                    margin="normal"
-                    size="small"
-                    error
-                    InputLabelProps={{
-                      shrink: true,
-                    }}
-                    InputProps={{
-                      readOnly: true,
-                      inputComponent: NumberFormatCustom,
-                    }}
-                  />
-                  <ArrowForwardIcon color="primary" />
-                  <TextField
-                    id="cld_new_quantity"
-                    label="Số lượng vải mới"
-                    color="success"
-                    defaultValue={data.cld_name_quantity}
-                    margin="normal"
-                    size="small"
-                    focused
-                    InputLabelProps={{
-                      shrink: true,
-                    }}
-                    InputProps={{
-                      readOnly: true,
-                      inputComponent: NumberFormatCustom,
                     }}
                   />
                 </Grid>

@@ -20,6 +20,7 @@ import { editUser } from "../../../redux/Action";
 import { FRONTEND_URL, LOCAL_PATH } from "../../../constants/Constants";
 import CameraAltIcon from "@mui/icons-material/CameraAlt";
 import { IOSSwitch, MyFormControl, MyTextField } from "../../utility/Utility";
+import { format } from "date-fns";
 
 const useStyle = makeStyles((theme) => ({
   root: {
@@ -50,7 +51,7 @@ function DetailForm(props) {
   const classes = useStyle();
   const { enqueueSnackbar } = useSnackbar();
   const dispatch = useDispatch();
-  const { onClose, id } = props;
+  const { onClose, id, userid } = props;
 
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
@@ -76,7 +77,7 @@ function DetailForm(props) {
   const [provinceData, setProvinceData] = useState([]);
   const [districtData, setDistrictData] = useState([]);
   const [wardData, setWardData] = useState([]);
-
+  const [data, setData] = useState()
   useEffect(() => {
     async function getProvinceData() {
       const { data } = await axios.get(`/getProvince`);
@@ -84,6 +85,7 @@ function DetailForm(props) {
     }
     async function getDetailUser() {
       const { data } = await axios.get(`/getDetailUser.${id}`);
+      setData(data[0]);
       if (data[0].user_wardid !== null) {
         const data01 = await axios.get(`/getAddress.${data[0].user_wardid}`);
         const data02 = await axios.get(
@@ -231,7 +233,6 @@ function DetailForm(props) {
     formData.append("user_typeid", type.trim());
     formData.append("user_date", date.trim());
     formData.append("user_avatar", avatar.trim());
-    formData.append("user_city", city.trim());
     formData.append("FRONTEND_URL", FRONTEND_URL);
     if (!province) {
       enqueueSnackbar("Vui lòng chọn Tỉnh/Thành", {
@@ -255,6 +256,19 @@ function DetailForm(props) {
       return false;
     }
     formData.append("user_wardid", parseInt(ward));
+
+    formData.append("uld_old_firstname", data.user_firstname);
+    formData.append("uld_old_lastname", data.user_lastname);
+    formData.append("uld_old_address", data.user_address);
+    formData.append("uld_old_email", data.user_email);
+    formData.append("uld_old_tel", data.user_tel);
+    formData.append("uld_old_status", data.user_status);
+    formData.append("uld_old_wardid", data.user_wardid);
+    const now = new Date();
+    formData.append("log_date", format(now, "yyyy-MM-dd HH:mm:ss"));
+    formData.append("log_userid", userid);
+    formData.append("log_eventtypeid", "ESA");
+
     if (file) {
       formData.append("file", file);
       formData.append("fileName", fileName);

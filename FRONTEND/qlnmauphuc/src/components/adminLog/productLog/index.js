@@ -117,7 +117,14 @@ export function ProductLog(props) {
                 >
                   Chi tiết chỉnh sửa sản phẩm {dataReq.productid}
                 </Typography>
-                <Divider sx={{mt: 0.5, mb: 0.5}}/>
+                <Typography
+                  sx={{ color: "#1976d2", fontSize: 16, fontWeight: 600 }}
+                >
+                  {dataReq.description.substring(
+                    dataReq.description.lastIndexOf("sản phẩm") + 9
+                  )}
+                </Typography>
+                <Divider sx={{ mt: 0.5, mb: 0.5 }} />
               </Grid>
               {data.pld_old_typeid === data.pld_new_typeid ? null : (
                 <Grid item xs={12} sx={center}>

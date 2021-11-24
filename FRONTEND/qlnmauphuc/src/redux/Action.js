@@ -104,8 +104,6 @@ export const addUser = (dataReq) => async (dispatch) => {
 };
 
 export const editUser = (dataReq) => async (dispatch) => {
-  const abc = {};
-  dataReq.forEach((value, key) => (abc[key] = value));
   const { data } = await Axios.post(`/admin/users/edit`, dataReq);
   dispatch({ type: SUA_USER, payload: data });
   // console.log(data);
