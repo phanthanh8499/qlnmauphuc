@@ -277,8 +277,8 @@ WHERE users.user_typeid != 'KH' AND user_isdeleted = 'false'`,
   );
 });
 
-router.get("/admin/users/delete.:id", function (req, res) {
-  const { id } = req.params;
+router.post("/admin/users/delete", function (req, res) {
+  const { id, log_date, log_userid, log_eventtypeid, user_username } = req.body;
   pool.query(
     `UPDATE users
 	SET user_isdeleted='true'
@@ -288,6 +288,18 @@ router.get("/admin/users/delete.:id", function (req, res) {
         console.log(error);
       } else {
         res.send(id);
+        pool.query(
+          `INSERT INTO log(
+	log_userid, log_eventtypeid, log_date, log_description)
+	VALUES ('${log_userid}', '${log_eventtypeid}',  '${log_date}',  'Xoá tài khoản ${user_username} (ID: ${id})');`,
+          (error, response) => {
+            if (error) {
+              console.log(error);
+            } else {
+              console.log("Ghi nhật ký thành công!");
+            }
+          }
+        );
       }
     }
   );
@@ -1091,7 +1103,8 @@ router.get("/getDetailUser.:id", function (req, res) {
 });
 
 router.post("/admin/users/changeStatus", function (req, res) {
-  const { id, status } = req.body;
+  const { id, status, log_date, log_userid, log_eventtypeid, user_username } = req.body;
+  console.log(id, status, log_date, log_userid, log_eventtypeid, user_username);
   pool.query(
     `UPDATE users
 	SET user_status='${status}'
@@ -1101,7 +1114,34 @@ router.post("/admin/users/changeStatus", function (req, res) {
         console.log(error);
         res.send("ERROR");
       } else {
-        res.send("OK");
+        res.send({ id: id, status: status });
+        if(status === "block"){
+          pool.query(
+            `INSERT INTO log(
+	log_userid, log_eventtypeid, log_date, log_description)
+	VALUES ('${log_userid}', '${log_eventtypeid}',  '${log_date}',  'Khoá tài khoản ${user_username} (ID: ${id})');`,
+            (error, response) => {
+              if (error) {
+                console.log(error);
+              } else {
+                console.log("Ghi nhật ký thành công!");
+              }
+            }
+          );
+        } else {
+          pool.query(
+            `INSERT INTO log(
+	log_userid, log_eventtypeid, log_date, log_description)
+	VALUES ('${log_userid}', '${log_eventtypeid}',  '${log_date}',  'Mở khoá tài khoản ${user_username} (ID: ${id})');`,
+            (error, response) => {
+              if (error) {
+                console.log(error);
+              } else {
+                console.log("Ghi nhật ký thành công!");
+              }
+            }
+          );
+        }
       }
     }
   );
@@ -1124,6 +1164,9 @@ router.post("/admin/users/add", async function (req, res) {
     user_isdeleted,
     fileRecv,
     FRONTEND_URL,
+    log_date,
+    log_userid,
+    log_eventtypeid,
   } = req.body;
   const salt = await bcrypt.genSalt(10);
   const hashPass = await bcrypt.hash(user_password, salt);
@@ -1200,6 +1243,18 @@ WHERE users.id = '${id}'`,
               }
             }
           );
+          pool.query(
+            `INSERT INTO log(
+	log_userid, log_eventtypeid, log_date, log_description)
+	VALUES ('${log_userid}', '${log_eventtypeid}',  '${log_date}',  'Thêm mới tài khoản ${user_username} (ID: ${id})');`,
+            (error, response) => {
+              if (error) {
+                console.log(error);
+              } else {
+                console.log("Ghi nhật ký thành công!");
+              }
+            }
+          );
         }
       }
     );
@@ -1225,6 +1280,18 @@ WHERE users.id = '${id}'`,
                 console.log(error);
               } else {
                 res.send(response.rows[0]);
+              }
+            }
+          );
+          pool.query(
+            `INSERT INTO log(
+	log_userid, log_eventtypeid, log_date, log_description)
+	VALUES ('${log_userid}', '${log_eventtypeid}',  '${log_date}',  'Thêm mới tài khoản ${user_username} (ID: ${id})');`,
+            (error, response) => {
+              if (error) {
+                console.log(error);
+              } else {
+                console.log("Ghi nhật ký thành công!");
               }
             }
           );
@@ -2455,6 +2522,10 @@ router.post(`/getActivityLog`, function (req, res) {
       eventtypeString = `AND log_eventtypeid = 'COF'`;
     } else if (eventtypeid === "Processing") {
       eventtypeString = `AND log_eventtypeid = 'POF'`;
+    } else if (eventtypeid === "Block") {
+      eventtypeString = `AND (log_eventtypeid = 'BCA' OR log_eventtypeid = 'BSA')`;
+    } else if (eventtypeid === "Unblock") {
+      eventtypeString = `AND (log_eventtypeid = 'UCA' OR log_eventtypeid = 'USA')`;
     } else {
       eventtypeString = `AND log_eventtypeid = '${eventtypeid}'`;
     }
@@ -2514,8 +2585,34 @@ router.get(`/getEventTypeData.:functiontypeid`, function (req, res) {
       { id: "Delete", et_name: "Xoá" },
       { id: "Cancel", et_name: "Huỷ bỏ" },
       { id: "Processing", et_name: "Duyệt" },
+      { id: "Block", et_name: "Khoá tài khoản" },
+      { id: "Unblock", et_name: "Mở khoá tài khoản" },
     ]);
   }
 });
+
+router.get(`/getProductLogDetail.:id`, function (req,res) {
+  const {id} = req.params;
+  pool.query(`SELECT * FROM product_log_detail WHERE pld_logid = '${id}'`,
+  (error, response) => {
+    if(error){
+      console.log(error);
+    } else {
+      res.send(response.rows[0]);
+    }
+  })
+})
+
+router.get(`/getClothLogDetail.:id`, function (req,res) {
+  const {id} = req.params;
+  pool.query(`SELECT * FROM cloth_log_detail WHERE cld_logid = '${id}'`,
+  (error, response) => {
+    if(error){
+      console.log(error);
+    } else {
+      res.send(response.rows[0]);
+    }
+  })
+})
 
 module.exports = router;

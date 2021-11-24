@@ -1,5 +1,7 @@
 import { Button, InputBase, Menu, Switch, FormControl, TextField, Typography, Link } from "@mui/material";
 import { styled, alpha } from "@mui/material/styles";
+import NumberFormat from "react-number-format";
+import React from "react";
 
 export function Copyright(props) {
   return (
@@ -176,3 +178,52 @@ export const MyTextField = styled(TextField)(({ theme }) => ({
 export const DateTextField = styled(TextField)(({ theme }) => ({
   padding: 10
 }));
+
+export const CurrencyFormatCustom = React.forwardRef(function NumberFormatCustom(
+  props,
+  ref
+) {
+  const { onChange, ...other } = props;
+
+  return (
+    <NumberFormat
+      {...other}
+      getInputRef={ref}
+      onValueChange={(values) => {
+        onChange({
+          target: {
+            name: props.name,
+            value: values.value,
+          },
+        });
+      }}
+      thousandSeparator
+      isNumericString
+      suffix=" VNĐ"
+    />
+  );
+});
+
+export const NumberFormatCustom = React.forwardRef(function NumberFormatCustom(
+  props,
+  ref
+) {
+  const { onChange, ...other } = props;
+
+  return (
+    <NumberFormat
+      {...other}
+      getInputRef={ref}
+      onValueChange={(values) => {
+        onChange({
+          target: {
+            name: props.name,
+            value: values.value,
+          },
+        });
+      }}
+      thousandSeparator
+      isNumericString
+    />
+  );
+});

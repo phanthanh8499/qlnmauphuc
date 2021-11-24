@@ -14,7 +14,7 @@ import { useSnackbar } from "notistack";
 import axios from "axios";
 import makeStyles from "@mui/styles/makeStyles";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
-import { NumberFormatCustom } from "../../utility/Utility";
+import { CurrencyFormatCustom } from "../../utility/Utility";
 
 const useStyle = makeStyles((theme) => ({
   root: {
@@ -63,7 +63,7 @@ const center = {
   justifyContent: "center",
 };
 
-function DetailForm(props) {
+export function ProductLog(props) {
   const classes = useStyle();
   const { enqueueSnackbar } = useSnackbar();
   const dispatch = useDispatch();
@@ -71,24 +71,13 @@ function DetailForm(props) {
   const { userInfo } = JSON.parse(localStorage.getItem("userInfo"));
   const [loading, setLoading] = useState(true);
   const [data, setData] = useState([]);
-  const [productTypeList, setProductTypeList] = useState([])
-  console.log(dataReq);
+  const [productTypeList, setProductTypeList] = useState([]);
   useEffect(() => {
     async function getProductLogDetail() {
       const { data } = await axios.get(`/getProductLogDetail.${dataReq.id}`);
-      console.log(data);
       setData(data);
     }
-    async function getClothLogDetail() {
-      const { data } = await axios.get(`/getClothLogDetail.${dataReq.id}`);
-      console.log(data);
-      setData(data);
-    }
-    if (dataReq.eventtypeid === "EPF") {
-      getProductLogDetail();
-    } else {
-      getClothLogDetail();
-    }
+    getProductLogDetail();
     async function getProductType() {
       const { data } = await axios.get("/getProductTypeData");
       setProductTypeList(data);
@@ -128,7 +117,7 @@ function DetailForm(props) {
                 >
                   Chi tiết chỉnh sửa sản phẩm {dataReq.productid}
                 </Typography>
-                <Divider />
+                <Divider sx={{mt: 0.5, mb: 0.5}}/>
               </Grid>
               {data.pld_old_typeid === data.pld_new_typeid ? null : (
                 <Grid item xs={12} sx={center}>
@@ -220,7 +209,7 @@ function DetailForm(props) {
                     }}
                     InputProps={{
                       readOnly: true,
-                      inputComponent: NumberFormatCustom,
+                      inputComponent: CurrencyFormatCustom,
                     }}
                   />
                   <ArrowForwardIcon color="primary" />
@@ -237,7 +226,7 @@ function DetailForm(props) {
                     }}
                     InputProps={{
                       readOnly: true,
-                      inputComponent: NumberFormatCustom,
+                      inputComponent: CurrencyFormatCustom,
                     }}
                   />
                 </Grid>
@@ -655,13 +644,13 @@ function DetailForm(props) {
                   />
                 </Grid>
               )}
-            </Grid>
-            <Grid item xs={12}>
-              <ButtonGroup className={classes.btngroup}>
-                <Button variant="outlined" color="error" onClick={onClose}>
-                  Đóng
-                </Button>
-              </ButtonGroup>
+              <Grid item xs={12}>
+                <ButtonGroup className={classes.btngroup}>
+                  <Button variant="outlined" color="error" onClick={onClose}>
+                    Đóng
+                  </Button>
+                </ButtonGroup>
+              </Grid>
             </Grid>
           </>
         )}
@@ -669,5 +658,3 @@ function DetailForm(props) {
     </Dialog>
   );
 }
-
-export default DetailForm;

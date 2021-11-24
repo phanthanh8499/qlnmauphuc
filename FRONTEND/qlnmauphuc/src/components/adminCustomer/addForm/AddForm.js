@@ -49,7 +49,7 @@ function AddForm(props) {
   const classes = useStyle();
   const { enqueueSnackbar } = useSnackbar();
   const dispatch = useDispatch();
-  const { open, onClose, id } = props;
+  const { open, onClose, id, userid } = props;
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [email, setEmail] = useState("");
@@ -224,6 +224,10 @@ function AddForm(props) {
     }
     formData.append("user_wardid", ward);
     formData.append("user_isdeleted", 'false');
+    const now = new Date();
+    formData.append("log_date", format(now, "yyyy-MM-dd HH:mm:ss"));
+    formData.append("log_userid", userid);
+    formData.append("log_eventtypeid", "ACA");
     if (file) {
       formData.append("file", file);
       formData.append("fileName", fileName);

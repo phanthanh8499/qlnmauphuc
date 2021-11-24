@@ -112,14 +112,13 @@ export const editUser = (dataReq) => async (dispatch) => {
 };
 
 export const deleteUser = (dataReq) => async (dispatch) => {
-  const { data } = await Axios.get(`/admin/users/delete.${dataReq}`);
+  const { data } = await Axios.post(`/admin/users/delete`, dataReq);
   dispatch({type: XOA_USER, payload: data})
 }
 
 export const changeStatusUser = (dataReq) => async (dispatch) => {
   const { data } = await Axios.post("/admin/users/changeStatus", dataReq);
-  dispatch({ type: THAY_DOI_TRANG_THAI_USER, payload: dataReq });
-  console.log(data);
+  dispatch({ type: THAY_DOI_TRANG_THAI_USER, payload: data });
 }
 
 export const getProductData = () => async (dispatch) => {

@@ -57,6 +57,8 @@ import LocalizationProvider from "@mui/lab/LocalizationProvider";
 import AdapterDateFns from "@mui/lab/AdapterDateFns";
 import { useDispatch } from "react-redux";
 import { getActivityLogData } from "../../redux/Action";
+import { ProductLog } from "./productLog";
+import { ClothLog } from "./clothLog";
 
 const MyButton = styled(Button)(({ theme }) => ({
   textTransform: "none",
@@ -170,15 +172,43 @@ export default function Data(props) {
 
   const { userInfo } = JSON.parse(localStorage.getItem("userInfo"));
 
+  const [productLog, setProductLog] = useState(false);
+  const closeProductLog = () => {
+    setProductLog(false)
+  }
+
+  const [clothLog, setClothLog] = useState(false);
+  const closeClothLog = () => {
+    setClothLog(false)
+  }
+
   const renderForm = () => {
     if (addForm) {
       return (
         <AddForm
           open={addForm}
           onClose={closeAddForm}
-          id={parseInt(dataRender[Object.keys(dataRender).sort().pop()].id)}
+          dataReq={rowSelected}
           userid={userInfo.id}
         ></AddForm>
+      );
+    }
+    if (productLog) {
+      return (
+        <ProductLog
+          open={productLog}
+          onClose={closeProductLog}
+          dataReq={rowSelected}
+        ></ProductLog>
+      );
+    }
+    if (clothLog) {
+      return (
+        <ClothLog
+          open={clothLog}
+          onClose={closeClothLog}
+          dataReq={rowSelected}
+        ></ClothLog>
       );
     }
     if (detailForm) {
@@ -247,7 +277,7 @@ export default function Data(props) {
     {
       field: "ft_name",
       headerName: "Chức năng",
-      width: 200,
+      width: 240,
       renderCell: (params) => {
         if (params.value === "Quản lý sản phẩm") {
           return (
@@ -289,7 +319,7 @@ export default function Data(props) {
     {
       field: "et_name",
       headerName: "Thao tác",
-      width: 150,
+      width: 170,
       renderCell: (params) => {
         if (params.value === "Thêm mới") {
           return (
@@ -312,12 +342,26 @@ export default function Data(props) {
             </MyButton>
           );
         }
+        if (params.value === "Mở khoá tài khoản") {
+          return (
+            <MyButton variant="outlined" color="warning" fullWidth>
+              {params.value}
+            </MyButton>
+          );
+        }
+        if (params.value === "Khoá tài khoản") {
+          return (
+            <MyButton variant="outlined" color="secondary" fullWidth>
+              {params.value}
+            </MyButton>
+          );
+        }
       },
     },
     {
       field: "log_description",
       headerName: "Nội dung",
-      width: 400,
+      width: 650,
     },
     {
       field: "log_date",
@@ -325,6 +369,32 @@ export default function Data(props) {
       width: 200,
       renderCell: (params) => {
         return formatDate(params.value);
+      },
+    },
+    {
+      field: "log_eventtypeid",
+      headerName: "Hành động",
+      width: 140,
+      renderCell: (params) => {
+        if (params.value === "EPF"){
+          return (
+            <IconButton onClick={(e) => setProductLog(true)} size="large" >
+              <VisibilityIcon color="primary" />
+            </IconButton>
+          );
+        } else if (
+          params.value === "ECF" ||
+          params.value === "ESA" ||
+          params.value === "ECA"
+        ) {
+          return (
+            <IconButton onClick={(e) => setClothLog(true)} size="large">
+              <VisibilityIcon color="primary" />
+            </IconButton>
+          );
+        } else {
+          return <></>;
+        } 
       },
     },
   ];
@@ -350,20 +420,6 @@ export default function Data(props) {
   };
 
   const theme = useTheme();
-
-  const names = [
-    "Trắng",
-    "Đen",
-    "Xám",
-    "Xanh",
-    "Xanh thanh",
-    "Vàng",
-    "Vàng nâu",
-    "Đỏ",
-    "Đỏ rượu",
-    "Đỏ nâu",
-  ];
-
   const handleChangeFunction = async (event) => {
     var string = event.target.value
     setFunctionSelected(string);
@@ -379,20 +435,6 @@ export default function Data(props) {
   const [count, setCount] = useState(0)
   const handleClickSearch = () => {
     // let temp = [...data];
-    
-    // if (thicknessSelected) {
-    //   temp = temp.filter(
-    //     (data) => data.product_thickness === thicknessSelected
-    //   );
-    // }
-    // if (softnessSelected) {
-    //   temp = temp.filter((data) => data.product_softness === softnessSelected);
-    // }
-    // if (elasticitySelected) {
-    //   temp = temp.filter(
-    //     (data) => data.product_elasticity === elasticitySelected
-    //   );
-    // }
     if (
       Date.parse(endDate) >
       Date.parse(new Date(new Date().setHours(23, 59, 59, 0)))
@@ -606,6 +648,8 @@ export default function Data(props) {
     pageStyle: pageStyle,
   });
 
+  const [rowSelected, setRowSelected] = useState();
+
   return (
     <Grid container>
       {loading ? (
@@ -683,6 +727,9 @@ export default function Data(props) {
               components={{
                 NoRowsOverlay: CustomNoRowsOverlay,
               }}
+              onRowClick={(param) =>
+                setRowSelected({ id: param.row.id, eventtypeid: param.row.log_eventtypeid, productid: param.row.log_description.substring(29) })
+              }
               onSelectionModelChange={(ids) => {
                 const selectedIDs = new Set(ids);
                 const selectedRowData = dataRender.filter((row) =>

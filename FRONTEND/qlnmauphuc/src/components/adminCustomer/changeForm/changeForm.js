@@ -12,6 +12,7 @@ import makeStyles from "@mui/styles/makeStyles";
 import clsx from "clsx";
 import { changeStatusUser } from "../../../redux/Action";
 import ChangeCircleIcon from "@mui/icons-material/ChangeCircle";
+import { format } from "date-fns";
 
 const useStyle = makeStyles((theme) => ({
   root: {
@@ -39,23 +40,37 @@ function ChangeForm(props) {
   const classes = useStyle();
   const { enqueueSnackbar } = useSnackbar();
   const dispatch = useDispatch();
-  const { open, onClose, id, listId} = props;
+  const { open, onClose, id, listId, dataReq, userid} = props;
   const handleSubmit = () => {
     if (listId.length !== 0) {
       listId.forEach((element) => {
         if (element.user_status === "active") {
-          const data = { id: element.id, status: "block" };
-          dispatch(changeStatusUser(data));
+          const formData = new FormData();
+          const now = new Date();
+          formData.append("log_date", format(now, "yyyy-MM-dd HH:mm:ss"));
+          formData.append("log_userid", userid);
+          formData.append("log_eventtypeid", "BCA");
+          formData.append("id", element.id);
+          formData.append("user_username", element.user_username);
+          formData.append("status", "block");
+          dispatch(changeStatusUser(formData));
         } else {
-          const data = { id: element.id, status: "active" };
-          dispatch(changeStatusUser(data));
+          const formData = new FormData();
+          const now = new Date();
+          formData.append("log_date", format(now, "yyyy-MM-dd HH:mm:ss"));
+          formData.append("log_userid", userid);
+          formData.append("log_eventtypeid", "UCA");
+          formData.append("id", element.id);
+          formData.append("user_username", element.user_username);
+          formData.append("status", "active");
+          dispatch(changeStatusUser(formData));
         }
         
       });
     } else {
       dispatch(changeStatusUser(parseInt(id)));
     }
-    enqueueSnackbar("Xoá sản phẩm thành công", {
+    enqueueSnackbar("Thay đổi trạng thái tài khoản thành công", {
       variant: "success",
       autoHideDuration: 2000,
     });

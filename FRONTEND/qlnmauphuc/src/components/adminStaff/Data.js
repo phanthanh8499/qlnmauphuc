@@ -201,6 +201,8 @@ export default function Data(props) {
     return new Date(dateString).toLocaleDateString(undefined, options);
   };
 
+  const { userInfo } = JSON.parse(localStorage.getItem("userInfo"));
+
   const renderForm = () => {
     if (addForm) {
       return (
@@ -216,6 +218,8 @@ export default function Data(props) {
                 .pop()
             ].id
           )}
+          userid={userInfo.id}
+          dataReq={rowSelected}
         ></AddForm>
       );
     }
@@ -225,6 +229,8 @@ export default function Data(props) {
           open={detailForm}
           onClose={closeDetailForm}
           id={parseInt(userId)}
+          userid={userInfo.id}
+          dataReq={rowSelected}
         ></DetailForm>
       );
     }
@@ -235,6 +241,8 @@ export default function Data(props) {
           onClose={closeDeleteForm}
           id={parseInt(userId)}
           listId={userIdList}
+          userid={userInfo.id}
+          dataReq={rowSelected}
         ></DeleteForm>
       );
     }
@@ -245,6 +253,8 @@ export default function Data(props) {
           onClose={closeChangeForm}
           id={parseInt(userId)}
           listId={userIdList}
+          userid={userInfo.id}
+          dataReq={rowSelected}
         ></ChangeForm>
       );
     }
@@ -255,6 +265,8 @@ export default function Data(props) {
           onClose={closePermissionForm}
           id={parseInt(userId)}
           listId={userIdList}
+          userid={userInfo.id}
+          dataReq={rowSelected}
         ></PermissionForm>
       );
     }
@@ -612,6 +624,8 @@ export default function Data(props) {
     pageStyle: pageStyle,
   });
 
+  const [rowSelected, setRowSelected] = useState();
+
   return (
     <Grid container>
       {loading ? (
@@ -748,6 +762,12 @@ export default function Data(props) {
               components={{
                 NoRowsOverlay: CustomNoRowsOverlay,
               }}
+              onRowClick={(param) =>
+                setRowSelected({
+                  id: param.row.id,
+                  user_username: param.row.user_username,
+                })
+              }
               onSelectionModelChange={(ids) => {
                 const selectedIDs = new Set(ids);
                 const selectedRowData = dataRender.filter((row) =>

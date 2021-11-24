@@ -12,6 +12,7 @@ import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
 import makeStyles from "@mui/styles/makeStyles";
 import clsx from "clsx";
 import { deleteUser } from "../../../redux/Action";
+import { format } from "date-fns";
 
 const useStyle = makeStyles((theme) => ({
   root: {
@@ -39,14 +40,30 @@ function DeleteForm(props) {
   const classes = useStyle();
   const { enqueueSnackbar } = useSnackbar();
   const dispatch = useDispatch();
-  const { open, onClose, id, listId} = props;
+  const { open, onClose, id, listId, userid, dataReq} = props;
+  console.log(dataReq);
+  console.log(listId)
   const handleSubmit = () => {
     if (listId.length !== 0) {
       listId.forEach((element) => {
-        dispatch(deleteUser(element.id));
+        const formData = new FormData();
+        const now = new Date();
+        formData.append("log_date", format(now, "yyyy-MM-dd HH:mm:ss"));
+        formData.append("log_userid", userid);
+        formData.append("log_eventtypeid", "DCA");
+        formData.append("id", element.id);
+        formData.append("user_username", element.user_username);
+        dispatch(deleteUser(formData));
       });
     } else {
-      dispatch(deleteUser(parseInt(id)));
+      const formData = new FormData();
+      const now = new Date();
+      formData.append("log_date", format(now, "yyyy-MM-dd HH:mm:ss"));
+      formData.append("log_userid", userid);
+      formData.append("log_eventtypeid", "DCA");
+      formData.append("id", dataReq.id);
+      formData.append("user_username", dataReq.user_username);
+      dispatch(deleteUser(formData));
     }
     enqueueSnackbar("Xoá người dùng thành công", {
       variant: "success",
