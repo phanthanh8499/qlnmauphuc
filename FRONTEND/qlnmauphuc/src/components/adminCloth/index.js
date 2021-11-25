@@ -10,6 +10,7 @@ import TabContext from "@mui/lab/TabContext";
 import TabList from "@mui/lab/TabList";
 import TabPanel from "@mui/lab/TabPanel";
 import Data from "./Data";
+import { BACKGROUNDADM } from "../../constants/Constants";
 
 const MyBadge = styled(Badge)`
   .MuiBadge-badge {
@@ -26,6 +27,20 @@ const useStyles = makeStyles((theme) => ({
   topBar: {
     padding: 5,
     margin: "0px 0px -5px 0px !important",
+  },
+  root: {
+    color: "rgb(97, 97, 97)",
+    transition: "box-shadow 300ms cubic-bezier(0.4, 0, 0.2, 1) 0ms",
+    boxShadow: "none",
+    overflow: "hidden",
+    borderRadius: "12px",
+    border: "1px solid rgba(144, 202, 249, 0.46)",
+    height: 637,
+    padding: "10px",
+    backgroundImage: `url("${BACKGROUNDADM}")`,
+    backgroundPosition: "center",
+    backgroundRepeat: "no-repeat",
+    backgroundSize: "cover",
   },
 }));
 
@@ -63,7 +78,7 @@ export default function AdminCloth() {
   };
 
   return (
-    <Grid container component={Paper}>
+    <Grid container className={classes.root}>
       {loading || loadingState ? (
         <Grid
           item
@@ -144,10 +159,9 @@ export default function AdminCloth() {
                 </Grid>
                 <Grid item xs={3}></Grid>
               </Grid>
+              <Divider sx={{ margin: "0px 0px -5px 0px" }} />
             </Grid>
-            <Grid item xs={12}>
-              <Divider sx={{ margin: "0px 0px 5px 0px" }} />
-            </Grid>
+            
             <Grid item xs={12}>
               <TabPanel value="1" sx={{ padding: 0 }}>
                 <Data data={all} />

@@ -31,8 +31,22 @@ const useStyles = makeStyles((theme) => ({
     fontSize: "45px !important",
   },
   title: {
-    fontWeight: '600 !important',
-  }
+    fontWeight: "600 !important",
+  },
+  root: {
+    backgroundColor: "#ffffff",
+    color: "rgb(97, 97, 97)",
+    transition: "box-shadow 300ms cubic-bezier(0.4, 0, 0.2, 1) 0ms",
+    boxShadow: "none",
+    overflow: "hidden",
+    borderRadius: "12px",
+    border: "1px solid rgba(144, 202, 249, 0.46)",
+    height: 637,
+    padding: "10px",
+    "&:hover": {
+      boxShadow: "rgb(32 40 45 / 8%) 0px 2px 14px 0px",
+    },
+  },
 }));
 
 export default function AdminProject() {
@@ -74,14 +88,14 @@ export default function AdminProject() {
     }
   }
   return (
-    <Grid container>
+    <Grid container className={classes.root} sx={{padding: '20px'}}>
       <Grid item xs={12}>
         <DataCount />
       </Grid>
       <Grid item xs={12} sx={{ mt: 1 }}>
         <Grid container spacing={1}>
           <Grid item xs={5}>
-            <Item sx={{ height: 400 }}>
+            <Item sx={{ height: 440 }} className={classes.root}>
               <Grid container>
                 <Grid item xs={8}>
                   <Typography className={classes.title}>
@@ -141,7 +155,7 @@ export default function AdminProject() {
             </Item>
           </Grid>
           <Grid item xs={7}>
-            <Item sx={{ height: 400 }}>
+            <Item sx={{ height: 440 }} className={classes.root}>
               <Grid container>
                 <Grid item xs={8}>
                   <Typography className={classes.title}>

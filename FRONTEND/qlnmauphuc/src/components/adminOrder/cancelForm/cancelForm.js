@@ -6,6 +6,7 @@ import makeStyles from "@mui/styles/makeStyles";
 import clsx from "clsx";
 import { processingOrder } from "../../../redux/Action";
 import BlockIcon from "@mui/icons-material/Block";
+import { format } from "date-fns";
 
 const useStyle = makeStyles((theme) => ({
   root: {
@@ -33,24 +34,32 @@ function CancelForm(props) {
   const classes = useStyle();
   const { enqueueSnackbar } = useSnackbar();
   const dispatch = useDispatch();
-  const { open, onClose, id, listId } = props;
+  const { open, onClose, id, listId, userid } = props;
   const handleSubmit = () => {
     if (listId.length !== 0) {
       listId.forEach((element) => {
         if (element.order_statusid === 0) {
+          const now = new Date();
           dispatch(
             processingOrder({
               order_statusid: 10,
               od_orderid: element.od_orderid,
+              log_date: format(now, "yyyy-MM-dd HH:mm:ss"),
+              log_userid: userid,
+              log_eventtypeid: "COF",
             })
           );
         }
       });
     } else {
+      const now = new Date();
       dispatch(
         processingOrder({
           order_statusid: 10,
           od_orderid: id,
+          log_date: format(now, "yyyy-MM-dd HH:mm:ss"),
+          log_userid: userid,
+          log_eventtypeid: "COF",
         })
       );
     }

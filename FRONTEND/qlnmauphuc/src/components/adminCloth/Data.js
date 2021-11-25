@@ -204,7 +204,7 @@ export default function Data(props) {
 
   const columns = [
     { field: "cloth_material", headerName: "Thành phần", width: 300 },
-    { field: "cloth_name", headerName: "Tên vải", width: 250 },
+    { field: "cloth_name", headerName: "Tên vải", width: 350 },
     {
       field: "cloth_quantity",
       headerName: "Số lượng (mét)",
@@ -236,8 +236,9 @@ export default function Data(props) {
       field: "id",
       headerName: "Hành động",
       sortable: false,
-      width: 110,
+      width: 150,
       disableClickEventBubbling: true,
+      align: 'center',
       renderCell: (params) => {
         const handleClickEdit = () => {
           openDetailForm();
@@ -265,7 +266,7 @@ export default function Data(props) {
 
   const columns2 = [
     { field: "cloth_material", headerName: "Thành phần", width: 300 },
-    { field: "cloth_name", headerName: "Tên vải", width: 300 },
+    { field: "cloth_name", headerName: "Tên vải", width: 500 },
     {
       field: "user_username",
       headerName: "Chủ sở hữu",
@@ -286,13 +287,14 @@ export default function Data(props) {
         }
       },
     },
-    { field: "ct_name", headerName: "Loại vải", width: 200 },
+    { field: "ct_name", headerName: "Loại vải", width: 250 },
     {
       field: "id",
       headerName: "Hành động",
       sortable: false,
-      width: 110,
+      width: 150,
       disableClickEventBubbling: true,
+      align: 'center',
       renderCell: (params) => {
         const handleClickEdit = () => {
           openDetailForm();
@@ -508,7 +510,7 @@ export default function Data(props) {
             variant="outlined"
             color="primary"
             onClick={handleClickSearch}
-            sx={{ float: "right", mr: 0.5 }}
+            sx={{ float: "right", mr: 0.5, backgroundColor: '#ffffff'}}
           >
             Tìm kiếm
           </Button>
@@ -649,7 +651,7 @@ export default function Data(props) {
             item
             xs={12}
             style={{
-              height: 474,
+              height: 445,
               width: "100%",
               "background-color": "#ffffff",
             }}

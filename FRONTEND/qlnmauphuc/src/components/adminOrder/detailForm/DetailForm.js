@@ -100,7 +100,7 @@ function DetailForm(props) {
   const classes = useStyle();
   const dispatch = useDispatch();
   const { enqueueSnackbar } = useSnackbar();
-  const { onClose, id } = props;
+  const { onClose, id, userid } = props;
 
   const [isEdit, setIsEdit] = useState(true);
 
@@ -657,6 +657,7 @@ function DetailForm(props) {
                     id={id}
                     data={detailData[0]}
                     handlePrint={() => handlePrint()}
+                    userid={userid}
                   />
                 </Grid>
               </Grid>
@@ -678,132 +679,139 @@ function DetailForm(props) {
                 </Grid>
               </Grid>
             </Grid>
-            <Grid container sx={{display: 'none'}}>
-            <div ref={componentRef}>
-              <Grid container>
-                <Grid item xs={8} align="left">
-                  <Typography sx={{ fontWeight: 600, fontSize: 18 }}>
-                    {INFO.name}
-                  </Typography>
-                  <Typography>{INFO.address}</Typography>
-                  <Typography>
-                    Email: {INFO.email}/Hotline: {INFO.tel}
-                  </Typography>
+            <Grid container sx={{ display: "none" }}>
+              <div ref={componentRef}>
+                <Grid container>
+                  <Grid item xs={8} align="left">
+                    <Typography sx={{ fontWeight: 600, fontSize: 18 }}>
+                      {INFO.name}
+                    </Typography>
+                    <Typography>{INFO.address}</Typography>
+                    <Typography>
+                      Email: {INFO.email}/Hotline: {INFO.tel}
+                    </Typography>
+                  </Grid>
+                  <Grid item xs={4} align="right">
+                    {/* <img src="http://a-dong.com.vn/upload/news/2019/11/07/logo_msmv.jpg"/> */}
+                    <Typography>{formatDateVn(now)}</Typography>
+                  </Grid>
+                  <Grid item xs={12} align="center">
+                    <Typography sx={{ fontWeight: 600, fontSize: 25 }}>
+                      PHIẾU ĐẶT MAY
+                    </Typography>
+                  </Grid>
+                  <Grid item xs={12}>
+                    <Typography>
+                      Mã đơn hàng: {detailData[0].od_orderid}
+                    </Typography>
+                  </Grid>
+                  <Grid item xs={8}>
+                    <Typography>
+                      Khách hàng: {detailData[0].order_customername}
+                    </Typography>
+                    <Typography>
+                      Địa chỉ: {detailData[0].order_customeraddress}
+                    </Typography>
+                    <Typography>
+                      Số điện thoại: {detailData[0].order_customerphone}
+                    </Typography>
+                  </Grid>
+                  <Grid item xs={4}>
+                    <Typography>
+                      Ngày in: {format(now, "dd/MM/yyyy HH:mm:ss")}
+                    </Typography>
+                    <Typography>
+                      H.T thanh toán: {detailData[0].opm_name}
+                    </Typography>
+                    <Typography>
+                      P.T vận chuyển: {detailData[0].osm_name}
+                    </Typography>
+                  </Grid>
+                  <Grid item xs={12}>
+                    <TableContainer>
+                      <Table
+                        sx={{ minWidth: 700 }}
+                        aria-label="customized table"
+                      >
+                        <TableHead>
+                          <TableRow>
+                            <TableCell>Mã hàng</TableCell>
+                            <TableCell align="center">Tên hàng</TableCell>
+                            <TableCell align="center">Đơn giá</TableCell>
+                            <TableCell align="center">Chiết khấu</TableCell>
+                            <TableCell align="center">Thuế</TableCell>
+                            <TableCell align="center">Thành tiền</TableCell>
+                          </TableRow>
+                        </TableHead>
+                        <TableBody>
+                          <TableRow>
+                            <TableCell component="th" scope="row">
+                              {detailData[0].product_code}
+                            </TableCell>
+                            <TableCell align="left">
+                              {detailData[0].product_name}
+                            </TableCell>
+                            <TableCell align="right">
+                              {new Intl.NumberFormat().format(
+                                detailData[0].product_price
+                              )}
+                            </TableCell>
+                            <TableCell align="left"></TableCell>
+                            <TableCell align="left"></TableCell>
+                            <TableCell align="right">
+                              {new Intl.NumberFormat().format(
+                                detailData[0].product_price
+                              )}
+                            </TableCell>
+                          </TableRow>
+                        </TableBody>
+                      </Table>
+                    </TableContainer>
+                  </Grid>
+                  <Grid item xs={10} align="right" sx={{ fontWeight: 600 }}>
+                    Tổng tiền hàng:
+                  </Grid>
+                  <Grid
+                    item
+                    xs={2}
+                    align="right"
+                    sx={{ pr: "16px", fontWeight: 600 }}
+                  >
+                    {new Intl.NumberFormat().format(
+                      detailData[0].product_price
+                    )}
+                  </Grid>
+                  <Grid item xs={10} align="right">
+                    Tiền thuế GTGT:
+                  </Grid>
+                  <Grid item xs={2} align="right" sx={{ pr: "16px" }}>
+                    0
+                  </Grid>
+                  <Grid item xs={10} align="right">
+                    Phí vận chuyển:
+                  </Grid>
+                  <Grid item xs={2} align="right" sx={{ pr: "16px" }}>
+                    0
+                  </Grid>
+                  <Grid item xs={12} align="right">
+                    <Divider sx={{ width: "30%" }} />
+                  </Grid>
+                  <Grid item xs={10} align="right" sx={{ fontWeight: 600 }}>
+                    Tổng tiền:
+                  </Grid>
+                  <Grid
+                    item
+                    xs={2}
+                    align="right"
+                    sx={{ pr: "16px", fontWeight: 600 }}
+                  >
+                    {new Intl.NumberFormat().format(
+                      detailData[0].product_price
+                    )}
+                  </Grid>
                 </Grid>
-                <Grid item xs={4} align="right">
-                  {/* <img src="http://a-dong.com.vn/upload/news/2019/11/07/logo_msmv.jpg"/> */}
-                  <Typography>{formatDateVn(now)}</Typography>
-                </Grid>
-                <Grid item xs={12} align="center">
-                  <Typography sx={{ fontWeight: 600, fontSize: 25 }}>
-                    PHIẾU ĐẶT MAY
-                  </Typography>
-                </Grid>
-                <Grid item xs={12}>
-                  <Typography>
-                    Mã đơn hàng: {detailData[0].od_orderid}
-                  </Typography>
-                </Grid>
-                <Grid item xs={8}>
-                  <Typography>
-                    Khách hàng: {detailData[0].order_customername}
-                  </Typography>
-                  <Typography>
-                    Địa chỉ: {detailData[0].order_customeraddress}
-                  </Typography>
-                  <Typography>
-                    Số điện thoại: {detailData[0].order_customerphone}
-                  </Typography>
-                </Grid>
-                <Grid item xs={4}>
-                  <Typography>
-                    Ngày in: {format(now, "dd/MM/yyyy HH:mm:ss")}
-                  </Typography>
-                  <Typography>
-                    H.T thanh toán: {detailData[0].opm_name}
-                  </Typography>
-                  <Typography>
-                    P.T vận chuyển: {detailData[0].osm_name}
-                  </Typography>
-                </Grid>
-                <Grid item xs={12}>
-                  <TableContainer>
-                    <Table sx={{ minWidth: 700 }} aria-label="customized table">
-                      <TableHead>
-                        <TableRow>
-                          <TableCell>Mã hàng</TableCell>
-                          <TableCell align="center">Tên hàng</TableCell>
-                          <TableCell align="center">Đơn giá</TableCell>
-                          <TableCell align="center">Chiết khấu</TableCell>
-                          <TableCell align="center">Thuế</TableCell>
-                          <TableCell align="center">Thành tiền</TableCell>
-                        </TableRow>
-                      </TableHead>
-                      <TableBody>
-                        <TableRow>
-                          <TableCell component="th" scope="row">
-                            {detailData[0].product_code}
-                          </TableCell>
-                          <TableCell align="left">
-                            {detailData[0].product_name}
-                          </TableCell>
-                          <TableCell align="right">
-                            {new Intl.NumberFormat().format(
-                              detailData[0].product_price
-                            )}
-                          </TableCell>
-                          <TableCell align="left"></TableCell>
-                          <TableCell align="left"></TableCell>
-                          <TableCell align="right">
-                            {new Intl.NumberFormat().format(
-                              detailData[0].product_price
-                            )}
-                          </TableCell>
-                        </TableRow>
-                      </TableBody>
-                    </Table>
-                  </TableContainer>
-                </Grid>
-                <Grid item xs={10} align="right" sx={{ fontWeight: 600 }}>
-                  Tổng tiền hàng:
-                </Grid>
-                <Grid
-                  item
-                  xs={2}
-                  align="right"
-                  sx={{ pr: "16px", fontWeight: 600 }}
-                >
-                  {new Intl.NumberFormat().format(detailData[0].product_price)}
-                </Grid>
-                <Grid item xs={10} align="right">
-                  Tiền thuế GTGT:
-                </Grid>
-                <Grid item xs={2} align="right" sx={{ pr: "16px" }}>
-                  0
-                </Grid>
-                <Grid item xs={10} align="right">
-                  Phí vận chuyển:
-                </Grid>
-                <Grid item xs={2} align="right" sx={{ pr: "16px" }}>
-                  0
-                </Grid>
-                <Grid item xs={12} align="right">
-                  <Divider sx={{ width: "30%" }} />
-                </Grid>
-                <Grid item xs={10} align="right" sx={{ fontWeight: 600 }}>
-                  Tổng tiền:
-                </Grid>
-                <Grid
-                  item
-                  xs={2}
-                  align="right"
-                  sx={{ pr: "16px", fontWeight: 600 }}
-                >
-                  {new Intl.NumberFormat().format(detailData[0].product_price)}
-                </Grid>
-                </Grid>
-            </div>
-              </Grid>
+              </div>
+            </Grid>
           </>
         )}
       </Grid>

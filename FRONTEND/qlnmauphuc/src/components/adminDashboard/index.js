@@ -15,6 +15,8 @@ import DLineChart from "./DLineChart";
 import WeeklyForm from "./weeklyForm/WeeklyForm";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import { Copyright } from "../utility/Utility";
+import { makeStyles } from "@mui/styles";
+import { BACKGROUNDADM } from "../../constants/Constants";
 
 const Item = styled(Paper)(({ theme }) => ({
   ...theme.typography.body2,
@@ -24,7 +26,29 @@ const Item = styled(Paper)(({ theme }) => ({
 
 const options = ["Báo cáo mỗi tuần"];
 
+const useStyles = makeStyles((theme) => ({
+  root: {
+    color: "rgb(97, 97, 97)",
+    transition: "box-shadow 300ms cubic-bezier(0.4, 0, 0.2, 1) 0ms",
+    boxShadow: "none",
+    overflow: "hidden",
+    borderRadius: "12px !important",
+    border: "1px solid rgba(144, 202, 249, 0.46)",
+    height: 637,
+    padding: "10px !important",
+    backgroundImage: `url("${BACKGROUNDADM}")`,
+    backgroundPosition: "center",
+    backgroundRepeat: "no-repeat",
+    backgroundSize: "cover",
+    backgroundColor: "#ffffff",
+    "&:hover": {
+      boxShadow: "rgb(32 40 45 / 8%) 0px 2px 14px 0px",
+    },
+  },
+}));
+
 export default function AdminDashboard() {
+  const classes = useStyles();
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
   const [weeklyForm, setWeeklyForm] = useState(false);
@@ -85,14 +109,17 @@ export default function AdminDashboard() {
     );
   };
   return (
-    <Grid container>
+    <Grid container className={classes.root} sx={{ padding: "20px" }}>
       <Grid item xs={12}>
         <DataCount />
       </Grid>
       <Grid item xs={12} sx={{ mt: 1 }}>
         <Grid container spacing={1}>
           <Grid item xs={8}>
-            <Item sx={{ height: 435 }}>
+            <Item
+              sx={{ height: 435, backgroundImage: "url(abc)" }}
+              className={classes.root}
+            >
               <Grid container>
                 <Grid item xs={8}>
                   <Typography sx={{ fontWeight: 600 }}>Doanh thu</Typography>
@@ -117,7 +144,10 @@ export default function AdminDashboard() {
             </Item>
           </Grid>
           <Grid item xs={4}>
-            <Item sx={{ height: 435 }}>
+            <Item
+              sx={{ height: 435, backgroundImage: "url(abc)" }}
+              className={classes.root}
+            >
               <Grid container>
                 <Grid item xs={8}>
                   <Typography sx={{ fontWeight: 600 }}>

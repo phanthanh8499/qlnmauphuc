@@ -768,6 +768,7 @@ export default function Data(props) {
                         variant="outlined"
                         color="primary"
                         onClick={handleClickSearch}
+                        sx={{backgroundColor: '#ffffff'}}
                       >
                         Tìm kiếm
                       </Button>
@@ -853,7 +854,7 @@ export default function Data(props) {
             item
             xs={12}
             style={{
-              height: 405,
+              height: 445,
               width: "100%",
               "background-color": "#ffffff",
             }}
@@ -861,7 +862,7 @@ export default function Data(props) {
             <DataGrid
               rows={rows}
               columns={isCcn ? columns2 : columns}
-              pageSize={5}
+              pageSize={6}
               className={antDesignClasses.root}
               checkboxSelection
               disableSelectionOnClick

@@ -21,6 +21,12 @@ const Item = styled(Paper)(({ theme }) => ({
   ...theme.typography.body2,
   padding: theme.spacing(1),
   color: theme.palette.text.secondary,
+  boxShadow: "none",
+  borderRadius: "12px",
+  border: "1px solid rgba(144, 202, 249, 0.46)",
+  "&:hover": {
+    boxShadow: "rgb(32 40 45 / 8%) 0px 2px 14px 0px",
+  },
 }));
 
 const center = {

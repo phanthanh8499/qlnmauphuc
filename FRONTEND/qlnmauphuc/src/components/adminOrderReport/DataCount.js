@@ -11,11 +11,16 @@ import TrendingDownIcon from "@mui/icons-material/TrendingDown";
 import { format } from "date-fns";
 import { useDispatch, useSelector } from "react-redux";
 import { getOrderReportCountData } from "../../redux/Action";
+import { BACKGROUNDADM } from "../../constants/Constants";
 
 const Item = styled(Paper)(({ theme }) => ({
   ...theme.typography.body2,
   padding: 20,
   color: theme.palette.text.secondary,
+  boxShadow: 'none',
+  "&:hover": {
+    boxShadow: "rgb(32 40 45 / 8%) 0px 2px 14px 0px",
+  },
 }));
 
 const center = {
@@ -31,6 +36,19 @@ const useStyles = makeStyles((theme) => ({
   },
   iconSize: {
     fontSize: "45px !important",
+  },
+  root: {
+    color: "rgb(97, 97, 97)",
+    transition: "box-shadow 300ms cubic-bezier(0.4, 0, 0.2, 1) 0ms",
+    // boxShadow: "none !important",
+    overflow: "hidden",
+    borderRadius: "12px",
+    border: "1px solid rgba(144, 202, 249, 0.46)",
+    padding: "10px",
+    backgroundImage: `url("${BACKGROUNDADM}")`,
+    backgroundPosition: "center",
+    backgroundRepeat: "no-repeat",
+    backgroundSize: "cover",
   },
 }));
 
@@ -126,7 +144,7 @@ export default function DataCount() {
       ) : (
         <>
           <Grid item xs={3}>
-            <Item sx={center}>
+            <Item sx={center} className={classes.root}>
               <Grid container>
                 <Grid item xs={12} sx={center}>
                   <ListAltOutlinedIcon className={classes.iconSize} />
@@ -143,7 +161,7 @@ export default function DataCount() {
             </Item>
           </Grid>
           <Grid item xs={3}>
-            <Item sx={center}>
+            <Item sx={center} className={classes.root}>
               <Grid container>
                 <Grid item xs={12} sx={center}>
                   <AssignmentTurnedInOutlinedIcon
@@ -164,7 +182,7 @@ export default function DataCount() {
             </Item>
           </Grid>
           <Grid item xs={3}>
-            <Item sx={center}>
+            <Item sx={center} className={classes.root}>
               <Grid container>
                 <Grid item xs={12} sx={center}>
                   <GroupsOutlinedIcon className={classes.iconSize} />
@@ -181,7 +199,7 @@ export default function DataCount() {
             </Item>
           </Grid>
           <Grid item xs={3}>
-            <Item sx={center}>
+            <Item sx={center} className={classes.root}>
               <Grid container>
                 <Grid item xs={12} sx={center}>
                   <QueryStatsOutlinedIcon className={classes.iconSize} />

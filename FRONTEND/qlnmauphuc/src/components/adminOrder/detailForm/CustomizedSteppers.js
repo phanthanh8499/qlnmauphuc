@@ -113,7 +113,7 @@ export default function CustomizedSteppers(props) {
   const [activeStep, setActiveStep] = useState(0);
   const [skipped, setSkipped] = useState(new Set());
   const { enqueueSnackbar } = useSnackbar();
-  const { activeId, id, data, handlePrint } = props;
+  const { activeId, id, data, handlePrint, userid } = props;
   useEffect(() => {
     setActiveStep(activeId);
   }, [activeId]);
@@ -201,6 +201,9 @@ export default function CustomizedSteppers(props) {
           date: format(today, "yyyy-MM-dd HH:mm:ss"),
           customername: data.order_customername,
           customeremail: data.order_customeremail,
+          log_date: format(today, "yyyy-MM-dd HH:mm:ss"),
+          log_userid: userid,
+          log_eventtypeid: "POF",
         })
       );
     }

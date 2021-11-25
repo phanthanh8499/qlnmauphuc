@@ -489,7 +489,7 @@ export default function Data(props) {
             variant="outlined"
             color="primary"
             onClick={handleClickSearch}
-            sx={{ float: "right", mr: 0.5 }}
+            sx={{ float: "right", mr: 0.5, backgroundColor: '#ffffff' }}
           >
             Tìm kiếm
           </Button>
@@ -624,7 +624,7 @@ export default function Data(props) {
             item
             xs={12}
             style={{
-              height: 425,
+              height: 445,
               width: "100%",
               "background-color": "#ffffff",
             }}

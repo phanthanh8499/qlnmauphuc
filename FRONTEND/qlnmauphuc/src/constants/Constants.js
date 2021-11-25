@@ -3,6 +3,9 @@ export const FRONTEND_URL = "F:/project/LV/FRONTEND/qlnmauphuc/public";
 export const FRONTEND_ADM_URL = "F:/project/LV/FRONTEND/qlnmauphuc/public/admin";
 export const LOCAL_PATH = "http://localhost:3000/";
 
+//BACKGROUNADM
+export const BACKGROUNDADM = "http://localhost:3000/images/background.jpg"
+
 //INFO
 export const INFO = {
   name: "Nhà may âu phục Thành Phan",

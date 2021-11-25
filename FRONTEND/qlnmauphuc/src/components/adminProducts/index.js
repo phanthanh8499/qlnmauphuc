@@ -16,6 +16,7 @@ import TabList from "@mui/lab/TabList";
 import TabContext from "@mui/lab/TabContext";
 import TabPanel from "@mui/lab/TabPanel";
 import Data from "./Data";
+import { BACKGROUNDADM } from "../../constants/Constants";
 
 const MyBadge = styled(Badge)(({ theme }) => ({
   "& .MuiBadge-badge": {
@@ -36,6 +37,20 @@ const useStyles = makeStyles((theme) => ({
   img: {
     height: 100,
     width: 100,
+  },
+  root: {
+    color: "rgb(97, 97, 97)",
+    transition: "box-shadow 300ms cubic-bezier(0.4, 0, 0.2, 1) 0ms",
+    boxShadow: "none",
+    overflow: "hidden",
+    borderRadius: "12px",
+    border: "1px solid rgba(144, 202, 249, 0.46)",
+    height: 637,
+    padding: "10px",
+    backgroundImage: `url("${BACKGROUNDADM}")`,
+    backgroundPosition: "center",
+    backgroundRepeat: "no-repeat",
+    backgroundSize: "cover",
   },
 }));
 
@@ -86,7 +101,7 @@ export default function AdminProducts() {
   };
 
   return (
-    <Grid container component={Paper}>
+    <Grid container className={classes.root}>
       {loading ? (
         <Grid
           item
@@ -154,9 +169,7 @@ export default function AdminProducts() {
                   </Box>
                 </Grid>
               </Grid>
-            </Grid>
-            <Grid item xs={12}>
-              <Divider sx={{ margin: "0px 0px 5px 0px" }} />
+              <Divider sx={{ margin: "0px 0px -5px 0px" }} />
             </Grid>
 
             <Grid item xs={12}>

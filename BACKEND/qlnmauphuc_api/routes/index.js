@@ -2013,6 +2013,9 @@ router.post("/admin/order/processing", function (req, res) {
     od_clothid,
     customername,
     customeremail,
+    log_date,
+    log_userid,
+    log_eventtypeid,
   } = req.body;
   if (order_statusid === 1) {
     console.log("đợi thợ may");
@@ -2068,25 +2071,38 @@ router.post("/admin/order/processing", function (req, res) {
             <p style="margin: 0px">Hotline: (+84)91 551 80 13</p>
           </div>
     `;
-          var mainOptions = {
-            // thiết lập đối tượng, nội dung gửi mail
-            from: "Nhà may âu phục Thành Phan",
-            to: customeremail,
-            subject: `Xử lý đơn hàng ${od_orderid}`,
-            text: "Your text is here", //Thường thi mình không dùng cái này thay vào đó mình sử dụng html để dễ edit hơn
-            html: content, //Nội dung html mình đã tạo trên kia :))
-          };
-          transporter.sendMail(mainOptions, function (err, info) {
-            if (err) {
-              console.log(err);
-              // req.flash("mess", "Lỗi gửi mail: " + err); //Gửi thông báo đến người dùng
-              res.redirect("/");
-            } else {
-              console.log("Message sent: " + info.response);
-              // req.flash("mess", "Một email đã được gửi đến tài khoản của bạn"); //Gửi thông báo đến người dùng
-              res.redirect("/");
+          // var mainOptions = {
+          //   // thiết lập đối tượng, nội dung gửi mail
+          //   from: "Nhà may âu phục Thành Phan",
+          //   to: customeremail,
+          //   subject: `Xử lý đơn hàng ${od_orderid}`,
+          //   text: "Your text is here", //Thường thi mình không dùng cái này thay vào đó mình sử dụng html để dễ edit hơn
+          //   html: content, //Nội dung html mình đã tạo trên kia :))
+          // };
+          // transporter.sendMail(mainOptions, function (err, info) {
+          //   if (err) {
+          //     console.log(err);
+          //     // req.flash("mess", "Lỗi gửi mail: " + err); //Gửi thông báo đến người dùng
+          //     res.redirect("/");
+          //   } else {
+          //     console.log("Message sent: " + info.response);
+          //     // req.flash("mess", "Một email đã được gửi đến tài khoản của bạn"); //Gửi thông báo đến người dùng
+          //     res.redirect("/");
+          //   }
+          // });
+          pool.query(
+            `INSERT INTO log(
+	log_userid, log_eventtypeid, log_date, log_description)
+	VALUES ('${log_userid}', '${log_eventtypeid}',  '${log_date}',  'Duyệt đơn hàng ID: ${od_orderid}');`,
+            (error, response) => {
+              if (error) {
+                console.log(error);
+              } else {
+                console.log("Ghi nhật ký thành công!");
+              }
             }
-          });
+          );
+
         }
       }
     );
@@ -2214,6 +2230,18 @@ router.post("/admin/order/processing", function (req, res) {
         } else {
           console.log("OK");
           res.send("OK");
+          pool.query(
+            `INSERT INTO log(
+	log_userid, log_eventtypeid, log_date, log_description)
+	VALUES ('${log_userid}', '${log_eventtypeid}',  '${log_date}',  'Huỷ hoá đơn ID: ${od_orderid}');`,
+            (error, response) => {
+              if (error) {
+                console.log(error);
+              } else {
+                console.log("Ghi nhật ký thành công!");
+              }
+            }
+          );
         }
       }
     );

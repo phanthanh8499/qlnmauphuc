@@ -201,6 +201,8 @@ export default function Data(props) {
     }
   };
 
+  const { userInfo } = JSON.parse(localStorage.getItem("userInfo"));
+
   const renderForm = () => {
     if (addForm) {
       return (
@@ -208,6 +210,7 @@ export default function Data(props) {
           open={addForm}
           onClose={closeAddForm}
           id={parseInt(dataRender[Object.keys(dataRender).sort().pop()].id)}
+          userid={userInfo.id}
         ></AddForm>
       );
     }
@@ -217,6 +220,7 @@ export default function Data(props) {
           open={detailForm}
           onClose={closeDetailForm}
           id={orderId}
+          userid={userInfo.id}
         ></DetailForm>
       );
     }
@@ -227,6 +231,7 @@ export default function Data(props) {
           onClose={closeDeleteForm}
           id={orderId}
           listId={orderIdList}
+          userid={userInfo.id}
         ></DeleteForm>
       );
     }
@@ -237,6 +242,7 @@ export default function Data(props) {
           onClose={closeCancelForm}
           id={orderId}
           listId={orderIdList}
+          userid={userInfo.id}
         ></CancelForm>
       );
     }
@@ -606,7 +612,7 @@ export default function Data(props) {
                       variant="outlined"
                       color="primary"
                       onClick={handleClickSearch}
-                      sx={{ mr: 0.5 }}
+                      sx={{ mr: 0.5, backgroundColor: '#ffffff' }}
                     >
                       Tìm kiếm
                     </Button>
@@ -687,7 +693,7 @@ export default function Data(props) {
             item
             xs={12}
             style={{
-              height: 450,
+              height: 445,
               width: "100%",
               "background-color": "#ffffff",
             }}

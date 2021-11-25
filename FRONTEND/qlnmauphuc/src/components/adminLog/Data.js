@@ -60,6 +60,7 @@ import { getActivityLogData } from "../../redux/Action";
 import { ProductLog } from "./productLog";
 import { ClothLog } from "./clothLog";
 import { UserLog } from "./userLog";
+import { purple, lightGreen, blue, red } from "@mui/material/colors";
 
 const MyButton = styled(Button)(({ theme }) => ({
   textTransform: "none",
@@ -310,21 +311,36 @@ export default function Data(props) {
         }
         if (params.value === "Quản lý đơn hàng") {
           return (
-            <MyButton variant="outlined" color="success" fullWidth>
+            <MyButton
+              variant="outlined"
+              color="error"
+              sx={{ color: blue[500]}}
+              fullWidth
+            >
               {params.value}
             </MyButton>
           );
         }
         if (params.value === "Quản lý tài khoản người dùng") {
           return (
-            <MyButton variant="outlined" color="success" fullWidth>
+            <MyButton
+              variant="outlined"
+              color="warning"
+              sx={{ color: lightGreen[ blue,900] }}
+              fullWidth
+            >
               {params.value}
             </MyButton>
           );
         }
         if (params.value === "Quản lý tài khoản nhân viên") {
           return (
-            <MyButton variant="outlined" color="success" fullWidth>
+            <MyButton
+              variant="outlined"
+              color="warning"
+              sx={{ color: red[900] }}
+              fullWidth
+            >
               {params.value}
             </MyButton>
           );
@@ -357,6 +373,18 @@ export default function Data(props) {
             </MyButton>
           );
         }
+        if (params.value === "Huỷ") {
+          return (
+            <MyButton
+              variant="outlined"
+              color="primary"
+              sx={{ color: purple[500] }}
+              fullWidth
+            >
+              {params.value}
+            </MyButton>
+          );
+        }
         if (params.value === "Mở khoá tài khoản") {
           return (
             <MyButton variant="outlined" color="warning" fullWidth>
@@ -367,6 +395,13 @@ export default function Data(props) {
         if (params.value === "Khoá tài khoản") {
           return (
             <MyButton variant="outlined" color="secondary" fullWidth>
+              {params.value}
+            </MyButton>
+          );
+        }
+        if (params.value === "Duyệt") {
+          return (
+            <MyButton variant="outlined" color="primary" sx={{color: red[500]}} fullWidth>
               {params.value}
             </MyButton>
           );
@@ -579,7 +614,7 @@ export default function Data(props) {
             </Select>
           </MyFormControl>
         </Grid>
-        <Grid item xs={1}>
+        <Grid item xs={2}>
           <MyFormControl fullWidth>
             <InputLabel id="event-select-label">Thao tác</InputLabel>
             <Select
@@ -626,7 +661,7 @@ export default function Data(props) {
             />
           </Grid>
         </LocalizationProvider>
-        <Grid item xs={2}></Grid>
+        <Grid item xs={1}></Grid>
         <Grid item xs={2}>
           <Button
             variant="outlined"
@@ -729,7 +764,7 @@ export default function Data(props) {
             item
             xs={12}
             style={{
-              height: 525,
+              height: 495,
               width: "100%",
               "background-color": "#ffffff",
             }}

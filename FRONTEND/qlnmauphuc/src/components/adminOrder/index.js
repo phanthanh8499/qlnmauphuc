@@ -11,6 +11,7 @@ import TabList from "@mui/lab/TabList";
 import TabPanel from "@mui/lab/TabPanel";
 import Data from "./Data";
 import { format } from "date-fns";
+import { BACKGROUNDADM } from "../../constants/Constants";
 const MyBadge = styled(Badge)`
   .MuiBadge-badge {
     right: -10px;
@@ -26,6 +27,20 @@ const useStyles = makeStyles((theme) => ({
   topBar: {
     padding: 5,
     margin: "0px 0px -5px 0px !important",
+  },
+  root: {
+    color: "rgb(97, 97, 97)",
+    transition: "box-shadow 300ms cubic-bezier(0.4, 0, 0.2, 1) 0ms",
+    boxShadow: "none",
+    overflow: "hidden",
+    borderRadius: "12px",
+    border: "1px solid rgba(144, 202, 249, 0.46)",
+    height: 637,
+    padding: "10px",
+    backgroundImage: `url("${BACKGROUNDADM}")`,
+    backgroundPosition: "center",
+    backgroundRepeat: "no-repeat",
+    backgroundSize: "cover",
   },
 }));
 
@@ -101,7 +116,7 @@ export default function AdminOrder() {
   };
 
   return (
-    <Grid container component={Paper}>
+    <Grid container className={classes.root}>
       {loading ? (
         <Grid
           item
