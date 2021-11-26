@@ -46,6 +46,10 @@ export default function Home() {
           path="/admin/log"
           component={lazy(() => import("../../../components/adminLog"))}
         ></Route>
+        <Route
+          path="/admin/loyaltyprogram"
+          component={lazy(() => import("../../../components/adminLoyaltyProgram"))}
+        ></Route>
       </Switch>
     </AdminLayout>
   );

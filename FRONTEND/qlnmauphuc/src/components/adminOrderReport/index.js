@@ -9,6 +9,7 @@ import MoreVertIcon from "@mui/icons-material/MoreVert";
 import WeeklyForm from "./weeklyForm/WeeklyForm";
 import MonthlyForm from "./monthlyForm/monthlyForm";
 import { Copyright } from "../utility/Utility";
+import TailorsData from "./TailorsData";
 
 const options = [
   "Báo cáo mỗi tuần",
@@ -41,7 +42,6 @@ const useStyles = makeStyles((theme) => ({
     overflow: "hidden",
     borderRadius: "12px",
     border: "1px solid rgba(144, 202, 249, 0.46)",
-    height: 637,
     padding: "10px",
     "&:hover": {
       boxShadow: "rgb(32 40 45 / 8%) 0px 2px 14px 0px",
@@ -88,7 +88,7 @@ export default function AdminProject() {
     }
   }
   return (
-    <Grid container className={classes.root} sx={{padding: '20px'}}>
+    <Grid container className={classes.root} sx={{ padding: "20px" }}>
       <Grid item xs={12}>
         <DataCount />
       </Grid>
@@ -179,6 +179,33 @@ export default function AdminProject() {
 
               <Divider sx={{ mt: 0.5, mb: 0.5 }} />
               <PStackChart />
+            </Item>
+          </Grid>
+          <Grid item xs={12}>
+            <Item className={classes.root}>
+              <Grid container>
+                <Grid item xs={8}>
+                  <Typography className={classes.title}>
+                    Dữ liệu tiến trình may
+                  </Typography>
+                </Grid>
+                <Grid item xs={4}>
+                  <IconButton
+                    aria-label="more"
+                    id="long-button"
+                    aria-controls="long-menu"
+                    aria-expanded={open ? "true" : undefined}
+                    aria-haspopup="true"
+                    onClick={handleClick}
+                    sx={{ float: "right", padding: 0 }}
+                  >
+                    <MoreVertIcon />
+                  </IconButton>
+                </Grid>
+              </Grid>
+
+              <Divider sx={{ mt: 0.5, mb: 0.5 }} />
+              <TailorsData />
             </Item>
           </Grid>
         </Grid>

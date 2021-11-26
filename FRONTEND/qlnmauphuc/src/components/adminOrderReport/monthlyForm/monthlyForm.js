@@ -18,6 +18,7 @@ import {
   getOrderReportCountData,
   getOrderReportPieChart,
   getOrderReportStackChart,
+  getTailorsData,
 } from "../../../redux/Action";
 import { MyFormControl } from "../../utility/Utility";
 import { Box } from "@mui/system";
@@ -65,10 +66,12 @@ function MonthyForm(props) {
         endDate: format(selected.endDate, "yyyy-MM-dd HH:mm:ss"),
         startDateLW: format(selected.startDateLW, "yyyy-MM-dd"),
         endDateLW: format(selected.endDateLW, "yyyy-MM-dd HH:mm:ss"),
+        total_order: 15,
       };
       dispatch(getOrderReportCountData(dataSend));
       dispatch(getOrderReportPieChart(dataSend));
       dispatch(getOrderReportStackChart(dataSend, 15));
+      dispatch(getTailorsData(dataSend, 15));
       enqueueSnackbar("Báo cáo theo tháng thành công", {
         variant: "success",
         autoHideDuration: 2000,

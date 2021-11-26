@@ -58,6 +58,7 @@ import {
   LIET_KE_KHACH_HANG,
   LIET_KE_QUYEN,
   LIET_KE_NHAT_KY,
+  BAO_CAO_TIEN_DO_MAY,
 } from "../constants/Constants";
 
 export const dangNhapReducer = (state = { loading: true }, action) => {
@@ -539,9 +540,11 @@ export const orderReportReducer = (
     loadingDC: true,
     loadingPC: true,
     loadingSC: true,
+    loadingTD: true,
     dataCount: [],
     dataStackChart: [],
     dataPieChart: [],
+    tailorsData: [],
   },
   action
 ) => {
@@ -552,6 +555,8 @@ export const orderReportReducer = (
       return { ...state, loadingPC: false, dataPieChart: action.payload };
     case BAO_CAO_TIEN_DO_HOA_DON:
       return { ...state, loadingSC: false, dataStackChart: action.payload };
+    case BAO_CAO_TIEN_DO_MAY:
+      return { ...state, loadingTD: false, tailorsData: action.payload };
     case LIET_KE_VAI:
       const data = action.payload.sort(function (a, b) {
         return a.id - b.id;
@@ -600,6 +605,21 @@ export const logReducer = (
   switch (action.type) {
     case LIET_KE_NHAT_KY:
       return { ...state, loading: false, logData: action.payload };
+    default:
+      return state;
+  }
+};
+
+export const loyaltyCustomerReducer = (
+  state = {
+    loading: true,
+    loyaltyCustomerData: [],
+  },
+  action
+) => {
+  switch (action.type) {
+    case LIET_KE_NHAT_KY:
+      return { ...state, loading: false, loyaltyCustomerData: action.payload };
     default:
       return state;
   }

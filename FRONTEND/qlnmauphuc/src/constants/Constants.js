@@ -91,6 +91,7 @@ export const XU_LY_DON_HANG = "XU_LY_DON_HANG";
 export const BAO_CAO_HOA_DON = "BAO_CAO_HOA_DON";
 export const BAO_CAO_TRANG_THAI_HOA_DON = "BAO_CAO_TRANG_THAI_HOA_DON";
 export const BAO_CAO_TIEN_DO_HOA_DON = "BAO_CAO_TIEN_DO_HOA_DON";
+export const BAO_CAO_TIEN_DO_MAY = "BAO_CAO_TIEN_DO_MAY";
 
 //======================== BAO CAO THUONG MAI =====================================
 export const BAO_CAO_THUONG_MAI = "BAO_CAO_THUONG_MAI";
@@ -99,3 +100,6 @@ export const BAO_CAO_SAN_PHAM_THUONG_MAI = "BAO_CAO_SAN_PHAM_THUONG_MAI";
 
 //======================== NHAT KY HOAT DONG =====================================
 export const LIET_KE_NHAT_KY = "LIET_KE_NHAT_KY";
+
+//======================== KHACH HANG THAN THIET =====================================
+export const LIET_KE_KHACH_HANG_THAN_THIET = "LIET_KE_KHACH_HANG_THAN_THIET";

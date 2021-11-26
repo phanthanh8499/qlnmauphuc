@@ -56,6 +56,7 @@ import {
   LIET_KE_NHAN_VIEN,
   LIET_KE_QUYEN,
   LIET_KE_NHAT_KY,
+  BAO_CAO_TIEN_DO_MAY,
 } from "../constants/Constants";
 
 export const dangNhapKhangHang = (username, password) => async (dispatch) => {
@@ -231,10 +232,10 @@ export const editUserInfo = (dataReq) => async (dispatch) => {
   console.log(data);
 };
 
-export const getOrderData = (id) => async (dispatch) => {
+export const getOrderData = (dataReq) => async (dispatch) => {
   dispatch({ type: YEU_CAU_LIET_KE_DON_HANG });
   try {
-    const { data } = await Axios.post(`/getOrderData`, id);
+    const { data } = await Axios.post(`/getOrderData`, dataReq);
     dispatch({ type: LIET_KE_DON_HANG, payload: data });
   } catch (error) {
     dispatch({ type: LIET_KE_DON_HANG_THAT_BAI, payload: error.message });
@@ -303,6 +304,11 @@ export const getOrderReportStackChart =
     }
     dispatch({ type: BAO_CAO_TIEN_DO_HOA_DON, payload: temp });
   };
+  export const getTailorsData =
+  (dataReq) => async (dispatch) => {
+    const { data } = await Axios.post(`/admin/getTailorsData`, dataReq);
+    dispatch({ type: BAO_CAO_TIEN_DO_MAY, payload: data });
+  };
 
 // ================== BAO CAO THUONG MAI ============================
 export const getEcommerceReportCountData = (dataReq) => async (dispatch) => {
@@ -336,5 +342,11 @@ export const getActivityLogData = (dataReq) => async (dispatch) => {
   for (let i = 0; i < data.length; i++) {
     data[i] = { ...data[i], stt: i + 1 };
   }
+  dispatch({ type: LIET_KE_NHAT_KY, payload: data });
+};
+
+  // ================== KHACH HANG THAN THIET ============================
+export const getLoyaltyCustomerData = (dataReq) => async (dispatch) => {
+  const { data } = await Axios.post(`/getLoyaltyCustomer`, dataReq);
   dispatch({ type: LIET_KE_NHAT_KY, payload: data });
 };

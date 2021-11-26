@@ -38,6 +38,7 @@ import StarBorder from "@mui/icons-material/StarBorder";
 import { DANG_XUAT, LOCAL_PATH } from "../../constants/Constants";
 import { getUserPermissions } from "../../redux/Action";
 import AssignmentIcon from "@mui/icons-material/Assignment";
+import CardMembershipIcon from "@mui/icons-material/CardMembership";
 
 function Copyright(props) {
   return (
@@ -232,6 +233,8 @@ export default function AAppBar(props) {
       ? setSelected(0) || setSelectedSubMenu("0b")
       : abc === "LOG"
       ? setSelected(5)
+      : abc === "LOYALTYPROGRAM"
+      ? setSelected(6)
       : setSelected() || setSelectedSubMenu();
   }, [abc]);
 
@@ -257,6 +260,8 @@ export default function AAppBar(props) {
       return "Trang cá nhân";
     } else if (item === "LOG") {
       return "Nhật ký hoạt động";
+    } else if (item === "LOYALTYPROGRAM") {
+      return "Khách hàng thân thiết";
     }
   };
 
@@ -408,7 +413,6 @@ export default function AAppBar(props) {
           </Link>
         ) : null}
 
-
         {permissionData[0].up_ordermanager === true ? (
           <Link to="/admin/log" onClick={(e) => changeTitle(e, 5)}>
             <MyListItem button selected={selected === 5}>
@@ -416,6 +420,17 @@ export default function AAppBar(props) {
                 <AssignmentIcon />
               </ListItemIcon>
               <ListItemText primary="Nhật ký hoạt động" />
+            </MyListItem>
+          </Link>
+        ) : null}
+
+        {permissionData[0].up_ordermanager === true ? (
+          <Link to="/admin/loyaltyprogram" onClick={(e) => changeTitle(e, 6)}>
+            <MyListItem button selected={selected === 6}>
+              <ListItemIcon>
+                <CardMembershipIcon />
+              </ListItemIcon>
+              <ListItemText primary="Khách hàng thân thiết" />
             </MyListItem>
           </Link>
         ) : null}

@@ -527,7 +527,7 @@ router.post("/admin/products/add", function (req, res) {
             if (error) {
               console.log(error);
             } else {
-              res.send(response.rows)
+              res.send(response.rows);
               pool.query(
                 `INSERT INTO log(
 	log_userid, log_eventtypeid, log_date, log_description)
@@ -656,24 +656,27 @@ router.post("/admin/products/delete", function (req, res) {
         console.log(error);
       } else {
         res.send(id);
-        pool.query(`SELECT product_code FROM products WHERE id='${id}'`, (error, response) => {
-          if (error) {
-            console.log(error);
-          } else {
-            pool.query(
-              `INSERT INTO log(
+        pool.query(
+          `SELECT product_code FROM products WHERE id='${id}'`,
+          (error, response) => {
+            if (error) {
+              console.log(error);
+            } else {
+              pool.query(
+                `INSERT INTO log(
 	log_userid, log_eventtypeid, log_date, log_description)
 	VALUES ('${log_userid}', '${log_eventtypeid}',  '${log_date}',  'Xoá sản phẩm ${response.rows[0].product_code}');`,
-              (error, response) => {
-                if (error) {
-                  console.log(error);
-                } else {
-                  console.log("Ghi nhật ký thành công!");
+                (error, response) => {
+                  if (error) {
+                    console.log(error);
+                  } else {
+                    console.log("Ghi nhật ký thành công!");
+                  }
                 }
-              }
-            );
+              );
+            }
           }
-        });
+        );
       }
     }
   );
@@ -1103,7 +1106,8 @@ router.get("/getDetailUser.:id", function (req, res) {
 });
 
 router.post("/admin/users/changeStatus", function (req, res) {
-  const { id, status, log_date, log_userid, log_eventtypeid, user_username } = req.body;
+  const { id, status, log_date, log_userid, log_eventtypeid, user_username } =
+    req.body;
   console.log(id, status, log_date, log_userid, log_eventtypeid, user_username);
   pool.query(
     `UPDATE users
@@ -1115,7 +1119,7 @@ router.post("/admin/users/changeStatus", function (req, res) {
         res.send("ERROR");
       } else {
         res.send({ id: id, status: status });
-        if(status === "block"){
+        if (status === "block") {
           pool.query(
             `INSERT INTO log(
 	log_userid, log_eventtypeid, log_date, log_description)
@@ -1344,7 +1348,7 @@ router.post("/admin/users/edit", function (req, res) {
     user_wardid,
     FRONTEND_URL
   );
-  console.log("================================================")
+  console.log("================================================");
   console.log(
     uld_old_firstname,
     uld_old_lastname,
@@ -1414,7 +1418,7 @@ WHERE users.id = '${id}'`,
                     if (error) {
                       console.log(error);
                     } else {
-                      console.log("Ghi nhật ký thành công!!!")
+                      console.log("Ghi nhật ký thành công!!!");
                     }
                   }
                 );
@@ -2102,7 +2106,6 @@ router.post("/admin/order/processing", function (req, res) {
               }
             }
           );
-
         }
       }
     );
@@ -2467,6 +2470,46 @@ LEFT JOIN table2 ON table1.name = table2.name`,
   );
 });
 
+router.post(`/admin/getTailorsData`, function (req, res) {
+  const { startDate, endDate, total_order } = req.body;
+  pool.query(
+    `WITH table1 AS(
+SELECT id AS user_id,
+	user_username, user_avatar, user_lastname, user_firstname
+FROM users
+WHERE users.user_typeid = 'NV' AND user_date <= '${endDate}'),
+table2 AS (
+SELECT users.id AS user_id, COUNT(orders.id) AS value 
+FROM orders 
+LEFT JOIN users ON users.id = orders.order_tailorid
+WHERE orders.order_tailorid > 1
+AND orders.order_statusid = '6' 
+AND order_startdate BETWEEN '${startDate}' AND '${endDate}'
+GROUP BY user_id ORDER BY user_id ASC
+),
+table3 AS (
+SELECT users.id AS user_id, COUNT(orders.id) AS value 
+FROM orders 
+LEFT JOIN users ON users.id = orders.order_tailorid
+WHERE orders.order_tailorid > 1
+AND (orders.order_statusid > '1' AND orders.order_statusid < '5') 
+AND order_startdate BETWEEN '${startDate}' AND '${endDate}'
+GROUP BY user_id ORDER BY user_id ASC
+)
+SELECT table1.user_id AS id, user_avatar, user_username, user_lastname, user_firstname, COALESCE(table2.value, 0) AS complete_order, COALESCE(table3.value, 0) AS processing_order, ${total_order} AS total_order, (COALESCE(table2.value, 0)-${total_order}>=0) AS is_complete
+FROM table1
+LEFT JOIN table2 ON table1.user_id = table2.user_id
+LEFT JOIN table3 ON table1.user_id = table3.user_id`,
+    (error, response) => {
+      if (error) {
+        console.log(error);
+      } else {
+        res.send(response.rows);
+      }
+    }
+  );
+});
+
 router.post(`/admin/getOrderCount`, function (req, res) {
   const { startDate, endDate, startDateLW, endDateLW } = req.body;
   console.log(startDate, endDate, startDateLW, endDateLW);
@@ -2575,10 +2618,10 @@ router.post(`/getActivityLog`, function (req, res) {
   const { functiontypeid, eventtypeid, startDate, endDate } = req.body;
   var functionString = "";
   var eventtypeString = "";
-  if (functiontypeid !== "All"){
+  if (functiontypeid !== "All") {
     functionString = `AND eventtype.et_functiontypeid = '${functiontypeid}'`;
   }
-  if (eventtypeid !== "All"){
+  if (eventtypeid !== "All") {
     if (eventtypeid === "Add") {
       eventtypeString = `AND (log_eventtypeid = 'APF' OR log_eventtypeid = 'ACF' OR log_eventtypeid = 'ACA' OR log_eventtypeid = 'ASA')`;
     } else if (eventtypeid === "Edit") {
@@ -2596,13 +2639,13 @@ router.post(`/getActivityLog`, function (req, res) {
     } else {
       eventtypeString = `AND log_eventtypeid = '${eventtypeid}'`;
     }
-  }  
+  }
   console.log(functionString);
   console.log(eventtypeString);
   console.log(startDate);
   console.log(endDate);
-    pool.query(
-      `SELECT log.*, users.user_username, eventtype.et_name, functiontype.ft_name FROM log
+  pool.query(
+    `SELECT log.*, users.user_username, eventtype.et_name, functiontype.ft_name FROM log
 INNER JOIN users ON users.id = log.log_userid
 INNER JOIN eventtype ON eventtype.id = log_eventtypeid
 INNER JOIN functiontype ON functiontype.id = eventtype.et_functiontypeid
@@ -2610,19 +2653,6 @@ WHERE log_date BETWEEN '${startDate}' AND '${endDate}'
 ${functionString}
 ${eventtypeString}
 ORDER BY log_date DESC`,
-      (error, response) => {
-        if (error) {
-          console.log(error);
-        } else {
-          res.send(response.rows);
-        }
-      }
-    );
-});
-
-router.get(`/getFunctionTypeData`, function (req, res) {
-  pool.query(
-    `SELECT * FROM functiontype`,
     (error, response) => {
       if (error) {
         console.log(error);
@@ -2631,6 +2661,16 @@ router.get(`/getFunctionTypeData`, function (req, res) {
       }
     }
   );
+});
+
+router.get(`/getFunctionTypeData`, function (req, res) {
+  pool.query(`SELECT * FROM functiontype`, (error, response) => {
+    if (error) {
+      console.log(error);
+    } else {
+      res.send(response.rows);
+    }
+  });
 });
 
 router.get(`/getEventTypeData.:functiontypeid`, function (req, res) {
@@ -2658,32 +2698,36 @@ router.get(`/getEventTypeData.:functiontypeid`, function (req, res) {
   }
 });
 
-router.get(`/getProductLogDetail.:id`, function (req,res) {
-  const {id} = req.params;
-  pool.query(`SELECT * FROM product_log_detail WHERE pld_logid = '${id}'`,
-  (error, response) => {
-    if(error){
-      console.log(error);
-    } else {
-      res.send(response.rows[0]);
+router.get(`/getProductLogDetail.:id`, function (req, res) {
+  const { id } = req.params;
+  pool.query(
+    `SELECT * FROM product_log_detail WHERE pld_logid = '${id}'`,
+    (error, response) => {
+      if (error) {
+        console.log(error);
+      } else {
+        res.send(response.rows[0]);
+      }
     }
-  })
-})
+  );
+});
 
-router.get(`/getClothLogDetail.:id`, function (req,res) {
-  const {id} = req.params;
-  pool.query(`SELECT * FROM cloth_log_detail WHERE cld_logid = '${id}'`,
-  (error, response) => {
-    if(error){
-      console.log(error);
-    } else {
-      res.send(response.rows[0]);
+router.get(`/getClothLogDetail.:id`, function (req, res) {
+  const { id } = req.params;
+  pool.query(
+    `SELECT * FROM cloth_log_detail WHERE cld_logid = '${id}'`,
+    (error, response) => {
+      if (error) {
+        console.log(error);
+      } else {
+        res.send(response.rows[0]);
+      }
     }
-  })
-})
+  );
+});
 
-router.get(`/getUserLogDetail.:id`, function (req,res) {
-  const {id} = req.params;
+router.get(`/getUserLogDetail.:id`, function (req, res) {
+  const { id } = req.params;
   pool.query(
     `SELECT user_log_detail.*, 
 CONCAT(uld_old_address, ', ', old_ward.ward_prefix, ' ', old_ward.ward_name, ', ', old_district.district_prefix, ' ', old_district.district_name, ', ', old_province.province_name) AS uld_old_address,
@@ -2703,6 +2747,46 @@ WHERE uld_logid = '${id}'`,
       }
     }
   );
-})
+});
+
+router.post(`/getLoyaltyCustomer`, function (req, res) {
+  const { provinceId, districtId, wardId, startDate, endDate } = req.body;
+  var string = "";
+  if (provinceId != 0){
+    string = `AND province.id = '${provinceId}'`;
+  }
+  if (districtId != 0){
+    string = string + " " + `AND district.id = '${districtId}'`;
+  }
+  if (wardId != 0) {
+    string = string + " " + `AND ward.id = '${wardId}'`;
+  }
+  console.log(string);
+  console.log(startDate, endDate);
+    pool.query(
+      `WITH table1 AS(
+	SELECT order_userid AS customer_id, COUNT(*) FROM orders
+	WHERE order_statusid = '6' AND order_startdate BETWEEN '${startDate}' AND '${endDate}'
+GROUP BY customer_id),
+table2 AS (
+	SELECT users.id, users.user_typeid, users.user_username, users.user_firstname, users.user_lastname, CONCAT(user_address, ', ', ward.ward_prefix, ' ', ward.ward_name, ', ', district.district_prefix, ' ', district.district_name, ', ', province.province_name) AS user_address, users.user_tel, users.user_status, users.user_date, users.user_avatar, users.user_email, ward.ward_prefix, ward.ward_name, ward.ward_districtid, district.district_prefix, district.district_name, ward.ward_provinceid, province.province_name FROM users
+LEFT JOIN ward ON ward.id = users.user_wardid
+LEFT JOIN district ON district.id = ward.ward_districtid
+LEFT JOIN province ON province.id = ward.ward_provinceid
+WHERE users.user_typeid = 'KH' AND user_isdeleted = 'false' ${string}
+)
+SELECT table2.*, COALESCE(table1.count, 0) AS order_count
+FROM table2
+LEFT JOIN table1 ON table2.id = table1.customer_id
+ORDER BY order_count DESC`,
+      (error, response) => {
+        if (error) {
+          console.log(error);
+        } else {
+          res.send(response.rows);
+        }
+      }
+    );
+});
 
 module.exports = router;

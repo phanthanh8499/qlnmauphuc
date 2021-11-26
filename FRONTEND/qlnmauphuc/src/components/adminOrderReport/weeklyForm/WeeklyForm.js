@@ -18,6 +18,7 @@ import {
   getOrderReportCountData,
   getOrderReportPieChart,
   getOrderReportStackChart,
+  getTailorsData,
 } from "../../../redux/Action";
 import { MyFormControl } from "../../utility/Utility";
 import { Box } from "@mui/system";
@@ -65,10 +66,12 @@ function WeeklyForm(props) {
         endDate: format(selected.endDate, "yyyy-MM-dd HH:mm:ss"),
         startDateLW: format(selected.startDateLW, "yyyy-MM-dd"),
         endDateLW: format(selected.endDateLW, "yyyy-MM-dd HH:mm:ss"),
+        total_order: 5,
       };
       dispatch(getOrderReportCountData(dataSend));
       dispatch(getOrderReportPieChart(dataSend));
       dispatch(getOrderReportStackChart(dataSend, 5));
+      dispatch(getTailorsData(dataSend));
       enqueueSnackbar("Báo cáo theo tuần thành công", {
         variant: "success",
         autoHideDuration: 2000,
