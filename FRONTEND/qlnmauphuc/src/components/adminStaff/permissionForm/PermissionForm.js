@@ -131,7 +131,7 @@ function PermissionForm(props) {
                     name="dOrder"
                   />
                 }
-                label="Bảng điều khiển - Tình trạng hoá đơn"
+                label="Bảng điều khiển - Tình trạng may"
               />
               <FormControlLabel
                 control={

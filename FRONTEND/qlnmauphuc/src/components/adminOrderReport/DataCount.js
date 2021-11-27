@@ -175,7 +175,7 @@ export default function DataCount() {
                 </Grid>
                 <Grid item xs={12} sx={center}>
                   <Typography className={classes.subTitle}>
-                    Hoá đơn hoàn thành
+                    Hoá đơn đã may xong
                   </Typography>
                 </Grid>
               </Grid>

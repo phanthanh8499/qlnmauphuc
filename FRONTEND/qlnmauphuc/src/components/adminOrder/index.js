@@ -87,6 +87,7 @@ export default function AdminOrder() {
   const [all, setAll] = useState([]);
 
   useEffect(() => {
+    setLoading(true);
     setAll(orderData);
     setProcessing(
       orderData.filter((orderData) => orderData.order_statusid === 0)

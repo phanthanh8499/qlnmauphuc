@@ -795,7 +795,11 @@ export default function Data(props) {
                         <TableRow key={row.name}>
                           <TableCell component="th" scope="row">
                             <Avatar
-                              src={LOCAL_PATH + row.user_avatar.substring(2)}
+                              src={
+                                !row.user_avatar
+                                  ? null
+                                  : LOCAL_PATH + row.user_avatar.substring(2)
+                              }
                             />
                           </TableCell>
 
@@ -809,16 +813,15 @@ export default function Data(props) {
                             {row.user_firstname}
                           </TableCell>
                           <TableCell align="center">
-                            {row.user_tel.replace(
-                              /(\d{3})(\d{3})(\d{4})/,
-                              "$1 $2 $3"
-                            )}
+                            {!row.user_tel
+                              ? null
+                              : row.user_tel.replace(
+                                  /(\d{3})(\d{3})(\d{4})/,
+                                  "$1 $2 $3"
+                                )}
                           </TableCell>
                           <TableCell align="left">{row.user_address}</TableCell>
-                          <TableCell align="left">
-                            {row.order_count}
-                          </TableCell>
-                          
+                          <TableCell align="left">{row.order_count}</TableCell>
                         </TableRow>
                       );
                     })}

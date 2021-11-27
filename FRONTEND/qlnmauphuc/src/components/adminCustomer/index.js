@@ -76,6 +76,7 @@ export default function AdminCustomer() {
   const [ccn, setCcn] = useState([]);
 
   useEffect(() => {
+    setLoadingState(true);
     setDcn(customerData.filter((item) => item.user_firstname !== null));
     setCcn(customerData.filter((item) => item.user_firstname === null));
     setLoadingState(false);

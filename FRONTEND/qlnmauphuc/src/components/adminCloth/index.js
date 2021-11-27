@@ -63,6 +63,7 @@ export default function AdminCloth() {
   const [vpol, setVpol] = useState([]);
 
   useEffect(() => {
+    setLoadingState(true);
     setAll(clothData);
     setCaro(clothData.filter((item) => item.cloth_typeid === "CARO"));
     setHthh(clothData.filter((item) => item.cloth_typeid === "HTHH"));

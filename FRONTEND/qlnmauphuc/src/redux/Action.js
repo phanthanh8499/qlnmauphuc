@@ -282,13 +282,14 @@ export const getOrderReportCountData = (dataReq) => async (dispatch) => {
 };
 export const getOrderReportPieChart = (dataReq) => async (dispatch) => {
   const { data } = await Axios.post(`/admin/getCountOrder`, dataReq);
-  const temp = ([
+  const temp = [
     { name: "Đợi xử lý", value: parseInt(data[0].processing_count) },
     { name: "Đang may", value: parseInt(data[0].sewing_count) },
+    { name: "Vừa may xong", value: parseInt(data[0].sewing_complete_count) },
     { name: "Đang vận chuyển", value: parseInt(data[0].shipping_count) },
-    { name: "Hoàn tất", value: parseInt(data[0].complete_count) },
+    { name: "Đã thanh toán", value: parseInt(data[0].complete_count) },
     { name: "Huỷ bỏ", value: parseInt(data[0].cancel_count) },
-  ]);
+  ];
   dispatch({ type: BAO_CAO_TRANG_THAI_HOA_DON, payload: temp });
 };
 export const getOrderReportStackChart =

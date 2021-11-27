@@ -36,6 +36,7 @@ export default function UOder() {
   }, []);
 
   useEffect(() => {
+    setLoading(true);
     setAll(orderData);
     setProcessing(
       orderData.filter((orderData) => orderData.order_statusid === 0)

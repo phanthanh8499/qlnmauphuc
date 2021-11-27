@@ -2075,25 +2075,25 @@ router.post("/admin/order/processing", function (req, res) {
             <p style="margin: 0px">Hotline: (+84)91 551 80 13</p>
           </div>
     `;
-          // var mainOptions = {
-          //   // thiết lập đối tượng, nội dung gửi mail
-          //   from: "Nhà may âu phục Thành Phan",
-          //   to: customeremail,
-          //   subject: `Xử lý đơn hàng ${od_orderid}`,
-          //   text: "Your text is here", //Thường thi mình không dùng cái này thay vào đó mình sử dụng html để dễ edit hơn
-          //   html: content, //Nội dung html mình đã tạo trên kia :))
-          // };
-          // transporter.sendMail(mainOptions, function (err, info) {
-          //   if (err) {
-          //     console.log(err);
-          //     // req.flash("mess", "Lỗi gửi mail: " + err); //Gửi thông báo đến người dùng
-          //     res.redirect("/");
-          //   } else {
-          //     console.log("Message sent: " + info.response);
-          //     // req.flash("mess", "Một email đã được gửi đến tài khoản của bạn"); //Gửi thông báo đến người dùng
-          //     res.redirect("/");
-          //   }
-          // });
+          var mainOptions = {
+            // thiết lập đối tượng, nội dung gửi mail
+            from: "Nhà may âu phục Thành Phan",
+            to: customeremail,
+            subject: `Xử lý đơn hàng ${od_orderid}`,
+            text: "Your text is here", //Thường thi mình không dùng cái này thay vào đó mình sử dụng html để dễ edit hơn
+            html: content, //Nội dung html mình đã tạo trên kia :))
+          };
+          transporter.sendMail(mainOptions, function (err, info) {
+            if (err) {
+              console.log(err);
+              // req.flash("mess", "Lỗi gửi mail: " + err); //Gửi thông báo đến người dùng
+              res.redirect("/");
+            } else {
+              console.log("Message sent: " + info.response);
+              // req.flash("mess", "Một email đã được gửi đến tài khoản của bạn"); //Gửi thông báo đến người dùng
+              res.redirect("/");
+            }
+          });
           pool.query(
             `INSERT INTO log(
 	log_userid, log_eventtypeid, log_date, log_description)
@@ -2416,9 +2416,16 @@ router.post(`/admin/getCountOrder`, function (req, res) {
 	SELECT COUNT(*)
 	FROM orders 
  WHERE 
-order_statusid >= 1 AND order_statusid <5
+order_statusid >= 1 AND order_statusid < 4
 AND order_startdate BETWEEN '${startDate}' AND '${endDate}'
 ) AS sewing_count,
+(
+	SELECT COUNT(*)
+	FROM orders 
+ WHERE 
+order_statusid = 5
+AND order_startdate BETWEEN '${startDate}' AND '${endDate}'
+) AS sewing_complete_count,
 (
 	SELECT COUNT(*)
 	FROM orders WHERE order_statusid = '5' AND order_startdate BETWEEN '${startDate}' AND '${endDate}'
@@ -2453,7 +2460,7 @@ SELECT CONCAT(users.user_lastname, ' ', users.user_firstname) AS name, COUNT(ord
 FROM orders 
 LEFT JOIN users ON users.id = orders.order_tailorid
 WHERE orders.order_tailorid > 1
-AND orders.order_statusid = '6' 
+AND (orders.order_statusid >= '4' AND orders.order_statusid <= '6') 
 AND order_startdate BETWEEN '${startDate}' AND '${endDate}'
 GROUP BY name ORDER BY name ASC
 )
@@ -2483,7 +2490,7 @@ SELECT users.id AS user_id, COUNT(orders.id) AS value
 FROM orders 
 LEFT JOIN users ON users.id = orders.order_tailorid
 WHERE orders.order_tailorid > 1
-AND orders.order_statusid = '6' 
+AND (orders.order_statusid >= '4' AND orders.order_statusid <= '6') 
 AND order_startdate BETWEEN '${startDate}' AND '${endDate}'
 GROUP BY user_id ORDER BY user_id ASC
 ),
@@ -2492,7 +2499,7 @@ SELECT users.id AS user_id, COUNT(orders.id) AS value
 FROM orders 
 LEFT JOIN users ON users.id = orders.order_tailorid
 WHERE orders.order_tailorid > 1
-AND (orders.order_statusid > '1' AND orders.order_statusid < '5') 
+AND (orders.order_statusid > '1' AND orders.order_statusid < '4') 
 AND order_startdate BETWEEN '${startDate}' AND '${endDate}'
 GROUP BY user_id ORDER BY user_id ASC
 )
@@ -2524,7 +2531,7 @@ router.post(`/admin/getOrderCount`, function (req, res) {
         ) AS count_order,
 		(
         SELECT COUNT(*)
-        FROM orders WHERE order_statusid = '6' AND order_startdate BETWEEN '${startDate}' AND '${endDate}'
+        FROM orders WHERE (order_statusid >= '4' AND order_statusid <= '6') AND order_startdate BETWEEN '${startDate}' AND '${endDate}'
         ) AS count_completeorder,
 		(
 		SELECT COUNT(*)

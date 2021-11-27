@@ -94,10 +94,12 @@ export default function AdminLoyaltyProgram() {
   const [ccn, setCcn] = useState([]);
 
   useEffect(() => {
+    setLoadingState(true);
     setDcn(loyaltyCustomerData.filter((item) => item.user_firstname !== null));
     setCcn(loyaltyCustomerData.filter((item) => item.user_firstname === null));
     setLoadingState(false);
   }, [loyaltyCustomerData]);
+
   const [value, setValue] = useState("1");
 
   const handleChange = (event, newValue) => {

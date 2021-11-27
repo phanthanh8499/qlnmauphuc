@@ -171,6 +171,7 @@ function DetailForm(props) {
               defaultValue={province}
               label="Tỉnh/Thành"
               onChange={handleChangeProvince}
+              disabled
             >
               {provinceData.map((value, key) => (
                 <MenuItem value={value.id} key={key}>
@@ -189,6 +190,7 @@ function DetailForm(props) {
               defaultValue={district}
               label="Quận/Huyện"
               onChange={handleChangeDistrict}
+              disabled
             >
               {districtData.map((value, key) => (
                 <MenuItem value={value.id} key={key}>
@@ -207,6 +209,7 @@ function DetailForm(props) {
               defaultValue={ward}
               label="Xã/Phường"
               onChange={handleChangeWard}
+              disabled
             >
               {wardData.map((value, key) => (
                 <MenuItem value={value.id} key={key}>
@@ -318,20 +321,20 @@ function DetailForm(props) {
               <Badge
                 overlap="circular"
                 anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
-                badgeContent={
-                  <>
-                    <input
-                      accept="image/*"
-                      className={classes.input}
-                      id="icon-button-file"
-                      type="file"
-                      onChange={saveFile}
-                    />
-                    <label htmlFor="icon-button-file">
-                      <CameraAltIcon sx={{ cursor: "pointer" }}></CameraAltIcon>
-                    </label>
-                  </>
-                }
+                // badgeContent={
+                //   <>
+                //     <input
+                //       accept="image/*"
+                //       className={classes.input}
+                //       id="icon-button-file"
+                //       type="file"
+                //       onChange={saveFile}
+                //     />
+                //     <label htmlFor="icon-button-file">
+                //       <CameraAltIcon sx={{ cursor: "pointer" }}></CameraAltIcon>
+                //     </label>
+                //   </>
+                // }
               >
                 <Avatar
                   alt="Travis Howard"
@@ -346,6 +349,7 @@ function DetailForm(props) {
                 <Grid item xs={6}>
                   <MyTextField
                     id="username"
+                    disabled
                     label="Tên đăng nhập"
                     placeholder="Nhập tên đăng nhập"
                     margin="normal"
@@ -363,6 +367,7 @@ function DetailForm(props) {
                 <Grid item xs={6}>
                   <MyTextField
                     id="lastname"
+                    disabled
                     label="Họ"
                     placeholder="Nhập họ"
                     margin="normal"
@@ -378,6 +383,7 @@ function DetailForm(props) {
                 <Grid item xs={6}>
                   <MyTextField
                     id="firstname"
+                    disabled
                     label="Tên"
                     placeholder="Nhập tên"
                     margin="normal"
@@ -393,6 +399,7 @@ function DetailForm(props) {
                 <Grid item xs={6}>
                   <MyTextField
                     id="tel"
+                    disabled
                     label="Số điện thoại"
                     placeholder="Nhập số điện thoại"
                     margin="normal"
@@ -408,6 +415,7 @@ function DetailForm(props) {
                 <Grid item xs={6}>
                   <MyTextField
                     id="email"
+                    disabled
                     label="Email"
                     placeholder="Nhập email"
                     margin="normal"
@@ -423,6 +431,7 @@ function DetailForm(props) {
                 <Grid item xs={12}>
                   <MyTextField
                     id="address"
+                    disabled
                     label="Địa chỉ"
                     placeholder="Nhập địa chỉ"
                     margin="normal"
@@ -438,7 +447,7 @@ function DetailForm(props) {
                 {renderAddressForm()}
               </Grid>
 
-              <Grid item xs={12}>
+              {/* <Grid item xs={12}>
                 <FormControlLabel
                   control={
                     <IOSSwitch
@@ -449,9 +458,9 @@ function DetailForm(props) {
                   }
                   label={status === "active" ? "Hoạt động" : "Đã khoá"}
                 />
-              </Grid>
+              </Grid> */}
             </Grid>
-            <Grid item xs={12}>
+            {/* <Grid item xs={12}>
               <ButtonGroup className={classes.btngroup}>
                 <Button
                   variant="outlined"
@@ -464,7 +473,7 @@ function DetailForm(props) {
                   Hủy bỏ
                 </Button>
               </ButtonGroup>
-            </Grid>
+            </Grid> */}
           </>
         )}
       </Grid>

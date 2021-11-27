@@ -255,7 +255,7 @@ export default function AAppBar(props) {
     } else if (item === "ORDERS") {
       return "Quản lý đơn hàng";
     } else if (item === "STATISTIC") {
-      return "Bảng điểu khiển - Tình trạng đơn hàng";
+      return "Bảng điểu khiển - Tình trạng may";
     } else if (item === "PROFILE") {
       return "Trang cá nhân";
     } else if (item === "LOG") {
@@ -318,7 +318,7 @@ export default function AAppBar(props) {
                   <ListItemIcon>
                     <TrendingUpIcon />
                   </ListItemIcon>
-                  <ListItemText primary="Tình trạng đơn hàng" />
+                  <ListItemText primary="Tình trạng may" />
                 </MyListSubItem>
               </Link>
             ) : null}

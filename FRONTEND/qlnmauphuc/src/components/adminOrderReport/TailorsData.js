@@ -79,7 +79,7 @@ export default function TailorsData(props) {
   const antDesignClasses = useStylesAntDesign();
   const dispatch = useDispatch();
   const [dataRender, setDataRender] = useState();
-  const { data, isCcn, startD, endD } = props;
+  const { data, isCcn } = props;
   const [loading, setLoading] = useState(true);
 
   const [province, setProvince] = useState(0);
@@ -102,6 +102,8 @@ export default function TailorsData(props) {
 
   const orderReport = useSelector((state) => state.orderReport);
   const { loadingTD, tailorsData } = orderReport;
+  const [startD, setStartD] = useState(new Date())
+  const [endD, setEndD] = useState(new Date())
   useEffect(() => {
     var now = new Date();
     now.setHours(0, 0, 0, 0);
@@ -121,6 +123,8 @@ export default function TailorsData(props) {
       endDate: format(endDate, "yyyy-MM-dd HH:mm:ss"),
       total_order: 5,
     };
+    setStartDate(startDate);
+    setEndDate(endDate);
     dispatch(getTailorsData(dataSend));
   }, []);
 
@@ -252,36 +256,36 @@ export default function TailorsData(props) {
         }
       } },
 
-    {
-      field: "id",
-      headerName: "Hành động",
-      sortable: false,
-      width: 110,
-      disableClickEventBubbling: true,
-      renderCell: (params) => {
-        const handleClickEdit = () => {
-          openDetailForm();
-          setUserId(params.value);
-        };
+    // {
+    //   field: "id",
+    //   headerName: "Hành động",
+    //   sortable: false,
+    //   width: 110,
+    //   disableClickEventBubbling: true,
+    //   renderCell: (params) => {
+    //     const handleClickEdit = () => {
+    //       openDetailForm();
+    //       setUserId(params.value);
+    //     };
 
-        const handleClickDelete = () => {
-          openDeleteForm();
-          setUserId(params.value);
-        };
+    //     const handleClickDelete = () => {
+    //       openDeleteForm();
+    //       setUserId(params.value);
+    //     };
 
-        return (
-          <ButtonGroup>
-            <IconButton onClick={handleClickEdit} size="large">
-              <VisibilityIcon />
-            </IconButton>
+    //     return (
+    //       <ButtonGroup>
+    //         <IconButton onClick={handleClickEdit} size="large">
+    //           <VisibilityIcon />
+    //         </IconButton>
 
-            <IconButton onClick={handleClickDelete} size="large">
-              <DeleteOutlineIcon color="error" />
-            </IconButton>
-          </ButtonGroup>
-        );
-      },
-    },
+    //         <IconButton onClick={handleClickDelete} size="large">
+    //           <DeleteOutlineIcon color="error" />
+    //         </IconButton>
+    //       </ButtonGroup>
+    //     );
+    //   },
+    // },
   ];
 
   const exportFile = () => {
@@ -538,7 +542,7 @@ export default function TailorsData(props) {
 
   const handlePrint = useReactToPrint({
     content: () => componentRef.current,
-    documentTitle: "ThongKeKhachHang" + "_Ngay_" + format(now, "dd-MM/yyyy"),
+    documentTitle: "TinhTrangMay" + "_Ngay_" + format(now, "dd-MM/yyyy"),
     pageStyle: pageStyle,
   });
 
@@ -671,28 +675,22 @@ export default function TailorsData(props) {
                   <Typography sx={{ fontWeight: 600 }}>{INFO.name}</Typography>
                 </Grid>
                 <Grid item xs={6} sx={{ textAlign: "right" }}>
-                  <Typography sx={{ fontWeight: 600 }}>Mẫu in: B114</Typography>
+                  <Typography sx={{ fontWeight: 600 }}>Mẫu in: B116</Typography>
                   <Typography sx={{ fontWeight: 600 }}>
                     Ngày in: {format(now, "dd/MM/yyyy")}
                   </Typography>
                 </Grid>
                 <Grid item xs={12} sx={{ textAlign: "center" }}>
                   <Typography variant="h5">
-                    Kết quả thống kê tài khoản khách hàng
+                    Báo cáo tình trạng may của nhân viên
                   </Typography>
-                  <Typography sx={{ fontSize: 14, fontStyle: "italic" }}>
-                    {/* {count === 0
-                      ? `(Từ ngày: ${format(
-                          startD,
-                          "dd-MM-yyyy"
-                        )} --- Đến ngày: 
-                    ${format(endD, "dd-MM-yyyy")})`
-                      : `(Từ ngày: ${format(
+                  {/* <Typography sx={{ fontSize: 14, fontStyle: "italic" }}>
+                    (Từ ngày: {format(
                           startDate,
                           "dd-MM-yyyy"
                         )} --- Đến ngày: 
-                    ${format(endDate, "dd-MM-yyyy")})`} */}
-                  </Typography>
+                    {format(endDate, "dd-MM-yyyy")})
+                  </Typography> */}
                 </Grid>
               </Grid>
               <TableContainer>
@@ -703,17 +701,16 @@ export default function TailorsData(props) {
                       <TableCell align="center">UserName</TableCell>
                       <TableCell align="center">Họ</TableCell>
                       <TableCell align="center">Tên</TableCell>
-                      <TableCell align="center" sx={{ width: "121px" }}>
-                        Số điện thoại
+                      <TableCell align="center">
+                        Chỉ tiêu may
                       </TableCell>
-                      <TableCell align="center">Địa chỉ</TableCell>
-                      <TableCell align="center">Trạng thái</TableCell>
-                      <TableCell align="center">Loại người dùng</TableCell>
-                      <TableCell align="center">Ngày tạo</TableCell>
+                      <TableCell align="center">Đang may</TableCell>
+                      <TableCell align="center">Hoàn thành</TableCell>
+                      <TableCell align="center">Đạt chỉ tiêu</TableCell>
                     </TableRow>
                   </TableHead>
-                  {/* <TableBody>
-                    {dataRender === [] ? null : dataRender.map((row) => {
+                  <TableBody>
+                    {dataRender.map((row) => {
                       return (
                         <TableRow key={row.name}>
                           <TableCell component="th" scope="row">
@@ -732,29 +729,23 @@ export default function TailorsData(props) {
                             {row.user_firstname}
                           </TableCell>
                           <TableCell align="center">
-                            {row.user_tel.replace(
-                              /(\d{3})(\d{3})(\d{4})/,
-                              "$1-$2-$3"
-                            )}
-                          </TableCell>
-                          <TableCell align="left">{row.user_address}</TableCell>
-                          <TableCell align="left">
-                            {row.user_status === "active"
-                              ? "Hoạt động"
-                              : "Bị khoá"}
+                            {row.total_order}
                           </TableCell>
                           <TableCell align="left">
-                            {row.user_typeid === "KH"
-                              ? "Khách hàng"
-                              : "Nhân viên"}
+                            {row.processing_order}
                           </TableCell>
-                          <TableCell align="center">
-                            {formatDate(row.user_date)}
+                          <TableCell align="left">
+                            {row.complete_order}
+                          </TableCell>
+                          <TableCell align="left">
+                            {row.is_complete === "true"
+                              ? "Đạt"
+                              : "Không đạt"}
                           </TableCell>
                         </TableRow>
                       );
                     })}
-                  </TableBody> */}
+                  </TableBody>
                 </Table>
               </TableContainer>
             </div>
