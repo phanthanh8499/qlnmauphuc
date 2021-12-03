@@ -59,6 +59,8 @@ import {
   LIET_KE_QUYEN,
   LIET_KE_NHAT_KY,
   BAO_CAO_TIEN_DO_MAY,
+  LIET_KE_MA_GIAM_GIA,
+  THEM_MA_GIAM_GIA,
 } from "../constants/Constants";
 
 export const dangNhapReducer = (state = { loading: true }, action) => {
@@ -620,6 +622,23 @@ export const loyaltyCustomerReducer = (
   switch (action.type) {
     case LIET_KE_NHAT_KY:
       return { ...state, loading: false, loyaltyCustomerData: action.payload };
+    default:
+      return state;
+  }
+};
+
+export const giftVoucherReducer = (
+  state = {
+    loading: true,
+    giftVoucherData: [],
+  },
+  action
+) => {
+  switch (action.type) {
+    case LIET_KE_MA_GIAM_GIA:
+      return { ...state, loading: false, giftVoucherData: action.payload };
+    case THEM_MA_GIAM_GIA:
+      return { ...state, giftVoucherData: [...state.giftVoucherData, action.payload] };
     default:
       return state;
   }

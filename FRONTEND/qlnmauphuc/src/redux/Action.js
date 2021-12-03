@@ -57,6 +57,7 @@ import {
   LIET_KE_QUYEN,
   LIET_KE_NHAT_KY,
   BAO_CAO_TIEN_DO_MAY,
+  LIET_KE_MA_GIAM_GIA,
 } from "../constants/Constants";
 
 export const dangNhapKhangHang = (username, password) => async (dispatch) => {
@@ -350,4 +351,11 @@ export const getActivityLogData = (dataReq) => async (dispatch) => {
 export const getLoyaltyCustomerData = (dataReq) => async (dispatch) => {
   const { data } = await Axios.post(`/getLoyaltyCustomer`, dataReq);
   dispatch({ type: LIET_KE_NHAT_KY, payload: data });
+};
+
+
+  // ================== MA GIAM GIA ============================
+export const getGiftVoucherData = (dataReq) => async (dispatch) => {
+  const { data } = await Axios.post(`/getGiftVoucherData`, dataReq);
+  dispatch({ type: LIET_KE_MA_GIAM_GIA, payload: data });
 };

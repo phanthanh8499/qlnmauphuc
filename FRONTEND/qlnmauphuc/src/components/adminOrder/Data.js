@@ -1,5 +1,4 @@
 import React, { useEffect, useRef, useState } from "react";
-import { useDispatch } from "react-redux";
 import { useSnackbar } from "notistack";
 import {
   DataGrid,
@@ -15,11 +14,7 @@ import {
   CircularProgress,
   Grid,
   IconButton,
-  InputLabel,
   MenuItem,
-  Select,
-  TextField,
-  Divider,
   Typography,
   TableContainer,
   Table,
@@ -28,7 +23,6 @@ import {
   TableCell,
   TableBody,
 } from "@mui/material";
-import { getOrderData } from "../../redux/Action";
 import { makeStyles } from "@mui/styles";
 import { styled } from "@mui/material/styles";
 import SearchIcon from "@mui/icons-material/Search";
@@ -41,7 +35,6 @@ import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import PrintIcon from "@mui/icons-material/Print";
 import {
   Copyright,
-  MyFormControl,
   Search,
   SearchIconWrapper,
   StyledInputBase,
@@ -50,10 +43,6 @@ import {
 import CancelForm from "./cancelForm/cancelForm";
 import XLSX from "xlsx";
 import SaveAltIcon from "@mui/icons-material/SaveAlt";
-import axios from "axios";
-import DesktopDatePicker from "@mui/lab/DesktopDatePicker";
-import LocalizationProvider from "@mui/lab/LocalizationProvider";
-import AdapterDateFns from "@mui/lab/AdapterDateFns";
 import { format } from "date-fns";
 import {
   CustomNoRowsOverlay,
@@ -88,25 +77,8 @@ export default function Data(props) {
   const classes = useStyles();
   const antDesignClasses = useStylesAntDesign();
   const { data, startD, endD } = props;
-
-  const dispatch = useDispatch();
   const [dataRender, setDataRender] = useState([]);
   const [loading, setLoading] = useState(true);
-
-  const [province, setProvince] = useState(0);
-  const [district, setDistrict] = useState(0);
-  const [ward, setWard] = useState(0);
-  const [provinceData, setProvinceData] = useState([]);
-  const [districtData, setDistrictData] = useState([]);
-  const [wardData, setWardData] = useState([]);
-
-  useEffect(() => {
-    async function getProvinceData() {
-      const { data } = await axios.get(`/getProvince`);
-      setProvinceData(data);
-    }
-    getProvinceData();
-  }, []);
 
   useEffect(() => {
     setDataRender(data);
@@ -260,6 +232,14 @@ export default function Data(props) {
       },
     },
     {
+      field: "order_enddate",
+      headerName: "Ngày hoàn tất",
+      width: 150,
+      renderCell: (params) => {
+        return formatDate(params.value);
+      },
+    },
+    {
       field: "os_name",
       headerName: "Trạng thái",
       width: 200,
@@ -370,137 +350,9 @@ export default function Data(props) {
     XLSX.writeFile(wb, "DSDonHang " + now + ".xlsx");
   };
 
-  const handleChangeProvince = async (e) => {
-    setProvince(e.target.value);
-    const { data } = await axios.get(`/getDistrict.${e.target.value}`);
-    setDistrictData(data);
-    setWardData([]);
-    setDistrict(0);
-    setWard(0);
-  };
-  const handleChangeDistrict = async (e) => {
-    setDistrict(e.target.value);
-    const { data } = await axios.get(`/getWard.${province}&${e.target.value}`);
-    setWardData(data);
-    setWard(0);
-  };
-  const handleChangeWard = (e) => {
-    setWard(e.target.value);
-  };
-
-  const renderAddressForm = () => {
-    return (
-      <>
-        <Grid item xs={2} sx={{ ml: 0.5 }}>
-          <MyFormControl fullWidth>
-            <InputLabel id="province-select-label">Tỉnh/Thành</InputLabel>
-            <Select
-              labelId="province-select-label"
-              id="province-simple-select"
-              defaultValue={province}
-              label="Tỉnh/Thành"
-              onChange={handleChangeProvince}
-            >
-              <MenuItem value={0}>Tất cả</MenuItem>
-              {provinceData.map((value, key) => (
-                <MenuItem value={value.id} key={key}>
-                  {value.province_name}
-                </MenuItem>
-              ))}
-            </Select>
-          </MyFormControl>
-        </Grid>
-        <Grid item xs={2}>
-          <MyFormControl fullWidth>
-            <InputLabel id="district-select-label">Quận/Huyện</InputLabel>
-            <Select
-              labelId="district-select-label"
-              id="district-simple-select"
-              defaultValue={district}
-              label="Quận/Huyện"
-              onChange={handleChangeDistrict}
-            >
-              <MenuItem value={0}>Tất cả</MenuItem>
-              {districtData.map((value, key) => (
-                <MenuItem value={value.id} key={key}>
-                  {value.district_prefix} {value.district_name}
-                </MenuItem>
-              ))}
-            </Select>
-          </MyFormControl>
-        </Grid>
-        <Grid item xs={2}>
-          <MyFormControl fullWidth>
-            <InputLabel id="ward-select-label">Xã/Phường</InputLabel>
-            <Select
-              labelId="ward-select-label"
-              id="ward-simple-select"
-              defaultValue={ward}
-              label="Xã/Phường"
-              onChange={handleChangeWard}
-            >
-              <MenuItem value={0}>Tất cả</MenuItem>
-              {wardData.map((value, key) => (
-                <MenuItem value={value.id} key={key}>
-                  {value.ward_prefix} {value.ward_name}
-                </MenuItem>
-              ))}
-            </Select>
-          </MyFormControl>
-        </Grid>
-      </>
-    );
-  };
-
-  const [startDate, setStartDate] = useState(
-    new Date(new Date().setHours(0, 0, 0, 0))
-  );
-
-  const handleChangeStartDate = (newValue) => {
-    setStartDate(newValue);
-  };
-
-  const [endDate, setEndDate] = useState(
-    new Date(new Date().setHours(23, 59, 59, 0))
-  );
-
-  const handleChangeEndDate = (newValue) => {
-    setEndDate(newValue);
-  };
 
   const [dataBackup, setDataBackup] = useState();
-  const [count, setCount] = useState(0)
-  const handleClickSearch = () => {
-    if (
-      Date.parse(endDate) >
-      Date.parse(new Date(new Date().setHours(23, 59, 59, 0)))
-    ) {
-      enqueueSnackbar("Không được chọn ngày lớn hơn ngày hiện tại", {
-        variant: "error",
-        autoHideDuration: 2000,
-      });
-      return false;
-    }
-    if (Date.parse(startDate) > Date.parse(endDate)) {
-      enqueueSnackbar("Ngày bắt đầu không được lớn hơn ngày kết thúc", {
-        variant: "error",
-        autoHideDuration: 2000,
-      });
-      return false;
-    } else {
-      const dataSend = {
-        id: 0,
-        provinceId: province,
-        districtId: district,
-        wardId: ward,
-        startDate: format(startDate, "yyyy-MM-dd"),
-        endDate: format(endDate, "yyyy-MM-dd HH:mm:ss"),
-      };
-      dispatch(getOrderData(dataSend));
-      setCount(count+1);
-    }
-  };
-
+  
   const liveSearch = (event) => {
     let string = event.target.value;
     event.preventDefault();
@@ -530,8 +382,8 @@ export default function Data(props) {
   const componentRef = useRef();
   const subtotal = (items) => {
     return items.map((item) => item.order_total).reduce((sum, i) => sum + i, 0);
-  }
-  const total = subtotal(dataRender)
+  };
+  const total = subtotal(dataRender);
   const now = new Date();
   const pageStyle = `
    @page {margin: 10px; size: 1240px 700px}
@@ -575,51 +427,6 @@ export default function Data(props) {
         <>
           <Grid item xs={12} sx={{ marginBottom: "5px" }}>
             <Grid container>
-              <Grid item xs={12}>
-                <Grid container>
-                  <Grid item xs={10}>
-                    <Grid container spacing={1}>
-                      {renderAddressForm()}
-
-                      <LocalizationProvider dateAdapter={AdapterDateFns}>
-                        <Grid item xs={2}>
-                          <DesktopDatePicker
-                            label="Từ ngày"
-                            inputFormat="dd/MM/yyyy"
-                            value={startDate}
-                            onChange={handleChangeStartDate}
-                            renderInput={(params) => (
-                              <TextField size="small" {...params} />
-                            )}
-                          />
-                        </Grid>
-                        <Grid item xs={2}>
-                          <DesktopDatePicker
-                            label="Đến ngày"
-                            inputFormat="dd/MM/yyyy"
-                            value={endDate}
-                            onChange={handleChangeEndDate}
-                            renderInput={(params) => (
-                              <TextField size="small" {...params} />
-                            )}
-                          />
-                        </Grid>
-                      </LocalizationProvider>
-                    </Grid>
-                  </Grid>
-                  <Grid item xs={2} align="right">
-                    <Button
-                      variant="outlined"
-                      color="primary"
-                      onClick={handleClickSearch}
-                      sx={{ mr: 0.5, backgroundColor: '#ffffff' }}
-                    >
-                      Tìm kiếm
-                    </Button>
-                  </Grid>
-                </Grid>
-                <Divider sx={{ mt: 0.5, mb: 0.5 }} />
-              </Grid>
               <Grid item xs={6}>
                 <Button
                   variant="outlined"
@@ -737,17 +544,7 @@ export default function Data(props) {
                     Báo cáo kết quả thống kê đơn hàng
                   </Typography>
                   <Typography sx={{ fontSize: 14, fontStyle: "italic" }}>
-                    {count === 0
-                      ? `(Từ ngày: ${format(
-                          startD,
-                          "dd-MM-yyyy"
-                        )} --- Đến ngày: 
-                    ${format(endD, "dd-MM-yyyy")})`
-                      : `(Từ ngày: ${format(
-                          startDate,
-                          "dd-MM-yyyy"
-                        )} --- Đến ngày: 
-                    ${format(endDate, "dd-MM-yyyy")})`}
+                    {`(Từ ngày: ${format(startD, "dd-MM-yyyy")} --- Đến ngày: ${format(endD, "dd-MM-yyyy")})`}
                   </Typography>
                 </Grid>
               </Grid>
@@ -775,7 +572,9 @@ export default function Data(props) {
                             {formatDate(row.order_startdate)}
                           </TableCell>
                           <TableCell align="left">{row.os_name}</TableCell>
-                          <TableCell align="left">{row.tailor_name}</TableCell>
+                          <TableCell align="left">
+                            {row.order_customername}
+                          </TableCell>
                           <TableCell align="left">
                             {row.order_customeraddress}
                           </TableCell>

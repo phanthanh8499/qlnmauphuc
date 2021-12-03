@@ -721,6 +721,12 @@ function DetailForm(props) {
                       Ngày in: {format(now, "dd/MM/yyyy HH:mm:ss")}
                     </Typography>
                     <Typography>
+                      Ngày hẹn trả (dự kiến): {format(
+                        new Date(detailData[0].order_enddate),
+                        "dd/MM/yyyy"
+                      )}
+                    </Typography>
+                    <Typography>
                       H.T thanh toán: {detailData[0].opm_name}
                     </Typography>
                     <Typography>

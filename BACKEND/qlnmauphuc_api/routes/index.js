@@ -1595,10 +1595,21 @@ router.post("/admin/users/editUserInfo", function (req, res) {
 router.post("/getOrderData", function (req, res) {
   const { id, provinceId, districtId, wardId, startDate, endDate } = req.body;
   console.log(id, provinceId, districtId, wardId, startDate, endDate);
+  var string = "";
+  if(provinceId !== 0){
+    string = `AND province.id = '${provinceId}'`;
+  }
+  if(districtId !== 0){
+    string = string + ` AND district.id = '${districtId}'`;
+  }
+  if(wardId !== 0){
+    string = string + ` AND ward.id = '${wardId}'`;
+  }
+  console.log(string);
+  console.log(`orders.order_startdate BETWEEN '${startDate}' AND '${endDate}'`);
   if (parseInt(id) === 0) {
-    if (wardId !== 0) {
       pool.query(
-        `SELECT order_details.id, order_details.od_orderid, order_details.od_productid, order_details.od_clothid, order_customername, order_wardid, district.id AS order_districtid, province.id AS order_provinceid, CONCAT(order_customeraddress, ', ', ward.ward_prefix, ' ', ward.ward_name, ', ', district.district_prefix, ' ', district.district_name, ', ', province.province_name) AS order_customeraddress, order_customerphone, order_customeremail, order_startdate, order_total, order_paymentid, opm_name, order_shippingid, osm_name, order_tailorid, CONCAT(user_lastname, ' ', user_firstname) AS tailor_name, user_tel as tailor_tel, order_statusid, order_userid, products.product_name, products.product_typeid, products.product_image1, os_name FROM order_details 
+        `SELECT order_details.id, order_details.od_orderid, order_details.od_productid, order_details.od_clothid, order_customername, order_wardid, district.id AS order_districtid, province.id AS order_provinceid, CONCAT(order_customeraddress, ', ', ward.ward_prefix, ' ', ward.ward_name, ', ', district.district_prefix, ' ', district.district_name, ', ', province.province_name) AS order_customeraddress, order_customerphone, order_customeremail, order_startdate, order_enddate, order_total, order_paymentid, opm_name, order_shippingid, osm_name, order_tailorid, CONCAT(user_lastname, ' ', user_firstname) AS tailor_name, user_tel as tailor_tel, order_statusid, order_userid, products.product_name, products.product_typeid, products.product_image1, os_name FROM order_details 
               INNER JOIN orders ON orders.id = order_details.od_orderid 
               INNER JOIN products ON products.id = order_details.od_productid
 			  INNER JOIN order_status ON order_status.id = orders.order_statusid
@@ -1608,8 +1619,7 @@ router.post("/getOrderData", function (req, res) {
 			  INNER JOIN ward ON ward.id = orders.order_wardid
 			  INNER JOIN district ON district.id = ward.ward_districtid
 			  INNER JOIN province ON province.id = ward.ward_provinceid 
-        WHERE province.id = '${provinceId}' AND district.id = '${districtId}' AND ward.id = '${wardId}'
-				      AND orders.order_startdate BETWEEN '${startDate}' AND '${endDate}'`,
+        WHERE orders.order_startdate BETWEEN '${startDate}' AND '${endDate}' ${string} `,
         (error, response) => {
           if (error) {
             console.log(error);
@@ -1619,76 +1629,6 @@ router.post("/getOrderData", function (req, res) {
         }
       );
       return true;
-    }
-    if (districtId !== 0) {
-      pool.query(
-        `SELECT order_details.id, order_details.od_orderid, order_details.od_productid, order_details.od_clothid, order_customername, order_wardid, district.id AS order_districtid, province.id AS order_provinceid, CONCAT(order_customeraddress, ', ', ward.ward_prefix, ' ', ward.ward_name, ', ', district.district_prefix, ' ', district.district_name, ', ', province.province_name) AS order_customeraddress, order_customerphone, order_customeremail, order_startdate, order_total, order_paymentid, opm_name, order_shippingid, osm_name, order_tailorid, CONCAT(user_lastname, ' ', user_firstname) AS tailor_name, user_tel as tailor_tel, order_statusid, order_userid, products.product_name, products.product_typeid, products.product_image1, os_name FROM order_details 
-              INNER JOIN orders ON orders.id = order_details.od_orderid 
-              INNER JOIN products ON products.id = order_details.od_productid
-			  INNER JOIN order_status ON order_status.id = orders.order_statusid
-			  INNER JOIN order_paymentmethod ON order_paymentmethod.id = orders.order_paymentid
-			  INNER JOIN order_shippingmethod ON order_shippingmethod.id = orders.order_shippingid
-			  INNER JOIN users ON users.id = orders.order_tailorid
-			  INNER JOIN ward ON ward.id = orders.order_wardid
-			  INNER JOIN district ON district.id = ward.ward_districtid
-			  INNER JOIN province ON province.id = ward.ward_provinceid
-        WHERE province.id = '${provinceId}' AND district.id = '${districtId}'
-				      AND orders.order_startdate BETWEEN '${startDate}' AND '${endDate}' `,
-        (error, response) => {
-          if (error) {
-            console.log(error);
-          } else {
-            res.send(response.rows);
-          }
-        }
-      );
-      return true;
-    }
-    if (provinceId !== 0) {
-      pool.query(
-        `SELECT order_details.id, order_details.od_orderid, order_details.od_productid, order_details.od_clothid, order_customername, order_wardid, district.id AS order_districtid, province.id AS order_provinceid, CONCAT(order_customeraddress, ', ', ward.ward_prefix, ' ', ward.ward_name, ', ', district.district_prefix, ' ', district.district_name, ', ', province.province_name) AS order_customeraddress, order_customerphone, order_customeremail, order_startdate, order_total, order_paymentid, opm_name, order_shippingid, osm_name, order_tailorid, CONCAT(user_lastname, ' ', user_firstname) AS tailor_name, user_tel as tailor_tel, order_statusid, order_userid, products.product_name, products.product_typeid, products.product_image1, os_name FROM order_details 
-              INNER JOIN orders ON orders.id = order_details.od_orderid 
-              INNER JOIN products ON products.id = order_details.od_productid
-			  INNER JOIN order_status ON order_status.id = orders.order_statusid
-			  INNER JOIN order_paymentmethod ON order_paymentmethod.id = orders.order_paymentid
-			  INNER JOIN order_shippingmethod ON order_shippingmethod.id = orders.order_shippingid
-			  INNER JOIN users ON users.id = orders.order_tailorid
-			  INNER JOIN ward ON ward.id = orders.order_wardid
-			  INNER JOIN district ON district.id = ward.ward_districtid
-			  INNER JOIN province ON province.id = ward.ward_provinceid
-        WHERE province.id = '${provinceId}'
-				      AND orders.order_startdate BETWEEN '${startDate}' AND '${endDate}' `,
-        (error, response) => {
-          if (error) {
-            console.log(error);
-          } else {
-            res.send(response.rows);
-          }
-        }
-      );
-      return true;
-    } else {
-      pool.query(
-        `SELECT order_details.id, order_details.od_orderid, order_details.od_productid, order_details.od_clothid, order_customername, order_wardid, district.id AS order_districtid, province.id AS order_provinceid, CONCAT(order_customeraddress, ', ', ward.ward_prefix, ' ', ward.ward_name, ', ', district.district_prefix, ' ', district.district_name, ', ', province.province_name) AS order_customeraddress, order_customerphone, order_customeremail, order_startdate, order_total, order_paymentid, opm_name, order_shippingid, osm_name, order_tailorid, CONCAT(user_lastname, ' ', user_firstname) AS tailor_name, user_tel as tailor_tel, order_statusid, order_userid, products.product_name, products.product_typeid, products.product_image1, os_name FROM order_details 
-                    INNER JOIN orders ON orders.id = order_details.od_orderid 
-                    INNER JOIN products ON products.id = order_details.od_productid
-              INNER JOIN order_status ON order_status.id = orders.order_statusid
-              INNER JOIN order_paymentmethod ON order_paymentmethod.id = orders.order_paymentid
-              INNER JOIN order_shippingmethod ON order_shippingmethod.id = orders.order_shippingid
-              INNER JOIN users ON users.id = orders.order_tailorid
-              INNER JOIN ward ON ward.id = orders.order_wardid
-              INNER JOIN district ON district.id = ward.ward_districtid
-              INNER JOIN province ON province.id = ward.ward_provinceid
-				      AND orders.order_startdate BETWEEN '${startDate}' AND '${endDate}'`,
-        (error, response) => {
-          if (error) {
-            console.log(error);
-          } else {
-            res.send(response.rows);
-          }
-        }
-      );
-    }
   } else {
     pool.query(
       `SELECT order_details.*, order_customername, order_customeraddress, order_customerphone, order_customeremail, order_startdate, order_enddate, order_subtotal, order_discount, order_total, order_paymentid, opm_name, order_shippingid, osm_name, order_statusid, order_userid, products.product_name, products.product_typeid, products.product_image1, cloth.cloth_name, cloth.cloth_image, cloth.cloth_quantity, cloth.cloth_material, os_name FROM order_details 
@@ -2020,7 +1960,23 @@ router.post("/admin/order/processing", function (req, res) {
     log_date,
     log_userid,
     log_eventtypeid,
+    order_shippingid,
   } = req.body;
+  var transporter = nodemailer.createTransport({
+    // config mail server
+    host: "smtp.gmail.com",
+    port: 465,
+    secure: true,
+    auth: {
+      user: "phanthanh8499@gmail.com", //Tài khoản gmail vừa tạo
+      pass: "121311Aa", //Mật khẩu tài khoản gmail vừa tạo
+    },
+    tls: {
+      // do not fail on invalid certs
+      rejectUnauthorized: false,
+    },
+  });
+
   if (order_statusid === 1) {
     console.log("đợi thợ may");
     console.log(order_statusid, order_tailorid, date, od_orderid);
@@ -2035,20 +1991,7 @@ router.post("/admin/order/processing", function (req, res) {
         } else {
           console.log("OK");
           res.send("OK");
-          var transporter = nodemailer.createTransport({
-            // config mail server
-            host: "smtp.gmail.com",
-            port: 465,
-            secure: true,
-            auth: {
-              user: "phanthanh8499@gmail.com", //Tài khoản gmail vừa tạo
-              pass: "121311Aa", //Mật khẩu tài khoản gmail vừa tạo
-            },
-            tls: {
-              // do not fail on invalid certs
-              rejectUnauthorized: false,
-            },
-          });
+          
           var content = "";
           content += `
          <div style="margin-bottom: 10px">
@@ -2094,6 +2037,7 @@ router.post("/admin/order/processing", function (req, res) {
               res.redirect("/");
             }
           });
+
           pool.query(
             `INSERT INTO log(
 	log_userid, log_eventtypeid, log_date, log_description)
@@ -2182,6 +2126,95 @@ router.post("/admin/order/processing", function (req, res) {
         } else {
           console.log("OK");
           res.send("OK");
+          if(order_shippingid === "TNM"){
+            var content = "";
+            content += `
+         <div style="margin-bottom: 10px">
+            <p stlye="margin: 0px">Xin chào ${customername},</p>
+            <p stlye="margin: 0px">
+              Đơn hàng ${od_orderid} của bạn đã may xong. Quý khách vui lòng đến nhà may để tiến hành các thủ tục thanh toán để hoàn tất đơn hàng và nhận hàng.
+            </p>
+            <p stlye="margin: 0px">Trân trọng </p>
+            <p stlye="margin: 0px">Nhà may âu phục Thành Phan </p>
+          </div>
+          <div
+            style="
+              font-size: 14px;
+              border-top: 1px dashed black;
+              padding-top: 10px;
+              font-style: italic
+            "
+          >
+            <p style="font-weight: 600; margin: 0px">Nhà may âu phục Thành Phan</p>
+            <p style="margin: 0px">Địa chỉ: 999/9, Nguyễn Văn Linh, Ninh Kiều, Cần Thơ</p>
+            <p style="margin: 0px">Email: phanthanh8499@gmail.com</p>
+            <p style="margin: 0px">Hotline: (+84)91 551 80 13</p>
+          </div>
+    `;
+            var mainOptions = {
+              // thiết lập đối tượng, nội dung gửi mail
+              from: "Nhà may âu phục Thành Phan",
+              to: customeremail,
+              subject: `Đơn hàng ${od_orderid} đã may xong`,
+              text: "Your text is here", //Thường thi mình không dùng cái này thay vào đó mình sử dụng html để dễ edit hơn
+              html: content, //Nội dung html mình đã tạo trên kia :))
+            };
+            transporter.sendMail(mainOptions, function (err, info) {
+              if (err) {
+                console.log(err);
+                // req.flash("mess", "Lỗi gửi mail: " + err); //Gửi thông báo đến người dùng
+                res.redirect("/");
+              } else {
+                console.log("Message sent: " + info.response);
+                // req.flash("mess", "Một email đã được gửi đến tài khoản của bạn"); //Gửi thông báo đến người dùng
+                res.redirect("/");
+              }
+            });
+          } else {
+            var content = "";
+            content += `
+         <div style="margin-bottom: 10px">
+            <p stlye="margin: 0px">Xin chào ${customername},</p>
+            <p stlye="margin: 0px">
+              Đơn hàng ${od_orderid} của bạn đã may xong. Quý khách vui lòng đợi đơn hàng vận chuyển đến địa chỉ đã ghi trong đơn đặt hàng.
+            </p>
+            <p stlye="margin: 0px">Trân trọng </p>
+            <p stlye="margin: 0px">Nhà may âu phục Thành Phan </p>
+          </div>
+          <div
+            style="
+              font-size: 14px;
+              border-top: 1px dashed black;
+              padding-top: 10px;
+              font-style: italic
+            "
+          >
+            <p style="font-weight: 600; margin: 0px">Nhà may âu phục Thành Phan</p>
+            <p style="margin: 0px">Địa chỉ: 999/9, Nguyễn Văn Linh, Ninh Kiều, Cần Thơ</p>
+            <p style="margin: 0px">Email: phanthanh8499@gmail.com</p>
+            <p style="margin: 0px">Hotline: (+84)91 551 80 13</p>
+          </div>
+    `;
+            var mainOptions = {
+              // thiết lập đối tượng, nội dung gửi mail
+              from: "Nhà may âu phục Thành Phan",
+              to: customeremail,
+              subject: `Đơn hàng ${od_orderid} đã may xong`,
+              text: "Your text is here", //Thường thi mình không dùng cái này thay vào đó mình sử dụng html để dễ edit hơn
+              html: content, //Nội dung html mình đã tạo trên kia :))
+            };
+            transporter.sendMail(mainOptions, function (err, info) {
+              if (err) {
+                console.log(err);
+                // req.flash("mess", "Lỗi gửi mail: " + err); //Gửi thông báo đến người dùng
+                res.redirect("/");
+              } else {
+                console.log("Message sent: " + info.response);
+                // req.flash("mess", "Một email đã được gửi đến tài khoản của bạn"); //Gửi thông báo đến người dùng
+                res.redirect("/");
+              }
+            });
+          }
         }
       }
     );
@@ -2795,5 +2828,130 @@ ORDER BY order_count DESC`,
       }
     );
 });
+
+function makeid(length) {
+    var result           = '';
+    var characters       = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_';
+    var charactersLength = characters.length;
+    for ( var i = 0; i < length; i++ ) {
+      result += characters.charAt(Math.floor(Math.random() * 
+ charactersLength));
+   }
+   return result;
+}
+
+router.post(`/getGiftVoucherData`, function(req, res) {
+  const { id, voucherDiscount, isActive, startDate, endDate } = req.body;
+  var string = "";
+  var string2 = "";
+  console.log(isActive)
+  if(voucherDiscount !== 0){
+    string = `giftvoucher.gv_discount = '${voucherDiscount}' AND `;
+  }
+  if (isActive !== 'all'){
+    string2 = `giftvoucher.gv_isactivated = '${isActive}' AND `;
+  }
+  if (id === 1) {
+      pool.query(
+        `SELECT giftvoucher.*, users.user_username FROM giftvoucher
+INNER JOIN users ON users.id = giftvoucher.gv_userid
+WHERE ${string} ${string2} giftvoucher.gv_creationdate BETWEEN '${startDate}' AND '${endDate}'`,
+        (error, response) => {
+          if (error) {
+            console.log(error);
+          } else {
+            res.send(response.rows);
+          }
+        }
+      );
+    } else {
+      pool.query(
+        `SELECT giftvoucher.*, users.user_username FROM giftvoucher
+INNER JOIN users ON users.id = giftvoucher.gv_userid
+WHERE giftvoucher.gv_userid = '${id}'`,
+        (error, response) => {
+          if (error) {
+            console.log(error);
+          } else {
+            res.send(response.rows);
+          }
+        }
+      );
+    } 
+})
+
+router.post(`/admin/add/voucher`, function (req, res) {
+  const {
+    gv_qty,
+    gv_discription,
+    gv_discount,
+    gv_creationdate,
+    gv_expirationdate,
+  } = req.body;
+  console.log(
+    gv_qty,
+    gv_discription,
+    gv_discount,
+    gv_creationdate,
+    gv_expirationdate
+  );
+  var list = [];
+  for (let i = 0; i < gv_qty; i++) {
+    var id = makeid(20);
+    pool.query(
+      `INSERT INTO giftvoucher(
+	id, gv_discription, gv_discount, gv_creationdate, gv_expirationdate, gv_isactivated, gv_userid)
+	VALUES ('${id}', '${gv_discription}', '${gv_discount}', '${gv_creationdate}', '${gv_expirationdate}', 'false', '1')`,
+      (error, response) => {
+        if (error) {
+          console.log(error);
+        } else {
+          pool.query(`SELECT * FROM giftvoucher WHERE id='${id}'`, (error, response) => {
+            if (error) {
+              console.log(error);
+            } else {
+              console.log(response.rows);
+              list.push(response.rows[0])
+            }
+          });
+        }
+      }
+    );
+  }
+  console.log("xong", list)
+  res.send(list);
+});
+
+router.get(`/useVoucher.:id`, function(req, res) {
+  const {id} = req.params;
+  const now = new Date();
+  console.log(now)
+  for(let i=0; i<5; i++){
+    console.log(makeid(20));
+  }
+  pool.query(`SELECT * FROM giamgia WHERE id='${id}'`,
+  (error, response) => {
+    if(error){
+      console.log(error)
+    } else {
+      console.log(response.rows)
+      console.log(response.rows.length)
+      
+      if(response.rows.length === 0){
+        res.send("NO")
+      } else {
+        if(response.rows[0].ngay <= now){
+          res.send("EXPIRED");
+          return false;
+        }
+        if(response.rows[0].sudung === true){
+          res.send("ISUSED")
+        } else {
+          res.send(response.rows[0])
+        }
+      }
+    }
+  })
+})
 
 module.exports = router;

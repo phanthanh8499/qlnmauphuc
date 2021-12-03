@@ -9,6 +9,7 @@ import {
   FormLabel,
   Grid,
   Icon,
+  Input,
   InputLabel,
   LinearProgress,
   MenuItem,
@@ -44,6 +45,8 @@ import { FRONTEND_URL, LOCAL_PATH } from "../../../constants/Constants";
 import clsx from "clsx";
 import axios from "axios";
 import { MyFormControl, MyTextField } from "../../utility/Utility";
+import CheckCircleIcon from "@mui/icons-material/CheckCircle";
+import { IconButton } from "@material-ui/core";
 
 const Accordion = styled((props) => (
   <MuiAccordion disableGutters elevation={0} square {...props} />
@@ -299,6 +302,7 @@ export default function Order(props) {
   const [owner, setOwner] = useState("nm");
   const [price, setPrice] = useState(0);
   const [discount, setDiscount] = useState(0);
+  const [shippingPrice, setShippingPrice] = useState(0)
   const [qty, setQty] = useState(1);
 
   const cloth = useSelector((state) => state.cloth);
@@ -327,13 +331,23 @@ export default function Order(props) {
 
     formData.append("order_subtotal", price / qty);
     formData.append("order_discount", discount / qty);
-    formData.append("order_total", (price - discount) / qty);
+    formData.append("order_total", (price - discount - voucherDiscount) / qty);
     formData.append("order_paymentid", paymentMethod);
     formData.append("order_shippingid", shippingMethod);
     formData.append("order_statusid", 0);
     formData.append("order_userid", userInfo.id);
     formData.append("od_productid", productData.id);
-
+    console.log("voucherDiscount", voucherDiscount);
+    console.log("voucherCode", voucherCode);
+    console.log("price", price/qty)
+    console.log("order_total", (price - discount - voucherDiscount + shippingPrice) / qty);
+    if(parseInt(qty) < 1){
+      enqueueSnackbar("Số lượng mua không hợp lệ", {
+        variant: "error",
+        autoHideDuration: 2000,
+      });
+      return false;
+    }
     if (!lastName || !firstName || !tel || !email || !address) {
       enqueueSnackbar("Vui lòng nhập thông tin cá nhân", {
         variant: "error",
@@ -2298,6 +2312,11 @@ export default function Order(props) {
         const data03 = await axios.get(
           `/getWard.${data01.data[0].ward_provinceid}&${data01.data[0].ward_districtid}`
         );
+        if (data01.data[0].ward_provinceid === 12) {
+          setShippingPrice(0);
+        } else {
+          setShippingPrice(30000);
+        }
         setDistrict(data01.data[0].ward_districtid);
         setProvince(data01.data[0].ward_provinceid);
         setDistrictData(data02.data);
@@ -2371,8 +2390,22 @@ export default function Order(props) {
   const increment = () => {
     // const temp = price + productData.product_price;
     // owner === "kh" ? setDiscount(temp * 0.3) : setDiscount(0);
+    console.log(qty+1)
     setQty(qty + 1);
     setPrice(price + productData.product_price);
+    if (qty + 1 !== 1 || qty + 1 !== 0) {
+      setVoucher("");
+      setVoucherDiscount(0);
+      setVoucherPercent(0);
+      setVoucherCode("");
+      setShippingPrice(0);
+    } else {
+      if (province === 12) {
+        setShippingPrice(0);
+      } else {
+        setShippingPrice(30000);
+      }
+    }
     if (owner === "nm") {
       clothIdList.push({ value: "" });
       clothImageList.push({ value: LOCAL_PATH + "images/loading.gif" });
@@ -2393,7 +2426,20 @@ export default function Order(props) {
       ? (temp = price - productData.product_price)
       : (temp = productData.product_price);
     // owner === "kh" ? setDiscount(temp * 0.3) : setDiscount(0);
-
+    console.log(qty-1)
+    if(qty-1 === 1 || qty-1 === 0){
+      if(province === 12){
+        setShippingPrice(0)
+      } else {
+        setShippingPrice(30000);
+      }
+    } else {
+      setVoucher("");
+      setVoucherDiscount(0);
+      setVoucherPercent(0);
+      setVoucherCode("");
+      setShippingPrice(0);
+    }
     if (qty > 1) {
       if (owner === "nm") {
         clothIdList.splice(clothIdList.length - 1);
@@ -2584,6 +2630,11 @@ export default function Order(props) {
     setWardData([]);
     setDistrict();
     setWard();
+    if(e.target.value === 12){
+      setShippingPrice(0)
+    } else {
+      setShippingPrice(30000)
+    }
   };
   const handleChangeDistrict = async (e) => {
     setDistrict(e.target.value);
@@ -2655,6 +2706,52 @@ export default function Order(props) {
       </>
     );
   };
+ 
+  const [voucher, setVoucher] = useState();
+  const [voucherDiscount, setVoucherDiscount] = useState(0);
+  const [voucherPercent, setVoucherPercent] = useState(0);
+  const [voucherCode, setVoucherCode] = useState();
+  const handleClickVoucher = async () => {
+    const {data} = await axios.get(`useVoucher.${voucher}`);
+    console.log(data)
+    if(data === "NO"){
+      enqueueSnackbar("Không đúng mã voucher", {
+        variant: "error",
+        autoHideDuration: 2000,
+      });
+      setVoucherDiscount(0);
+      setVoucherPercent(0);
+      setVoucherCode("")
+      return false;
+    }
+    if(data === "ISUSED"){
+      enqueueSnackbar("Mã voucher đã được sử dụng", {
+        variant: "error",
+        autoHideDuration: 2000,
+      });
+      setVoucherDiscount(0);
+      setVoucherPercent(0);
+      setVoucherCode("")
+      return false;
+    }
+    if(data === "EXPIRED"){
+      enqueueSnackbar("Mã voucher đã hết hạn", {
+        variant: "error",
+        autoHideDuration: 2000,
+      });
+      setVoucherDiscount(0);
+      setVoucherPercent(0);
+      setVoucherCode("")
+      return false;
+    }
+    setVoucherDiscount((price*data.giam/100))
+    setVoucherPercent(data.giam);
+    setVoucherCode(voucher);
+    enqueueSnackbar("Nhập mã voucher thành công", {
+      variant: "success",
+      autoHideDuration: 2000,
+    });
+  }
 
   return (
     <Dialog
@@ -2991,16 +3088,29 @@ export default function Order(props) {
                       size="small"
                       value={qty}
                       onChange={(e) => {
-                        setQty(parseInt(e.target.value));
-                        setPrice(e.target.value * productData.product_price);
-
+                        var num = parseInt(e.target.value);
+                        setQty(parseInt(num));
+                        setPrice(num * productData.product_price);
+                        if (num > 1) {
+                          setVoucher("");
+                          setVoucherDiscount(0);
+                          setVoucherPercent(0);
+                          setVoucherCode("");
+                          setShippingPrice(0);
+                        } else {
+                          if (province === 12) {
+                            setShippingPrice(0);
+                          } else {
+                            setShippingPrice(30000);
+                          }
+                        }
                         // owner === "kh"
                         //   ? setDiscount(
                         //       e.target.value * productData.product_price * 0.3
                         //     )
                         //   : setDiscount(0);
 
-                        for (let i = 1; i <= e.target.value; i++) {
+                        for (let i = 1; i <= num; i++) {
                           clothIdList.push({ value: "" });
                           clothImageList.push({
                             value: LOCAL_PATH + "images/loading.gif",
@@ -3047,6 +3157,24 @@ export default function Order(props) {
                     })}
                   </Typography>
                 </Grid>
+
+                {qty > 1 ? null : (
+                  <>
+                    <Grid item xs={8}>
+                      <Typography sx={{ fontSize: "14px" }}>
+                        Voucher giảm ({voucherPercent} %)
+                      </Typography>
+                    </Grid>
+                    <Grid item xs={4}>
+                      <Typography sx={{ fontSize: "14px", float: "right" }}>
+                        {voucherDiscount.toLocaleString("it-IT", {
+                          style: "currency",
+                          currency: "VND",
+                        })}
+                      </Typography>
+                    </Grid>
+                  </>
+                )}
                 <Grid item xs={8}>
                   <Typography sx={{ fontSize: "14px" }}>
                     Phí vận chuyển
@@ -3054,12 +3182,30 @@ export default function Order(props) {
                 </Grid>
                 <Grid item xs={4}>
                   <Typography sx={{ fontSize: "14px", float: "right" }}>
-                    {parseInt(0).toLocaleString("it-IT", {
+                    {shippingPrice.toLocaleString("it-IT", {
                       style: "currency",
                       currency: "VND",
                     })}
                   </Typography>
                 </Grid>
+                {qty > 1 ? null : (
+                  <Grid item xs={12} sx={center}>
+                    <Input
+                      placeholder="Nhập mã giảm giá"
+                      inputProps={{ "aria-label": "description" }}
+                      sx={{
+                        width: "95%",
+                        backgroundColor: "#fff",
+                        padding: "5px",
+                        border: "1px solid #d3d3d3",
+                      }}
+                      onChange={(e) => setVoucher(e.target.value)}
+                    />
+                    <IconButton onClick={handleClickVoucher}>
+                      <CheckCircleIcon color="success" />
+                    </IconButton>
+                  </Grid>
+                )}
               </Grid>
               <Divider sx={{ margin: "10px 0px" }} />
               <Grid container>
@@ -3068,7 +3214,12 @@ export default function Order(props) {
                 </Grid>
                 <Grid item xs={4}>
                   <Typography sx={{ fontSize: "14px", float: "right" }}>
-                    {(price - discount).toLocaleString("it-IT", {
+                    {(
+                      price -
+                      discount -
+                      voucherDiscount +
+                      shippingPrice
+                    ).toLocaleString("it-IT", {
                       style: "currency",
                       currency: "VND",
                     })}

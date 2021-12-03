@@ -1,17 +1,36 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect,useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { Badge, CircularProgress, Divider, Grid, Paper } from "@mui/material";
+import { useSnackbar } from "notistack";
+import {
+  Button,
+  CircularProgress,
+  Grid,
+  InputLabel,
+  MenuItem,
+  Select,
+  TextField,
+  Divider,
+  Badge,
+} from "@mui/material";
 import { getOrderData } from "../../redux/Action";
 import { makeStyles } from "@mui/styles";
 import { styled } from "@mui/material/styles";
-import Box from "@mui/material/Box";
+import {
+  MyFormControl,
+} from "../utility/Utility";
+import axios from "axios";
+import DesktopDatePicker from "@mui/lab/DesktopDatePicker";
+import LocalizationProvider from "@mui/lab/LocalizationProvider";
+import AdapterDateFns from "@mui/lab/AdapterDateFns";
+import { format } from "date-fns";
 import Tab from "@mui/material/Tab";
 import TabContext from "@mui/lab/TabContext";
 import TabList from "@mui/lab/TabList";
 import TabPanel from "@mui/lab/TabPanel";
 import Data from "./Data";
-import { format } from "date-fns";
+import Box from "@mui/material/Box";
 import { BACKGROUNDADM } from "../../constants/Constants";
+
 const MyBadge = styled(Badge)`
   .MuiBadge-badge {
     right: -10px;
@@ -49,8 +68,22 @@ export default function AdminOrder() {
   const order = useSelector((state) => state.order);
   const { orderData, error } = order;
   const dispatch = useDispatch();
-  const [startD, setStartD] = useState(new Date());
-  const [endD, setEndD] = useState(new Date());
+  const [startDate, setStartDate] = useState(
+    new Date(new Date().setHours(0, 0, 0, 0))
+  );
+
+  const handleChangeStartDate = (newValue) => {
+    setStartDate(newValue);
+  };
+
+  const [endDate, setEndDate] = useState(
+    new Date(new Date().setHours(23, 59, 59, 0))
+  );
+
+  const handleChangeEndDate = (newValue) => {
+    setEndDate(newValue);
+  };
+
   useEffect(() => {
     var now = new Date();
     now.setHours(0, 0, 0, 0);
@@ -65,8 +98,8 @@ export default function AdminOrder() {
       endDate.setDate(endDate.getDate() - endDate.getDay() + 7);
       endDate.setHours(23, 59, 59, 0);
     }
-    setStartD(startDate);
-    setEndD(endD);
+    setStartDate(startDate);
+    setEndDate(endDate >= new Date() ? new Date() : endDate);
     const dataSend = {
       id: 0,
       provinceId: 0,
@@ -85,22 +118,70 @@ export default function AdminOrder() {
   const [complete, setComplete] = useState();
   const [cancel, setCancel] = useState();
   const [all, setAll] = useState([]);
+  const [late, setLate] = useState();
+  const [unpaid, setUnpaid] = useState();
+
+  const { enqueueSnackbar } = useSnackbar();
+  const [province, setProvince] = useState(0);
+  const [district, setDistrict] = useState(0);
+  const [ward, setWard] = useState(0);
+  const [provinceData, setProvinceData] = useState([]);
+  const [districtData, setDistrictData] = useState([]);
+  const [wardData, setWardData] = useState([]);
 
   useEffect(() => {
+    async function getProvinceData() {
+      const { data } = await axios.get(`/getProvince`);
+      setProvinceData(data);
+    }
+    getProvinceData();
+  }, []);
+
+  useEffect(() => {
+    var now = new Date();
     setLoading(true);
     setAll(orderData);
+    const lateOrder = orderData.filter(
+      (orderData) =>
+        orderData.order_statusid >= 2 &&
+        orderData.order_statusid <= 3 &&
+        Date.parse(orderData.order_enddate) <= Date.parse(now)
+    );
+    const unpaidOrder = orderData.filter(
+      (orderData) =>
+        orderData.order_statusid >= 4 &&
+        orderData.order_statusid <= 5 &&
+        orderData.order_shippingid === "TNM" &&
+        Date.parse(orderData.order_enddate) <= Date.parse(now)
+    );
     setProcessing(
       orderData.filter((orderData) => orderData.order_statusid === 0)
     );
-    setSewing(
-      orderData.filter(
-        (orderData) =>
-          orderData.order_statusid === 1 ||
-          orderData.order_statusid === 2 ||
-          orderData.order_statusid === 3 ||
-          orderData.order_statusid === 4
-      )
+    const sewingOrder = orderData.filter(
+      (orderData) =>
+        orderData.order_statusid === 1 ||
+        orderData.order_statusid === 2 ||
+        orderData.order_statusid === 3 ||
+        orderData.order_statusid === 4
     );
+    console.log(sewingOrder);
+    function isSewing(num) {
+      for (let i = 0; i < lateOrder.length; i++) {
+        if (num.od_orderid === lateOrder[i].od_orderid) {
+          return false;
+        }
+      }
+      for (let i = 0; i < unpaidOrder.length; i++) {
+        if (num.od_orderid === unpaidOrder[i].od_orderid) {
+          return false;
+        }
+      }
+      return num;
+    }
+    setSewing(sewingOrder.filter(isSewing));
+    console.log();
+    setLate(lateOrder);
+    setUnpaid(unpaidOrder);
     setTransport(
       orderData.filter((orderData) => orderData.order_statusid === 5)
     );
@@ -114,6 +195,118 @@ export default function AdminOrder() {
   const [value, setValue] = useState("1");
   const handleChange = (event, newValue) => {
     setValue(newValue);
+  };
+
+  const handleClickSearch = () => {
+    if (
+      Date.parse(endDate) >
+      Date.parse(new Date(new Date().setHours(23, 59, 59, 0)))
+    ) {
+      enqueueSnackbar("Không được chọn ngày lớn hơn ngày hiện tại", {
+        variant: "error",
+        autoHideDuration: 2000,
+      });
+      return false;
+    }
+    if (Date.parse(startDate) > Date.parse(endDate)) {
+      enqueueSnackbar("Ngày bắt đầu không được lớn hơn ngày kết thúc", {
+        variant: "error",
+        autoHideDuration: 2000,
+      });
+      return false;
+    } else {
+      const dataSend = {
+        id: 0,
+        provinceId: province,
+        districtId: district,
+        wardId: ward,
+        startDate: format(startDate, "yyyy-MM-dd"),
+        endDate: format(endDate, "yyyy-MM-dd HH:mm:ss"),
+      };
+      dispatch(getOrderData(dataSend));
+    }
+  };
+
+  const handleChangeProvince = async (e) => {
+    setProvince(e.target.value);
+    const { data } = await axios.get(`/getDistrict.${e.target.value}`);
+    setDistrictData(data);
+    setWardData([]);
+    setDistrict(0);
+    setWard(0);
+  };
+  const handleChangeDistrict = async (e) => {
+    setDistrict(e.target.value);
+    const { data } = await axios.get(`/getWard.${province}&${e.target.value}`);
+    setWardData(data);
+    setWard(0);
+  };
+  const handleChangeWard = (e) => {
+    setWard(e.target.value);
+  };
+
+  const renderAddressForm = () => {
+    return (
+      <>
+        <Grid item xs={2} sx={{ ml: 0.5 }}>
+          <MyFormControl fullWidth>
+            <InputLabel id="province-select-label">Tỉnh/Thành</InputLabel>
+            <Select
+              labelId="province-select-label"
+              id="province-simple-select"
+              defaultValue={province}
+              label="Tỉnh/Thành"
+              onChange={handleChangeProvince}
+            >
+              <MenuItem value={0}>Tất cả</MenuItem>
+              {provinceData.map((value, key) => (
+                <MenuItem value={value.id} key={key}>
+                  {value.province_name}
+                </MenuItem>
+              ))}
+            </Select>
+          </MyFormControl>
+        </Grid>
+        <Grid item xs={2}>
+          <MyFormControl fullWidth>
+            <InputLabel id="district-select-label">Quận/Huyện</InputLabel>
+            <Select
+              labelId="district-select-label"
+              id="district-simple-select"
+              defaultValue={district}
+              label="Quận/Huyện"
+              onChange={handleChangeDistrict}
+            >
+              <MenuItem value={0}>Tất cả</MenuItem>
+              {districtData.map((value, key) => (
+                <MenuItem value={value.id} key={key}>
+                  {value.district_prefix} {value.district_name}
+                </MenuItem>
+              ))}
+            </Select>
+          </MyFormControl>
+        </Grid>
+        <Grid item xs={2}>
+          <MyFormControl fullWidth>
+            <InputLabel id="ward-select-label">Xã/Phường</InputLabel>
+            <Select
+              labelId="ward-select-label"
+              id="ward-simple-select"
+              defaultValue={ward}
+              label="Xã/Phường"
+              onChange={handleChangeWard}
+            >
+              <MenuItem value={0}>Tất cả</MenuItem>
+              {wardData.map((value, key) => (
+                <MenuItem value={value.id} key={key}>
+                  {value.ward_prefix} {value.ward_name}
+                </MenuItem>
+              ))}
+            </Select>
+          </MyFormControl>
+        </Grid>
+      </>
+    );
   };
 
   return (
@@ -204,33 +397,101 @@ export default function AdminOrder() {
                         }
                         value="6"
                       />
+                      <MyTab
+                        label={
+                          <MyBadge badgeContent={late.length} color="primary">
+                            May trễ hạn
+                          </MyBadge>
+                        }
+                        value="7"
+                      />
+                      <MyTab
+                        label={
+                          <MyBadge badgeContent={unpaid.length} color="primary">
+                            Chưa nhận hàng
+                          </MyBadge>
+                        }
+                        value="8"
+                      />
                     </TabList>
                   </Box>
                 </Grid>
                 <Grid item xs={3}></Grid>
               </Grid>
             </Grid>
+
             <Grid item xs={12}>
               <Divider sx={{ margin: "0px 0px 5px 0px" }} />
             </Grid>
             <Grid item xs={12}>
+              <Grid container>
+                <Grid item xs={10}>
+                  <Grid container spacing={1}>
+                    {renderAddressForm()}
+
+                    <LocalizationProvider dateAdapter={AdapterDateFns}>
+                      <Grid item xs={2}>
+                        <DesktopDatePicker
+                          label="Từ ngày"
+                          inputFormat="dd/MM/yyyy"
+                          value={startDate}
+                          onChange={handleChangeStartDate}
+                          renderInput={(params) => (
+                            <TextField size="small" {...params} />
+                          )}
+                        />
+                      </Grid>
+                      <Grid item xs={2}>
+                        <DesktopDatePicker
+                          label="Đến ngày"
+                          inputFormat="dd/MM/yyyy"
+                          value={endDate}
+                          onChange={handleChangeEndDate}
+                          renderInput={(params) => (
+                            <TextField size="small" {...params} />
+                          )}
+                        />
+                      </Grid>
+                    </LocalizationProvider>
+                  </Grid>
+                </Grid>
+                <Grid item xs={2} align="right">
+                  <Button
+                    variant="outlined"
+                    color="primary"
+                    onClick={handleClickSearch}
+                    sx={{ mr: 0.5, backgroundColor: "#ffffff" }}
+                  >
+                    Tìm kiếm
+                  </Button>
+                </Grid>
+              </Grid>
+              <Divider sx={{ mt: 0.5, mb: 0.5 }} />
+            </Grid>
+            <Grid item xs={12}>
               <TabPanel value="1" sx={{ padding: 0 }}>
-                <Data data={all} startD={startD} endD={endD}/>
+                <Data data={all} startD={startDate} endD={endDate} />
               </TabPanel>
               <TabPanel value="2" sx={{ padding: 0 }}>
-                <Data data={processing} startD={startD} endD={endD}/>
+                <Data data={processing} startD={startDate} endD={endDate} />
               </TabPanel>
               <TabPanel value="3" sx={{ padding: 0 }}>
-                <Data data={sewing} startD={startD} endD={endD}/>
+                <Data data={sewing} startD={startDate} endD={endDate} />
               </TabPanel>
               <TabPanel value="4" sx={{ padding: 0 }}>
-                <Data data={transport} startD={startD} endD={endD}/>
+                <Data data={transport} startD={startDate} endD={endDate} />
               </TabPanel>
               <TabPanel value="5" sx={{ padding: 0 }}>
-                <Data data={complete} startD={startD} endD={endD}/>
+                <Data data={complete} startD={startDate} endD={endDate} />
               </TabPanel>
               <TabPanel value="6" sx={{ padding: 0 }}>
-                <Data data={cancel} startD={startD} endD={endD}/>
+                <Data data={cancel} startD={startDate} endD={endDate} />
+              </TabPanel>
+              <TabPanel value="7" sx={{ padding: 0 }}>
+                <Data data={late} startD={startDate} endD={endDate} />
+              </TabPanel>
+              <TabPanel value="8" sx={{ padding: 0 }}>
+                <Data data={unpaid} startD={startDate} endD={endDate} />
               </TabPanel>
             </Grid>
           </TabContext>

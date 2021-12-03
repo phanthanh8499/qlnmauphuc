@@ -39,6 +39,7 @@ import { DANG_XUAT, LOCAL_PATH } from "../../constants/Constants";
 import { getUserPermissions } from "../../redux/Action";
 import AssignmentIcon from "@mui/icons-material/Assignment";
 import CardMembershipIcon from "@mui/icons-material/CardMembership";
+import CardGiftcardIcon from "@mui/icons-material/CardGiftcard";
 
 function Copyright(props) {
   return (
@@ -235,6 +236,8 @@ export default function AAppBar(props) {
       ? setSelected(5)
       : abc === "LOYALTYPROGRAM"
       ? setSelected(6)
+      : abc === "GIFTVOUCHER"
+      ? setSelected(7)
       : setSelected() || setSelectedSubMenu();
   }, [abc]);
 
@@ -262,6 +265,8 @@ export default function AAppBar(props) {
       return "Nhật ký hoạt động";
     } else if (item === "LOYALTYPROGRAM") {
       return "Khách hàng thân thiết";
+    } else if (item === "GIFTVOUCHER") {
+      return "Mã giảm giá";
     }
   };
 
@@ -431,6 +436,17 @@ export default function AAppBar(props) {
                 <CardMembershipIcon />
               </ListItemIcon>
               <ListItemText primary="Khách hàng thân thiết" />
+            </MyListItem>
+          </Link>
+        ) : null}
+
+        {permissionData[0].up_ordermanager === true ? (
+          <Link to="/admin/giftvoucher" onClick={(e) => changeTitle(e, 7)}>
+            <MyListItem button selected={selected === 7}>
+              <ListItemIcon>
+                <CardGiftcardIcon />
+              </ListItemIcon>
+              <ListItemText primary="Mã giảm giá" />
             </MyListItem>
           </Link>
         ) : null}

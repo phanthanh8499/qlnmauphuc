@@ -142,6 +142,7 @@ export default function CustomizedSteppers(props) {
             od_clothid: data.od_clothid,
             customername: data.order_customername,
             customeremail: data.order_customeremail,
+            order_shippingid: data.order_shippingid,
           })
         );
       } else if (
@@ -159,6 +160,7 @@ export default function CustomizedSteppers(props) {
               od_clothid: data.od_clothid,
               customername: data.order_customername,
               customeremail: data.order_customeremail,
+              order_shippingid: data.order_shippingid,
             })
           );
           setActiveStep((prevActiveStep) => prevActiveStep + 1);
@@ -179,6 +181,7 @@ export default function CustomizedSteppers(props) {
               cloth_quantity: data.cloth_quantity - 2,
               cloth_typeid: data.cloth_typeid,
               od_clothid: data.od_clothid,
+              order_shippingid: data.order_shippingid,
               customername: data.order_customername,
               customeremail: data.order_customeremail,
             })
@@ -204,6 +207,7 @@ export default function CustomizedSteppers(props) {
           log_date: format(today, "yyyy-MM-dd HH:mm:ss"),
           log_userid: userid,
           log_eventtypeid: "POF",
+          order_shippingid: data.order_shippingid,
         })
       );
     }

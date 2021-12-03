@@ -54,6 +54,7 @@ export default function All(props) {
     setPage(value - 1);
   };
   useEffect(() => {
+    setLoading(true);
     const rowsPerPage = 3;
     setDataRender(data);
     setRowsPerPage(rowsPerPage);

@@ -50,6 +50,10 @@ export default function Home() {
           path="/admin/loyaltyprogram"
           component={lazy(() => import("../../../components/adminLoyaltyProgram"))}
         ></Route>
+        <Route
+          path="/admin/giftvoucher"
+          component={lazy(() => import("../../../components/adminGiftVoucher"))}
+        ></Route>
       </Switch>
     </AdminLayout>
   );
