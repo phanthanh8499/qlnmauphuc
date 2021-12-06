@@ -1684,6 +1684,7 @@ router.post("/admin/order/add", function (req, res) {
     haveFile,
     cloth_name,
     order_wardid,
+    voucherCode,
     FRONTEND_URL,
   } = req.body;
   const id = uuidv4();
@@ -1720,6 +1721,15 @@ router.post("/admin/order/add", function (req, res) {
     od_thighcircumference,
     order_wardid
   );
+  if(!voucherCode){
+    console.log("code???", voucherCode);
+    console.log("Khong co code")
+  } else {
+    console.log("có code", voucherCode);
+    pool.query(`UPDATE giftvoucher
+          SET gv_isactivated='true'
+          WHERE id='${voucherCode}'`);
+  }
   if (parseInt(haveFile) === 0) {
     console.log("****************************************************");
     console.log("khong co file");
@@ -2868,7 +2878,9 @@ WHERE ${string} ${string2} giftvoucher.gv_creationdate BETWEEN '${startDate}' AN
       pool.query(
         `SELECT giftvoucher.*, users.user_username FROM giftvoucher
 INNER JOIN users ON users.id = giftvoucher.gv_userid
-WHERE giftvoucher.gv_userid = '${id}'`,
+WHERE giftvoucher.gv_userid = '${id}'
+AND giftvoucher.gv_isactivated = 'false'
+ORDER BY giftvoucher.gv_expirationdate ASC`,
         (error, response) => {
           if (error) {
             console.log(error);
@@ -2880,7 +2892,7 @@ WHERE giftvoucher.gv_userid = '${id}'`,
     } 
 })
 
-router.post(`/admin/add/voucher`, function (req, res) {
+router.post(`/admin/add/voucher`, async function (req, res) {
   const {
     gv_qty,
     gv_discription,
@@ -2895,63 +2907,58 @@ router.post(`/admin/add/voucher`, function (req, res) {
     gv_creationdate,
     gv_expirationdate
   );
-  var list = [];
-  for (let i = 0; i < gv_qty; i++) {
-    var id = makeid(20);
-    pool.query(
-      `INSERT INTO giftvoucher(
+  var id = makeid(20);
+  pool.query(
+    `INSERT INTO giftvoucher(
 	id, gv_discription, gv_discount, gv_creationdate, gv_expirationdate, gv_isactivated, gv_userid)
 	VALUES ('${id}', '${gv_discription}', '${gv_discount}', '${gv_creationdate}', '${gv_expirationdate}', 'false', '1')`,
-      (error, response) => {
-        if (error) {
-          console.log(error);
-        } else {
-          pool.query(`SELECT * FROM giftvoucher WHERE id='${id}'`, (error, response) => {
+    (error, response) => {
+      if (error) {
+        console.log(error);
+      } else {
+        pool.query(
+          `SELECT giftvoucher.*, users.user_username FROM giftvoucher
+INNER JOIN users ON users.id = giftvoucher.gv_userid`,
+          (error, response) => {
             if (error) {
               console.log(error);
             } else {
               console.log(response.rows);
-              list.push(response.rows[0])
+              console.log(response.rows[0]);
+              res.send(response.rows[0]);
             }
-          });
-        }
+          }
+        );
       }
-    );
-  }
-  console.log("xong", list)
-  res.send(list);
+    }
+  );
 });
 
 router.get(`/useVoucher.:id`, function(req, res) {
   const {id} = req.params;
   const now = new Date();
-  console.log(now)
-  for(let i=0; i<5; i++){
-    console.log(makeid(20));
-  }
-  pool.query(`SELECT * FROM giamgia WHERE id='${id}'`,
-  (error, response) => {
-    if(error){
-      console.log(error)
-    } else {
-      console.log(response.rows)
-      console.log(response.rows.length)
-      
-      if(response.rows.length === 0){
-        res.send("NO")
+  pool.query(
+    `SELECT * FROM giftvoucher WHERE id='${id}'`,
+    (error, response) => {
+      if (error) {
+        console.log(error);
       } else {
-        if(response.rows[0].ngay <= now){
-          res.send("EXPIRED");
-          return false;
-        }
-        if(response.rows[0].sudung === true){
-          res.send("ISUSED")
+        if (response.rows.length === 0) {
+          res.send("NO");
         } else {
-          res.send(response.rows[0])
+          if (response.rows[0].gv_expirationdate <= now) {
+            res.send("EXPIRED");
+            return false;
+          }
+          if (response.rows[0].gv_isactivated === true) {
+            res.send("ISUSED");
+          } else {
+            res.send(response.rows[0]);
+          }
         }
       }
     }
-  })
+  );
 })
 
 module.exports = router;

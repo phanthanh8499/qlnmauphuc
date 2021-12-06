@@ -37,6 +37,8 @@ export default function ListModule () {
        ? setValue(2)
        : pathname === "cloth"
        ? setValue(3)
+       : pathname === "giftvoucher"
+       ? setValue(4)
        : pathname === ""
        ? setValue("")
        : setValue(2);
@@ -97,10 +99,21 @@ export default function ListModule () {
               <ListItemText primary="Quản lý vải" />
             </MyListItem>
           </Link>
-          <Link to="/" onClick={(e) => dangXuat()}>
+          <Link to="/account/giftvoucher">
             <MyListItem
               selected={value === 4}
               onClick={(e) => handleClick(e, 4)}
+            >
+              <ListItemIcon>
+                <PermIdentityIcon />
+              </ListItemIcon>
+              <ListItemText primary="Quà tặng" />
+            </MyListItem>
+          </Link>
+          <Link to="/" onClick={(e) => dangXuat()}>
+            <MyListItem
+              selected={value === 5}
+              onClick={(e) => handleClick(e, 5)}
             >
               <ListItemIcon>
                 <ExitToAppIcon />

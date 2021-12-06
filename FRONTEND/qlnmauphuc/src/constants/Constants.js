@@ -6,6 +6,11 @@ export const LOCAL_PATH = "http://localhost:3000/";
 //BACKGROUNADM
 export const BACKGROUNDADM = "http://localhost:3000/images/background.jpg"
 
+//BACKGROUNUSER
+export const VOUCHERBG_RED = "http://localhost:3000/images/voucherbg-red.jpg";
+export const VOUCHERBG_GOLD = "http://localhost:3000/images/voucherbg-gold.jpg";
+export const VOUCHERBG_BLUE = "http://localhost:3000/images/voucherbg-blue.jpg";
+
 //INFO
 export const INFO = {
   name: "Nhà may âu phục Thành Phan",

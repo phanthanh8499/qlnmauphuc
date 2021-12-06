@@ -58,6 +58,7 @@ import {
   LIET_KE_NHAT_KY,
   BAO_CAO_TIEN_DO_MAY,
   LIET_KE_MA_GIAM_GIA,
+  THEM_MA_GIAM_GIA,
 } from "../constants/Constants";
 
 export const dangNhapKhangHang = (username, password) => async (dispatch) => {
@@ -358,4 +359,10 @@ export const getLoyaltyCustomerData = (dataReq) => async (dispatch) => {
 export const getGiftVoucherData = (dataReq) => async (dispatch) => {
   const { data } = await Axios.post(`/getGiftVoucherData`, dataReq);
   dispatch({ type: LIET_KE_MA_GIAM_GIA, payload: data });
+};
+
+export const addGiftVoucher = (dataReq) => async (dispatch) => {
+  const { data } = await Axios.post(`/admin/add/voucher`, dataReq);
+  console.log(data)
+  dispatch({ type: THEM_MA_GIAM_GIA, payload: data });
 };

@@ -52,6 +52,11 @@ export const routes = [
     component: lazy(() => import("./../pages/users/cloth/Cloth")),
   },
   {
+    path: "/account/giftvoucher",
+    exact: true,
+    component: lazy(() => import("./../pages/users/giftvoucher/GiftVoucher")),
+  },
+  {
     path: "/account/measurements-edit-:id",
     exact: true,
     component: lazy(() =>

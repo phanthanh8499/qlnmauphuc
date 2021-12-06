@@ -18,7 +18,7 @@ import makeStyles from "@mui/styles/makeStyles";
 import { useDispatch } from "react-redux";
 import { FRONTEND_URL } from "../../../constants/Constants";
 import CameraAltIcon from "@mui/icons-material/CameraAlt";
-import { addUser } from "../../../redux/Action";
+import { addGiftVoucher } from "../../../redux/Action";
 import { format } from "date-fns";
 import { MyFormControl, MyTextField } from "../../utility/Utility";
 import axios from "axios";
@@ -210,8 +210,9 @@ function AddForm(props) {
     formData.append("log_date", format(now, "yyyy-MM-dd HH:mm:ss"));
     formData.append("log_userid", userid);
     formData.append("log_eventtypeid", "ACA");
-    const {data} = await axios.post(`/admin/add/voucher`, formData);
-    console.log("nhan api", data);
+    for(let i=0; i<qty; i++){
+      dispatch(addGiftVoucher(formData));
+    }
     enqueueSnackbar("Thêm voucher thành công", {
       variant: "success",
       autoHideDuration: 2000,

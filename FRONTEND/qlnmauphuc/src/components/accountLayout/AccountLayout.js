@@ -42,6 +42,8 @@ export default function AccountLayout (props){
         setTitle("Số hiệu đăng ký");
       } else if (pathname === "/account/measurements-add") {
         setTitle("Thêm số hiệu đăng ký");
+      } else if (pathname === "/account/giftvoucher") {
+        setTitle("Danh sách quà tặng");
       } else {
         setTitle("Sửa số hiệu đăng ký");
       }

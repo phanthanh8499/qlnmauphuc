@@ -331,12 +331,16 @@ export default function Order(props) {
 
     formData.append("order_subtotal", price / qty);
     formData.append("order_discount", discount / qty);
-    formData.append("order_total", (price - discount - voucherDiscount) / qty);
+    formData.append(
+      "order_total",
+      (price - discount - voucherDiscount + shippingPrice) / qty
+    );
     formData.append("order_paymentid", paymentMethod);
     formData.append("order_shippingid", shippingMethod);
     formData.append("order_statusid", 0);
     formData.append("order_userid", userInfo.id);
     formData.append("od_productid", productData.id);
+    formData.append("voucherCode", voucherCode);
     console.log("voucherDiscount", voucherDiscount);
     console.log("voucherCode", voucherCode);
     console.log("price", price/qty)
@@ -2744,8 +2748,8 @@ export default function Order(props) {
       setVoucherCode("")
       return false;
     }
-    setVoucherDiscount((price*data.giam/100))
-    setVoucherPercent(data.giam);
+    setVoucherDiscount((price*data.gv_discount/100))
+    setVoucherPercent(data.gv_discount);
     setVoucherCode(voucher);
     enqueueSnackbar("Nhập mã voucher thành công", {
       variant: "success",

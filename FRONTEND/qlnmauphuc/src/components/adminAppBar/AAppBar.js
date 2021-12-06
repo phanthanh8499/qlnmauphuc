@@ -40,6 +40,7 @@ import { getUserPermissions } from "../../redux/Action";
 import AssignmentIcon from "@mui/icons-material/Assignment";
 import CardMembershipIcon from "@mui/icons-material/CardMembership";
 import CardGiftcardIcon from "@mui/icons-material/CardGiftcard";
+import SettingsApplicationsIcon from "@mui/icons-material/SettingsApplications";
 
 function Copyright(props) {
   return (
@@ -238,6 +239,8 @@ export default function AAppBar(props) {
       ? setSelected(6)
       : abc === "GIFTVOUCHER"
       ? setSelected(7)
+      : abc === "SETTING"
+      ? setSelected(8)
       : setSelected() || setSelectedSubMenu();
   }, [abc]);
 
@@ -267,6 +270,8 @@ export default function AAppBar(props) {
       return "Khách hàng thân thiết";
     } else if (item === "GIFTVOUCHER") {
       return "Mã giảm giá";
+    }else if (item === "SETTING") {
+      return "Cấu hình";
     }
   };
 
@@ -447,6 +452,17 @@ export default function AAppBar(props) {
                 <CardGiftcardIcon />
               </ListItemIcon>
               <ListItemText primary="Mã giảm giá" />
+            </MyListItem>
+          </Link>
+        ) : null}
+
+        {permissionData[0].up_ordermanager === true ? (
+          <Link to="/admin/setting" onClick={(e) => changeTitle(e, 8)}>
+            <MyListItem button selected={selected === 8}>
+              <ListItemIcon>
+                <SettingsApplicationsIcon />
+              </ListItemIcon>
+              <ListItemText primary="Cấu hình" />
             </MyListItem>
           </Link>
         ) : null}
