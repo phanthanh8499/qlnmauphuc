@@ -5,8 +5,8 @@ import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import { useSnackbar } from "notistack";
 import { DataGrid } from "@mui/x-data-grid";
 import AddForm from "./addForm/AddForm";
+import GiftForm from "./giftForm/GiftForm";
 import DetailForm from "./detailForm/DetailForm";
-import DeleteForm from "./deleteForm/DeteleForm";
 import {
   Avatar,
   Button,
@@ -43,6 +43,7 @@ import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import CancelIcon from "@mui/icons-material/Cancel";
 import EditIcon from "@mui/icons-material/Edit";
 import SearchIcon from "@mui/icons-material/Search";
+import CardGiftcardIcon from "@mui/icons-material/CardGiftcard";
 import ChangeForm from "./changeForm/changeForm";
 import XLSX from "xlsx";
 import AddIcon from "@mui/icons-material/Add";
@@ -111,7 +112,7 @@ export default function Data(props) {
   const [userId, setUserId] = useState(0);
   const [addForm, setAddForm] = useState(false);
   const [detailForm, setDetailForm] = useState(false);
-  const [deleteForm, setDeleteForm] = useState(false);
+  const [giftForm, setGiftForm] = useState(false);
   const [changeForm, setChangeForm] = useState(false);
   const [userIdList, setUserIdList] = useState([]);
   const openAddForm = () => {
@@ -129,11 +130,11 @@ export default function Data(props) {
     setDetailForm(false);
   };
 
-  const openDeleteForm = () => {
-    setDeleteForm(true);
+  const openGiftForm = () => {
+    setGiftForm(true);
   };
-  const closeDeleteForm = () => {
-    setDeleteForm(false);
+  const closeGiftForm = () => {
+    setGiftForm(false);
   };
 
   const openChangeForm = () => {
@@ -158,7 +159,7 @@ export default function Data(props) {
         autoHideDuration: 2000,
       });
     } else {
-      openDeleteForm();
+      setGiftForm();
     }
   };
 
@@ -229,16 +230,16 @@ export default function Data(props) {
         ></DetailForm>
       );
     }
-    if (deleteForm) {
+    if (giftForm) {
       return (
-        <DeleteForm
-          open={deleteForm}
-          onClose={closeDeleteForm}
+        <GiftForm
+          open={giftForm}
+          onClose={closeGiftForm}
           id={parseInt(userId)}
           listId={userIdList}
           userid={userInfo.id}
           dataReq={rowSelected}
-        ></DeleteForm>
+        ></GiftForm>
       );
     }
     if (changeForm) {
@@ -278,7 +279,7 @@ export default function Data(props) {
         return formatTel(params.value);
       },
     },
-    { field: "user_address", headerName: "Địa chỉ", width: 300 },
+    { field: "user_address", headerName: "Địa chỉ", width: 500 },
     { field: "order_count", headerName: "Tích điểm", width: 150 },
     {
       field: "id",
@@ -291,16 +292,20 @@ export default function Data(props) {
           openDetailForm();
           setUserId(params.value);
         };
-
-        const handleClickDelete = () => {
-          openDeleteForm();
+        const handleClickGiveGift = () => {
+          openGiftForm();
           setUserId(params.value);
         };
 
         return (
-            <IconButton onClick={handleClickEdit} size="large">
+          <ButtonGroup variant="outlined" aria-label="outlined button group">
+            <IconButton onClick={handleClickEdit} size="large" color="success">
               <VisibilityIcon />
             </IconButton>
+            <IconButton onClick={handleClickGiveGift} size="large">
+              <CardGiftcardIcon />
+            </IconButton>
+          </ButtonGroup>
         );
       },
     },
@@ -339,11 +344,20 @@ export default function Data(props) {
           openDetailForm();
           setUserId(params.value);
         };
+        const handleClickGiveGift = () => {
+          openGiftForm();
+          setUserId(params.value);
+        };
 
         return (
-            <IconButton onClick={handleClickEdit} size="large">
+          <ButtonGroup variant="outlined" aria-label="outlined button group">
+            <IconButton onClick={handleClickEdit} size="large" color="success">
               <VisibilityIcon />
             </IconButton>
+            <IconButton onClick={handleClickGiveGift} size="large">
+              <CardGiftcardIcon />
+            </IconButton>
+          </ButtonGroup>
         );
       },
     },
@@ -496,7 +510,7 @@ export default function Data(props) {
   };
 
   const [dataBackup, setDataBackup] = useState();
-  const [count, setCount] = useState(0)
+  const [count, setCount] = useState(0);
   const handleClickSearch = () => {
     if (
       Date.parse(endDate) >
@@ -522,7 +536,7 @@ export default function Data(props) {
         startDate: format(startDate, "yyyy-MM-dd"),
         endDate: format(endDate, "yyyy-MM-dd HH:mm:ss"),
       };
-      dispatch(getLoyaltyCustomerData(dataSend))
+      dispatch(getLoyaltyCustomerData(dataSend));
       setCount(count + 1);
     }
   };
@@ -594,11 +608,12 @@ export default function Data(props) {
 
   const handlePrint = useReactToPrint({
     content: () => componentRef.current,
-    documentTitle: "ThongKeKhachHang" + "_Ngay_" + format(now, "dd-MM/yyyy"),
+    documentTitle:
+      "ThongKeKhachHangThanThiet" + "_Ngay_" + format(now, "dd-MM/yyyy"),
     pageStyle: pageStyle,
   });
 
-  const [rowSelected, setRowSelected] = useState()
+  const [rowSelected, setRowSelected] = useState();
 
   return (
     <Grid container>
@@ -634,7 +649,7 @@ export default function Data(props) {
                         variant="outlined"
                         color="primary"
                         onClick={handleClickSearch}
-                        sx={{backgroundColor: '#ffffff'}}
+                        sx={{ backgroundColor: "#ffffff" }}
                       >
                         Tìm kiếm
                       </Button>
@@ -790,41 +805,48 @@ export default function Data(props) {
                     </TableRow>
                   </TableHead>
                   <TableBody>
-                    {dataRender === [] ? null : dataRender.map((row) => {
-                      return (
-                        <TableRow key={row.name}>
-                          <TableCell component="th" scope="row">
-                            <Avatar
-                              src={
-                                !row.user_avatar
-                                  ? null
-                                  : LOCAL_PATH + row.user_avatar.substring(2)
-                              }
-                            />
-                          </TableCell>
+                    {dataRender === []
+                      ? null
+                      : dataRender.map((row) => {
+                          return (
+                            <TableRow key={row.name}>
+                              <TableCell component="th" scope="row">
+                                <Avatar
+                                  src={
+                                    !row.user_avatar
+                                      ? null
+                                      : LOCAL_PATH +
+                                        row.user_avatar.substring(2)
+                                  }
+                                />
+                              </TableCell>
 
-                          <TableCell align="left">
-                            {row.user_username}
-                          </TableCell>
-                          <TableCell align="left">
-                            {row.user_lastname}
-                          </TableCell>
-                          <TableCell align="left">
-                            {row.user_firstname}
-                          </TableCell>
-                          <TableCell align="center">
-                            {!row.user_tel
-                              ? null
-                              : row.user_tel.replace(
-                                  /(\d{3})(\d{3})(\d{4})/,
-                                  "$1 $2 $3"
-                                )}
-                          </TableCell>
-                          <TableCell align="left">{row.user_address}</TableCell>
-                          <TableCell align="left">{row.order_count}</TableCell>
-                        </TableRow>
-                      );
-                    })}
+                              <TableCell align="left">
+                                {row.user_username}
+                              </TableCell>
+                              <TableCell align="left">
+                                {row.user_lastname}
+                              </TableCell>
+                              <TableCell align="left">
+                                {row.user_firstname}
+                              </TableCell>
+                              <TableCell align="center">
+                                {!row.user_tel
+                                  ? null
+                                  : row.user_tel.replace(
+                                      /(\d{3})(\d{3})(\d{4})/,
+                                      "$1 $2 $3"
+                                    )}
+                              </TableCell>
+                              <TableCell align="left">
+                                {row.user_address}
+                              </TableCell>
+                              <TableCell align="left">
+                                {row.order_count}
+                              </TableCell>
+                            </TableRow>
+                          );
+                        })}
                   </TableBody>
                 </Table>
               </TableContainer>

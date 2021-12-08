@@ -2892,6 +2892,34 @@ ORDER BY giftvoucher.gv_expirationdate ASC`,
     } 
 })
 
+router.get(`/getGiftVoucherMenu.:voucherDiscount`, function (req, res) {
+  const { voucherDiscount } = req.params;
+  console.log(voucherDiscount);
+  var string = "";
+  if (voucherDiscount !== 0) {
+    string = `giftvoucher.gv_discount = '${voucherDiscount}' AND `;
+  }
+  var now = new Date().toLocaleString("en-US", { timeZone: "Asia/Jakarta" });
+  function toTimestamp(strDate) {
+    var datum = Date.parse(strDate);
+    return datum / 1000;
+  }
+  
+  console.log(now)
+  pool.query(
+    `SELECT * FROM giftvoucher
+WHERE ${string} giftvoucher.gv_isactivated = 'false' AND gv_userid = '1' AND gv_expirationdate >= '${now}'
+ORDER BY gv_expirationdate ASC`,
+    (error, response) => {
+      if (error) {
+        console.log(error);
+      } else {
+        res.send(response.rows);
+      }
+    }
+  );
+});
+
 router.post(`/admin/add/voucher`, async function (req, res) {
   const {
     gv_qty,
@@ -2959,6 +2987,37 @@ router.get(`/useVoucher.:id`, function(req, res) {
       }
     }
   );
+})
+
+router.post(`/admin/giftVoucher/giveUser`, function(req, res) {
+  const {
+    log_date,
+    log_userid,
+    log_eventtypeid,
+    id,
+    user_username,
+    voucherList,
+    dateList,
+  } = req.body;
+  console.log(
+    log_date,
+    log_userid,
+    log_eventtypeid,
+    id,
+    user_username,
+    
+  );
+  var voucherL = JSON.parse(voucherList);
+  var dateL = JSON.parse(dateList);
+  console.log(voucherL);
+  console.log(dateL);
+  for(let i=0; i<voucherL.length; i++){
+    console.log(voucherL[i].id, " - ", dateL[i].gv_expirationdate);
+    pool.query(`UPDATE giftvoucher
+	SET gv_expirationdate='${dateL[i].gv_expirationdate}', gv_userid='${id}'
+	WHERE id='${voucherL[i].id}';`);
+  }
+  
 })
 
 module.exports = router;
