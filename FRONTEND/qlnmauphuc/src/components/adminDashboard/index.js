@@ -1,4 +1,5 @@
 import {
+  CircularProgress,
   Divider,
   Grid,
   IconButton,
@@ -17,6 +18,7 @@ import MoreVertIcon from "@mui/icons-material/MoreVert";
 import { Copyright } from "../utility/Utility";
 import { makeStyles } from "@mui/styles";
 import { BACKGROUNDADM } from "../../constants/Constants";
+import { useSelector } from "react-redux";
 
 const Item = styled(Paper)(({ theme }) => ({
   ...theme.typography.body2,
@@ -108,75 +110,97 @@ export default function AdminDashboard() {
       </div>
     );
   };
+  const users = useSelector((state) => state.users);
+  const { loadingPermissions, permissionData } = users;
+
   return (
     <Grid container className={classes.root} sx={{ padding: "20px" }}>
-      <Grid item xs={12}>
-        <DataCount />
-      </Grid>
-      <Grid item xs={12} sx={{ mt: 1 }}>
-        <Grid container spacing={1}>
-          <Grid item xs={8}>
-            <Item
-              sx={{ height: 435, backgroundImage: "url(abc)" }}
-              className={classes.root}
-            >
-              <Grid container>
-                <Grid item xs={8}>
-                  <Typography sx={{ fontWeight: 600 }}>Doanh thu</Typography>
-                </Grid>
-                <Grid item xs={4}>
-                  <IconButton
-                    aria-label="more"
-                    id="long-button"
-                    aria-controls="long-menu"
-                    aria-expanded={open ? "true" : undefined}
-                    aria-haspopup="true"
-                    onClick={handleClick}
-                    sx={{ float: "right", padding: 0 }}
-                  >
-                    <MoreVertIcon />
-                  </IconButton>
-                </Grid>
-              </Grid>
-              <Divider />
-              {/* <OrderChart /> */}
-              <DLineChart />
-            </Item>
-          </Grid>
-          <Grid item xs={4}>
-            <Item
-              sx={{ height: 435, backgroundImage: "url(abc)" }}
-              className={classes.root}
-            >
-              <Grid container>
-                <Grid item xs={8}>
-                  <Typography sx={{ fontWeight: 600 }}>
-                    Sản phẩm được đặt may
-                  </Typography>
-                </Grid>
-                <Grid item xs={4}>
-                  <IconButton
-                    aria-label="more"
-                    id="long-button"
-                    aria-controls="long-menu"
-                    aria-expanded={open ? "true" : undefined}
-                    aria-haspopup="true"
-                    onClick={handleClick}
-                    sx={{ float: "right", padding: 0 }}
-                  >
-                    <MoreVertIcon />
-                  </IconButton>
-                </Grid>
-              </Grid>
-              <Divider />
-              <PPieChart />
-            </Item>
-          </Grid>
+      {loadingPermissions ? (
+        <Grid
+          item
+          sx={{
+            height: 637,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+          xs={12}
+        >
+          <CircularProgress />
         </Grid>
-        {Copyright()}
-      </Grid>
-      {renderMenu()}
-      {renderForm()}
+      ) : permissionData[0].up_eccommercedashboard === false ? null : (
+        <>
+          <Grid item xs={12}>
+            <DataCount />
+          </Grid>
+          <Grid item xs={12} sx={{ mt: 1 }}>
+            <Grid container spacing={1}>
+              <Grid item xs={8}>
+                <Item
+                  sx={{ height: 435, backgroundImage: "url(abc)" }}
+                  className={classes.root}
+                >
+                  <Grid container>
+                    <Grid item xs={8}>
+                      <Typography sx={{ fontWeight: 600 }}>
+                        Doanh thu
+                      </Typography>
+                    </Grid>
+                    <Grid item xs={4}>
+                      <IconButton
+                        aria-label="more"
+                        id="long-button"
+                        aria-controls="long-menu"
+                        aria-expanded={open ? "true" : undefined}
+                        aria-haspopup="true"
+                        onClick={handleClick}
+                        sx={{ float: "right", padding: 0 }}
+                      >
+                        <MoreVertIcon />
+                      </IconButton>
+                    </Grid>
+                  </Grid>
+                  <Divider />
+                  {/* <OrderChart /> */}
+                  <DLineChart />
+                </Item>
+              </Grid>
+              <Grid item xs={4}>
+                <Item
+                  sx={{ height: 435, backgroundImage: "url(abc)" }}
+                  className={classes.root}
+                >
+                  <Grid container>
+                    <Grid item xs={8}>
+                      <Typography sx={{ fontWeight: 600 }}>
+                        Sản phẩm được đặt may
+                      </Typography>
+                    </Grid>
+                    <Grid item xs={4}>
+                      <IconButton
+                        aria-label="more"
+                        id="long-button"
+                        aria-controls="long-menu"
+                        aria-expanded={open ? "true" : undefined}
+                        aria-haspopup="true"
+                        onClick={handleClick}
+                        sx={{ float: "right", padding: 0 }}
+                      >
+                        <MoreVertIcon />
+                      </IconButton>
+                    </Grid>
+                  </Grid>
+                  <Divider />
+                  <PPieChart />
+                </Item>
+              </Grid>
+            </Grid>
+            {Copyright()}
+          </Grid>
+          {renderMenu()}
+          {renderForm()}
+        </>
+      )}
     </Grid>
   );
 }

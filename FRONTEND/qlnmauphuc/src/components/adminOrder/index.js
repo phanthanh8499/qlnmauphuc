@@ -67,6 +67,8 @@ export default function AdminOrder() {
   const classes = useStyles();
   const order = useSelector((state) => state.order);
   const { orderData, error } = order;
+  const users = useSelector((state) => state.users);
+  const { loadingPermissions, permissionData } = users;
   const dispatch = useDispatch();
   const [startDate, setStartDate] = useState(
     new Date(new Date().setHours(0, 0, 0, 0))
@@ -311,7 +313,7 @@ export default function AdminOrder() {
 
   return (
     <Grid container className={classes.root}>
-      {loading ? (
+      {loading || loadingPermissions ? (
         <Grid
           item
           xs={12}
@@ -328,7 +330,7 @@ export default function AdminOrder() {
         </Grid>
       ) : error ? (
         <div>error</div>
-      ) : (
+      ) : permissionData[0].up_ordermanager === false ? null : (
         <>
           <TabContext value={value}>
             <Grid item xs={12} className={classes.topBar}>

@@ -285,17 +285,21 @@ export default function AAppBar(props) {
   const renderListModule = () => {
     return (
       <List>
-        <MyListItem
-          button
-          selected={selected === 0}
-          onClick={(e) => handleClick(e, 0)}
-        >
-          <ListItemIcon>
-            <DashboardIcon />
-          </ListItemIcon>
-          <ListItemText primary="Bảng điều khiển" />
-          {openSubMenu[0] ? <ExpandLess /> : <ExpandMore />}
-        </MyListItem>
+        {permissionData[0].up_eccommercedashboard ||
+        permissionData[0].up_sewingstatus ? (
+          <MyListItem
+            button
+            selected={selected === 0}
+            onClick={(e) => handleClick(e, 0)}
+          >
+            <ListItemIcon>
+              <DashboardIcon />
+            </ListItemIcon>
+            <ListItemText primary="Bảng điều khiển" />
+            {openSubMenu[0] ? <ExpandLess /> : <ExpandMore />}
+          </MyListItem>
+        ) : null}
+
         <Collapse in={openSubMenu[0]} timeout="auto" unmountOnExit>
           <List component="div" disablePadding>
             {permissionData[0].up_eccommercedashboard ? (
@@ -315,7 +319,7 @@ export default function AAppBar(props) {
                 </MyListSubItem>
               </Link>
             ) : null}
-            {permissionData[0].up_orderdashboard ? (
+            {permissionData[0].up_sewingstatus ? (
               <Link
                 to="/admin/statistic"
                 onClick={(e) => changeTitleMenu(e, 0, "0b")}
@@ -335,17 +339,21 @@ export default function AAppBar(props) {
           </List>
         </Collapse>
 
-        <MyListItem
-          button
-          selected={selected === 1}
-          onClick={(e) => handleClick(e, 1)}
-        >
-          <ListItemIcon>
-            <PeopleIcon />
-          </ListItemIcon>
-          <ListItemText primary="Quản lý tài khoản" />
-          {openSubMenu[1] ? <ExpandLess /> : <ExpandMore />}
-        </MyListItem>
+        {permissionData[0].up_customeraccountmanager ||
+        permissionData[0].up_staffaccountmanager ? (
+          <MyListItem
+            button
+            selected={selected === 1}
+            onClick={(e) => handleClick(e, 1)}
+          >
+            <ListItemIcon>
+              <PeopleIcon />
+            </ListItemIcon>
+            <ListItemText primary="Quản lý tài khoản" />
+            {openSubMenu[1] ? <ExpandLess /> : <ExpandMore />}
+          </MyListItem>
+        ) : null}
+
         <Collapse in={openSubMenu[1]} timeout="auto" unmountOnExit>
           <List component="div" disablePadding>
             {permissionData[0].up_customeraccountmanager === true ? (
@@ -423,7 +431,7 @@ export default function AAppBar(props) {
           </Link>
         ) : null}
 
-        {permissionData[0].up_ordermanager === true ? (
+        {permissionData[0].up_log === true ? (
           <Link to="/admin/log" onClick={(e) => changeTitle(e, 5)}>
             <MyListItem button selected={selected === 5}>
               <ListItemIcon>
@@ -434,7 +442,7 @@ export default function AAppBar(props) {
           </Link>
         ) : null}
 
-        {permissionData[0].up_ordermanager === true ? (
+        {permissionData[0].up_loyaltyprogram === true ? (
           <Link to="/admin/loyaltyprogram" onClick={(e) => changeTitle(e, 6)}>
             <MyListItem button selected={selected === 6}>
               <ListItemIcon>
@@ -445,7 +453,7 @@ export default function AAppBar(props) {
           </Link>
         ) : null}
 
-        {permissionData[0].up_ordermanager === true ? (
+        {permissionData[0].up_giftvoucher === true ? (
           <Link to="/admin/giftvoucher" onClick={(e) => changeTitle(e, 7)}>
             <MyListItem button selected={selected === 7}>
               <ListItemIcon>
@@ -456,7 +464,7 @@ export default function AAppBar(props) {
           </Link>
         ) : null}
 
-        {permissionData[0].up_ordermanager === true ? (
+        {permissionData[0].up_setting === true ? (
           <Link to="/admin/setting" onClick={(e) => changeTitle(e, 8)}>
             <MyListItem button selected={selected === 8}>
               <ListItemIcon>

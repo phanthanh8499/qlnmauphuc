@@ -59,7 +59,7 @@ const useStyles = makeStyles((theme) => ({
 export default function AdminCustomer() {
   const classes = useStyles();
   const users = useSelector((state) => state.users);
-
+  const { loadingPermissions, permissionData } = users;
   const { loadingCustomer, customerData } = users;
   const [loadingState, setLoadingState] = useState(true);
   const [startD, setStartD] = useState(new Date());
@@ -89,7 +89,7 @@ export default function AdminCustomer() {
 
   return (
     <Grid container className={classes.root}>
-      {loadingCustomer || loadingState ? (
+      {loadingCustomer || loadingState || loadingPermissions ? (
         <Grid
           item
           xs={12}
@@ -104,7 +104,7 @@ export default function AdminCustomer() {
         >
           <CircularProgress />
         </Grid>
-      ) : (
+      ) : permissionData[0].up_customeraccountmanager === false ? null : (
         <>
           <TabContext value={value}>
             <Grid item xs={12} className={classes.topBar}>

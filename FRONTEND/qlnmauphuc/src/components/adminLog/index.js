@@ -60,6 +60,8 @@ export default function AdminLog() {
   const classes = useStyles();
   const log = useSelector((state) => state.log);
   const { logData, loading } = log;
+  const users = useSelector((state) => state.users);
+  const { loadingPermissions, permissionData } = users;
   const dispatch = useDispatch();
 
   const [data, setData] = useState();
@@ -93,7 +95,7 @@ export default function AdminLog() {
 
   return (
     <Grid container className={classes.root}>
-      {loading ? (
+      {loading || loadingPermissions ? (
         <Grid
           item
           xs={12}
@@ -108,12 +110,8 @@ export default function AdminLog() {
         >
           <CircularProgress />
         </Grid>
-      ) : (
+      ) : permissionData[0].up_log === false ? null : (
         <>
-          {/* <Grid item xs={12}>
-            <Divider sx={{ margin: "0px 0px 5px 0px" }} />
-          </Grid> */}
-
           <Grid item xs={12}>
             <Data data={logData} startD={startD} endD={endD} />
           </Grid>

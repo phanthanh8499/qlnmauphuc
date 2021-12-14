@@ -50,7 +50,8 @@ export default function AdminCloth() {
   const { loading, clothData } = cloth;
   const [loadingState, setLoadingState] = useState(true);
   const dispatch = useDispatch();
-
+  const users = useSelector((state) => state.users);
+  const { loadingPermissions, permissionData } = users;
   useEffect(() => {
     dispatch(getClothData());
   }, [dispatch]);
@@ -80,7 +81,7 @@ export default function AdminCloth() {
 
   return (
     <Grid container className={classes.root}>
-      {loading || loadingState ? (
+      {loading || loadingState || loadingPermissions ? (
         <Grid
           item
           xs={12}
@@ -95,7 +96,7 @@ export default function AdminCloth() {
         >
           <CircularProgress />
         </Grid>
-      ) : (
+      ) : permissionData[0].up_clothmanager === false ? null : (
         <>
           <TabContext value={value}>
             <Grid item xs={12} className={classes.topBar}>
@@ -162,7 +163,7 @@ export default function AdminCloth() {
               </Grid>
               <Divider sx={{ margin: "0px 0px -5px 0px" }} />
             </Grid>
-            
+
             <Grid item xs={12}>
               <TabPanel value="1" sx={{ padding: 0 }}>
                 <Data data={all} />

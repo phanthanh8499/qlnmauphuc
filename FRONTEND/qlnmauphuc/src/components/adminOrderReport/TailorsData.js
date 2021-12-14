@@ -666,7 +666,6 @@ export default function TailorsData(props) {
                 setUserIdList(selectedRowData);
               }}
             />
-            {Copyright()}
           </Grid>
           <Grid container sx={{ display: "none" }}>
             <div ref={componentRef}>

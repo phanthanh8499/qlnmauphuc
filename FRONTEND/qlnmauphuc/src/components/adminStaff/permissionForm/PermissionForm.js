@@ -49,12 +49,16 @@ function PermissionForm(props) {
     const dataSend = {
       up_userid: id,
       up_eccommercedashboard: dDashboard,
-      up_orderdashboard: dOrder,
+      up_sewingstatus: dSewingStatus,
       up_customeraccountmanager: customer,
       up_staffaccountmanager: staff,
       up_productmanager: product,
       up_clothmanager: cloth,
       up_ordermanager: order,
+      up_log: log,
+      up_loyaltyprogram: loyaltyProgram,
+      up_giftvoucher: giftVoucher,
+      up_setting: setting,
     };
     if (listId.length !== 0) {
       listId.forEach((element) => {
@@ -78,22 +82,31 @@ function PermissionForm(props) {
   };
 
   const [dDashboard, setDDashboard] = useState(true);
-  const [dOrder, setDOrder] = useState(true);
+  const [dSewingStatus, setDSewingStatus] = useState(true);
   const [customer, setCustomer] = useState(true);
   const [staff, setStaff] = useState(true);
   const [product, setProduct] = useState(true);
   const [order, setOrder] = useState(true);
   const [cloth, setCloth] = useState(true);
+  const [log, setLog] = useState(true);
+  const [loyaltyProgram, setLoyaltyProgram] = useState(true);
+  const [giftVoucher, setGiftVoucher] = useState(true);
+  const [setting, setSetting] = useState(true);
+
   useEffect(() => {
     async function setState() {
       const {data} = await axios.get(`/getUserPermissions.${id}`)
       setDDashboard(data[0].up_eccommercedashboard);
-      setDOrder(data[0].up_orderdashboard);
+      setDSewingStatus(data[0].up_sewingstatus);
       setCustomer(data[0].up_customeraccountmanager);
       setStaff(data[0].up_staffaccountmanager);
       setProduct(data[0].up_productmanager);
       setCloth(data[0].up_clothmanager);
       setOrder(data[0].up_ordermanager);
+      setLog(data[0].up_log);
+      setLoyaltyProgram(data[0].up_loyaltyprogram);
+      setGiftVoucher(data[0].up_giftvoucher);
+      setSetting(data[0].up_setting);
     }
     setState()
   }, [id])
@@ -126,9 +139,9 @@ function PermissionForm(props) {
               <FormControlLabel
                 control={
                   <Switch
-                    checked={dOrder}
-                    onChange={(e) => setDOrder(!dOrder)}
-                    name="dOrder"
+                    checked={dSewingStatus}
+                    onChange={(e) => setDSewingStatus(!dSewingStatus)}
+                    name="dSewingStatus"
                   />
                 }
                 label="Bảng điều khiển - Tình trạng may"
@@ -166,6 +179,16 @@ function PermissionForm(props) {
               <FormControlLabel
                 control={
                   <Switch
+                    checked={cloth}
+                    onChange={(e) => setCloth(!cloth)}
+                    name="cloth"
+                  />
+                }
+                label="Quản lý vải"
+              />
+              <FormControlLabel
+                control={
+                  <Switch
                     checked={order}
                     onChange={(e) => setOrder(!order)}
                     name="order"
@@ -176,12 +199,42 @@ function PermissionForm(props) {
               <FormControlLabel
                 control={
                   <Switch
-                    checked={cloth}
-                    onChange={(e) => setCloth(!cloth)}
-                    name="cloth"
+                    checked={log}
+                    onChange={(e) => setLog(!log)}
+                    name="log"
                   />
                 }
-                label="Quản lý vải"
+                label="Nhật ký hoạt động"
+              />
+              <FormControlLabel
+                control={
+                  <Switch
+                    checked={loyaltyProgram}
+                    onChange={(e) => setLoyaltyProgram(!loyaltyProgram)}
+                    name="loyaltyProgram"
+                  />
+                }
+                label="Khách hàng thân thiết"
+              />
+              <FormControlLabel
+                control={
+                  <Switch
+                    checked={giftVoucher}
+                    onChange={(e) => setGiftVoucher(!giftVoucher)}
+                    name="giftVoucher"
+                  />
+                }
+                label="Mã giảm giá"
+              />
+              <FormControlLabel
+                control={
+                  <Switch
+                    checked={setting}
+                    onChange={(e) => setSetting(!setting)}
+                    name="setting"
+                  />
+                }
+                label="Cấu hình"
               />
             </FormGroup>
           </FormControl>

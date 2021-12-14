@@ -70,8 +70,9 @@ export default function AdminGiftVoucher() {
   const classes = useStyles();
   const { enqueueSnackbar } = useSnackbar();
   const giftVoucher = useSelector((state) => state.giftVoucher);
-
   const { loading, giftVoucherData } = giftVoucher;
+  const users = useSelector((state) => state.users);
+  const { loadingPermissions, permissionData } = users;
   const [loadingState, setLoadingState] = useState(true);
   const [startD, setStartD] = useState(new Date());
   const [endD, setEndD] = useState(new Date());
@@ -196,7 +197,7 @@ export default function AdminGiftVoucher() {
 
   return (
     <Grid container className={classes.root}>
-      {loading || loadingState ? (
+      {loading || loadingState || loadingPermissions ? (
         <Grid
           item
           xs={12}
@@ -211,7 +212,7 @@ export default function AdminGiftVoucher() {
         >
           <CircularProgress />
         </Grid>
-      ) : (
+      ) : permissionData[0].up_giftvoucher === false ? null : (
         <>
           <TabContext value={value}>
             <Grid item xs={12} className={classes.topBar}>

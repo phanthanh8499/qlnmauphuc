@@ -58,6 +58,8 @@ export default function AdminProducts() {
   const classes = useStyles();
   const products = useSelector((state) => state.products);
   const { productData, error } = products;
+  const users = useSelector((state) => state.users);
+  const { loadingPermissions, permissionData } = users;
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -102,7 +104,7 @@ export default function AdminProducts() {
 
   return (
     <Grid container className={classes.root}>
-      {loading ? (
+      {loading || loadingPermissions ? (
         <Grid
           item
           xs={12}
@@ -119,7 +121,7 @@ export default function AdminProducts() {
         </Grid>
       ) : error ? (
         <div>error</div>
-      ) : (
+      ) : permissionData[0].up_productmanager === false ? null : (
         <>
           <TabContext value={value}>
             <Grid item xs={12} className={classes.topBar}>

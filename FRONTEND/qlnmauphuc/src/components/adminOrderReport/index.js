@@ -1,4 +1,4 @@
-import { Divider, Grid, Paper, Typography, Menu, MenuItem, IconButton} from "@mui/material";
+import { Divider, Grid, Paper, Typography, Menu, MenuItem, IconButton, CircularProgress} from "@mui/material";
 import React, { useState } from "react";
 import { styled } from "@mui/material/styles";
 import { makeStyles } from "@mui/styles";
@@ -10,6 +10,7 @@ import WeeklyForm from "./weeklyForm/WeeklyForm";
 import MonthlyForm from "./monthlyForm/monthlyForm";
 import { Copyright } from "../utility/Utility";
 import TailorsData from "./TailorsData";
+import { useSelector } from "react-redux";
 
 const options = [
   "Báo cáo mỗi tuần",
@@ -87,8 +88,26 @@ export default function AdminProject() {
       );
     }
   }
+
+  const users = useSelector((state) => state.users);
+  const { loadingPermissions, permissionData } = users;
+
   return (
     <Grid container className={classes.root} sx={{ padding: "20px" }}>
+      {loadingPermissions ? (
+        <Grid
+          item
+          sx={{
+            height: 637,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+          xs={12}
+        >
+          <CircularProgress />
+        </Grid>
+      ) : permissionData[0].up_sewingstatus === false ? <Grid sx={{height: 594}} xs={12}></Grid> : (<>
       <Grid item xs={12}>
         <DataCount />
       </Grid>
@@ -211,7 +230,8 @@ export default function AdminProject() {
         </Grid>
         {Copyright()}
       </Grid>
-      {renderForm()}
+      {renderForm()}</>)
+}
     </Grid>
   );
 }

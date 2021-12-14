@@ -58,8 +58,9 @@ const useStyles = makeStyles((theme) => ({
 export default function AdminLoyaltyProgram() {
   const classes = useStyles();
   const loyaltyCustomer = useSelector((state) => state.loyaltyCustomer);
-
   const { loading, loyaltyCustomerData } = loyaltyCustomer;
+  const users = useSelector((state) => state.users);
+  const { loadingPermissions, permissionData } = users;
   const [loadingState, setLoadingState] = useState(true);
   const [startD, setStartD] = useState(new Date());
   const [endD, setEndD] = useState(new Date());
@@ -108,7 +109,7 @@ export default function AdminLoyaltyProgram() {
 
   return (
     <Grid container className={classes.root}>
-      {loading || loadingState ? (
+      {loading || loadingState || loadingPermissions ? (
         <Grid
           item
           xs={12}
@@ -123,7 +124,7 @@ export default function AdminLoyaltyProgram() {
         >
           <CircularProgress />
         </Grid>
-      ) : (
+      ) : permissionData[0].up_loyaltyprogram === false ? null : (
         <>
           <TabContext value={value}>
             <Grid item xs={12} className={classes.topBar}>

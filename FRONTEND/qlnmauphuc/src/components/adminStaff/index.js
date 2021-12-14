@@ -48,6 +48,7 @@ export default function AdminStaff() {
   const classes = useStyles();
   const users = useSelector((state) => state.users);
   const { loadingStaff, staffData} = users;
+  const { loadingPermissions, permissionData } = users;
   const [loadingState, setLoadingState] = useState(true)
   const dispatch = useDispatch()
   const [startD, setStartD] = useState(new Date())
@@ -76,7 +77,7 @@ export default function AdminStaff() {
 
   return (
     <Grid container className={classes.root}>
-      {loadingStaff || loadingState ? (
+      {loadingStaff || loadingState || loadingPermissions ? (
         <Grid
           item
           xs={12}
@@ -91,7 +92,7 @@ export default function AdminStaff() {
         >
           <CircularProgress />
         </Grid>
-      ) : (
+      ) : permissionData[0].up_staffaccountmanager === false ? null : (
         <>
           <TabContext value={value}>
             <Grid item xs={12} className={classes.topBar}>

@@ -1233,6 +1233,11 @@ router.post("/admin/users/add", async function (req, res) {
               console.log(err);
             }
           });
+         if (user_typeid === "NV") {
+           pool.query(`INSERT INTO user_permissions(
+   up_userid, up_eccommercedashboard, up_sewingstatus, up_customeraccountmanager, up_staffaccountmanager, up_productmanager, up_clothmanager, up_ordermanager, up_log, up_loyaltyprogram, up_giftvoucher, up_setting)
+	VALUES ('${id}', 'false', 'false', 'false', 'false', 'false', 'false', 'true', 'false', 'false', 'false', 'false')`);
+         }    
           pool.query(
             `SELECT users.id, users.user_typeid, users.user_username, users.user_password, users.user_firstname, users.user_lastname, CONCAT(user_address, ', ', ward.ward_prefix, ' ', ward.ward_name, ', ', district.district_prefix, ' ', district.district_name, ', ', province.province_name) AS user_address, users.user_tel, users.user_status, users.user_date, users.user_avatar, users.user_email, ward.ward_prefix, ward.ward_name, ward.ward_districtid, district.district_prefix, district.district_name, ward.ward_provinceid, province.province_name FROM users
 LEFT JOIN ward ON ward.id = users.user_wardid
@@ -1273,6 +1278,11 @@ WHERE users.id = '${id}'`,
           res.send({ msg: "ERROR" });
         } else {
           id = response.rows[0].id;
+          if (user_typeid === "NV"){
+            pool.query(`INSERT INTO user_permissions(
+   up_userid, up_eccommercedashboard, up_sewingstatus, up_customeraccountmanager, up_staffaccountmanager, up_productmanager, up_clothmanager, up_ordermanager, up_log, up_loyaltyprogram, up_giftvoucher, up_setting)
+	VALUES ('${id}', 'false', 'false', 'false', 'false', 'false', 'false', 'true', 'false', 'false', 'false', 'false')`);
+          }    
           pool.query(
             `SELECT users.id, users.user_typeid, users.user_username, users.user_password, users.user_firstname, users.user_lastname, CONCAT(user_address, ', ', ward.ward_prefix, ' ', ward.ward_name, ', ', district.district_prefix, ' ', district.district_name, ', ', province.province_name) AS user_address, users.user_tel, users.user_status, users.user_date, users.user_avatar, users.user_email, ward.ward_prefix, ward.ward_name, ward.ward_districtid, district.district_prefix, district.district_name, ward.ward_provinceid, province.province_name FROM users
 LEFT JOIN ward ON ward.id = users.user_wardid
@@ -1596,20 +1606,20 @@ router.post("/getOrderData", function (req, res) {
   const { id, provinceId, districtId, wardId, startDate, endDate } = req.body;
   console.log(id, provinceId, districtId, wardId, startDate, endDate);
   var string = "";
-  if(provinceId !== 0){
+  if (provinceId !== 0) {
     string = `AND province.id = '${provinceId}'`;
   }
-  if(districtId !== 0){
+  if (districtId !== 0) {
     string = string + ` AND district.id = '${districtId}'`;
   }
-  if(wardId !== 0){
+  if (wardId !== 0) {
     string = string + ` AND ward.id = '${wardId}'`;
   }
   console.log(string);
   console.log(`orders.order_startdate BETWEEN '${startDate}' AND '${endDate}'`);
   if (parseInt(id) === 0) {
-      pool.query(
-        `SELECT order_details.id, order_details.od_orderid, order_details.od_productid, order_details.od_clothid, order_customername, order_wardid, district.id AS order_districtid, province.id AS order_provinceid, CONCAT(order_customeraddress, ', ', ward.ward_prefix, ' ', ward.ward_name, ', ', district.district_prefix, ' ', district.district_name, ', ', province.province_name) AS order_customeraddress, order_customerphone, order_customeremail, order_startdate, order_enddate, order_total, order_paymentid, opm_name, order_shippingid, osm_name, order_tailorid, CONCAT(user_lastname, ' ', user_firstname) AS tailor_name, user_tel as tailor_tel, order_statusid, order_userid, products.product_name, products.product_typeid, products.product_image1, os_name FROM order_details 
+    pool.query(
+      `SELECT order_details.id, order_details.od_orderid, order_details.od_productid, order_details.od_clothid, order_customername, order_wardid, district.id AS order_districtid, province.id AS order_provinceid, CONCAT(order_customeraddress, ', ', ward.ward_prefix, ' ', ward.ward_name, ', ', district.district_prefix, ' ', district.district_name, ', ', province.province_name) AS order_customeraddress, order_customerphone, order_customeremail, order_startdate, order_enddate, order_total, order_paymentid, opm_name, order_shippingid, osm_name, order_tailorid, CONCAT(user_lastname, ' ', user_firstname) AS tailor_name, user_tel as tailor_tel, order_statusid, order_userid, products.product_name, products.product_typeid, products.product_image1, os_name FROM order_details 
               INNER JOIN orders ON orders.id = order_details.od_orderid 
               INNER JOIN products ON products.id = order_details.od_productid
 			  INNER JOIN order_status ON order_status.id = orders.order_statusid
@@ -1620,15 +1630,15 @@ router.post("/getOrderData", function (req, res) {
 			  INNER JOIN district ON district.id = ward.ward_districtid
 			  INNER JOIN province ON province.id = ward.ward_provinceid 
         WHERE orders.order_startdate BETWEEN '${startDate}' AND '${endDate}' ${string} `,
-        (error, response) => {
-          if (error) {
-            console.log(error);
-          } else {
-            res.send(response.rows);
-          }
+      (error, response) => {
+        if (error) {
+          console.log(error);
+        } else {
+          res.send(response.rows);
         }
-      );
-      return true;
+      }
+    );
+    return true;
   } else {
     pool.query(
       `SELECT order_details.*, order_customername, order_customeraddress, order_customerphone, order_customeremail, order_startdate, order_enddate, order_subtotal, order_discount, order_total, order_paymentid, opm_name, order_shippingid, osm_name, order_statusid, order_userid, products.product_name, products.product_typeid, products.product_image1, cloth.cloth_name, cloth.cloth_image, cloth.cloth_quantity, cloth.cloth_material, os_name FROM order_details 
@@ -1721,9 +1731,9 @@ router.post("/admin/order/add", function (req, res) {
     od_thighcircumference,
     order_wardid
   );
-  if(!voucherCode){
+  if (!voucherCode) {
     console.log("code???", voucherCode);
-    console.log("Khong co code")
+    console.log("Khong co code");
   } else {
     console.log("có code", voucherCode);
     pool.query(`UPDATE giftvoucher
@@ -1956,7 +1966,7 @@ router.post("/admin/order/edit", function (req, res) {
   });
 });
 
-router.post("/admin/order/processing", function (req, res) {
+router.post("/admin/order/processing", async function (req, res) {
   const {
     order_statusid,
     order_tailorid,
@@ -1972,21 +1982,24 @@ router.post("/admin/order/processing", function (req, res) {
     log_eventtypeid,
     order_shippingid,
   } = req.body;
+  const data = await pool.query(`SELECT * FROM email WHERE id='1'`);
+  console.log(data.rows[0]);
+  console.log(data.rows[0].e_email);
+  console.log(data.rows[0].e_password);
+
   var transporter = nodemailer.createTransport({
-    // config mail server
     host: "smtp.gmail.com",
     port: 465,
     secure: true,
     auth: {
-      user: "phanthanh8499@gmail.com", //Tài khoản gmail vừa tạo
-      pass: "121311Aa", //Mật khẩu tài khoản gmail vừa tạo
+      user: data.rows[0].e_email,
+      pass: data.rows[0].e_password,
     },
     tls: {
-      // do not fail on invalid certs
       rejectUnauthorized: false,
     },
   });
-
+  
   if (order_statusid === 1) {
     console.log("đợi thợ may");
     console.log(order_statusid, order_tailorid, date, od_orderid);
@@ -2001,7 +2014,7 @@ router.post("/admin/order/processing", function (req, res) {
         } else {
           console.log("OK");
           res.send("OK");
-          
+
           var content = "";
           content += `
          <div style="margin-bottom: 10px">
@@ -2136,7 +2149,7 @@ router.post("/admin/order/processing", function (req, res) {
         } else {
           console.log("OK");
           res.send("OK");
-          if(order_shippingid === "TNM"){
+          if (order_shippingid === "TNM") {
             var content = "";
             content += `
          <div style="margin-bottom: 10px">
@@ -2292,6 +2305,7 @@ router.post("/admin/order/processing", function (req, res) {
       }
     );
   }
+
 });
 
 router.get("/admin/order/delete.:id", function (req, res) {
@@ -2642,16 +2656,21 @@ router.post(`/editUserPermissions`, function (req, res) {
   const {
     up_userid,
     up_eccommercedashboard,
-    up_orderdashboard,
+    up_sewingstatus,
     up_customeraccountmanager,
     up_staffaccountmanager,
     up_productmanager,
     up_clothmanager,
     up_ordermanager,
+    up_log,
+    up_loyaltyprogram,
+    up_giftvoucher,
+    up_setting,
   } = req.body;
+  console.log(up_sewingstatus,up_log, up_loyaltyprogram, up_giftvoucher, up_setting);
   pool.query(
     `UPDATE user_permissions
-	SET up_eccommercedashboard='${up_eccommercedashboard}', up_orderdashboard='${up_orderdashboard}', up_customeraccountmanager='${up_customeraccountmanager}', up_staffaccountmanager='${up_staffaccountmanager}', up_productmanager='${up_productmanager}', up_clothmanager='${up_clothmanager}', up_ordermanager='${up_ordermanager}'
+	SET up_eccommercedashboard='${up_eccommercedashboard}', up_sewingstatus='${up_sewingstatus}', up_customeraccountmanager='${up_customeraccountmanager}', up_staffaccountmanager='${up_staffaccountmanager}', up_productmanager='${up_productmanager}', up_clothmanager='${up_clothmanager}', up_ordermanager='${up_ordermanager}', up_log='${up_log}', up_loyaltyprogram='${up_loyaltyprogram}', up_giftvoucher='${up_giftvoucher}', up_setting='${up_setting}'
 	WHERE up_userid='${up_userid}'`,
     (error, response) => {
       if (error) {
@@ -2802,10 +2821,10 @@ WHERE uld_logid = '${id}'`,
 router.post(`/getLoyaltyCustomer`, function (req, res) {
   const { provinceId, districtId, wardId, startDate, endDate } = req.body;
   var string = "";
-  if (provinceId != 0){
+  if (provinceId != 0) {
     string = `AND province.id = '${provinceId}'`;
   }
-  if (districtId != 0){
+  if (districtId != 0) {
     string = string + " " + `AND district.id = '${districtId}'`;
   }
   if (wardId != 0) {
@@ -2813,8 +2832,8 @@ router.post(`/getLoyaltyCustomer`, function (req, res) {
   }
   console.log(string);
   console.log(startDate, endDate);
-    pool.query(
-      `WITH table1 AS(
+  pool.query(
+    `WITH table1 AS(
 	SELECT order_userid AS customer_id, COUNT(*) FROM orders
 	WHERE order_statusid = '6' AND order_startdate BETWEEN '${startDate}' AND '${endDate}'
 GROUP BY customer_id),
@@ -2829,6 +2848,43 @@ SELECT table2.*, COALESCE(table1.count, 0) AS order_count
 FROM table2
 LEFT JOIN table1 ON table2.id = table1.customer_id
 ORDER BY order_count DESC`,
+    (error, response) => {
+      if (error) {
+        console.log(error);
+      } else {
+        res.send(response.rows);
+      }
+    }
+  );
+});
+
+function makeid(length) {
+  var result = "";
+  var characters =
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_";
+  var charactersLength = characters.length;
+  for (var i = 0; i < length; i++) {
+    result += characters.charAt(Math.floor(Math.random() * charactersLength));
+  }
+  return result;
+}
+
+router.post(`/getGiftVoucherData`, function (req, res) {
+  const { id, voucherDiscount, isActive, startDate, endDate } = req.body;
+  var string = "";
+  var string2 = "";
+  console.log(isActive);
+  if (voucherDiscount !== 0) {
+    string = `giftvoucher.gv_discount = '${voucherDiscount}' AND `;
+  }
+  if (isActive !== "all") {
+    string2 = `giftvoucher.gv_isactivated = '${isActive}' AND `;
+  }
+  if (id === 1) {
+    pool.query(
+      `SELECT giftvoucher.*, users.user_username FROM giftvoucher
+INNER JOIN users ON users.id = giftvoucher.gv_userid
+WHERE ${string} ${string2} giftvoucher.gv_creationdate BETWEEN '${startDate}' AND '${endDate}'`,
       (error, response) => {
         if (error) {
           console.log(error);
@@ -2837,60 +2893,23 @@ ORDER BY order_count DESC`,
         }
       }
     );
-});
-
-function makeid(length) {
-    var result           = '';
-    var characters       = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_';
-    var charactersLength = characters.length;
-    for ( var i = 0; i < length; i++ ) {
-      result += characters.charAt(Math.floor(Math.random() * 
- charactersLength));
-   }
-   return result;
-}
-
-router.post(`/getGiftVoucherData`, function(req, res) {
-  const { id, voucherDiscount, isActive, startDate, endDate } = req.body;
-  var string = "";
-  var string2 = "";
-  console.log(isActive)
-  if(voucherDiscount !== 0){
-    string = `giftvoucher.gv_discount = '${voucherDiscount}' AND `;
-  }
-  if (isActive !== 'all'){
-    string2 = `giftvoucher.gv_isactivated = '${isActive}' AND `;
-  }
-  if (id === 1) {
-      pool.query(
-        `SELECT giftvoucher.*, users.user_username FROM giftvoucher
-INNER JOIN users ON users.id = giftvoucher.gv_userid
-WHERE ${string} ${string2} giftvoucher.gv_creationdate BETWEEN '${startDate}' AND '${endDate}'`,
-        (error, response) => {
-          if (error) {
-            console.log(error);
-          } else {
-            res.send(response.rows);
-          }
-        }
-      );
-    } else {
-      pool.query(
-        `SELECT giftvoucher.*, users.user_username FROM giftvoucher
+  } else {
+    pool.query(
+      `SELECT giftvoucher.*, users.user_username FROM giftvoucher
 INNER JOIN users ON users.id = giftvoucher.gv_userid
 WHERE giftvoucher.gv_userid = '${id}'
 AND giftvoucher.gv_isactivated = 'false'
 ORDER BY giftvoucher.gv_expirationdate ASC`,
-        (error, response) => {
-          if (error) {
-            console.log(error);
-          } else {
-            res.send(response.rows);
-          }
+      (error, response) => {
+        if (error) {
+          console.log(error);
+        } else {
+          res.send(response.rows);
         }
-      );
-    } 
-})
+      }
+    );
+  }
+});
 
 router.get(`/getGiftVoucherMenu.:voucherDiscount`, function (req, res) {
   const { voucherDiscount } = req.params;
@@ -2904,8 +2923,8 @@ router.get(`/getGiftVoucherMenu.:voucherDiscount`, function (req, res) {
     var datum = Date.parse(strDate);
     return datum / 1000;
   }
-  
-  console.log(now)
+
+  console.log(now);
   pool.query(
     `SELECT * FROM giftvoucher
 WHERE ${string} giftvoucher.gv_isactivated = 'false' AND gv_userid = '1' AND gv_expirationdate >= '${now}'
@@ -2962,8 +2981,8 @@ INNER JOIN users ON users.id = giftvoucher.gv_userid`,
   );
 });
 
-router.get(`/useVoucher.:id`, function(req, res) {
-  const {id} = req.params;
+router.get(`/useVoucher.:id`, function (req, res) {
+  const { id } = req.params;
   const now = new Date();
   pool.query(
     `SELECT * FROM giftvoucher WHERE id='${id}'`,
@@ -2987,9 +3006,9 @@ router.get(`/useVoucher.:id`, function(req, res) {
       }
     }
   );
-})
+});
 
-router.post(`/admin/giftVoucher/giveUser`, function(req, res) {
+router.post(`/admin/giftVoucher/giveUser`, function (req, res) {
   const {
     log_date,
     log_userid,
@@ -2999,25 +3018,38 @@ router.post(`/admin/giftVoucher/giveUser`, function(req, res) {
     voucherList,
     dateList,
   } = req.body;
-  console.log(
-    log_date,
-    log_userid,
-    log_eventtypeid,
-    id,
-    user_username,
-    
-  );
   var voucherL = JSON.parse(voucherList);
   var dateL = JSON.parse(dateList);
-  console.log(voucherL);
-  console.log(dateL);
-  for(let i=0; i<voucherL.length; i++){
-    console.log(voucherL[i].id, " - ", dateL[i].gv_expirationdate);
+  for (let i = 0; i < voucherL.length; i++) {
     pool.query(`UPDATE giftvoucher
 	SET gv_expirationdate='${dateL[i].gv_expirationdate}', gv_userid='${id}'
 	WHERE id='${voucherL[i].id}';`);
   }
-  
-})
+});
+
+router.get(`/admin/emailConfig/getData`, function (req, res) {
+  pool.query(`SELECT * FROM email WHERE id='1'`, (error, response) => {
+    if (error) {
+      console.log(error);
+    } else {
+      res.send(response.rows[0]);
+    }
+  });
+});
+
+router.post(`/admin/emailConfig/update`, function (req, res) {
+  const { email, password } = req.body;
+  pool.query(`UPDATE email
+	SET e_email='${email}', e_password='${password}'
+	WHERE id='1'`, 
+  (error, response) => {
+    if(error){
+      console.log(error)
+       res.send("ERROR");
+    } else {
+      res.send("OK")
+    }
+  });
+});
 
 module.exports = router;
