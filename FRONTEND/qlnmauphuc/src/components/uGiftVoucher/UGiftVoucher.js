@@ -98,7 +98,6 @@ export default function UGiftVoucher() {
   };
 
   const handleClickCopy = (e, voucherid) => {
-    console.log(voucherid);
     navigator.clipboard.writeText(voucherid);
     enqueueSnackbar(`Đã sao chép ID: ${voucherid}`, {
       variant: "success",

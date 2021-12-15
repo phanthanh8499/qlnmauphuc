@@ -207,15 +207,6 @@ export default function Data(props) {
         <AddForm
           open={addForm}
           onClose={closeAddForm}
-          id={parseInt(
-            dataRender[
-              Object.keys(dataRender)
-                .sort(function (a, b) {
-                  if (a.id >= b.id) return a;
-                })
-                .pop()
-            ].id
-          )}
           userid={userInfo.id}
         ></AddForm>
       );

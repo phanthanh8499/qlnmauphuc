@@ -548,7 +548,7 @@ export default function Order(props) {
               formData.set("od_clothid", od_id + 1);
               setTimeout(() => {
                 dispatch(addOrder(formData));
-              }, i * 10 + 500); 
+              }, i * 500 + 500); 
             }
           }
         }
@@ -713,7 +713,7 @@ export default function Order(props) {
                   format(today, "yyyy-MM-dd HH:mm:ss")
               );
               formData.set("od_clothid", od_id + 1);
-              setTimeout(() => {dispatch(addOrder(formData));}, i*10 + 500) 
+              setTimeout(() => {dispatch(addOrder(formData));}, i*500 + 500) 
             }
           }
         }
@@ -875,7 +875,7 @@ export default function Order(props) {
               formData.set("od_clothid", od_id + 1);
               setTimeout(() => {
                 dispatch(addOrder(formData));
-              }, i * 10 + 500); 
+              }, i * 500 + 500); 
             }
           }
         }
@@ -1038,7 +1038,7 @@ export default function Order(props) {
               formData.set("od_clothid", od_id + 1);
               setTimeout(() => {
                 dispatch(addOrder(formData));
-              }, i * 10 + 500); 
+              }, i * 500 + 500); 
             }
           }
         }
@@ -1204,7 +1204,7 @@ export default function Order(props) {
               formData.set("od_clothid", od_id + 1);
               setTimeout(() => {
                 dispatch(addOrder(formData));
-              }, i * 10 + 500); 
+              }, i * 500 + 500); 
             }
           }
         }
@@ -1373,7 +1373,7 @@ export default function Order(props) {
               formData.set("od_clothid", od_id + 1);
               setTimeout(() => {
                 dispatch(addOrder(formData));
-              }, i * 10 + 500); 
+              }, i * 500 + 500); 
             }
           }
         }

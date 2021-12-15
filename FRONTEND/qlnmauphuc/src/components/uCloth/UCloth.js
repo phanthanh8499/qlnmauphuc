@@ -1,4 +1,4 @@
-import { CircularProgress, Grid, Pagination, Typography } from "@mui/material";
+import { Button, CircularProgress, Grid, Pagination, Typography } from "@mui/material";
 import { makeStyles } from "@mui/styles";
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
@@ -6,6 +6,7 @@ import { LOCAL_PATH } from "../../constants/Constants";
 import { getMyClothData } from "../../redux/Action";
 import ImageMagnify from "./ImageMagnify";
 import DoNotTouchIcon from "@mui/icons-material/DoNotTouch";
+import DetailForm from "./detailForm/DetailForm";
 
 const center = {
   display: "flex",
@@ -67,6 +68,13 @@ export default function UCloth() {
     setCount(Math.ceil(myClothData.length / rowsPerPage));
   }, [myClothData]);
 
+  const handleClickDetail = (id) => {
+    setDetailForm(true)
+    setClothSelected(id)
+  }
+  const handleClickDelete = (id) => {
+    console.log(id)
+  }
   const renderCloth = () => {
     if (myClothData.length >= 1) {
       return (
@@ -103,6 +111,18 @@ export default function UCloth() {
                 </Typography>
               </Grid> */}
               </Grid>
+              <Grid container sx={{ mt: "35px" }}>
+                <Grid item xs={12}>
+                  <Button
+                    variant="outlined"
+                    color="primary"
+                    fullWidth
+                    onClick={(e) => handleClickDetail(value.id)}
+                  >
+                    Xem chi tiết
+                  </Button>
+                </Grid>
+              </Grid>
             </Grid>
           </Grid>
         </Grid>
@@ -121,6 +141,26 @@ export default function UCloth() {
         </Grid>
       );
   };
+  
+  const [clothSelected, setClothSelected] = useState()
+
+  const [detailForm, setDetailForm] = useState(false)
+  const closeDetailForm = () => {
+    setDetailForm(false);
+  }
+
+  const renderForm = () => {
+    if(detailForm){
+      return (
+        <DetailForm
+          open={detailForm}
+          onClose={closeDetailForm}
+          id={clothSelected}
+        ></DetailForm>
+      );
+    }
+  }
+
   return (
     <Grid container spacing={1}>
       {loadingMyData ? (
@@ -139,6 +179,7 @@ export default function UCloth() {
               color="primary"
             />
           </Grid>
+          {renderForm()}
         </>
       )}
     </Grid>

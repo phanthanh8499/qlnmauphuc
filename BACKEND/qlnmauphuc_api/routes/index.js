@@ -1603,7 +1603,7 @@ router.post("/admin/users/editUserInfo", function (req, res) {
 });
 
 router.post("/getOrderData", function (req, res) {
-  const { id, provinceId, districtId, wardId, startDate, endDate } = req.body;
+  const { id, provinceId, districtId, wardId, startDate, endDate, orderID } = req.body;
   console.log(id, provinceId, districtId, wardId, startDate, endDate);
   var string = "";
   if (provinceId !== 0) {
@@ -1614,6 +1614,16 @@ router.post("/getOrderData", function (req, res) {
   }
   if (wardId !== 0) {
     string = string + ` AND ward.id = '${wardId}'`;
+  }
+  var dateString = "";
+  var orderIDString = "";
+  if (orderID) {
+    orderIDString = `AND orders.id = '${orderID}'`;
+  }
+  if(startDate){
+    dateString = `AND orders.order_startdate BETWEEN '${startDate}' AND '${endDate}'`;
+  } else {
+    console.log("khong co startdate")
   }
   console.log(string);
   console.log(`orders.order_startdate BETWEEN '${startDate}' AND '${endDate}'`);
@@ -1648,7 +1658,7 @@ router.post("/getOrderData", function (req, res) {
 			  INNER JOIN order_status ON order_status.id = orders.order_statusid
 			  INNER JOIN order_paymentmethod ON order_paymentmethod.id = orders.order_paymentid
 			  INNER JOIN order_shippingmethod ON order_shippingmethod.id = orders.order_shippingid
-			  WHERE orders.order_userid = '${id}'`,
+			  WHERE orders.order_userid = '${id}' ${orderIDString} ${dateString}`,
       (error, response) => {
         if (error) {
           console.log(error);
@@ -3050,6 +3060,23 @@ router.post(`/admin/emailConfig/update`, function (req, res) {
       res.send("OK")
     }
   });
+});
+
+router.get(`/getOrderHaveCloth.:id`, function (req, res) {
+  const { id } = req.params;
+  pool.query(
+    `SELECT order_details.id, order_details.od_orderid, cloth_name FROM order_details 
+INNER JOIN cloth ON cloth.id = order_details.od_clothid
+WHERE order_details.od_clothid = '${id}'`,
+    (error, response) => {
+      if (error) {
+        console.log(error);
+        res.send("ERROR");
+      } else {
+        res.send(response.rows);
+      }
+    }
+  );
 });
 
 module.exports = router;
