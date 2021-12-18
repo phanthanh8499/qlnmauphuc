@@ -2937,7 +2937,7 @@ router.get(`/getGiftVoucherMenu.:voucherDiscount`, function (req, res) {
   console.log(now);
   pool.query(
     `SELECT * FROM giftvoucher
-WHERE ${string} giftvoucher.gv_isactivated = 'false' AND gv_userid = '1' AND gv_expirationdate >= '${now}'
+WHERE ${string} giftvoucher.gv_isactivated = 'false' AND gv_userid = '1'
 ORDER BY gv_expirationdate ASC`,
     (error, response) => {
       if (error) {

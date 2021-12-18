@@ -319,7 +319,7 @@ export default function AdminGiftVoucher() {
                     <Grid item xs={2}>
                       <MyFormControl fullWidth>
                         <InputLabel id="active-select-label">
-                          Kích hoạt
+                          Trạng thái
                         </InputLabel>
                         <Select
                           labelId="active-select-label"

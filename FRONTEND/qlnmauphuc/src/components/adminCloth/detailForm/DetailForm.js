@@ -103,6 +103,7 @@ function DetailForm(props) {
     ));
   };
   const [data, setData] = useState([]) 
+  const [loading2, setLoading2] = useState(true)
   useEffect(() => {
     async function getDetailProduct() {
       const { data } = await axios.get(`/getDetailCloth.${id}`);
@@ -117,6 +118,7 @@ function DetailForm(props) {
       setLastName(`${data[0].user_lastname}`);
       setClothName(`${data[0].ct_name}`);
       setImgUpload(LOCAL_PATH + `${data[0].cloth_image.substring(2)}`);
+      setLoading2(false)
     }
     async function getClothType() {
       const { data } = await axios.get("/getClothTypeData");
@@ -180,7 +182,7 @@ function DetailForm(props) {
           <ImageMagnify img={imgUpload}></ImageMagnify>
         </Grid>
         <Grid item xs={8} className={classes.detailBox}>
-          {loading ? (
+          {loading || loading2 ? (
             <Grid
               item
               xs={12}

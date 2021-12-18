@@ -222,7 +222,7 @@ export default function Data(props) {
 
   const columns = [
     { field: "od_orderid", headerName: "Mã đơn hàng", width: 350 },
-
+    { field: "product_name", headerName: "Tên sản phẩm", width: 400 },
     {
       field: "order_startdate",
       headerName: "Ngày tạo",
@@ -234,7 +234,7 @@ export default function Data(props) {
     {
       field: "order_enddate",
       headerName: "Ngày hoàn tất",
-      width: 150,
+      width: 200,
       renderCell: (params) => {
         return formatDate(params.value);
       },
@@ -280,8 +280,16 @@ export default function Data(props) {
       },
     },
     { field: "order_customername", headerName: "Tên khách hàng", width: 200 },
-    { field: "order_customeraddress", headerName: "Địa chỉ", width: 450 },
-    { field: "product_name", headerName: "Tên sản phẩm", width: 300 },
+    {
+      field: "order_customerphone",
+      headerName: "Số điện thoại",
+      width: 150,
+    },
+    { field: "order_customeraddress", headerName: "Địa chỉ", width: 500 },
+    { field: "tailor_name", headerName: "Người may", width: 250 },
+    { field: "tailor_tel", headerName: "Số điện thoại người may", width: 250 },
+    { field: "osm_name", headerName: "Phương thức vận chuyển", width: 250 },
+    { field: "opm_name", headerName: "Phương thức thanh toán", width: 300 },
     {
       field: "order_total",
       headerName: "Tổng tiên",
@@ -325,23 +333,26 @@ export default function Data(props) {
   ];
 
   const exportFile = () => {
-    var list = JSON.parse(JSON.stringify(dataRender));
-    list.map((item) => {
-      delete item.id;
-      delete item.od_productid;
-      delete item.od_clothid;
-      delete item.order_wardid;
-      delete item.order_districtid;
-      delete item.order_provinceid;
-      delete item.order_paymentid;
-      delete item.order_shippingid;
-      delete item.order_tailorid;
-      delete item.order_statusid;
-      delete item.order_userid;
-      delete item.product_typeid;
-      delete item.product_image1;
-      return item;
-    });
+    var list = [];
+    for(let i=0; i<dataRender.length; i++){
+      list.push({
+        STT: i + 1,
+        "Mã đơn hàng": dataRender[i].od_orderid,
+        "Tên mẫu may": dataRender[i].product_name,
+        "Người đặt may": dataRender[i].order_customername,
+        "Số điện thoại": dataRender[i].order_customerphone,
+        "Địa chỉ": dataRender[i].order_customeraddress,
+        Email: dataRender[i].order_customeremail,
+        "Ngày tạo": formatDate(dataRender[i].order_startdate),
+        "Ngày hoàn tất": formatDate(dataRender[i].order_enddate),
+        "Người may": dataRender[i].tailor_name,
+        "Số điện thoại người may": dataRender[i].tailor_tel,
+        "Phương thức vận chuyển": dataRender[i].osm_name,
+        "Phương thức thanh toán": dataRender[i].opm_name,
+        "Trạng thái hoá đơn": dataRender[i].os_name,
+        "Tổng tiền": dataRender[i].order_total,
+      });
+    }
     const ws = XLSX.utils.json_to_sheet(list);
     var now = new Date();
     now = format(now, "yyyy-MM-dd HH:mm:ss");
@@ -369,7 +380,25 @@ export default function Data(props) {
           removeAccents(data.os_name)
             .toLowerCase()
             .includes(removeAccents(string).toLowerCase()) ||
+          removeAccents(data.order_customername)
+            .toLowerCase()
+            .includes(removeAccents(string).toLowerCase()) ||
+          removeAccents(data.order_customeraddress)
+            .toLowerCase()
+            .includes(removeAccents(string).toLowerCase()) ||
+          removeAccents(data.tailor_name)
+            .toLowerCase()
+            .includes(removeAccents(string).toLowerCase()) ||
+          removeAccents(data.osm_name)
+            .toLowerCase()
+            .includes(removeAccents(string).toLowerCase()) ||
+          removeAccents(data.opm_name)
+            .toLowerCase()
+            .includes(removeAccents(string).toLowerCase()) ||
           formatDate(data.order_startdate).includes(string) ||
+          formatDate(data.order_enddate).includes(string) ||
+          data.order_customerphone.toString().includes(string) ||
+          data.tailor_tel.toString().includes(string) ||
           data.order_total.toString().includes(string)
         );
       });
@@ -552,8 +581,10 @@ export default function Data(props) {
                 <Table sx={{ minWidth: 700 }} aria-label="customized table">
                   <TableHead>
                     <TableRow>
+                      <TableCell>STT</TableCell>
                       <TableCell>Mã đơn hàng</TableCell>
                       <TableCell align="center">Ngày tạo</TableCell>
+                      <TableCell align="center">Ngày hoàn tất</TableCell>
                       <TableCell align="center">Trạng thái</TableCell>
                       <TableCell align="center">Tên khách hàng</TableCell>
                       <TableCell align="center">Địa chỉ</TableCell>
@@ -562,14 +593,20 @@ export default function Data(props) {
                     </TableRow>
                   </TableHead>
                   <TableBody>
-                    {dataRender.map((row) => {
+                    {dataRender.map((row, key) => {
                       return (
                         <TableRow key={row.name}>
+                          <TableCell >
+                            {key+1}
+                          </TableCell>
                           <TableCell component="th" scope="row">
                             {row.od_orderid}
                           </TableCell>
                           <TableCell align="center">
                             {formatDate(row.order_startdate)}
+                          </TableCell>
+                          <TableCell align="center">
+                            {formatDate(row.order_enddate)}
                           </TableCell>
                           <TableCell align="left">{row.os_name}</TableCell>
                           <TableCell align="left">
@@ -589,7 +626,7 @@ export default function Data(props) {
                       );
                     })}
                     <TableRow>
-                      <TableCell colSpan={5}></TableCell>
+                      <TableCell colSpan={7}></TableCell>
                       <TableCell>
                         <Typography sx={{ fontWeight: 500 }}>
                           Tổng cộng:

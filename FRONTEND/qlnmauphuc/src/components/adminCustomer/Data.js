@@ -277,7 +277,8 @@ export default function Data(props) {
         return formatTel(params.value);
       },
     },
-    { field: "user_address", headerName: "Địa chỉ", width: 300 },
+    { field: "user_address", headerName: "Địa chỉ", width: 500 },
+    { field: "user_email", headerName: "Email", width: 300 },
     {
       field: "user_status",
       headerName: "Trạng thái",
@@ -474,20 +475,20 @@ export default function Data(props) {
   ];
 
   const exportFile = () => {
-    var list = JSON.parse(JSON.stringify(dataRender));
-    list.map((item) => {
-      delete item.user_password;
-      delete item.user_city;
-      delete item.user_wardid;
-      delete item.ward_prefix;
-      delete item.ward_name;
-      delete item.ward_districtid;
-      delete item.district_prefix;
-      delete item.district_name;
-      delete item.ward_provinceid;
-      delete item.province_name;
-      return item;
-    });
+    var list = [];
+    for (let i = 0; i < dataRender.length; i++) {
+      list.push({
+        STT: i + 1,
+        Username: dataRender[i].user_username,
+        Họ: dataRender[i].user_lastname,
+        Tên: dataRender[i].user_firstname,
+        "Số điện thoại": dataRender[i].user_tel,
+        "Địa chỉ": dataRender[i].user_address,
+        Email: dataRender[i].user_email,
+        "Ngày tạo": formatDate(dataRender[i].user_date),
+        "Trạng thái": dataRender[i].user_status === "active" ? "Hoạt động" : "Đã khoá",
+      });
+    }
     const ws = XLSX.utils.json_to_sheet(list);
     const wb = XLSX.utils.book_new();
     var now = new Date();
@@ -675,6 +676,7 @@ export default function Data(props) {
             data.user_lastname + " " + data.user_firstname
           ).includes(removeAccents(string)) ||
           removeAccents(data.user_address).includes(removeAccents(string)) ||
+          removeAccents(data.user_email).includes(removeAccents(string)) ||
           removeAccents(data.user_status).includes(removeAccents(string)) ||
           formatDate(data.user_date).toString().includes(string) ||
           data.user_tel.toString().includes(string)
@@ -768,7 +770,7 @@ export default function Data(props) {
                         variant="outlined"
                         color="primary"
                         onClick={handleClickSearch}
-                        sx={{backgroundColor: '#ffffff'}}
+                        sx={{ backgroundColor: "#ffffff" }}
                       >
                         Tìm kiếm
                       </Button>
@@ -928,14 +930,16 @@ export default function Data(props) {
                       <TableCell align="center" sx={{ width: "121px" }}>
                         Số điện thoại
                       </TableCell>
-                      <TableCell align="center">Địa chỉ</TableCell>
+                      <TableCell align="center" sx={{ width: "300px" }}>
+                        Địa chỉ
+                      </TableCell>
                       <TableCell align="center">Trạng thái</TableCell>
                       <TableCell align="center">Loại người dùng</TableCell>
                       <TableCell align="center">Ngày tạo</TableCell>
                     </TableRow>
                   </TableHead>
                   <TableBody>
-                    {dataRender.map((row) => {
+                    {dataRender.map((row, key) => {
                       return (
                         <TableRow key={row.name}>
                           <TableCell component="th" scope="row">
@@ -943,7 +947,6 @@ export default function Data(props) {
                               src={LOCAL_PATH + row.user_avatar.substring(2)}
                             />
                           </TableCell>
-
                           <TableCell align="left">
                             {row.user_username}
                           </TableCell>

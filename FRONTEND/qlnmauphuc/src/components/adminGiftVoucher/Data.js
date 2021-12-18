@@ -285,7 +285,7 @@ export default function Data(props) {
     },
     {
       field: "gv_isactivated",
-      headerName: "Đã kích hoạt",
+      headerName: "Trạng thái",
       width: 180,
       align: "center",
       renderCell: (params) => {
@@ -309,7 +309,7 @@ export default function Data(props) {
         "Ngày tạo": formatDate(dataRender[i].gv_creationdate),
         "Ngày hết hạn": formatDate(dataRender[i].gv_expirationdate),
         "Chủ sở hữu": dataRender[i].user_username,
-        "Kích hoạt":
+        "Trạng thái":
           dataRender[i].gv_isactivated === true
             ? "Đã kích hoạt"
             : "Chưa kích hoạt",
@@ -534,7 +534,7 @@ export default function Data(props) {
                       </TableCell>
                       <TableCell align="center">Ngày hết hạn</TableCell>
                       <TableCell align="center">Chủ sở hữu</TableCell>
-                      <TableCell align="center">Kích hoạt</TableCell>
+                      <TableCell align="center">Trạng thái</TableCell>
                     </TableRow>
                   </TableHead>
                   <TableBody>

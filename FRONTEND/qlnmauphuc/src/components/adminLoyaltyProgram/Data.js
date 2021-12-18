@@ -202,34 +202,6 @@ export default function Data(props) {
   const { userInfo } = JSON.parse(localStorage.getItem("userInfo"));
 
   const renderForm = () => {
-    if (addForm) {
-      return (
-        <AddForm
-          open={addForm}
-          onClose={closeAddForm}
-          id={parseInt(
-            dataRender[
-              Object.keys(dataRender)
-                .sort(function (a, b) {
-                  if (a.id >= b.id) return a;
-                })
-                .pop()
-            ].id
-          )}
-          userid={userInfo.id}
-        ></AddForm>
-      );
-    }
-    if (detailForm) {
-      return (
-        <DetailForm
-          open={detailForm}
-          onClose={closeDetailForm}
-          id={parseInt(userId)}
-          userid={userInfo.id}
-        ></DetailForm>
-      );
-    }
     if (giftForm) {
       return (
         <GiftForm
@@ -257,14 +229,14 @@ export default function Data(props) {
   };
 
   const columns = [
-    {
-      field: "user_avatar",
-      headerName: "Avatar",
-      width: 100,
-      renderCell: (params) => {
-        return <Avatar src={LOCAL_PATH + params.value.substring(2)} />;
-      },
-    },
+    // {
+    //   field: "user_avatar",
+    //   headerName: "Avatar",
+    //   width: 100,
+    //   renderCell: (params) => {
+    //     return <Avatar src={LOCAL_PATH + params.value.substring(2)} />;
+    //   },
+    // },
     { field: "user_username", headerName: "UserName", width: 100 },
     { field: "user_lastname", headerName: "Họ", width: 200 },
     { field: "user_firstname", headerName: "Tên", width: 130 },
@@ -364,26 +336,24 @@ export default function Data(props) {
   ];
 
   const exportFile = () => {
-    var list = JSON.parse(JSON.stringify(dataRender));
-    list.map((item) => {
-      delete item.user_password;
-      delete item.user_city;
-      delete item.user_wardid;
-      delete item.ward_prefix;
-      delete item.ward_name;
-      delete item.ward_districtid;
-      delete item.district_prefix;
-      delete item.district_name;
-      delete item.ward_provinceid;
-      delete item.province_name;
-      return item;
-    });
+    var list = [];
+    for(let i =0; i<dataRender.length; i++){
+      list.push({
+        STT: i + 1,
+        Username: dataRender[i].user_username,
+        Họ: dataRender[i].user_lastname,
+        Tên: dataRender[i].user_firstname,
+        "Số điện thoại": dataRender[i].user_tel,
+        "Địa chỉ": dataRender[i].user_address,
+        "Tích điểm": dataRender[i].order_count,
+      });
+    }
     const ws = XLSX.utils.json_to_sheet(list);
     const wb = XLSX.utils.book_new();
     var now = new Date();
     now = format(now, "yyyy-MM-dd HH:mm:ss");
     XLSX.utils.book_append_sheet(wb, ws, "data");
-    XLSX.writeFile(wb, "DSKhachHang " + now + ".xlsx");
+    XLSX.writeFile(wb, "DSKhachHangThanThiet " + now + ".xlsx");
   };
 
   const handleChangeProvince = async (e) => {
@@ -675,38 +645,6 @@ export default function Data(props) {
                 >
                   <PrintIcon sx={{ mr: 0.5 }} /> Tạo bản in
                 </Button>
-                <Button
-                  id="demo-customized-button"
-                  aria-controls="demo-customized-menu"
-                  aria-haspopup="true"
-                  aria-expanded={openMenu ? "true" : undefined}
-                  variant="contained"
-                  disableElevation
-                  onClick={handleClickMenu}
-                  endIcon={<KeyboardArrowDownIcon />}
-                  sx={{ ml: 0.5 }}
-                >
-                  Hành động
-                </Button>
-                <StyledMenu
-                  id="demo-customized-menu"
-                  MenuListProps={{
-                    "aria-labelledby": "demo-customized-button",
-                  }}
-                  anchorEl={anchorEl}
-                  open={openMenu}
-                  onClose={handleCloseMenu}
-                >
-                  <MenuItem onClick={handleClickChange} disableRipple>
-                    <EditIcon />
-                    Cập nhật trạng thái
-                  </MenuItem>
-
-                  <MenuItem onClick={handleClickDelete} disableRipple>
-                    <CancelIcon />
-                    Xoá
-                  </MenuItem>
-                </StyledMenu>
               </Grid>
               <Grid item xs={3}>
                 <Search>
@@ -765,14 +703,14 @@ export default function Data(props) {
                   <Typography sx={{ fontWeight: 600 }}>{INFO.name}</Typography>
                 </Grid>
                 <Grid item xs={6} sx={{ textAlign: "right" }}>
-                  <Typography sx={{ fontWeight: 600 }}>Mẫu in: B114</Typography>
+                  <Typography sx={{ fontWeight: 600 }}>Mẫu in: B120</Typography>
                   <Typography sx={{ fontWeight: 600 }}>
                     Ngày in: {format(now, "dd/MM/yyyy")}
                   </Typography>
                 </Grid>
                 <Grid item xs={12} sx={{ textAlign: "center" }}>
                   <Typography variant="h5">
-                    Kết quả thống kê tài khoản khách hàng
+                    Kết quả thống kê tài khoản thân thiết
                   </Typography>
                   <Typography sx={{ fontSize: 14, fontStyle: "italic" }}>
                     {count === 0
@@ -793,7 +731,8 @@ export default function Data(props) {
                 <Table sx={{ minWidth: 700 }} aria-label="customized table">
                   <TableHead>
                     <TableRow>
-                      <TableCell>Avatar</TableCell>
+                      <TableCell>STT</TableCell>
+                      {/* <TableCell>Avatar</TableCell> */}
                       <TableCell align="center">UserName</TableCell>
                       <TableCell align="center">Họ</TableCell>
                       <TableCell align="center">Tên</TableCell>
@@ -807,10 +746,10 @@ export default function Data(props) {
                   <TableBody>
                     {dataRender === []
                       ? null
-                      : dataRender.map((row) => {
+                      : dataRender.map((row, key) => {
                           return (
                             <TableRow key={row.name}>
-                              <TableCell component="th" scope="row">
+                              {/* <TableCell component="th" scope="row">
                                 <Avatar
                                   src={
                                     !row.user_avatar
@@ -819,8 +758,11 @@ export default function Data(props) {
                                         row.user_avatar.substring(2)
                                   }
                                 />
-                              </TableCell>
+                              </TableCell> */}
 
+                              <TableCell align="center">
+                                {key+1}
+                              </TableCell>
                               <TableCell align="left">
                                 {row.user_username}
                               </TableCell>

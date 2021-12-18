@@ -321,12 +321,18 @@ export default function Data(props) {
   ];
 
   const exportFile = () => {
-    var list = JSON.parse(JSON.stringify(dataRender));
-    list.map((item) => {
-      delete item.user_firstname;
-      delete item.user_lastname;
-      return item;
-    });
+    var list = [];
+    for(let i=0; i<dataRender.length; i++){
+      list.push({
+        STT: i + 1,
+        "Mã vải": dataRender[i].id,
+        "Chất liệu": dataRender[i].cloth_material,
+        Tên: dataRender[i].cloth_name,
+        "Số lượng (mét)": dataRender[i].cloth_quantity,
+        "Loại vải": dataRender[i].ct_name,
+        "Chủ sở hữu": dataRender[i].user_username,
+      });
+    }
     var now = new Date();
     now = format(now, "yyyy-MM-dd HH:mm:ss");
     const ws = XLSX.utils.json_to_sheet(list);
@@ -712,7 +718,8 @@ export default function Data(props) {
                 <Table sx={{ minWidth: 700 }} aria-label="customized table">
                   <TableHead>
                     <TableRow>
-                      <TableCell>ID</TableCell>
+                      <TableCell>STT</TableCell>
+                      <TableCell>Mã vải</TableCell>
                       <TableCell align="center">Thành phần</TableCell>
                       <TableCell align="center">Tên vải</TableCell>
                       <TableCell align="center">Loại vải</TableCell>
@@ -721,9 +728,12 @@ export default function Data(props) {
                     </TableRow>
                   </TableHead>
                   <TableBody>
-                    {dataRender.map((row) => {
+                    {dataRender.map((row, key) => {
                       return (
                         <TableRow key={row.name}>
+                          <TableCell>
+                            {key+1}
+                          </TableCell>
                           <TableCell component="th" scope="row">
                             {row.id}
                           </TableCell>
@@ -744,7 +754,7 @@ export default function Data(props) {
                       );
                     })}
                     <TableRow>
-                      <TableCell colSpan={3}></TableCell>
+                      <TableCell colSpan={4}></TableCell>
                       <TableCell colSpan={2} align="right">
                         <Typography sx={{ fontWeight: 500 }}>
                           Tổng cộng:

@@ -8,6 +8,8 @@ import {
   MenuItem,
   Select,
   CircularProgress,
+  Box,
+  Typography,
 } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import { makeStyles } from "@mui/styles";
@@ -18,17 +20,21 @@ import { FRONTEND_URL, LOCAL_PATH } from "../../constants/Constants";
 import { useSnackbar } from "notistack";
 import axios from "axios";
 import { MyFormControl, MyTextField } from "../utility/Utility";
+import AddAPhotoIcon from "@mui/icons-material/AddAPhoto";
 
 const useStyles = makeStyles((theme) => ({
   btngroup: {
     margin: 10,
     float: "right",
   },
-  avatar: {
-    width: "207px !important",
-    height: "207px !important",
-    // borderRadius: "50%",
-  },
+  // input: {
+  //   display: "none",
+  // },
+  // avatar: {
+  //   width: "207px !important",
+  //   height: "207px !important",
+  //   // borderRadius: "50%",
+  // },
   avatarItem: {
     justifyItems: "center",
     alignItems: "center",
@@ -37,9 +43,7 @@ const useStyles = makeStyles((theme) => ({
   content: {
     padding: 10,
   },
-  input: {
-    display: "none",
-  },
+
   smallLabel: {
     color: "#7f7f7f",
     fontSize: 12,
@@ -50,9 +54,35 @@ const useStyles = makeStyles((theme) => ({
     alignItems: "center",
     display: "flex",
   },
+  input: {
+    display: "none",
+  },
+  avatar: {
+    height: "170px !important",
+    width: "170px !important",
+  },
+  inputAvatar: {
+    borderRadius: "50%",
+    padding: 8,
+    marginBottom: '60px',
+    border: "1px dashed rgba(145, 158, 171, 0.32)",
+    "&:hover": {
+      "& $placeholder": {
+        zIndex: 9,
+      },
+    },
+  },
+  placeholder: {
+    position: "absolute",
+    color: "rgb(255, 255, 255)",
+    backgroundColor: "rgb(22, 28, 36)",
+    borderRadius: "50%",
+    opacity: 0.6,
+    transition: "opacity 200ms cubic-bezier(0.4, 0, 0.2, 1) 0ms",
+  },
 }));
 
-export default function UserProfile() {
+export default function UProfile() {
   const classes = useStyles();
   const dispatch = useDispatch();
   const { enqueueSnackbar } = useSnackbar();
@@ -292,31 +322,46 @@ export default function UserProfile() {
         </Grid>
       ) : (
         <>
-          <Grid item xs={3} className={classes.avatarItem}>
-            <Badge
-              overlap="circular"
-              anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
-              badgeContent={
-                <>
-                  <input
-                    accept="image/*"
-                    className={classes.input}
-                    id="icon-button-file"
-                    type="file"
-                    onChange={saveFile}
-                  />
-                  <label htmlFor="icon-button-file">
-                    <CameraAltIcon sx={{ cursor: "pointer" }}></CameraAltIcon>
-                  </label>
-                </>
-              }
-            >
+          <Grid
+            item
+            xs={3}
+            sx={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              mt: 3,
+              mb: 3,
+            }}
+          >
+            <Box className={classes.inputAvatar}>
+              <input
+                accept="image/*"
+                className={classes.input}
+                id="icon-button-file"
+                type="file"
+                onChange={saveFile}
+              />
+              <label htmlFor="icon-button-file" className={classes.placeholder}>
+                <Box
+                  sx={{
+                    width: 170,
+                    height: 170,
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    flexDirection: "column",
+                  }}
+                >
+                  <AddAPhotoIcon sx={{ cursor: "pointer" }}></AddAPhotoIcon>
+                  <Typography sx={{ fontSize: 12 }}>Update photo</Typography>
+                </Box>
+              </label>
               <Avatar
                 alt="Travis Howard"
                 src={imgUpload}
                 className={classes.avatar}
               />
-            </Badge>
+            </Box>
           </Grid>
           <Grid item xs={9}>
             <Grid container spacing={1}>

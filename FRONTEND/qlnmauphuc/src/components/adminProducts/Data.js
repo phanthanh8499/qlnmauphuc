@@ -268,17 +268,22 @@ export default function Data(props) {
   ];
 
   const exportFile = () => {
-    var list = JSON.parse(JSON.stringify(dataRender));
-    list.map((item) => {
-      delete item.product_image2;
-      delete item.product_image3;
-      delete item.product_introduction1;
-      delete item.product_introduction2;
-      delete item.product_introduction3;
-      delete item.product_introduction4;
-      delete item.product_introduction5;
-      return item;
-    });
+    var list = [];
+    for(let i=0; i<dataRender.length; i++){
+      list.push({
+        STT: i + 1,
+        "Mã sản phẩm": dataRender[i].product_code,
+        "Tên sản phẩm": dataRender[i].product_name,
+        Giá: dataRender[i].product_price,
+        "Màu sắc": dataRender[i].product_color,
+        "Chất liệu vải": dataRender[i].product_material,
+        "Lớp lót": dataRender[i].product_lining,
+        Size: dataRender[i].product_size,
+        "Độ dày": dataRender[i].product_thickness,
+        "Độ mềm": dataRender[i].product_softness,
+        "Độ co giãn": dataRender[i].product_elasticity,
+      });
+    }
     var now = new Date();
     now = format(now, "yyyy-MM-dd HH:mm:ss");
     const ws = XLSX.utils.json_to_sheet(list);
@@ -595,10 +600,6 @@ export default function Data(props) {
                   open={openMenu}
                   onClose={handleCloseMenu}
                 >
-                  <MenuItem onClick={handleClickEdit} disableRipple>
-                    <EditIcon />
-                    Cập nhật trạng thái
-                  </MenuItem>
                   <MenuItem onClick={handleClickDelete} disableRipple>
                     <CancelIcon />
                     Xoá
@@ -657,7 +658,7 @@ export default function Data(props) {
                   <Typography sx={{ fontWeight: 600 }}>{INFO.name}</Typography>
                 </Grid>
                 <Grid item xs={6} sx={{ textAlign: "right" }}>
-                  <Typography sx={{ fontWeight: 600 }}>Mẫu in: B111</Typography>
+                  <Typography sx={{ fontWeight: 600 }}>Mẫu in: B116</Typography>
                   <Typography sx={{ fontWeight: 600 }}>
                     Ngày in: {format(now, "dd/MM/yyyy")}
                   </Typography>
