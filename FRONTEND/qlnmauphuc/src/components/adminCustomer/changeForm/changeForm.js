@@ -91,7 +91,7 @@ function ChangeForm(props) {
             className={clsx(classes.center, classes.title)}
             xs={{ mb: 2 }}
           >
-            <Typography variant="h5">Xác nhận thay thay đổi?</Typography>
+            <Typography variant="h5">Xác nhận thay đổi?</Typography>
             <Typography>Bạn có chắc chắn muốn thay đổi trạng thái</Typography>
           </Stack>
         </Grid>

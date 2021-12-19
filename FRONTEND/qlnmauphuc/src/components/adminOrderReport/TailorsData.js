@@ -586,38 +586,6 @@ export default function TailorsData(props) {
                 >
                   <PrintIcon sx={{ mr: 0.5 }} /> Tạo bản in
                 </Button>
-                <Button
-                  id="demo-customized-button"
-                  aria-controls="demo-customized-menu"
-                  aria-haspopup="true"
-                  aria-expanded={openMenu ? "true" : undefined}
-                  variant="contained"
-                  disableElevation
-                  onClick={handleClickMenu}
-                  endIcon={<KeyboardArrowDownIcon />}
-                  sx={{ ml: 0.5 }}
-                >
-                  Hành động
-                </Button>
-                <StyledMenu
-                  id="demo-customized-menu"
-                  MenuListProps={{
-                    "aria-labelledby": "demo-customized-button",
-                  }}
-                  anchorEl={anchorEl}
-                  open={openMenu}
-                  onClose={handleCloseMenu}
-                >
-                  <MenuItem onClick={handleClickChange} disableRipple>
-                    <EditIcon />
-                    Cập nhật trạng thái
-                  </MenuItem>
-
-                  <MenuItem onClick={handleClickDelete} disableRipple>
-                    <CancelIcon />
-                    Xoá
-                  </MenuItem>
-                </StyledMenu>
               </Grid>
               <Grid item xs={3}>
                 <Search>
