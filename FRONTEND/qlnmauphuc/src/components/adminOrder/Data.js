@@ -495,10 +495,6 @@ export default function Data(props) {
                   open={openMenu}
                   onClose={handleCloseMenu}
                 >
-                  <MenuItem onClick={handleClickEdit} disableRipple>
-                    <EditIcon />
-                    Cập nhật trạng thái
-                  </MenuItem>
                   <MenuItem onClick={handleClickCancel} disableRipple>
                     <BlockIcon />
                     Huỷ

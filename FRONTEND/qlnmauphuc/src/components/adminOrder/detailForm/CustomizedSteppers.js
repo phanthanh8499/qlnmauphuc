@@ -322,7 +322,7 @@ export default function CustomizedSteppers(props) {
         ) : (
           <Grid item xs={2}>
             <ButtonGroup>
-              <Button
+              {/* <Button
                 color="error"
                 disabled={
                   activeStep === 0 || activeStep === 1 || activeStep === 2
@@ -330,10 +330,10 @@ export default function CustomizedSteppers(props) {
                 onClick={handleBack}
               >
                 Back
-              </Button>
+              </Button> */}
 
               <Button onClick={handleNext} disabled={activeStep === 1}>
-                {activeStep === steps.length - 1 ? "Finish" : "Next"}
+                {activeStep === steps.length - 1 ? "Finish" : "Tiếp theo"}
               </Button>
             </ButtonGroup>
           </Grid>

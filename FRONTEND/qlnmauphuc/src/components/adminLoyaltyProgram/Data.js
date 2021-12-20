@@ -214,16 +214,16 @@ export default function Data(props) {
         ></GiftForm>
       );
     }
-    if (changeForm) {
+    if (detailForm) {
       return (
-        <ChangeForm
-          open={changeForm}
-          onClose={closeChangeForm}
+        <DetailForm
+          open={detailForm}
+          onClose={closeDetailForm}
           id={parseInt(userId)}
           listId={userIdList}
           userid={userInfo.id}
           dataReq={rowSelected}
-        ></ChangeForm>
+        ></DetailForm>
       );
     }
   };

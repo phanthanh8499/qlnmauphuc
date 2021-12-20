@@ -136,10 +136,6 @@ export const getProductData = () => async (dispatch) => {
 }
 
 export const addProduct = (dataReq) => async (dispatch) => {
-  // const abc = {};
-  // data.forEach((value, key) => (abc[key] = value));
-  // abc.id = parseInt(abc.id);
-  // console.log(abc)
   const {data} = await Axios.post("/admin/products/add", dataReq);
   dispatch({ type: THEM_SAN_PHAM, payload: data });
 }

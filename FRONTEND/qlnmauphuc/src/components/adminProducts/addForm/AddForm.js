@@ -125,7 +125,19 @@ function AddForm(props) {
   const dispatch = useDispatch();
   const { open, onClose, id, userid} = props;
 
+  const [productCodeList, setProductCodeList] = useState([])
+
+  useEffect(()=> {
+    async function getData(){
+      const {data} = await axios.get(`/getProductCode`);
+      setProductCodeList(data)
+      setLoading2(false)
+    }
+    getData()
+  }, [])
+
   const [loading, setLoading] = useState(true);
+  const [loading2, setLoading2] = useState(true);
   const [productTypeList, setProductTypeList] = useState([]);
   const [imgUpload1, setImgUpload1] = useState("./images/loadingImg.gif");
   const [imgUpload2, setImgUpload2] = useState("./images/loadingImg.gif");
@@ -322,6 +334,12 @@ function AddForm(props) {
     formData.append("log_date", format(now, "yyyy-MM-dd HH:mm:ss"));
     formData.append("log_userid", userid);
     formData.append("log_eventtypeid", "APF");
+    var check = 0;
+    for(let i=0; i<productCodeList.length; i++){
+      if(code === productCodeList[i].product_code){
+        check = check + 1;
+      }
+    }
     if (
       !code ||
       !name ||
@@ -337,6 +355,11 @@ function AddForm(props) {
       !introduction5
     ) {
       enqueueSnackbar("Hãy điền đầy đủ thông tin", {
+        variant: "error",
+        autoHideDuration: 2000,
+      });
+    } else if (check !==0 ) {
+      enqueueSnackbar("Mã sản phẩm đã có, vui lòng nhập mã khác", {
         variant: "error",
         autoHideDuration: 2000,
       });
@@ -380,7 +403,7 @@ function AddForm(props) {
             img4={imgUpload4}
           ></ProductImageGallery>
         </Grid>
-        {loading ? (
+        {loading || loading2 ? (
           <Grid
             item
             xs={8}
@@ -740,7 +763,7 @@ function AddForm(props) {
                   color="primary"
                   onClick={handleSubmit}
                 >
-                  Cập nhật thông tin
+                  Xác nhận thêm
                 </Button>
                 <Button variant="outlined" color="error" onClick={onClose}>
                   Hủy bỏ

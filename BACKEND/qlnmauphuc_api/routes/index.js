@@ -527,7 +527,7 @@ router.post("/admin/products/add", function (req, res) {
             if (error) {
               console.log(error);
             } else {
-              res.send(response.rows);
+              res.send(response.rows[0]);
               pool.query(
                 `INSERT INTO log(
 	log_userid, log_eventtypeid, log_date, log_description)
@@ -3077,6 +3077,17 @@ WHERE order_details.od_clothid = '${id}'`,
       }
     }
   );
+});
+
+router.get(`/getProductCode`, function (req, res) {
+  pool.query(`SELECT id, product_code FROM products`, (error, response) => {
+    if (error) {
+      console.log(error);
+      res.send("ERROR");
+    } else {
+      res.send(response.rows);
+    }
+  });
 });
 
 module.exports = router;

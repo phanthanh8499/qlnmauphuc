@@ -74,7 +74,7 @@ export default function ListModule () {
               <ListItemIcon>
                 <PermIdentityIcon />
               </ListItemIcon>
-              <ListItemText primary="Thông tin cá nhân" />
+              <ListItemText primary="Quản lý tài khoản" />
             </MyListItem>
           </Link>
           <Link to="/account/measurements">

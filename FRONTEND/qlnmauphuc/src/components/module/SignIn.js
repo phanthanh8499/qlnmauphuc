@@ -151,7 +151,7 @@ function SignIn(props) {
                   required
                   fullWidth
                   id="username"
-                  label="Nhập tên tài khoản"
+                  label="Nhập tên tài khoản/Số điện thoại"
                   name="username"
                   onChange={getUsernameParams}
                 />

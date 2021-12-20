@@ -70,19 +70,19 @@ export default function TopBar() {
                 <MenuAppBar></MenuAppBar>
               ) : (
                 <Typography variant="subtitle1" className={classes.titleColor}>
-                  Wellcome guest!
+                  Xin chào bạn!
                   <span
                     onClick={handleOpenSignInForm}
                     className={classes.title}
                   >
-                    Login
+                    Đăng nhập
                   </span>
-                  or
+                  hoặc
                   <span
                     onClick={handleOpenSignUpForm}
                     className={classes.title}
                   >
-                    Register
+                    Đăng ký
                   </span>
                 </Typography>
               )}

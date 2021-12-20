@@ -183,7 +183,7 @@ export default function ProductCategory() {
     setColor(list);
   };
 
-  const [value, setValue] = useState([0, 3000000]);
+  const [value, setValue] = useState([0, 10000000]);
 
   const handleChange = (event, newValue) => {
     if (!beforeChange) {
@@ -567,7 +567,7 @@ export default function ProductCategory() {
                   onChange={handleChange}
                   onChangeCommitted={handleChangeCommitted}
                   min={0}
-                  max={3000000}
+                  max={10000000}
                   sx={{ mt: 4.5, mb: 1, width: "95%" }}
                 />
                 <Typography sx={{ fontSize: 14 }}>

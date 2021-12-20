@@ -33,7 +33,7 @@ export default function AccountLayout (props){
       if (pathname === "/account/orders") {
         setTitle("Danh sách đơn hàng");
       } else if (pathname === "/account/profile") {
-        setTitle("Thông tin cá nhân");
+        setTitle("Quản lý tài khoản");
       } else if (pathname === "/account/cloth") {
         setTitle("Quản lý vải");
       } else if (pathname === "/account") {
