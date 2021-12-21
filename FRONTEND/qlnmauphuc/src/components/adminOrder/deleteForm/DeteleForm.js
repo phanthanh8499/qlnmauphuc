@@ -33,16 +33,30 @@ function DeleteForm(props) {
   const classes = useStyle();
   const { enqueueSnackbar } = useSnackbar();
   const dispatch = useDispatch();
-  const { open, onClose, id, listId } = props;
+  const { open, onClose, id, listId, orderStatus } = props;
   const handleSubmit = () => {
     if (listId.length !== 0) {
       listId.forEach((element) => {
-        dispatch(deleteOrder(element.od_orderid));
+        if (
+          element.order_statusid === 0 ||
+          element.order_statusid === 10
+        ) {
+          dispatch(deleteOrder(element.od_orderid));
+        } 
       });
     } else {
-      dispatch(deleteOrder(id));
+      if (orderStatus === 0 || orderStatus === 10){
+        dispatch(deleteOrder(id));
+      } else {
+        enqueueSnackbar("Không thể xoá đơn hàng này", {
+          variant: "error",
+          autoHideDuration: 2000,
+        });
+        onClose();
+        return false;
+      }
     }
-    enqueueSnackbar("Xoá sản phẩm thành công", {
+    enqueueSnackbar("Xoá đơn hàng thành công", {
       variant: "success",
       autoHideDuration: 2000,
     });

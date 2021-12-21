@@ -60,12 +60,12 @@ export default function AdminStaff() {
   }, []);
 
   const [nv, setNv] = useState([]);
+  const [tn, setTn] = useState([]);
   const [qt, setQt] = useState([]);
 
   useEffect(() => {
-   
     setNv(staffData.filter((item) => item.user_typeid === "NV"));
-  
+    setTn(staffData.filter((item) => item.user_typeid === "TN"));
     setQt(staffData.filter((item) => item.user_typeid === "AD"));
     setLoadingState(false);
   }, [staffData]);
@@ -111,6 +111,14 @@ export default function AdminStaff() {
                         }
                         value="1"
                       />
+                      <MyTab
+                        label={
+                          <MyBadge badgeContent={tn.length} color="primary">
+                            Thu ngân
+                          </MyBadge>
+                        }
+                        value="2"
+                      />
 
                       <MyTab
                         label={
@@ -118,7 +126,7 @@ export default function AdminStaff() {
                             Quản trị
                           </MyBadge>
                         }
-                        value="2"
+                        value="3"
                       />
                     </TabList>
                   </Box>
@@ -132,6 +140,9 @@ export default function AdminStaff() {
                 <Data data={nv} startD={startD} endD={endD} isNv />
               </TabPanel>
               <TabPanel value="2" sx={{ padding: 0 }}>
+                <Data data={tn} startD={startD} endD={endD} isNv />
+              </TabPanel>
+              <TabPanel value="3" sx={{ padding: 0 }}>
                 <Data data={qt} startD={startD} endD={endD} />
               </TabPanel>
             </Grid>

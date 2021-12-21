@@ -1233,11 +1233,11 @@ router.post("/admin/users/add", async function (req, res) {
               console.log(err);
             }
           });
-         if (user_typeid === "NV") {
-           pool.query(`INSERT INTO user_permissions(
+          if (user_typeid === "NV") {
+            pool.query(`INSERT INTO user_permissions(
    up_userid, up_eccommercedashboard, up_sewingstatus, up_customeraccountmanager, up_staffaccountmanager, up_productmanager, up_clothmanager, up_ordermanager, up_log, up_loyaltyprogram, up_giftvoucher, up_setting)
 	VALUES ('${id}', 'false', 'false', 'false', 'false', 'false', 'false', 'true', 'false', 'false', 'false', 'false')`);
-         }    
+          }
           pool.query(
             `SELECT users.id, users.user_typeid, users.user_username, users.user_password, users.user_firstname, users.user_lastname, CONCAT(user_address, ', ', ward.ward_prefix, ' ', ward.ward_name, ', ', district.district_prefix, ' ', district.district_name, ', ', province.province_name) AS user_address, users.user_tel, users.user_status, users.user_date, users.user_avatar, users.user_email, ward.ward_prefix, ward.ward_name, ward.ward_districtid, district.district_prefix, district.district_name, ward.ward_provinceid, province.province_name FROM users
 LEFT JOIN ward ON ward.id = users.user_wardid
@@ -1278,11 +1278,11 @@ WHERE users.id = '${id}'`,
           res.send({ msg: "ERROR" });
         } else {
           id = response.rows[0].id;
-          if (user_typeid === "NV"){
+          if (user_typeid === "NV") {
             pool.query(`INSERT INTO user_permissions(
    up_userid, up_eccommercedashboard, up_sewingstatus, up_customeraccountmanager, up_staffaccountmanager, up_productmanager, up_clothmanager, up_ordermanager, up_log, up_loyaltyprogram, up_giftvoucher, up_setting)
 	VALUES ('${id}', 'false', 'false', 'false', 'false', 'false', 'false', 'true', 'false', 'false', 'false', 'false')`);
-          }    
+          }
           pool.query(
             `SELECT users.id, users.user_typeid, users.user_username, users.user_password, users.user_firstname, users.user_lastname, CONCAT(user_address, ', ', ward.ward_prefix, ' ', ward.ward_name, ', ', district.district_prefix, ' ', district.district_name, ', ', province.province_name) AS user_address, users.user_tel, users.user_status, users.user_date, users.user_avatar, users.user_email, ward.ward_prefix, ward.ward_name, ward.ward_districtid, district.district_prefix, district.district_name, ward.ward_provinceid, province.province_name FROM users
 LEFT JOIN ward ON ward.id = users.user_wardid
@@ -1603,7 +1603,8 @@ router.post("/admin/users/editUserInfo", function (req, res) {
 });
 
 router.post("/getOrderData", function (req, res) {
-  const { id, provinceId, districtId, wardId, startDate, endDate, orderID } = req.body;
+  const { id, provinceId, districtId, wardId, startDate, endDate, orderID } =
+    req.body;
   console.log(id, provinceId, districtId, wardId, startDate, endDate);
   var string = "";
   if (provinceId !== 0) {
@@ -1620,10 +1621,10 @@ router.post("/getOrderData", function (req, res) {
   if (orderID) {
     orderIDString = `AND orders.id = '${orderID}'`;
   }
-  if(startDate){
+  if (startDate) {
     dateString = `AND orders.order_startdate BETWEEN '${startDate}' AND '${endDate}'`;
   } else {
-    console.log("khong co startdate")
+    console.log("khong co startdate");
   }
   console.log(string);
   console.log(`orders.order_startdate BETWEEN '${startDate}' AND '${endDate}'`);
@@ -2009,7 +2010,7 @@ router.post("/admin/order/processing", async function (req, res) {
       rejectUnauthorized: false,
     },
   });
-  
+
   if (order_statusid === 1) {
     console.log("đợi thợ may");
     console.log(order_statusid, order_tailorid, date, od_orderid);
@@ -2315,19 +2316,31 @@ router.post("/admin/order/processing", async function (req, res) {
       }
     );
   }
-
 });
 
 router.get("/admin/order/delete.:id", function (req, res) {
   const { id } = req.params;
-  console.log(id);
-  // pool.query(`DELETE FROM measurements WHERE id='${id}'`, (error, response) => {
-  //   if (error) {
-  //     console.log(error);
-  //   } else {
-  //     console.log("Xoá thành công sản phẩm có id là: ", id);
-  //   }
-  // });
+  pool.query(
+    `DELETE FROM order_details
+WHERE od_orderid = '${id}'`,
+    (error, response) => {
+      if (error) {
+        console.log(error);
+      } else {
+        pool.query(
+          `DELETE FROM orders
+      WHERE id = '${id}'`,
+          (error, response) => {
+            if (error) {
+              console.log(error);
+            } else {
+              console.log("Xoá thành công đơn hàng có id là: ", id);
+            }
+          }
+        );
+      }
+    }
+  );
 });
 
 router.get(`/getProvince`, function (req, res) {
@@ -2651,7 +2664,9 @@ ${string2}`,
 router.get(`/getUserPermissions.:id`, function (req, res) {
   const { id } = req.params;
   pool.query(
-    `SELECT * FROM user_permissions WHERE up_userid = '${id}'`,
+    `SELECT users.user_typeid, user_permissions.* FROM user_permissions 
+INNER JOIN users ON users.id = user_permissions.up_userid 
+WHERE up_userid = '${id}'`,
     (error, response) => {
       if (error) {
         console.log(error);
@@ -2677,7 +2692,13 @@ router.post(`/editUserPermissions`, function (req, res) {
     up_giftvoucher,
     up_setting,
   } = req.body;
-  console.log(up_sewingstatus,up_log, up_loyaltyprogram, up_giftvoucher, up_setting);
+  console.log(
+    up_sewingstatus,
+    up_log,
+    up_loyaltyprogram,
+    up_giftvoucher,
+    up_setting
+  );
   pool.query(
     `UPDATE user_permissions
 	SET up_eccommercedashboard='${up_eccommercedashboard}', up_sewingstatus='${up_sewingstatus}', up_customeraccountmanager='${up_customeraccountmanager}', up_staffaccountmanager='${up_staffaccountmanager}', up_productmanager='${up_productmanager}', up_clothmanager='${up_clothmanager}', up_ordermanager='${up_ordermanager}', up_log='${up_log}', up_loyaltyprogram='${up_loyaltyprogram}', up_giftvoucher='${up_giftvoucher}', up_setting='${up_setting}'
@@ -3049,17 +3070,19 @@ router.get(`/admin/emailConfig/getData`, function (req, res) {
 
 router.post(`/admin/emailConfig/update`, function (req, res) {
   const { email, password } = req.body;
-  pool.query(`UPDATE email
+  pool.query(
+    `UPDATE email
 	SET e_email='${email}', e_password='${password}'
-	WHERE id='1'`, 
-  (error, response) => {
-    if(error){
-      console.log(error)
-       res.send("ERROR");
-    } else {
-      res.send("OK")
+	WHERE id='1'`,
+    (error, response) => {
+      if (error) {
+        console.log(error);
+        res.send("ERROR");
+      } else {
+        res.send("OK");
+      }
     }
-  });
+  );
 });
 
 router.get(`/getOrderHaveCloth.:id`, function (req, res) {

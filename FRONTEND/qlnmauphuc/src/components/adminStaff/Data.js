@@ -337,8 +337,8 @@ export default function Data(props) {
           );
         } else {
           return (
-            <MyButton variant="outlined" color="success" fullWidth>
-              Khách hàng
+            <MyButton variant="outlined" color="warning" fullWidth>
+              Thu ngân
             </MyButton>
           );
         }
@@ -865,7 +865,7 @@ export default function Data(props) {
                           <TableCell align="left">
                             {row.user_typeid === "NV"
                               ? "Nhân viên"
-                              : "Quản trị viên"}
+                              : row.user_typeid === "TN" ? "Thu ngân" : "Quản trị viên"}
                           </TableCell>
                           <TableCell align="center">
                             {formatDate(row.user_date)}

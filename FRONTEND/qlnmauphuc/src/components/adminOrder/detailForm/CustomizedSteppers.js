@@ -15,7 +15,7 @@ import FactCheckOutlinedIcon from "@mui/icons-material/FactCheckOutlined";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import AlarmIcon from "@mui/icons-material/Alarm";
 import AlarmOnIcon from "@mui/icons-material/AlarmOn";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { processingOrder } from "../../../redux/Action";
 import { format } from "date-fns";
 import { useSnackbar } from "notistack";
@@ -114,6 +114,9 @@ export default function CustomizedSteppers(props) {
   const [skipped, setSkipped] = useState(new Set());
   const { enqueueSnackbar } = useSnackbar();
   const { activeId, id, data, handlePrint, userid } = props;
+  const users = useSelector((state) => state.users);
+  const { loadingPermissions, permissionData } = users;
+
   useEffect(() => {
     setActiveStep(activeId);
   }, [activeId]);
@@ -276,6 +279,49 @@ export default function CustomizedSteppers(props) {
     },
   ];
 
+  const renderButton = () => {
+    console.log("tailorid", data.order_tailorid);
+    console.log("tailorid", permissionData[0].up_userid);
+    console.log(data.order_tailorid === permissionData[0].up_userid);
+    if (
+      permissionData[0].user_typeid === "NV"   
+    ) {
+      if (
+        data.order_tailorid === permissionData[0].up_userid &&
+        (activeStep === 2 ||
+        activeStep === 3)
+      ) {
+        return (
+          <Button onClick={handleNext}>
+            {activeStep === steps.length - 1 ? "Finish" : "Tiếp theo"}
+          </Button>
+        );
+      } else {
+        return null;
+      }     
+    } else if (permissionData[0].user_typeid === "TN") {
+      if (
+        activeStep === 0 ||
+        activeStep === 1 ||
+        activeStep === 4 ||
+        activeStep === 5
+      ) {
+        return (
+          <Button onClick={handleNext} disabled={activeStep === 1}>
+            {activeStep === steps.length - 1 ? "Finish" : "Tiếp theo"}
+          </Button>
+        );
+      } else {
+        return null;
+      }   
+    } else {
+      return (
+        <Button onClick={handleNext} disabled={activeStep === 1}>
+          {activeStep === steps.length - 1 ? "Finish" : "Tiếp theo"}
+        </Button>
+      );
+    }
+  }
   return (
     <Stack sx={{ width: "100%" }} spacing={4}>
       <Stepper
@@ -306,7 +352,7 @@ export default function CustomizedSteppers(props) {
             color="primary"
             onClick={() => handlePrint()}
           >
-            <PrintIcon/>
+            <PrintIcon />
           </Button>
         </Grid>
         {activeStep === steps.length - 1 ? (
@@ -331,10 +377,10 @@ export default function CustomizedSteppers(props) {
               >
                 Back
               </Button> */}
-
-              <Button onClick={handleNext} disabled={activeStep === 1}>
+              {renderButton()}
+              {/* <Button onClick={handleNext} disabled={activeStep === 1}>
                 {activeStep === steps.length - 1 ? "Finish" : "Tiếp theo"}
-              </Button>
+              </Button> */}
             </ButtonGroup>
           </Grid>
         )}

@@ -101,7 +101,8 @@ function DetailForm(props) {
   const dispatch = useDispatch();
   const { enqueueSnackbar } = useSnackbar();
   const { onClose, id, userid } = props;
-
+  const users = useSelector((state) => state.users);
+  const { loadingPermissions, permissionData } = users;
   const [isEdit, setIsEdit] = useState(true);
 
   const order = useSelector((state) => state.order);
@@ -109,7 +110,6 @@ function DetailForm(props) {
   useEffect(() => {
     dispatch(getDetailOrder(id));
   }, [id]);
-  const users = useSelector((state) => state.users);
   const { loading, userData } = users;
 
   useEffect(() => {
@@ -309,7 +309,7 @@ function DetailForm(props) {
       <Grid container sx={{ mt: 1 }}>
         <Grid item xs={12}>
           <SpanButton>Thông tin người may</SpanButton>
-          {detailData[0].order_statusid === 1 ? (
+          {detailData[0].order_statusid === 1 && permissionData[0].user_typeid !== "NV" ? (
             isEdit ? (
               <IconButton size="small" onClick={setEdit} color="primary">
                 <EditIcon />
@@ -630,7 +630,7 @@ function DetailForm(props) {
       maxWidth="lg"
     >
       <Grid container className={classes.root}>
-        {loading || loadingDetail ? (
+        {loading || loadingDetail || loadingPermissions ? (
           <Grid
             item
             xs={12}
@@ -721,7 +721,8 @@ function DetailForm(props) {
                       Ngày in: {format(now, "dd/MM/yyyy HH:mm:ss")}
                     </Typography>
                     <Typography>
-                      Ngày hẹn trả (dự kiến): {format(
+                      Ngày hẹn trả (dự kiến):{" "}
+                      {format(
                         new Date(detailData[0].order_enddate),
                         "dd/MM/yyyy"
                       )}

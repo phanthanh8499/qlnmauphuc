@@ -50,6 +50,7 @@ import {
 } from "../utility/DataGridTheme";
 import { useReactToPrint } from "react-to-print";
 import { INFO } from "../../constants/Constants";
+import { useSelector } from "react-redux";
 
 function CustomToolbar() {
   return (
@@ -79,6 +80,8 @@ export default function Data(props) {
   const { data, startD, endD } = props;
   const [dataRender, setDataRender] = useState([]);
   const [loading, setLoading] = useState(true);
+  const users = useSelector((state) => state.users);
+  const { loadingPermissions, permissionData } = users;
 
   useEffect(() => {
     setDataRender(data);
@@ -204,6 +207,7 @@ export default function Data(props) {
           id={orderId}
           listId={orderIdList}
           userid={userInfo.id}
+          orderStatus={orderStatus}
         ></DeleteForm>
       );
     }
@@ -220,6 +224,7 @@ export default function Data(props) {
     }
   };
 
+  const [orderStatus, setOrderStatus] = useState();
   const columns = [
     { field: "od_orderid", headerName: "Mã đơn hàng", width: 350 },
     { field: "product_name", headerName: "Tên sản phẩm", width: 400 },
@@ -316,6 +321,9 @@ export default function Data(props) {
           setOrderId(
             dataRender.filter((item) => item.id === params.value)[0].od_orderid
           );
+          setOrderStatus(
+            dataRender.filter((item) => item.id === params.value)[0].order_statusid
+          );
         };
 
         return (
@@ -323,9 +331,11 @@ export default function Data(props) {
             <IconButton onClick={handleClickEdit} size="large">
               <VisibilityIcon />
             </IconButton>
-            <IconButton onClick={handleClickDelete} size="large">
-              <DeleteOutlineIcon color="error" />
-            </IconButton>
+            {permissionData[0].user_typeid === "NV" ? null : (
+              <IconButton onClick={handleClickDelete} size="large">
+                <DeleteOutlineIcon color="error" />
+              </IconButton>
+            )}
           </ButtonGroup>
         );
       },
@@ -437,7 +447,7 @@ export default function Data(props) {
 
   return (
     <Grid container>
-      {loading ? (
+      {loading || loadingPermissions ? (
         <Grid
           item
           xs={12}
@@ -569,7 +579,10 @@ export default function Data(props) {
                     Báo cáo kết quả thống kê đơn hàng
                   </Typography>
                   <Typography sx={{ fontSize: 14, fontStyle: "italic" }}>
-                    {`(Từ ngày: ${format(startD, "dd-MM-yyyy")} --- Đến ngày: ${format(endD, "dd-MM-yyyy")})`}
+                    {`(Từ ngày: ${format(
+                      startD,
+                      "dd-MM-yyyy"
+                    )} --- Đến ngày: ${format(endD, "dd-MM-yyyy")})`}
                   </Typography>
                 </Grid>
               </Grid>
@@ -592,9 +605,7 @@ export default function Data(props) {
                     {dataRender.map((row, key) => {
                       return (
                         <TableRow key={row.name}>
-                          <TableCell >
-                            {key+1}
-                          </TableCell>
+                          <TableCell>{key + 1}</TableCell>
                           <TableCell component="th" scope="row">
                             {row.od_orderid}
                           </TableCell>

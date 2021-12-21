@@ -253,9 +253,10 @@ export const editOrder = (dataReq) => async (dispatch) => {
   dispatch({ type: CHINH_SUA_THONG_TIN_DON_HANG, payload: data, msg: data });
 };
 
-export const deleteOrder = (data) => async (dispatch) => {
-  dispatch({ type: XOA_DON_HANG, payload: data });
-  // await Axios.get(`/admin/Order/delete.${data}`);
+export const deleteOrder = (dataReq) => async (dispatch) => {
+  console.log("id xoa", dataReq);
+  Axios.get(`/admin/Order/delete.${dataReq}`);
+  dispatch({ type: XOA_DON_HANG, payload: dataReq });
 };
 
 export const cancelOrder = (data) => async (dispatch) => {

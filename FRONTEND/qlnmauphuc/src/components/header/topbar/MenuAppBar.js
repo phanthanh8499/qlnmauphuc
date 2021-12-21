@@ -122,6 +122,14 @@ export default function MenuAppBar() {
                   </Link>
                 </MenuItem>
               </>
+            ) : userInfo.user_typeid === "TN" ? (
+              <>
+                <MenuItem onClick={handleClose}>
+                  <Link to="/admin/orders" target="_blank">
+                    Trang quản trị
+                  </Link>
+                </MenuItem>
+              </>
             ) : userInfo ? (
               <>
                 <MenuItem onClick={handleClose}>
