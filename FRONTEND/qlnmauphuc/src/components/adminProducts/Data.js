@@ -658,7 +658,7 @@ export default function Data(props) {
                   <Typography sx={{ fontWeight: 600 }}>{INFO.name}</Typography>
                 </Grid>
                 <Grid item xs={6} sx={{ textAlign: "right" }}>
-                  <Typography sx={{ fontWeight: 600 }}>Mẫu in: B116</Typography>
+                  <Typography sx={{ fontWeight: 600 }}>Mẫu in: B112</Typography>
                   <Typography sx={{ fontWeight: 600 }}>
                     Ngày in: {format(now, "dd/MM/yyyy")}
                   </Typography>

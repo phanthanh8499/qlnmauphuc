@@ -54,7 +54,7 @@ import {
   useStylesAntDesign,
 } from "../utility/DataGridTheme";
 import { useReactToPrint } from "react-to-print";
-import { getTailorsData } from "../../redux/Action";
+import { getTailorsData, setDateData } from "../../redux/Action";
 
 const useStyles = makeStyles((theme) => ({
   topBar: {
@@ -101,7 +101,7 @@ export default function TailorsData(props) {
 
 
   const orderReport = useSelector((state) => state.orderReport);
-  const { loadingTD, tailorsData } = orderReport;
+  const { loadingTD, loadingD, tailorsData, dateData } = orderReport;
   const [startD, setStartD] = useState(new Date())
   const [endD, setEndD] = useState(new Date())
   useEffect(() => {
@@ -125,6 +125,9 @@ export default function TailorsData(props) {
     };
     setStartDate(startDate);
     setEndDate(endDate);
+    dispatch(
+      setDateData({ startDate: startDate, endDate: endDate })
+    );
     dispatch(getTailorsData(dataSend));
   }, []);
 
@@ -550,7 +553,7 @@ export default function TailorsData(props) {
 
   return (
     <Grid container>
-      {loadingTD || loading ? (
+      {loadingTD || loadingD || loading ? (
         <Grid
           item
           xs={12}
@@ -651,13 +654,10 @@ export default function TailorsData(props) {
                   <Typography variant="h5">
                     Báo cáo tình trạng may của nhân viên
                   </Typography>
-                  {/* <Typography sx={{ fontSize: 14, fontStyle: "italic" }}>
-                    (Từ ngày: {format(
-                          startDate,
-                          "dd-MM-yyyy"
-                        )} --- Đến ngày: 
-                    {format(endDate, "dd-MM-yyyy")})
-                  </Typography> */}
+                  <Typography sx={{ fontSize: 14, fontStyle: "italic" }}>
+                    (Từ ngày: {format(dateData.startDate, "dd/MM/yyyy")} ---
+                    Đến ngày: {format(dateData.endDate, "dd/MM/yyyy")})
+                  </Typography>
                 </Grid>
               </Grid>
               <TableContainer>
@@ -668,9 +668,7 @@ export default function TailorsData(props) {
                       <TableCell align="center">UserName</TableCell>
                       <TableCell align="center">Họ</TableCell>
                       <TableCell align="center">Tên</TableCell>
-                      <TableCell align="center">
-                        Chỉ tiêu may
-                      </TableCell>
+                      <TableCell align="center">Chỉ tiêu may</TableCell>
                       <TableCell align="center">Đang may</TableCell>
                       <TableCell align="center">Hoàn thành</TableCell>
                       <TableCell align="center">Đạt chỉ tiêu</TableCell>
@@ -705,9 +703,7 @@ export default function TailorsData(props) {
                             {row.complete_order}
                           </TableCell>
                           <TableCell align="left">
-                            {row.is_complete === "true"
-                              ? "Đạt"
-                              : "Không đạt"}
+                            {row.is_complete === true ? "Đạt" : "Không đạt"}
                           </TableCell>
                         </TableRow>
                       );

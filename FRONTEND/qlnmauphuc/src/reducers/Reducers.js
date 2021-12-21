@@ -61,6 +61,7 @@ import {
   BAO_CAO_TIEN_DO_MAY,
   LIET_KE_MA_GIAM_GIA,
   THEM_MA_GIAM_GIA,
+  BAO_CAO_NGAY,
 } from "../constants/Constants";
 
 export const dangNhapReducer = (state = { loading: true }, action) => {
@@ -543,10 +544,12 @@ export const orderReportReducer = (
     loadingPC: true,
     loadingSC: true,
     loadingTD: true,
+    loadingD: true,
     dataCount: [],
     dataStackChart: [],
     dataPieChart: [],
     tailorsData: [],
+    dateData: [],
   },
   action
 ) => {
@@ -559,6 +562,8 @@ export const orderReportReducer = (
       return { ...state, loadingSC: false, dataStackChart: action.payload };
     case BAO_CAO_TIEN_DO_MAY:
       return { ...state, loadingTD: false, tailorsData: action.payload };
+    case BAO_CAO_NGAY:
+      return { ...state, loadingD: false, dateData: action.payload };
     case LIET_KE_VAI:
       const data = action.payload.sort(function (a, b) {
         return a.id - b.id;

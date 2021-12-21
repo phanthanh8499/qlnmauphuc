@@ -710,7 +710,7 @@ export default function Data(props) {
                 </Grid>
                 <Grid item xs={12} sx={{ textAlign: "center" }}>
                   <Typography variant="h5">
-                    Kết quả thống kê tài khoản thân thiết
+                    Kết quả thống kê tài khoản khách hàng thân thiết
                   </Typography>
                   <Typography sx={{ fontSize: 14, fontStyle: "italic" }}>
                     {count === 0

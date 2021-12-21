@@ -59,6 +59,7 @@ import {
   BAO_CAO_TIEN_DO_MAY,
   LIET_KE_MA_GIAM_GIA,
   THEM_MA_GIAM_GIA,
+  BAO_CAO_NGAY,
 } from "../constants/Constants";
 
 export const dangNhapKhangHang = (username, password) => async (dispatch) => {
@@ -303,11 +304,16 @@ export const getOrderReportStackChart =
     }
     dispatch({ type: BAO_CAO_TIEN_DO_HOA_DON, payload: temp });
   };
-  export const getTailorsData =
+
+export const getTailorsData =
   (dataReq) => async (dispatch) => {
     const { data } = await Axios.post(`/admin/getTailorsData`, dataReq);
     dispatch({ type: BAO_CAO_TIEN_DO_MAY, payload: data });
   };
+
+export const setDateData = (data) =>  (dispatch) => {
+    dispatch({ type: BAO_CAO_NGAY, payload: data });
+};
 
 // ================== BAO CAO THUONG MAI ============================
 export const getEcommerceReportCountData = (dataReq) => async (dispatch) => {
