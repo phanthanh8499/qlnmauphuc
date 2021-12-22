@@ -120,14 +120,14 @@ export default function AdminStaff() {
                         value="2"
                       />
 
-                      <MyTab
+                      {/* <MyTab
                         label={
                           <MyBadge badgeContent={qt.length} color="primary">
                             Quản trị
                           </MyBadge>
                         }
                         value="3"
-                      />
+                      /> */}
                     </TabList>
                   </Box>
                 </Grid>

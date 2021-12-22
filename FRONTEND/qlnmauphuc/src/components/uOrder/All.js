@@ -137,11 +137,19 @@ export default function All(props) {
       ).map((value, key) => (
         <Grid container className={classes.root} key={key}>
           <Grid item xs={1} sx={center}>
-            <img
-              className={classes.img}
-              src={LOCAL_PATH + value.product_image1.substring(2)}
-              alt={value.product_name}
-            ></img>
+            {value.product_image1 ? (
+              <img
+                className={classes.img}
+                src={LOCAL_PATH + value.product_image1.substring(2)}
+                alt={value.product_name}
+              ></img>
+            ) : (
+              <img
+                className={classes.img}
+                src={LOCAL_PATH}
+                alt={value.product_name}
+              ></img>
+            )}
           </Grid>
           <Grid item xs={9}>
             <Grid container>
@@ -157,10 +165,10 @@ export default function All(props) {
                 </Typography>
                 <Typography className={classes.subTitle}>
                   Tổng tiền:{" "}
-                  {value.order_total.toLocaleString("it-IT", {
+                  {value.order_total ? value.order_total.toLocaleString("it-IT", {
                     style: "currency",
                     currency: "VND",
-                  })}
+                  }) : null}
                 </Typography>
               </Grid>
               <Grid item xs={4}>

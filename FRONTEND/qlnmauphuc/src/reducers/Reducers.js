@@ -62,6 +62,7 @@ import {
   LIET_KE_MA_GIAM_GIA,
   THEM_MA_GIAM_GIA,
   BAO_CAO_NGAY,
+  THAY_DOI_QUYEN,
 } from "../constants/Constants";
 
 export const dangNhapReducer = (state = { loading: true }, action) => {
@@ -216,6 +217,29 @@ export const userReducer = (
           if (item.id === parseInt(action.payload.id)) {
             item = action.payload;
             item.id = parseInt(action.payload.id);
+            return item;
+          } else {
+            return item;
+          }
+        }),
+      };
+    case THAY_DOI_QUYEN:
+      return {
+        ...state,
+        staffData: state.staffData.map((item) => {
+          if (item.id === parseInt(action.payload.up_userid)) {
+            item.id = parseInt(action.payload.up_userid);
+            item.up_eccommercedashboard = action.payload.up_eccommercedashboard;
+            item.up_sewingstatus = action.payload.up_sewingstatus;
+            item.up_customeraccountmanager = action.payload.up_customeraccountmanager;
+            item.up_staffaccountmanager = action.payload.up_staffaccountmanager;
+            item.up_productmanager = action.payload.up_productmanager;
+            item.up_clothmanager = action.payload.up_clothmanager;
+            item.up_ordermanager = action.payload.up_ordermanager;
+            item.up_log = action.payload.up_log;
+            item.up_loyaltyprogram = action.payload.up_loyaltyprogram;
+            item.up_giftvoucher = action.payload.up_giftvoucher;
+            item.up_setting = action.payload.up_setting;
             return item;
           } else {
             return item;

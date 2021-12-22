@@ -59,6 +59,8 @@ import {
   useStylesAntDesign,
 } from "../utility/DataGridTheme";
 import { useReactToPrint } from "react-to-print";
+import ChangeCircleIcon from '@mui/icons-material/ChangeCircle';
+import CheckIcon from "@mui/icons-material/Check";
 
 const useStyles = makeStyles((theme) => ({
   topBar: {
@@ -81,7 +83,7 @@ export default function Data(props) {
   const [dataRender, setDataRender] = useState();
   const { data, isNv, startD, endD } = props;
   const [loading, setLoading] = useState(true);
-
+  const [show, setShow] = useState(true);
   const [province, setProvince] = useState(0);
   const [district, setDistrict] = useState(0);
   const [ward, setWard] = useState(0);
@@ -394,6 +396,209 @@ export default function Data(props) {
     },
   ];
 
+  const columns2 = [
+    {
+      field: "user_avatar",
+      headerName: "Avatar",
+      width: 100,
+      renderCell: (params) => {
+        return <Avatar src={LOCAL_PATH + params.value.substring(2)} />;
+      },
+    },
+    { field: "user_username", headerName: "UserName", width: 100 },
+    {
+      field: "user_status",
+      headerName: "Trạng thái",
+      width: 150,
+      renderCell: (params) => {
+        if (params.value === "active") {
+          return (
+            <MyButton variant="outlined" color="primary" fullWidth>
+              Hoạt động
+            </MyButton>
+          );
+        } else {
+          return (
+            <MyButton variant="outlined" color="error" fullWidth>
+              Bi khoá
+            </MyButton>
+          );
+        }
+      },
+    },
+    {
+      field: "user_typeid",
+      headerName: "Loại người dùng",
+      width: 150,
+      renderCell: (params) => {
+        if (params.value === "AD") {
+          return (
+            <MyButton variant="outlined" color="primary" fullWidth>
+              Admin
+            </MyButton>
+          );
+        }
+        if (params.value === "NV") {
+          return (
+            <MyButton variant="outlined" color="secondary" fullWidth>
+              Nhân viên
+            </MyButton>
+          );
+        } else {
+          return (
+            <MyButton variant="outlined" color="warning" fullWidth>
+              Thu ngân
+            </MyButton>
+          );
+        }
+      },
+    },
+    {
+      field: "up_eccommercedashboard",
+      headerName: "BĐK - Thương mại",
+      width: 180,
+      align: "center",
+      renderCell: (params) => {
+        if (params.value === true) {
+          return <CheckIcon color="primary" />;
+        } else return <div></div>;
+      },
+    },
+    {
+      field: "up_sewingstatus",
+      headerName: "BĐK - Tình trạng may",
+      width: 180,
+      align: "center",
+      renderCell: (params) => {
+        if (params.value === true) {
+          return <CheckIcon color="primary" />;
+        } else return <div></div>;
+      },
+    },
+    {
+      field: "up_customeraccountmanager",
+      headerName: "Quản lý TK khách hàng",
+      width: 180,
+      align: "center",
+      renderCell: (params) => {
+        if (params.value === true) {
+          return <CheckIcon color="primary" />;
+        } else return <div></div>;
+      },
+    },
+    {
+      field: "up_staffaccountmanager",
+      headerName: "Quản lý TK nhân viên",
+      width: 180,
+      align: "center",
+      renderCell: (params) => {
+        if (params.value === true) {
+          return <CheckIcon color="primary" />;
+        } else return <div></div>;
+      },
+    },
+    {
+      field: "up_productmanager",
+      headerName: "Quản lý sản phẩm",
+      width: 180,
+      align: "center",
+      renderCell: (params) => {
+        if (params.value === true) {
+          return <CheckIcon color="primary" />;
+        } else return <div></div>;
+      },
+    },
+    {
+      field: "up_clothmanager",
+      headerName: "Quản lý vải",
+      width: 180,
+      align: "center",
+      renderCell: (params) => {
+        if (params.value === true) {
+          return <CheckIcon color="primary" />;
+        } else return <div></div>;
+      },
+    },
+    {
+      field: "up_ordermanager",
+      headerName: "Quản lý đơn hàng",
+      width: 180,
+      align: "center",
+      renderCell: (params) => {
+        if (params.value === true) {
+          return <CheckIcon color="primary" />;
+        } else return <div></div>;
+      },
+    },
+    {
+      field: "up_giftvoucher",
+      headerName: "Mã giảm giá",
+      width: 180,
+      align: "center",
+      renderCell: (params) => {
+        if (params.value === true) {
+          return <CheckIcon color="primary" />;
+        } else return <div></div>;
+      },
+    },
+    {
+      field: "up_loyaltyprogram",
+      headerName: "Khách hàng thân thiết",
+      width: 180,
+      align: "center",
+      renderCell: (params) => {
+        if (params.value === true) {
+          return <CheckIcon color="primary" />;
+        } else return <div></div>;
+      },
+    },
+    {
+      field: "up_log",
+      headerName: "Nhật ký hoạt động",
+      width: 180,
+      align: "center",
+      renderCell: (params) => {
+        if (params.value === true) {
+          return <CheckIcon color="primary" />;
+        } else return <div></div>;
+      },
+    },
+    {
+      field: "up_setting",
+      headerName: "Cấu hình",
+      width: 180,
+      align: "center",
+      renderCell: (params) => {
+        if (params.value === true) {
+          return <CheckIcon color="primary" />;
+        } else return <div></div>;
+      },
+    },
+    {
+      field: "id",
+      headerName: "Hành động",
+      sortable: false,
+      width: isNv ? 160 : 110,
+      disableClickEventBubbling: true,
+      renderCell: (params) => {
+        const handleClickPermission = () => {
+          openPermissionForm();
+          setUserId(params.value);
+        };
+
+        return (
+          <ButtonGroup>
+            {isNv ? (
+              <IconButton onClick={handleClickPermission} size="large">
+                <SettingsIcon color="secondary" />
+              </IconButton>
+            ) : null}
+          </ButtonGroup>
+        );
+      },
+    },
+  ];
+
   const exportFile = () => {
     var list = [];
     for (let i = 0; i < dataRender.length; i++) {
@@ -663,7 +868,7 @@ export default function Data(props) {
                         variant="outlined"
                         color="primary"
                         onClick={handleClickSearch}
-                        sx={{ backgroundColor: '#ffffff'}}
+                        sx={{ backgroundColor: "#ffffff" }}
                       >
                         Tìm kiếm
                       </Button>
@@ -732,6 +937,14 @@ export default function Data(props) {
                     Xoá
                   </MenuItem>
                 </StyledMenu>
+                <Button
+                  variant="outlined"
+                  color="primary"
+                  onClick={() => setShow(!show)}
+                  sx={{ ml: 0.5 }}
+                >
+                  <ChangeCircleIcon sx={{ mr: 0.5 }} /> Đổi danh sách
+                </Button>
               </Grid>
               <Grid item xs={3}>
                 <Search>
@@ -758,7 +971,7 @@ export default function Data(props) {
           >
             <DataGrid
               rows={rows}
-              columns={columns}
+              columns={show ? columns : columns2}
               pageSize={5}
               className={antDesignClasses.root}
               checkboxSelection
@@ -865,7 +1078,9 @@ export default function Data(props) {
                           <TableCell align="left">
                             {row.user_typeid === "NV"
                               ? "Nhân viên"
-                              : row.user_typeid === "TN" ? "Thu ngân" : "Quản trị viên"}
+                              : row.user_typeid === "TN"
+                              ? "Thu ngân"
+                              : "Quản trị viên"}
                           </TableCell>
                           <TableCell align="center">
                             {formatDate(row.user_date)}

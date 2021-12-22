@@ -14,6 +14,8 @@ import React, { useEffect, useState } from "react";
 import { useSnackbar } from "notistack";
 import makeStyles from "@mui/styles/makeStyles";
 import axios from "axios";
+import { useDispatch } from "react-redux";
+import { THAY_DOI_QUYEN } from "../../../constants/Constants";
 
 const useStyle = makeStyles((theme) => ({
   root: {
@@ -44,7 +46,7 @@ function PermissionForm(props) {
   const classes = useStyle();
   const { enqueueSnackbar } = useSnackbar();
   const { open, onClose, id, listId } = props;
-
+  const dispatch = useDispatch();
   const handleSubmit = async () => {
     const dataSend = {
       up_userid: id,
@@ -72,6 +74,7 @@ function PermissionForm(props) {
           autoHideDuration: 2000,
         });
       } else {
+        dispatch({ type: THAY_DOI_QUYEN, payload: dataSend });
         enqueueSnackbar("Phân quyền thành công", {
           variant: "success",
           autoHideDuration: 2000,

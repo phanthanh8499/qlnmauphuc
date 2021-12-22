@@ -46,6 +46,8 @@ export const THAY_DOI_TRANG_THAI_USER = "THAY_DOI_TRANG_THAI_USER";
 export const THEM_USER = "THEM_USER";
 export const XOA_USER_THAT_BAI = "XOA_USER_THAT_BAI";
 
+export const THAY_DOI_QUYEN = "THAY_DOI_QUYEN";
+
 //======================== SAN PHAM =====================================
 export const YEU_CAU_LIET_KE_SP = "YEU_CAU_LIET_KE_SP";
 export const LIET_KE_SAN_PHAM = "LIET_KE_SAN_PHAM";

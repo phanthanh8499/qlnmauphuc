@@ -262,10 +262,11 @@ WHERE users.user_typeid = 'KH' AND user_isdeleted = 'false'`,
 
 router.get("/admin/users/getStaff", function (req, res) {
   pool.query(
-    `SELECT users.id, users.user_typeid, users.user_username, users.user_password, users.user_firstname, users.user_lastname, CONCAT(user_address, ', ', ward.ward_prefix, ' ', ward.ward_name, ', ', district.district_prefix, ' ', district.district_name, ', ', province.province_name) AS user_address, users.user_tel, users.user_status, users.user_date, users.user_avatar, users.user_email, ward.ward_prefix, ward.ward_name, ward.ward_districtid, district.district_prefix, district.district_name, ward.ward_provinceid, province.province_name FROM users
+    `SELECT users.id, users.user_typeid, users.user_username, users.user_password, users.user_firstname, users.user_lastname, CONCAT(user_address, ', ', ward.ward_prefix, ' ', ward.ward_name, ', ', district.district_prefix, ' ', district.district_name, ', ', province.province_name) AS user_address, users.user_tel, users.user_status, users.user_date, users.user_avatar, users.user_email, ward.ward_prefix, ward.ward_name, ward.ward_districtid, district.district_prefix, district.district_name, ward.ward_provinceid, province.province_name, up_eccommercedashboard, up_sewingstatus, up_customeraccountmanager, up_staffaccountmanager, up_productmanager, up_clothmanager, up_ordermanager, up_log, up_loyaltyprogram, up_giftvoucher, up_setting FROM users
 LEFT JOIN ward ON ward.id = users.user_wardid
 LEFT JOIN district ON district.id = ward.ward_districtid
 LEFT JOIN province ON province.id = ward.ward_provinceid
+LEFT JOIN user_permissions ON user_permissions.up_userid = users.id
 WHERE users.user_typeid != 'KH' AND user_isdeleted = 'false'`,
     (error, response) => {
       if (error) {
@@ -1234,24 +1235,49 @@ router.post("/admin/users/add", async function (req, res) {
             }
           });
           if (user_typeid === "NV") {
-            pool.query(`INSERT INTO user_permissions(
+            pool.query(
+              `INSERT INTO user_permissions(
    up_userid, up_eccommercedashboard, up_sewingstatus, up_customeraccountmanager, up_staffaccountmanager, up_productmanager, up_clothmanager, up_ordermanager, up_log, up_loyaltyprogram, up_giftvoucher, up_setting)
-	VALUES ('${id}', 'false', 'false', 'false', 'false', 'false', 'false', 'true', 'false', 'false', 'false', 'false')`);
-          }
-          pool.query(
-            `SELECT users.id, users.user_typeid, users.user_username, users.user_password, users.user_firstname, users.user_lastname, CONCAT(user_address, ', ', ward.ward_prefix, ' ', ward.ward_name, ', ', district.district_prefix, ' ', district.district_name, ', ', province.province_name) AS user_address, users.user_tel, users.user_status, users.user_date, users.user_avatar, users.user_email, ward.ward_prefix, ward.ward_name, ward.ward_districtid, district.district_prefix, district.district_name, ward.ward_provinceid, province.province_name FROM users
+	VALUES ('${id}', 'false', 'false', 'false', 'false', 'false', 'false', 'true', 'false', 'false', 'false', 'false')`,
+              (error, response) => {
+                if (error) {
+                  console.log(error);
+                } else {
+                  pool.query(
+                    `SELECT users.id, users.user_typeid, users.user_username, users.user_password, users.user_firstname, users.user_lastname, CONCAT(user_address, ', ', ward.ward_prefix, ' ', ward.ward_name, ', ', district.district_prefix, ' ', district.district_name, ', ', province.province_name) AS user_address, users.user_tel, users.user_status, users.user_date, users.user_avatar, users.user_email, ward.ward_prefix, ward.ward_name, ward.ward_districtid, district.district_prefix, district.district_name, ward.ward_provinceid, province.province_name, up_eccommercedashboard, up_sewingstatus, up_customeraccountmanager, up_staffaccountmanager, up_productmanager, up_clothmanager, up_ordermanager, up_log, up_loyaltyprogram, up_giftvoucher, up_setting FROM users
+LEFT JOIN ward ON ward.id = users.user_wardid
+LEFT JOIN district ON district.id = ward.ward_districtid
+LEFT JOIN province ON province.id = ward.ward_provinceid
+LEFT JOIN user_permissions ON user_permissions.up_userid = users.id
+WHERE users.id = '${id}'`,
+                    (error, response) => {
+                      if (error) {
+                        console.log(error);
+                      } else {
+                        res.send(response.rows[0]);
+                      }
+                    }
+                  );
+                }
+              }
+            );
+          } else {
+            pool.query(
+              `SELECT users.id, users.user_typeid, users.user_username, users.user_password, users.user_firstname, users.user_lastname, CONCAT(user_address, ', ', ward.ward_prefix, ' ', ward.ward_name, ', ', district.district_prefix, ' ', district.district_name, ', ', province.province_name) AS user_address, users.user_tel, users.user_status, users.user_date, users.user_avatar, users.user_email, ward.ward_prefix, ward.ward_name, ward.ward_districtid, district.district_prefix, district.district_name, ward.ward_provinceid, province.province_name FROM users
 LEFT JOIN ward ON ward.id = users.user_wardid
 LEFT JOIN district ON district.id = ward.ward_districtid
 LEFT JOIN province ON province.id = ward.ward_provinceid
 WHERE users.id = '${id}'`,
-            (error, response) => {
-              if (error) {
-                console.log(error);
-              } else {
-                res.send(response.rows[0]);
+              (error, response) => {
+                if (error) {
+                  console.log(error);
+                } else {
+                  res.send(response.rows[0]);
+                }
               }
-            }
-          );
+            );
+          }
+          
           pool.query(
             `INSERT INTO log(
 	log_userid, log_eventtypeid, log_date, log_description)
@@ -1279,24 +1305,48 @@ WHERE users.id = '${id}'`,
         } else {
           id = response.rows[0].id;
           if (user_typeid === "NV") {
-            pool.query(`INSERT INTO user_permissions(
+            pool.query(
+              `INSERT INTO user_permissions(
    up_userid, up_eccommercedashboard, up_sewingstatus, up_customeraccountmanager, up_staffaccountmanager, up_productmanager, up_clothmanager, up_ordermanager, up_log, up_loyaltyprogram, up_giftvoucher, up_setting)
-	VALUES ('${id}', 'false', 'false', 'false', 'false', 'false', 'false', 'true', 'false', 'false', 'false', 'false')`);
-          }
-          pool.query(
-            `SELECT users.id, users.user_typeid, users.user_username, users.user_password, users.user_firstname, users.user_lastname, CONCAT(user_address, ', ', ward.ward_prefix, ' ', ward.ward_name, ', ', district.district_prefix, ' ', district.district_name, ', ', province.province_name) AS user_address, users.user_tel, users.user_status, users.user_date, users.user_avatar, users.user_email, ward.ward_prefix, ward.ward_name, ward.ward_districtid, district.district_prefix, district.district_name, ward.ward_provinceid, province.province_name FROM users
+	VALUES ('${id}', 'false', 'false', 'false', 'false', 'false', 'false', 'true', 'false', 'false', 'false', 'false')`,
+              (error, response) => {
+                if (error) {
+                  console.log(error);
+                } else {
+                  pool.query(
+                    `SELECT users.id, users.user_typeid, users.user_username, users.user_password, users.user_firstname, users.user_lastname, CONCAT(user_address, ', ', ward.ward_prefix, ' ', ward.ward_name, ', ', district.district_prefix, ' ', district.district_name, ', ', province.province_name) AS user_address, users.user_tel, users.user_status, users.user_date, users.user_avatar, users.user_email, ward.ward_prefix, ward.ward_name, ward.ward_districtid, district.district_prefix, district.district_name, ward.ward_provinceid, province.province_name, up_eccommercedashboard, up_sewingstatus, up_customeraccountmanager, up_staffaccountmanager, up_productmanager, up_clothmanager, up_ordermanager, up_log, up_loyaltyprogram, up_giftvoucher, up_setting FROM users
+LEFT JOIN ward ON ward.id = users.user_wardid
+LEFT JOIN district ON district.id = ward.ward_districtid
+LEFT JOIN province ON province.id = ward.ward_provinceid
+LEFT JOIN user_permissions ON user_permissions.up_userid = users.id
+WHERE users.id = '${id}'`,
+                    (error, response) => {
+                      if (error) {
+                        console.log(error);
+                      } else {
+                        res.send(response.rows[0]);
+                      }
+                    }
+                  );
+                }
+              }
+            );
+          } else {
+            pool.query(
+              `SELECT users.id, users.user_typeid, users.user_username, users.user_password, users.user_firstname, users.user_lastname, CONCAT(user_address, ', ', ward.ward_prefix, ' ', ward.ward_name, ', ', district.district_prefix, ' ', district.district_name, ', ', province.province_name) AS user_address, users.user_tel, users.user_status, users.user_date, users.user_avatar, users.user_email, ward.ward_prefix, ward.ward_name, ward.ward_districtid, district.district_prefix, district.district_name, ward.ward_provinceid, province.province_name FROM users
 LEFT JOIN ward ON ward.id = users.user_wardid
 LEFT JOIN district ON district.id = ward.ward_districtid
 LEFT JOIN province ON province.id = ward.ward_provinceid
 WHERE users.id = '${id}'`,
-            (error, response) => {
-              if (error) {
-                console.log(error);
-              } else {
-                res.send(response.rows[0]);
+              (error, response) => {
+                if (error) {
+                  console.log(error);
+                } else {
+                  res.send(response.rows[0]);
+                }
               }
-            }
-          );
+            );
+          }
           pool.query(
             `INSERT INTO log(
 	log_userid, log_eventtypeid, log_date, log_description)
@@ -1372,6 +1422,17 @@ router.post("/admin/users/edit", function (req, res) {
     log_eventtypeid
   );
 
+  if (user_typeid === "NV") {
+    pool.query(`UPDATE user_permissions
+	SET up_eccommercedashboard='false', up_sewingstatus='false', up_customeraccountmanager='false', up_staffaccountmanager='false', up_productmanager='false', up_clothmanager='false', up_ordermanager='true', up_log='false', up_loyaltyprogram='false', up_giftvoucher='false', up_setting='false'
+	WHERE up_userid='${id}' `);
+  }
+  if (user_typeid === "TN") {
+    pool.query(`UPDATE user_permissions
+	SET up_eccommercedashboard='false', up_sewingstatus='true', up_customeraccountmanager='false', up_staffaccountmanager='false', up_productmanager='false', up_clothmanager='false', up_ordermanager='true', up_log='false', up_loyaltyprogram='false', up_giftvoucher='false', up_setting='false'
+	WHERE up_userid='${id}' `);
+  }
+  
   if (parseInt(fileRecv) === 1) {
     const file = req.files.file;
     const filename = Date.now() + "-" + id + "-" + file.name;
@@ -1398,43 +1459,62 @@ router.post("/admin/users/edit", function (req, res) {
               console.log(err);
             }
           });
-          pool.query(
-            `SELECT users.id, users.user_typeid, users.user_username, users.user_password, users.user_firstname, users.user_lastname, CONCAT(user_address, ', ', ward.ward_prefix, ' ', ward.ward_name, ', ', district.district_prefix, ' ', district.district_name, ', ', province.province_name) AS user_address, users.user_tel, users.user_status, users.user_date, users.user_avatar, users.user_email, ward.ward_prefix, ward.ward_name, ward.ward_districtid, district.district_prefix, district.district_name, ward.ward_provinceid, province.province_name FROM users
+          if(user_typeid == "KH"){
+            pool.query(
+              `SELECT users.id, users.user_typeid, users.user_username, users.user_password, users.user_firstname, users.user_lastname, CONCAT(user_address, ', ', ward.ward_prefix, ' ', ward.ward_name, ', ', district.district_prefix, ' ', district.district_name, ', ', province.province_name) AS user_address, users.user_tel, users.user_status, users.user_date, users.user_avatar, users.user_email, ward.ward_prefix, ward.ward_name, ward.ward_districtid, district.district_prefix, district.district_name, ward.ward_provinceid, province.province_name FROM users
 LEFT JOIN ward ON ward.id = users.user_wardid
 LEFT JOIN district ON district.id = ward.ward_districtid
 LEFT JOIN province ON province.id = ward.ward_provinceid
 WHERE users.id = '${id}'`,
-            (error, response) => {
-              if (error) {
-                console.log(error);
-              } else {
-                res.send(response.rows[0]);
+              (error, response) => {
+                if (error) {
+                  console.log(error);
+                } else {
+                  res.send(response.rows[0]);
+                }
               }
-            }
-          );
-          pool.query(
-            `INSERT INTO log(
+            );
+          } else {
+            pool.query(
+              `SELECT users.id, users.user_typeid, users.user_username, users.user_password, users.user_firstname, users.user_lastname, CONCAT(user_address, ', ', ward.ward_prefix, ' ', ward.ward_name, ', ', district.district_prefix, ' ', district.district_name, ', ', province.province_name) AS user_address, users.user_tel, users.user_status, users.user_date, users.user_avatar, users.user_email, ward.ward_prefix, ward.ward_name, ward.ward_districtid, district.district_prefix, district.district_name, ward.ward_provinceid, province.province_name, up_eccommercedashboard, up_sewingstatus, up_customeraccountmanager, up_staffaccountmanager, up_productmanager, up_clothmanager, up_ordermanager, up_log, up_loyaltyprogram, up_giftvoucher, up_setting FROM users
+LEFT JOIN ward ON ward.id = users.user_wardid
+LEFT JOIN district ON district.id = ward.ward_districtid
+LEFT JOIN province ON province.id = ward.ward_provinceid
+LEFT JOIN user_permissions ON user_permissions.up_userid = users.id
+WHERE users.id = '${id}'`,
+              (error, response) => {
+                if (error) {
+                  console.log(error);
+                } else {
+                  res.send(response.rows[0]);
+                }
+              }
+            );
+          }
+          
+            pool.query(
+              `INSERT INTO log(
 	log_userid, log_eventtypeid, log_date, log_description)
 	VALUES ('${log_userid}', '${log_eventtypeid}',  '${log_date}',  'Chỉnh sửa thông tin tài khoản ${user_username} (ID: ${id})') RETURNING id;`,
-            (error, response) => {
-              if (error) {
-                console.log(error);
-              } else {
-                pool.query(
-                  `INSERT INTO user_log_detail(
+              (error, response) => {
+                if (error) {
+                  console.log(error);
+                } else {
+                  pool.query(
+                    `INSERT INTO user_log_detail(
 	uld_logid, uld_old_firstname, uld_new_firstname, uld_old_lastname, uld_new_lastname, uld_old_address, uld_new_address, uld_old_tel, uld_new_tel, uld_old_email, uld_new_email, uld_old_wardid, uld_new_wardid, uld_old_status, uld_new_status)
 	VALUES ('${response.rows[0].id}', '${uld_old_firstname}', '${user_firstname}', '${uld_old_lastname}', '${user_lastname}', '${uld_old_address}', '${user_address}', '${uld_old_tel}', '${user_tel}', '${uld_old_email}', '${user_email}', '${uld_old_wardid}', '${user_wardid}', '${uld_old_status}', '${user_status}')`,
-                  (error, response) => {
-                    if (error) {
-                      console.log(error);
-                    } else {
-                      console.log("Ghi nhật ký thành công!!!");
+                    (error, response) => {
+                      if (error) {
+                        console.log(error);
+                      } else {
+                        console.log("Ghi nhật ký thành công!!!");
+                      }
                     }
-                  }
-                );
+                  );
+                }
               }
-            }
-          );
+            );
         }
       }
     );
@@ -1448,20 +1528,39 @@ WHERE users.id = '${id}'`,
           console.log(error);
           res.send({ msg: "ERROR" });
         } else {
-          pool.query(
-            `SELECT users.id, users.user_typeid, users.user_username, users.user_password, users.user_firstname, users.user_lastname, CONCAT(user_address, ', ', ward.ward_prefix, ' ', ward.ward_name, ', ', district.district_prefix, ' ', district.district_name, ', ', province.province_name) AS user_address, users.user_tel, users.user_status, users.user_date, users.user_avatar, users.user_email, ward.ward_prefix, ward.ward_name, ward.ward_districtid, district.district_prefix, district.district_name, ward.ward_provinceid, province.province_name FROM users
+           if (user_typeid == "KH") {
+             pool.query(
+               `SELECT users.id, users.user_typeid, users.user_username, users.user_password, users.user_firstname, users.user_lastname, CONCAT(user_address, ', ', ward.ward_prefix, ' ', ward.ward_name, ', ', district.district_prefix, ' ', district.district_name, ', ', province.province_name) AS user_address, users.user_tel, users.user_status, users.user_date, users.user_avatar, users.user_email, ward.ward_prefix, ward.ward_name, ward.ward_districtid, district.district_prefix, district.district_name, ward.ward_provinceid, province.province_name FROM users
 LEFT JOIN ward ON ward.id = users.user_wardid
 LEFT JOIN district ON district.id = ward.ward_districtid
 LEFT JOIN province ON province.id = ward.ward_provinceid
 WHERE users.id = '${id}'`,
-            (error, response) => {
-              if (error) {
-                console.log(error);
-              } else {
-                res.send(response.rows[0]);
-              }
-            }
-          );
+               (error, response) => {
+                 if (error) {
+                   console.log(error);
+                 } else {
+                   res.send(response.rows[0]);
+                 }
+               }
+             );
+           } else {
+             pool.query(
+               `SELECT users.id, users.user_typeid, users.user_username, users.user_password, users.user_firstname, users.user_lastname, CONCAT(user_address, ', ', ward.ward_prefix, ' ', ward.ward_name, ', ', district.district_prefix, ' ', district.district_name, ', ', province.province_name) AS user_address, users.user_tel, users.user_status, users.user_date, users.user_avatar, users.user_email, ward.ward_prefix, ward.ward_name, ward.ward_districtid, district.district_prefix, district.district_name, ward.ward_provinceid, province.province_name, up_eccommercedashboard, up_sewingstatus, up_customeraccountmanager, up_staffaccountmanager, up_productmanager, up_clothmanager, up_ordermanager, up_log, up_loyaltyprogram, up_giftvoucher, up_setting FROM users
+LEFT JOIN ward ON ward.id = users.user_wardid
+LEFT JOIN district ON district.id = ward.ward_districtid
+LEFT JOIN province ON province.id = ward.ward_provinceid
+LEFT JOIN user_permissions ON user_permissions.up_userid = users.id
+WHERE users.id = '${id}'`,
+               (error, response) => {
+                 if (error) {
+                   console.log(error);
+                 } else {
+                   res.send(response.rows[0]);
+                 }
+               }
+             );
+           }
+
           pool.query(
             `INSERT INTO log(
 	log_userid, log_eventtypeid, log_date, log_description)
@@ -2996,7 +3095,8 @@ router.post(`/admin/add/voucher`, async function (req, res) {
       } else {
         pool.query(
           `SELECT giftvoucher.*, users.user_username FROM giftvoucher
-INNER JOIN users ON users.id = giftvoucher.gv_userid`,
+INNER JOIN users ON users.id = giftvoucher.gv_userid
+WHERE giftvoucher.id = '${id}'`,
           (error, response) => {
             if (error) {
               console.log(error);
@@ -3111,6 +3211,33 @@ router.get(`/getProductCode`, function (req, res) {
       res.send(response.rows);
     }
   });
+});
+
+router.get(`/getUserTypeData`, function (req, res) {
+  pool.query(`SELECT * FROM user_types`, (error, response) => {
+    if (error) {
+      console.log(error);
+      res.send("ERROR");
+    } else {
+      res.send(response.rows);
+    }
+  });
+});
+
+router.get(`/getUserDataWithPermissions`, function (req, res) {
+  pool.query(
+    `SELECT users.id, user_username, user_typeid, user_avatar, ut_name, up_eccommercedashboard, up_sewingstatus, up_customeraccountmanager, up_staffaccountmanager, up_productmanager, up_clothmanager, up_ordermanager, up_log, up_loyaltyprogram, up_giftvoucher, up_setting FROM users
+INNER JOIN user_permissions ON user_permissions.up_userid = users.id
+INNER JOIN user_types ON user_types.id = users.user_typeid`,
+    (error, response) => {
+      if (error) {
+        console.log(error);
+        res.send("ERROR");
+      } else {
+        res.send(response.rows);
+      }
+    }
+  );
 });
 
 module.exports = router;

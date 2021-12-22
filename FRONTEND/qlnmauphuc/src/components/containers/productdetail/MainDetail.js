@@ -1,6 +1,8 @@
 import { Breadcrumbs, Grid, Link, Paper, Typography, Button } from "@mui/material";
 import makeStyles from '@mui/styles/makeStyles';
+import { useSnackbar } from "notistack";
 import React, { useState } from "react";
+import { useSelector } from "react-redux";
 import Order from "../order/Order";
 import MyImageGallery from "./MyImageGallery";
 
@@ -113,6 +115,21 @@ export default function MainDetail(props) {
   const [open, setOpen] = React.useState(false);
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
+  const { enqueueSnackbar } = useSnackbar();
+  const dangNhap = useSelector((state) => state.dangNhap)
+  const {userInfo} = dangNhap;
+  // const  userInfo  = localStorage.getItem("userInfo");
+  const handleClickSubmit = () => {
+    console.log(userInfo);
+    if(userInfo){
+      handleOpen()
+    } else {
+      enqueueSnackbar("Bạn cần đăng nhập để tiến hành đặt may", {
+        variant: "error",
+        autoHideDuration: 2000,
+      });
+    }
+  }
   const renderBreadCrumbs = () => {
     if (
       data[0].product_typeid === "BFM" ||
@@ -125,7 +142,7 @@ export default function MainDetail(props) {
           <Link color="inherit" href="/home">
             Trang chủ
           </Link>
-          <Link color="inherit" href="/">
+          <Link color="inherit" href="/category/type=FFM">
             Thời trang Nam
           </Link>
           <Typography color="textPrimary">{data[0].pt_name}</Typography>
@@ -137,7 +154,7 @@ export default function MainDetail(props) {
           <Link color="inherit" href="/home">
             Trang chủ
           </Link>
-          <Link color="inherit" href="/">
+          <Link color="inherit" href="/category/type=FFF">
             Thời trang Nữ
           </Link>
           <Typography color="textPrimary">{data[0].pt_name}</Typography>
@@ -218,7 +235,7 @@ export default function MainDetail(props) {
                   variant="outlined"
                   color="primary"
                   className={classes.btnOrder}
-                  onClick={handleOpen}
+                  onClick={handleClickSubmit}
                 >
                   Đặt may
                 </Button>

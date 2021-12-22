@@ -70,6 +70,11 @@ function AddForm(props) {
   const [wardData, setWardData] = useState([]);
 
   useEffect(() => {
+    async function getUserData() {
+      const { data } = await axios.get(`/getUserData`);
+      setUserData(data);
+    }
+    getUserData();
     async function getProvinceData() {
       const { data } = await axios.get(`/getProvince`);
       setProvinceData(data);
@@ -170,6 +175,8 @@ function AddForm(props) {
     );
   };
 
+  const [userData, setUserData] = useState(true);
+
   const handleSubmit = () => {
     const formData = new FormData();
     const today = new Date();
@@ -186,6 +193,10 @@ function AddForm(props) {
     formData.append("user_typeid", "NV");
     formData.append("user_avatar", "./images/avatar/user-image.jpg");
     formData.append("FRONTEND_URL", FRONTEND_URL);
+   
+    var check1 = 0;
+    var check2 = 0;
+    
     if (
       !firstname ||
       !password ||
@@ -196,6 +207,28 @@ function AddForm(props) {
       !tel
     ) {
       enqueueSnackbar("Vui lòng điền đầy đủ thông tin", {
+        variant: "error",
+        autoHideDuration: 2000,
+      });
+      return false;
+    }
+    for (let i = 0; i < userData.length; i++) {
+      if (username.trim() === userData[i].user_username) {
+        check1 = check1 + 1;
+      }
+      if (tel.trim() === userData[i].user_tel) {
+        check2 = check2 + 1;
+      }
+    }
+    if (check1 !== 0) {
+      enqueueSnackbar("Tên đăng nhập đã tồn tại", {
+        variant: "error",
+        autoHideDuration: 2000,
+      });
+      return false;
+    }
+    if (check2 !== 0) {
+      enqueueSnackbar("Số điện thoại đã tồn tại", {
         variant: "error",
         autoHideDuration: 2000,
       });
@@ -222,12 +255,14 @@ function AddForm(props) {
       });
       return false;
     }
+    
     formData.append("user_wardid", ward);
     formData.append("user_isdeleted", 'false');
     const now = new Date();
     formData.append("log_date", format(now, "yyyy-MM-dd HH:mm:ss"));
     formData.append("log_userid", userid);
     formData.append("log_eventtypeid", "ASA");
+    
     if (file) {
       formData.append("file", file);
       formData.append("fileName", fileName);

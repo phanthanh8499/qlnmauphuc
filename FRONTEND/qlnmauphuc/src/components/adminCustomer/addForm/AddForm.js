@@ -69,7 +69,13 @@ function AddForm(props) {
   const [districtData, setDistrictData] = useState([]);
   const [wardData, setWardData] = useState([]);
 
+  const [userData, setUserData] = useState([])
   useEffect(() => {
+    async function getUserData() {
+      const { data } = await axios.get(`/getUserData`);
+      setUserData(data);
+    }
+    getUserData();
     async function getProvinceData() {
       const { data } = await axios.get(`/getProvince`);
       setProvinceData(data);
@@ -186,6 +192,8 @@ function AddForm(props) {
     formData.append("user_typeid", "KH");
     formData.append("user_avatar", "./images/avatar/user-image.jpg");
     formData.append("FRONTEND_URL", FRONTEND_URL);
+    var check1 = 0;
+    var check2 = 0;
     if (
       !firstname ||
       !password ||
@@ -196,6 +204,28 @@ function AddForm(props) {
       !tel
     ) {
       enqueueSnackbar("Vui lòng điền đầy đủ thông tin", {
+        variant: "error",
+        autoHideDuration: 2000,
+      });
+      return false;
+    }
+    for (let i = 0; i < userData.length; i++) {
+      if (username.trim() === userData[i].user_username) {
+        check1 = check1 + 1;
+      }
+      if (tel.trim() === userData[i].user_tel) {
+        check2 = check2 + 1;
+      }
+    }
+    if (check1 !== 0) {
+      enqueueSnackbar("Tên đăng nhập đã tồn tại", {
+        variant: "error",
+        autoHideDuration: 2000,
+      });
+      return false;
+    }
+    if (check2 !== 0) {
+      enqueueSnackbar("Số điện thoại đã tồn tại", {
         variant: "error",
         autoHideDuration: 2000,
       });

@@ -78,7 +78,12 @@ function DetailForm(props) {
   const [districtData, setDistrictData] = useState([]);
   const [wardData, setWardData] = useState([]);
   const [data, setData] = useState()
+  const [userTypeData, setUserTypeData] = useState([])
   useEffect(() => {
+    async function getMenuUserType(){
+      const { data } = await axios.get(`/getUserTypeData`);
+      setUserTypeData(data)
+    }
     async function getProvinceData() {
       const { data } = await axios.get(`/getProvince`);
       setProvinceData(data);
@@ -115,6 +120,7 @@ function DetailForm(props) {
       setWard(`${data[0].user_wardid}`);
       setLoading(false);
     }
+    getMenuUserType();
     getProvinceData();
     getDetailUser();
   }, []);
@@ -159,6 +165,11 @@ function DetailForm(props) {
     setWard(e.target.value);
   };
 
+  const handleChangeUserType = (e) => {
+    setType(e.target.value)
+  }
+
+
   const renderAddressForm = () => {
     return (
       <>
@@ -200,12 +211,12 @@ function DetailForm(props) {
         </Grid>
         <Grid item xs={4} sx={{ marginTop: "10px" }}>
           <MyFormControl fullWidth>
-            <InputLabel id="ward-select-label">Xã/Phường</InputLabel>
+            <InputLabel id="ward-select-label">Loại tài khoản</InputLabel>
             <Select
               labelId="ward-select-label"
               id="ward-simple-select"
               defaultValue={ward}
-              label="Xã/Phường"
+              label="Loại tài khoản"
               onChange={handleChangeWard}
             >
               {wardData.map((value, key) => (
@@ -358,7 +369,31 @@ function DetailForm(props) {
                     }}
                   />
                 </Grid>
-                <Grid item xs={6}></Grid>
+                <Grid item xs={6}>
+                  <MyFormControl fullWidth sx={{ mt: 0.5 }}>
+                    <InputLabel id="usertype-select-label">
+                      Loại tài khoản
+                    </InputLabel>
+                    <Select
+                      labelId="usertype-select-label"
+                      id="usertype-simple-select"
+                      defaultValue={type}
+                      label="Loại tài khoản"
+                      onChange={handleChangeUserType}
+                    >
+                      {userTypeData
+                        .filter(
+                          (userTypeData) =>
+                            userTypeData.id !== "AD" && userTypeData.id !== "KH"
+                        )
+                        .map((value, key) => (
+                          <MenuItem value={value.id} key={key}>
+                            {value.ut_name}
+                          </MenuItem>
+                        ))}
+                    </Select>
+                  </MyFormControl>
+                </Grid>
                 <Grid item xs={6}>
                   <MyTextField
                     id="lastname"

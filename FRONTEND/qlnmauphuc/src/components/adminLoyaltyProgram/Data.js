@@ -229,14 +229,16 @@ export default function Data(props) {
   };
 
   const columns = [
-    // {
-    //   field: "user_avatar",
-    //   headerName: "Avatar",
-    //   width: 100,
-    //   renderCell: (params) => {
-    //     return <Avatar src={LOCAL_PATH + params.value.substring(2)} />;
-    //   },
-    // },
+    {
+      field: "user_avatar",
+      headerName: "Avatar",
+      width: 100,
+      renderCell: (params) => {
+        if(params.value){
+          return <Avatar src={LOCAL_PATH + params.value.substring(2)} />;    
+        }
+      },
+    },
     { field: "user_username", headerName: "UserName", width: 100 },
     { field: "user_lastname", headerName: "Họ", width: 200 },
     { field: "user_firstname", headerName: "Tên", width: 130 },
@@ -248,7 +250,9 @@ export default function Data(props) {
         const formatTel = (text) => {
           return text.replace(/(\d{3})(\d{3})(\d{4})/, "$1 $2 $3");
         };
-        return formatTel(params.value);
+        if (params.value) {
+          return formatTel(params.value);
+        }
       },
     },
     { field: "user_address", headerName: "Địa chỉ", width: 500 },
@@ -289,7 +293,9 @@ export default function Data(props) {
       headerName: "Avatar",
       width: 100,
       renderCell: (params) => {
-        return <Avatar src={LOCAL_PATH + params.value.substring(2)} />;
+        if (params.value) {
+          return <Avatar src={LOCAL_PATH + params.value.substring(2)} />;
+        }
       },
     },
     { field: "user_username", headerName: "UserName", width: 100 },
@@ -301,7 +307,9 @@ export default function Data(props) {
         const formatTel = (text) => {
           return text.replace(/(\d{3})(\d{3})(\d{4})/, "$1 $2 $3");
         };
-        return formatTel(params.value);
+        if(params.value){
+          return formatTel(params.value);
+        }
       },
     },
     { field: "order_count", headerName: "Tích điểm", width: 150 },
@@ -732,7 +740,7 @@ export default function Data(props) {
                   <TableHead>
                     <TableRow>
                       <TableCell>STT</TableCell>
-                      {/* <TableCell>Avatar</TableCell> */}
+                      <TableCell>Avatar</TableCell>
                       <TableCell align="center">UserName</TableCell>
                       <TableCell align="center">Họ</TableCell>
                       <TableCell align="center">Tên</TableCell>
@@ -749,7 +757,8 @@ export default function Data(props) {
                       : dataRender.map((row, key) => {
                           return (
                             <TableRow key={row.name}>
-                              {/* <TableCell component="th" scope="row">
+                              <TableCell align="center">{key + 1}</TableCell>
+                              <TableCell component="th" scope="row">
                                 <Avatar
                                   src={
                                     !row.user_avatar
@@ -758,11 +767,8 @@ export default function Data(props) {
                                         row.user_avatar.substring(2)
                                   }
                                 />
-                              </TableCell> */}
-
-                              <TableCell align="center">
-                                {key+1}
                               </TableCell>
+
                               <TableCell align="left">
                                 {row.user_username}
                               </TableCell>
