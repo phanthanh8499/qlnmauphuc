@@ -242,8 +242,8 @@ function AFCustomer(props) {
           <Grid item xs={10}>
             <TextField
               id="product_name"
-              label="Tên sản phẩm"
-              placeholder="Nhập tên sản phẩm"
+              label="Tên vải"
+              placeholder="Nhập tên vải"
               margin="normal"
               fullWidth
               size="small"

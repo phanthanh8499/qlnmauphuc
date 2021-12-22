@@ -6,6 +6,7 @@ import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline";
 import makeStyles from "@mui/styles/makeStyles";
 import clsx from "clsx";
 import { deleteOrder } from "../../../redux/Action";
+import { format } from "date-fns";
 
 const useStyle = makeStyles((theme) => ({
   root: {
@@ -33,7 +34,7 @@ function DeleteForm(props) {
   const classes = useStyle();
   const { enqueueSnackbar } = useSnackbar();
   const dispatch = useDispatch();
-  const { open, onClose, id, listId, orderStatus } = props;
+  const { open, onClose, id, listId, orderStatus, userid } = props;
   const handleSubmit = () => {
     if (listId.length !== 0) {
       listId.forEach((element) => {
@@ -41,12 +42,28 @@ function DeleteForm(props) {
           element.order_statusid === 0 ||
           element.order_statusid === 10
         ) {
-          dispatch(deleteOrder(element.od_orderid));
+          const now = new Date();
+          dispatch(
+            deleteOrder({
+              od_orderid: element.od_orderid,
+              log_date: format(now, "yyyy-MM-dd HH:mm:ss"),
+              log_userid: userid,
+              log_eventtypeid: "DOF",
+            })
+          );
         } 
       });
     } else {
       if (orderStatus === 0 || orderStatus === 10){
-        dispatch(deleteOrder(id));
+        const now = new Date();
+        dispatch(
+          deleteOrder({
+            od_orderid: id,
+            log_date: format(now, "yyyy-MM-dd HH:mm:ss"),
+            log_userid: userid,
+            log_eventtypeid: "DOF",
+          })
+        );
       } else {
         enqueueSnackbar("Không thể xoá đơn hàng này", {
           variant: "error",

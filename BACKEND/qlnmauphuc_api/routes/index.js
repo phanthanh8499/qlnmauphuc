@@ -2417,23 +2417,38 @@ router.post("/admin/order/processing", async function (req, res) {
   }
 });
 
-router.get("/admin/order/delete.:id", function (req, res) {
-  const { id } = req.params;
+router.post("/admin/order/delete", function (req, res) {
+  const { od_orderid,
+            log_date,
+            log_userid,
+            log_eventtypeid } = req.body;
   pool.query(
     `DELETE FROM order_details
-WHERE od_orderid = '${id}'`,
+WHERE od_orderid = '${od_orderid}'`,
     (error, response) => {
       if (error) {
         console.log(error);
       } else {
         pool.query(
           `DELETE FROM orders
-      WHERE id = '${id}'`,
+      WHERE id = '${od_orderid}'`,
           (error, response) => {
             if (error) {
               console.log(error);
             } else {
-              console.log("Xoá thành công đơn hàng có id là: ", id);
+              
+              pool.query(
+                `INSERT INTO log(
+	log_userid, log_eventtypeid, log_date, log_description)
+	VALUES ('${log_userid}', '${log_eventtypeid}',  '${log_date}',  'Xoá hoá đơn ID: ${od_orderid}');`,
+                (error, response) => {
+                  if (error) {
+                    console.log(error);
+                  } else {
+                    console.log("Ghi nhật ký thành công!");
+                  }
+                }
+              );
             }
           }
         );

@@ -254,9 +254,9 @@ export const editOrder = (dataReq) => async (dispatch) => {
 };
 
 export const deleteOrder = (dataReq) => async (dispatch) => {
-  console.log("id xoa", dataReq);
-  Axios.get(`/admin/Order/delete.${dataReq}`);
-  dispatch({ type: XOA_DON_HANG, payload: dataReq });
+  console.log("id xoa", dataReq.od_orderid);
+  dispatch({ type: XOA_DON_HANG, payload: dataReq.od_orderid });
+  Axios.post(`/admin/Order/delete`, dataReq);
 };
 
 export const cancelOrder = (data) => async (dispatch) => {

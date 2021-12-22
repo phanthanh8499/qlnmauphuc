@@ -36,7 +36,7 @@ import ExpandLess from "@mui/icons-material/ExpandLess";
 import ExpandMore from "@mui/icons-material/ExpandMore";
 import StarBorder from "@mui/icons-material/StarBorder";
 import { DANG_XUAT, LOCAL_PATH } from "../../constants/Constants";
-import { getUserPermissions } from "../../redux/Action";
+import { getUserData, getUserPermissions } from "../../redux/Action";
 import AssignmentIcon from "@mui/icons-material/Assignment";
 import CardMembershipIcon from "@mui/icons-material/CardMembership";
 import CardGiftcardIcon from "@mui/icons-material/CardGiftcard";

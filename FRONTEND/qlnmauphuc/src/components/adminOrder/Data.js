@@ -22,6 +22,8 @@ import {
   TableRow,
   TableCell,
   TableBody,
+  InputLabel,
+  Select,
 } from "@mui/material";
 import { makeStyles } from "@mui/styles";
 import { styled } from "@mui/material/styles";
@@ -50,7 +52,9 @@ import {
 } from "../utility/DataGridTheme";
 import { useReactToPrint } from "react-to-print";
 import { INFO } from "../../constants/Constants";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
+import { getUserData } from "../../redux/Action";
+import { MyFormControl } from "../utility/Utility";
 
 function CustomToolbar() {
   return (
@@ -82,7 +86,9 @@ export default function Data(props) {
   const [loading, setLoading] = useState(true);
   const users = useSelector((state) => state.users);
   const { loadingPermissions, permissionData } = users;
-
+  // const dispatch = useDispatch()
+  // const { userData } = users;
+    
   useEffect(() => {
     setDataRender(data);
     setDataBackup(data);
@@ -244,6 +250,17 @@ export default function Data(props) {
         return formatDate(params.value);
       },
     },
+    { field: "order_customername", headerName: "Tên khách hàng", width: 200 },
+    {
+      field: "order_customerphone",
+      headerName: "Số điện thoại",
+      width: 150,
+    },
+    { field: "order_customeraddress", headerName: "Địa chỉ", width: 500 },
+    { field: "tailor_name", headerName: "Người may", width: 250 },
+    // { field: "tailor_tel", headerName: "Số điện thoại người may", width: 250 },
+    { field: "osm_name", headerName: "Phương thức vận chuyển", width: 250 },
+    { field: "opm_name", headerName: "Phương thức thanh toán", width: 300 },
     {
       field: "os_name",
       headerName: "Trạng thái",
@@ -284,17 +301,6 @@ export default function Data(props) {
         );
       },
     },
-    { field: "order_customername", headerName: "Tên khách hàng", width: 200 },
-    {
-      field: "order_customerphone",
-      headerName: "Số điện thoại",
-      width: 150,
-    },
-    { field: "order_customeraddress", headerName: "Địa chỉ", width: 500 },
-    { field: "tailor_name", headerName: "Người may", width: 250 },
-    { field: "tailor_tel", headerName: "Số điện thoại người may", width: 250 },
-    { field: "osm_name", headerName: "Phương thức vận chuyển", width: 250 },
-    { field: "opm_name", headerName: "Phương thức thanh toán", width: 300 },
     {
       field: "order_total",
       headerName: "Tổng tiên",
@@ -322,7 +328,8 @@ export default function Data(props) {
             dataRender.filter((item) => item.id === params.value)[0].od_orderid
           );
           setOrderStatus(
-            dataRender.filter((item) => item.id === params.value)[0].order_statusid
+            dataRender.filter((item) => item.id === params.value)[0]
+              .order_statusid
           );
         };
 
@@ -445,6 +452,36 @@ export default function Data(props) {
     pageStyle: pageStyle,
   });
 
+  // const [tailor, setTailor] = useState(0);
+  // const handleChangeTailor = (e) => {
+  //   console.log(e.target.value)
+  //   var string = e.target.value;
+  //   setTailor(e.target.value);
+  //   if (string !== 0) {
+  //     console.log("???")
+  //     console.log(dataBackup.filter((data) => (data.order_tailorid === parseInt(string))));
+  //     let filtered = dataBackup.filter(
+  //       (data) => data.order_tailorid === parseInt(string)
+  //     );
+  //     setDataRender(filtered);
+  //   } else {
+  //     console.log("??á?");
+  //     setDataRender(dataBackup);
+  //   }
+  // };
+
+  // const renderMenuTailor = () => {
+  //   return userData
+  //     .filter((item) => item.user_typeid === "NV")
+  //     .map((value, key) => {
+  //       return (
+  //         <MenuItem value={value.id} key={key}>
+  //           {value.user_lastname + " " + value.user_firstname}
+  //         </MenuItem>
+  //       );
+  //     });
+  // };
+
   return (
     <Grid container>
       {loading || loadingPermissions ? (
@@ -515,7 +552,22 @@ export default function Data(props) {
                   </MenuItem>
                 </StyledMenu>
               </Grid>
-              <Grid item xs={3}></Grid>
+              <Grid item xs={3}>
+                {/* <MyFormControl fullWidth>
+                  <InputLabel id="tailor-label">Thợ may</InputLabel>
+                  <Select
+                    labelId="tailor-label"
+                    id="demo-simple-select"
+                    value={tailor}
+                    label="Thợ may"
+                    onChange={handleChangeTailor}
+                  >
+                    <MenuItem value={0}>Tất cả</MenuItem>
+                    {renderMenuTailor()}
+                  </Select>
+                </MyFormControl> */}
+                
+              </Grid>
               <Grid item xs={3}>
                 <Search>
                   <SearchIconWrapper>
