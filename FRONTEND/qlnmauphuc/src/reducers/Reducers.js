@@ -6,6 +6,7 @@ import {
   BAO_CAO_TRANG_THAI_HOA_DON,
   BAO_CAO_SAN_PHAM_THUONG_MAI,
   CAP_NHAT_HINH_ANH,
+  XOA_MA_GIAM_GIA,
   CHINH_SUA_THONG_TIN_DON_HANG,
   CHINH_SUA_THONG_TIN_SAN_PHAM,
   CHINH_SUA_THONG_TIN_SO_DO,
@@ -667,7 +668,17 @@ export const giftVoucherReducer = (
     case LIET_KE_MA_GIAM_GIA:
       return { ...state, loading: false, giftVoucherData: action.payload };
     case THEM_MA_GIAM_GIA:
-      return { ...state, giftVoucherData: [...state.giftVoucherData, action.payload] };
+      return {
+        ...state,
+        giftVoucherData: [...state.giftVoucherData, action.payload],
+      };
+    case XOA_MA_GIAM_GIA:
+      return {
+        ...state,
+        giftVoucherData: state.giftVoucherData.filter(
+          (giftVoucherData) => giftVoucherData.id !== action.payload
+        ),
+      };
     default:
       return state;
   }

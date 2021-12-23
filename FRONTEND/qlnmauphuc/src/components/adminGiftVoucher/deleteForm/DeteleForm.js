@@ -11,7 +11,7 @@ import { useSnackbar } from "notistack";
 import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
 import makeStyles from "@mui/styles/makeStyles";
 import clsx from "clsx";
-import { deleteUser } from "../../../redux/Action";
+import { deleteVoucher } from "../../../redux/Action";
 import { format } from "date-fns";
 
 const useStyle = makeStyles((theme) => ({
@@ -53,7 +53,7 @@ function DeleteForm(props) {
         formData.append("log_eventtypeid", "DCA");
         formData.append("id", element.id);
         formData.append("user_username", element.user_username);
-        dispatch(deleteUser(formData));
+        dispatch(deleteVoucher(formData));
       });
     } else {
       const formData = new FormData();
@@ -63,9 +63,9 @@ function DeleteForm(props) {
       formData.append("log_eventtypeid", "DCA");
       formData.append("id", dataReq.id);
       formData.append("user_username", dataReq.user_username);
-      dispatch(deleteUser(formData));
+      dispatch(deleteVoucher(formData));
     }
-    enqueueSnackbar("Xoá người dùng thành công", {
+    enqueueSnackbar("Xoá mã giảm giá thành công", {
       variant: "success",
       autoHideDuration: 2000,
     });

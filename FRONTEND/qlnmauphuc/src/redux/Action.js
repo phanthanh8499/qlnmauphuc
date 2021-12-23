@@ -60,6 +60,7 @@ import {
   LIET_KE_MA_GIAM_GIA,
   THEM_MA_GIAM_GIA,
   BAO_CAO_NGAY,
+  XOA_MA_GIAM_GIA,
 } from "../constants/Constants";
 
 export const dangNhapKhangHang = (username, password) => async (dispatch) => {
@@ -368,4 +369,9 @@ export const addGiftVoucher = (dataReq) => async (dispatch) => {
   const { data } = await Axios.post(`/admin/add/voucher`, dataReq);
   console.log(data)
   dispatch({ type: THEM_MA_GIAM_GIA, payload: data });
+};
+
+export const deleteVoucher = (dataReq) => async (dispatch) => {
+  const { data } = await Axios.post(`/admin/delete/voucher`, dataReq);
+  dispatch({ type: XOA_MA_GIAM_GIA, payload: data });
 };

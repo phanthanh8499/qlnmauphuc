@@ -3239,6 +3239,23 @@ router.get(`/getUserTypeData`, function (req, res) {
   });
 });
 
+router.post(`/admin/delete/voucher`, function (req, res) {
+  const {id} = req.body;
+  console.log(id)
+  pool.query(
+    `DELETE FROM giftvoucher
+WHERE id = '${id}'`,
+    (error, response) => {
+      if (error) {
+        console.log(error);
+        res.send("ERROR");
+      } else {
+        res.send(id);
+      }
+    }
+  );
+});
+
 router.get(`/getUserDataWithPermissions`, function (req, res) {
   pool.query(
     `SELECT users.id, user_username, user_typeid, user_avatar, ut_name, up_eccommercedashboard, up_sewingstatus, up_customeraccountmanager, up_staffaccountmanager, up_productmanager, up_clothmanager, up_ordermanager, up_log, up_loyaltyprogram, up_giftvoucher, up_setting FROM users

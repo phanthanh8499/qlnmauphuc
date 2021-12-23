@@ -52,6 +52,9 @@ export default function UChangePassword() {
       });
       return false;
     } else {
+      setCurrentPass("")
+      setNewPass("");
+      setConfirmPass("");
       enqueueSnackbar("Cập nhật mật khẩu thành công", {
         variant: "success",
         autoHideDuration: 2000,
@@ -78,7 +81,7 @@ export default function UChangePassword() {
                 label="Mật khẩu hiện tại"
                 placeholder="Nhập mật khẩu hiện tại"
                 margin="normal"
-                defaultValue={currentPass}
+                value={currentPass}
                 fullWidth
                 type="password"
                 onChange={(e) => setCurrentPass(e.target.value)}
@@ -95,7 +98,7 @@ export default function UChangePassword() {
                 label="Mật khẩu mới"
                 placeholder="Nhập mật khẩu cần đổi"
                 margin="normal"
-                defaultValue={newPass}
+                value={newPass}
                 fullWidth
                 type="password"
                 onChange={(e) => setNewPass(e.target.value)}
@@ -111,7 +114,7 @@ export default function UChangePassword() {
                 label="Xác nhận lai mật khẩu"
                 placeholder="Nhập lại mật khẩu cần đổi"
                 margin="normal"
-                defaultValue={confirmPass}
+                value={confirmPass}
                 fullWidth
                 type="password"
                 onChange={(e) => setConfirmPass(e.target.value)}

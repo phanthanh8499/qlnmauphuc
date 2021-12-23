@@ -115,3 +115,4 @@ export const LIET_KE_KHACH_HANG_THAN_THIET = "LIET_KE_KHACH_HANG_THAN_THIET";
 //======================== MA GIAM GIA =====================================
 export const LIET_KE_MA_GIAM_GIA = "LIET_KE_MA_GIAM_GIA";
 export const THEM_MA_GIAM_GIA = "THEM_MA_GIAM_GIA";
+export const XOA_MA_GIAM_GIA = "XOA_MA_GIAM_GIA";
